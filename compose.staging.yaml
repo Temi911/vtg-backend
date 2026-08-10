@@ -1,0 +1,13 @@
+services:
+  backend:
+    environment:
+      NODE_ENV: staging
+      PORT: 4000
+      DATABASE_URL: postgresql://vtg:vtg@postgres:5432/vtg
+      DATABASE_SSL: "false"
+      CORS_ORIGIN: http://localhost:3000
+      JWT_ACCESS_SECRET: staging-only-change-this-access-secret-32chars
+      JWT_REFRESH_SECRET: staging-only-change-this-refresh-secret-32chars
+      OBJECT_STORAGE_PROVIDER: local
+      LOCAL_UPLOAD_DIR: /app/uploads
+    command: ["npm", "run", "start:staging"]
