@@ -133,16 +133,28 @@ function dispatchVerificationEmail(email, code) {
 async function issueEmailVerificationCode(email) {
   const normalizedEmail = normalizeEmail(email);
   const code = generateVerificationCode();
+
   PENDING_EMAIL_VERIFICATIONS.set(normalizedEmail, {
     code,
     expiresAt: Date.now() + 15 * 60 * 1000,
   });
-  const sent = await Promise.resolve(dispatchVerificationEmail(normalizedEmail, code));
-  const deliveryMode = sent ? 'smtp' : 'local-log';
-  console.info(`[VTG] Verification code for ${normalizedEmail}: ${code}`);
-  return { code, deliveryMode };
-}
 
+  const sent = await Promise.resolve(
+    dispatchVerificationEmail(normalizedEmail, code)
+  );
+
+  if (!sent) {
+    PENDING_EMAIL_VERIFICATIONS.delete(normalizedEmail);
+
+    throw new AppError(
+      'We could not deliver the verification email. Please try again later.',
+      502,
+      'EMAIL_DELIVERY_FAILED'
+    );
+  }
+
+  return { sent: true };
+}
 function consumeEmailVerificationCode(email, code) {
   const normalizedEmail = normalizeEmail(email);
   const pending = PENDING_EMAIL_VERIFICATIONS.get(normalizedEmail);
