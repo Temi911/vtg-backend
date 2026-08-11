@@ -27,10 +27,26 @@ const aiRoutes = require('./routes/ai.routes');
 const i18nRoutes = require('./routes/i18n.routes');
 
 const app = express();
+app.set('trust proxy', 1);
+
+// Bound SMTP waits prevent an unreachable SMTP server from holding a
+// verification request open until the browser/proxy gives up.
+try {
+  const nodemailer = require('nodemailer');
+  const originalCreateTransport = nodemailer.createTransport.bind(nodemailer);
+  nodemailer.createTransport = (options = {}, ...rest) => originalCreateTransport({
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
+    ...options,
+  }, ...rest);
+} catch (error) {
+  // nodemailer is optional in the auth controller.
+}
+
 const workspaceRoot = path.resolve(__dirname, '..', '..');
 const frontendEntry = path.join(workspaceRoot, 'vtg-live-19-DEMO_1.html');
 
-// ── security & parsing ──────────────────────────────────────
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -61,13 +77,10 @@ if (process.env.NODE_ENV === 'production' && allowedOrigins.length === 0) {
 app.use(
   cors({
     origin(origin, callback) {
-      // Allow non-browser/server-to-server requests without an Origin header.
       if (!origin) return callback(null, true);
-
       if (allowedOrigins.includes('*') && process.env.NODE_ENV !== 'production') {
         return callback(null, true);
       }
-
       return callback(null, allowedOrigins.includes(origin));
     },
   })
@@ -75,7 +88,6 @@ app.use(
 app.use(express.json({ limit: '2mb' }));
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
-// Generous global limiter; auth routes get a stricter one below.
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -93,10 +105,8 @@ const authLimiter = rateLimit({
   message: { error: { code: 'RATE_LIMITED', message: 'Too many attempts. Try again later.' } },
 });
 
-// ── health check ─────────────────────────────────────────────
 app.get('/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
-// ── routes ───────────────────────────────────────────────────
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/orders', ordersRoutes);
@@ -126,7 +136,6 @@ const PORT = process.env.PORT || 4000;
 
 if (require.main === module) {
   app.listen(PORT, () => {
-    // eslint-disable-next-line no-console
     console.log(`VTG Africa API listening on port ${PORT}`);
   });
 }
