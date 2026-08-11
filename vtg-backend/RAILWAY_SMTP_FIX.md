@@ -1,1 +1,0 @@
-This deployment fix is intended to address Railway proxy forwarding and bounded SMTP connection waits during email verification.
