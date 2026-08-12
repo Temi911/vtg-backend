@@ -1,9 +1,17 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "headers": [
+    {
+      "source": "/(.*\\.(js|css|png|jpg|jpeg|webp|svg|ico|woff2))",
+      "headers": [
+        {"key": "Cache-Control", "value": "public, max-age=31536000, immutable"}
+      ]
+    }
+  ],
   "routes": [
     {
       "src": "^/$",
-      "dest": "/frontend-v4.html"
+      "dest": "/frontend-v3.html"
     },
     {
       "src": "^/api/(.*)$",
