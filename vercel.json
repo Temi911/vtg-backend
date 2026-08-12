@@ -1,12 +1,13 @@
 {
-  "rewrites": [
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "routes": [
     {
-      "source": "/",
-      "destination": "/api/frontend"
+      "src": "^/$",
+      "dest": "/api/frontend"
     },
     {
-      "source": "/api/:path*",
-      "destination": "https://vtg-backend-production-7ad6.up.railway.app/api/:path*"
+      "src": "^/api/(.*)$",
+      "dest": "https://vtg-backend-production-7ad6.up.railway.app/api/$1"
     }
   ]
 }
