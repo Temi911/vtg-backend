@@ -1,0 +1,29 @@
+name: Attach live market news client
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  attach:
+    if: github.event.head_commit.message != 'Attach lazy live market news client'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Attach client and remove one-time workflow
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('frontend-v3.html')
+          s = p.read_text(encoding='utf-8')
+          tag = '<script src="/vtg-market-news.js" defer></script>'
+          if tag not in s:
+              s = s.replace('</body>', tag + '</body>')
+              p.write_text(s, encoding='utf-8')
+          Path('.github/workflows/attach-market-news.yml').unlink(missing_ok=True)
+          PY
+          git config user.name 'VTG Automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add frontend-v3.html .github/workflows/attach-market-news.yml
+          git commit -m 'Attach lazy live market news client' || exit 0
+          git push
