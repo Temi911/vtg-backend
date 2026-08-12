@@ -3,7 +3,7 @@
   "routes": [
     {
       "src": "^/$",
-      "dest": "/frontend-v2.html"
+      "dest": "/frontend-v3.html"
     },
     {
       "src": "^/api/(.*)$",
