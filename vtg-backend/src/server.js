@@ -23,81 +23,25 @@ const locationRoutes = require('./routes/location.routes');
 const communicationsRoutes = require('./routes/communications.routes');
 const aiRoutes = require('./routes/ai.routes');
 const i18nRoutes = require('./routes/i18n.routes');
+const tradeRoutes = require('./routes/trade.routes');
 const app = express();
 app.set('trust proxy', 1);
-
-try {
-  const nodemailer = require('nodemailer');
-  const originalCreateTransport = nodemailer.createTransport.bind(nodemailer);
-  nodemailer.createTransport = (options = {}, ...rest) => originalCreateTransport({ connectionTimeout: 10000, greetingTimeout: 10000, socketTimeout: 15000, ...options }, ...rest);
-} catch (error) {}
-
-const workspaceRoot = path.resolve(__dirname, '..', '..');
-const frontendEntry = path.join(workspaceRoot, 'vtg-live-19-DEMO_1.html');
-const intelligenceWidget = fs.readFileSync(path.join(__dirname, 'vtg-trade-intelligence.js'), 'utf8');
-
-app.use(helmet({
-  contentSecurityPolicy: {
-    useDefaults: false,
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", 'https://unpkg.com'],
-      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://unpkg.com'],
-      imgSrc: ["'self'", 'data:', 'blob:', 'https://images.unsplash.com', 'https://*.tile.openstreetmap.org'],
-      fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
-      connectSrc: ["'self'", 'https://api.frankfurter.app', 'https://api.coingecko.com', 'https://news.google.com', 'https://nominatim.openstreetmap.org', 'https://*.tile.openstreetmap.org'],
-      objectSrc: ["'none'"], baseUri: ["'self'"], formAction: ["'self'"]
-    }
-  }
-}));
-const allowedOrigins = (process.env.CORS_ORIGIN || '').split(',').map(x => x.trim()).filter(Boolean);
-if (process.env.NODE_ENV === 'production' && allowedOrigins.length === 0) throw new Error('CORS_ORIGIN is required in production.');
-app.use(cors({ origin(origin, callback) { if (!origin) return callback(null, true); if (allowedOrigins.includes('*') && process.env.NODE_ENV !== 'production') return callback(null, true); return callback(null, allowedOrigins.includes(origin)); } }));
-app.use(express.json({ limit: '2mb' }));
-app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
-app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 600, standardHeaders: true, legacyHeaders: false }));
-const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 30, standardHeaders: true, legacyHeaders: false, message: { error: { code: 'RATE_LIMITED', message: 'Too many attempts. Try again later.' } } });
-app.get('/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
-app.use('/api/auth', authLimiter, authRoutes);
-app.use('/api/products', productsRoutes);
-app.use('/api/orders', ordersRoutes);
-app.use('/api/lc', lcRoutes);
-app.use('/api/wallet', walletRoutes);
-app.use('/api/payments', paymentsRoutes);
-app.use('/api/documents', documentsRoutes);
-app.use('/api/shipments', shipmentsRoutes);
-app.use('/api/messages', messagesRoutes);
-app.use('/api/compliance', complianceRoutes);
-app.use('/api/notifications', notificationsRoutes);
-app.use('/api/preferences', preferencesRoutes);
-app.use('/api/location', locationRoutes);
-app.use('/api/communications', communicationsRoutes);
-app.use('/api/i18n', i18nRoutes);
-app.use('/api/ai', aiRoutes);
-
-async function newsFeed(q) {
-  const u = `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en-US&gl=US&ceid=US:en`;
-  const r = await fetch(u, { headers: { 'user-agent': 'VTG-Trade-Intelligence/1.0' } });
-  if (!r.ok) throw new Error('news unavailable');
-  const xml = await r.text();
-  return [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].slice(0, 8).map(m => { const x=m[1]; const get=t=>{const a=x.match(new RegExp(`<${t}>([\\s\\S]*?)<\\/${t}>`)); return a ? a[1].replace(/<!\[CDATA\[|\]\]>/g,'').replace(/<[^>]+>/g,'').trim() : '';}; return {title:get('title'),link:get('link'),published:get('pubDate'),source:get('source')}; });
-}
-app.get('/api/market/dashboard', async (req,res) => {
-  const out={updated_at:new Date().toISOString(),forex:null,crypto:null,news:[]};
-  try { const r=await fetch('https://api.frankfurter.app/latest?from=USD&to=NGN,CNY,GHS,KES,ZAR,EUR,GBP,AED,JPY'); if(r.ok) out.forex={...(await r.json()),source:'Frankfurter / ECB reference rates'}; } catch(e) { out.forex={error:'Live forex unavailable'}; }
-  try { const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd,ngn,cny&include_24hr_change=true'); if(r.ok) out.crypto={prices:await r.json(),source:'CoinGecko'}; } catch(e) { out.crypto={error:'Live crypto unavailable'}; }
-  try { const qs=['vehicle automotive market China EV BYD Chery Geely SAIC export','China trade import export Africa Nigeria manufacturing supply chain','global vehicle tariffs automotive trade shipping logistics']; const all=(await Promise.all(qs.map(newsFeed))).flat(); const seen=new Set(); out.news=all.filter(x=>x.title&&!seen.has(x.title)&&seen.add(x.title)).slice(0,12); } catch(e) {}
-  res.json(out);
-});
-app.get('/api/market/geocode', async (req,res) => {
-  const q=String(req.query.q||'').trim(); if(!q||q.length>160) return res.status(400).json({error:'Location search is required.'});
-  try { const r=await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&q=${encodeURIComponent(q)}`,{headers:{'user-agent':'VTG-Trade-Intelligence/1.0'}}); if(!r.ok) throw new Error(); const data=await r.json(); res.json({results:data.map(x=>({lat:Number(x.lat),lon:Number(x.lon),name:x.display_name,type:x.type}))}); } catch(e) { res.status(502).json({error:'Location lookup unavailable.'}); }
-});
-
-app.get('/', (req,res,next) => { fs.readFile(frontendEntry,'utf8',(err,html)=>{ if(err) return next(err); const script=`<script>${intelligenceWidget}</script>`; res.type('html').send(html.includes('</body>')?html.replace('</body>',script+'</body>'):html+script); }); });
-app.use(express.static(workspaceRoot, { index: 'vtg-live-19-DEMO_1.html' }));
-app.use(notFoundHandler);
-app.use(errorHandler);
-const PORT=process.env.PORT||4000;
-if(require.main===module) app.listen(PORT,()=>console.log(`VTG Africa API listening on port ${PORT}`));
-module.exports=app;
+try { const nodemailer=require('nodemailer'); const original=nodemailer.createTransport.bind(nodemailer); nodemailer.createTransport=(options={},...rest)=>original({connectionTimeout:10000,greetingTimeout:10000,socketTimeout:15000,...options},...rest); } catch (_) {}
+const workspaceRoot=path.resolve(__dirname,'..','..');
+const frontendEntry=path.join(workspaceRoot,'vtg-live-19-DEMO_1.html');
+const intelligenceWidget=fs.readFileSync(path.join(__dirname,'vtg-trade-intelligence.js'),'utf8');
+app.use(helmet({contentSecurityPolicy:{useDefaults:false,directives:{defaultSrc:["'self'"],scriptSrc:["'self'","'unsafe-inline'",'https://unpkg.com'],styleSrc:["'self'","'unsafe-inline'",'https://fonts.googleapis.com','https://unpkg.com'],imgSrc:["'self'",'data:','blob:','https://images.unsplash.com','https://*.tile.openstreetmap.org'],fontSrc:["'self'",'https://fonts.gstatic.com','data:'],connectSrc:["'self'",'https://api.frankfurter.app','https://api.coingecko.com','https://news.google.com','https://nominatim.openstreetmap.org','https://*.tile.openstreetmap.org'],objectSrc:["'none'"],baseUri:["'self'"],formAction:["'self'"]}}}));
+const allowedOrigins=(process.env.CORS_ORIGIN||'').split(',').map(x=>x.trim()).filter(Boolean);
+if(process.env.NODE_ENV==='production'&&allowedOrigins.length===0) throw new Error('CORS_ORIGIN is required in production.');
+app.use(cors({origin(origin,callback){if(!origin)return callback(null,true);if(allowedOrigins.includes('*')&&process.env.NODE_ENV!=='production')return callback(null,true);return callback(null,allowedOrigins.includes(origin));}}));
+app.use(express.json({limit:'2mb'})); app.use(morgan(process.env.NODE_ENV==='production'?'combined':'dev'));
+app.use(rateLimit({windowMs:15*60*1000,max:600,standardHeaders:true,legacyHeaders:false}));
+const authLimiter=rateLimit({windowMs:15*60*1000,max:30,standardHeaders:true,legacyHeaders:false,message:{error:{code:'RATE_LIMITED',message:'Too many attempts. Try again later.'}}});
+app.get('/health',(req,res)=>res.json({status:'ok',time:new Date().toISOString()}));
+app.use('/api/auth',authLimiter,authRoutes); app.use('/api/products',productsRoutes); app.use('/api/orders',ordersRoutes); app.use('/api/lc',lcRoutes); app.use('/api/wallet',walletRoutes); app.use('/api/payments',paymentsRoutes); app.use('/api/documents',documentsRoutes); app.use('/api/shipments',shipmentsRoutes); app.use('/api/messages',messagesRoutes); app.use('/api/compliance',complianceRoutes); app.use('/api/notifications',notificationsRoutes); app.use('/api/preferences',preferencesRoutes); app.use('/api/location',locationRoutes); app.use('/api/communications',communicationsRoutes); app.use('/api/i18n',i18nRoutes); app.use('/api/ai',aiRoutes); app.use('/api/trade',tradeRoutes);
+async function newsFeed(q){const u=`https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en-US&gl=US&ceid=US:en`;const r=await fetch(u,{headers:{'user-agent':'VTG-Trade-Intelligence/1.0'}});if(!r.ok)throw new Error('news unavailable');const xml=await r.text();return[...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].slice(0,8).map(m=>{const x=m[1],get=t=>{const a=x.match(new RegExp(`<${t}>([\\s\\S]*?)<\\/${t}>`));return a?a[1].replace(/<!\[CDATA\[|\]\]>/g,'').replace(/<[^>]+>/g,'').trim():''};return{title:get('title'),link:get('link'),published:get('pubDate'),source:get('source')}})}
+app.get('/api/market/dashboard',async(req,res)=>{const out={updated_at:new Date().toISOString(),forex:null,crypto:null,news:[]};try{const r=await fetch('https://api.frankfurter.app/latest?from=USD&to=NGN,CNY,GHS,KES,ZAR,EUR,GBP,AED,JPY');if(r.ok)out.forex={...(await r.json()),source:'Frankfurter / ECB reference rates'}}catch(e){out.forex={error:'Live forex unavailable'}}try{const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd,ngn,cny&include_24hr_change=true');if(r.ok)out.crypto={prices:await r.json(),source:'CoinGecko'}}catch(e){out.crypto={error:'Live crypto unavailable'}}try{const qs=['vehicle automotive market China EV BYD Chery Geely SAIC export','China trade import export Africa Nigeria manufacturing supply chain','global vehicle tariffs automotive trade shipping logistics'];const all=(await Promise.all(qs.map(newsFeed))).flat(),seen=new Set();out.news=all.filter(x=>x.title&&!seen.has(x.title)&&seen.add(x.title)).slice(0,12)}catch(e){}res.json(out)});
+app.get('/api/market/geocode',async(req,res)=>{const q=String(req.query.q||'').trim();if(!q||q.length>160)return res.status(400).json({error:'Location search is required.'});try{const r=await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&q=${encodeURIComponent(q)}`,{headers:{'user-agent':'VTG-Trade-Intelligence/1.0'}});if(!r.ok)throw new Error();const data=await r.json();res.json({results:data.map(x=>({lat:Number(x.lat),lon:Number(x.lon),name:x.display_name,type:x.type}))})}catch(e){res.status(502).json({error:'Location lookup unavailable.'})}});
+app.get('/',(req,res,next)=>{fs.readFile(frontendEntry,'utf8',(err,html)=>{if(err)return next(err);const script=`<script>${intelligenceWidget}</script>`;res.type('html').send(html.includes('</body>')?html.replace('</body>',script+'</body>'):html+script)})});
+app.use(express.static(workspaceRoot,{index:'vtg-live-19-DEMO_1.html'})); app.use(notFoundHandler); app.use(errorHandler);
+const PORT=process.env.PORT||4000;if(require.main===module)app.listen(PORT,()=>console.log(`VTG Africa API listening on port ${PORT}`));module.exports=app;
