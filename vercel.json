@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/",
+      "destination": "/api/frontend"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://vtg-backend-production-7ad6.up.railway.app/api/:path*"
     }
