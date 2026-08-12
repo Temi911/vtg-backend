@@ -1,7 +1,7 @@
 {
   "name": "vtg-africa-backend",
   "version": "1.0.0",
-  "description": "Backend API for Vintage Trade Global (VTG Africa) \u2014 Africa-China trade finance platform by Folayele Global Resources Ltd (FGR)",
+  "description": "Backend API for Vintage Trade Global (VTG Africa) — Africa-China trade finance platform by Folayele Global Resources Ltd (FGR)",
   "main": "src/server.js",
   "type": "commonjs",
   "scripts": {
@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
+    "axios": "^1.11.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
