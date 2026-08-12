@@ -1,0 +1,74 @@
+name: Fix VTG AI assistant UI
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix-ai-ui:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Patch AI assistant UI
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path("index.html")
+          if not p.exists():
+              raise SystemExit("index.html not found")
+          s = p.read_text(encoding="utf-8")
+          marker = "VTG AI Assistant hardening: closed on startup, launcher always available"
+          if marker not in s:
+              patch = r'''<!-- VTG AI Assistant hardening: closed on startup, launcher always available -->
+<script>
+(function(){
+  function ensureVTGAIAssistant(){
+    if(typeof window.AIChat !== 'object' || !window.AIChat) return false;
+    try{
+      window.AIChat.build();
+      var launcher=document.getElementById('ai-launcher');
+      var panel=document.getElementById('ai-panel');
+      if(launcher){ launcher.classList.add('visible'); launcher.style.display='flex'; }
+      if(panel){ panel.classList.remove('open'); panel.style.display='none'; }
+      return true;
+    }catch(e){ console.warn('[VTG AI] Assistant initialization failed:', e); return false; }
+  }
+  function boot(){
+    if(ensureVTGAIAssistant()) return;
+    var attempts=0;
+    var timer=setInterval(function(){
+      attempts++;
+      if(ensureVTGAIAssistant() || attempts>=40) clearInterval(timer);
+    },250);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
+  window.addEventListener('load',function(){
+    var panel=document.getElementById('ai-panel');
+    var launcher=document.getElementById('ai-launcher');
+    if(panel){ panel.classList.remove('open'); panel.style.display='none'; }
+    if(launcher){ launcher.classList.add('visible'); launcher.style.display='flex'; }
+  });
+})();
+</script>
+'''
+              if "</body>" not in s:
+                  raise SystemExit("closing body tag not found")
+              s = s.replace("</body>", patch + "\n</body>", 1)
+              p.write_text(s, encoding="utf-8")
+
+      - name: Commit patched frontend and remove one-time workflow
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -f .github/workflows/fix-ai-ui.yml
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Fix VTG AI assistant launcher behavior"
+          git push
