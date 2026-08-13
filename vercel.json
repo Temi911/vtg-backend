@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "node scripts/prepare-frontend-v6.js",
   "headers": [
     {
       "source": "/(.*\\.(js|css|png|jpg|jpeg|webp|svg|ico|woff2))",
@@ -27,7 +28,7 @@
     },
     {
       "source": "/",
-      "destination": "/frontend-v5.html"
+      "destination": "/frontend-v6.html"
     }
   ]
 }
