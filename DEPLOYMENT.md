@@ -4,7 +4,8 @@ This guide makes the VTG frontend + backend + signup flow publicly accessible.
 
 ## 1. Architecture for launch
 
-- Frontend host: Vercel/Netlify (serves `vtg-live-19-DEMO_1.html`)
+- Frontend host: Vercel or the Railway-served frontend
+- Frontend entrypoint: `frontend-v3.html`
 - Backend host: Railway/Render/Fly/VPS (runs Express API)
 - Database: managed PostgreSQL (Railway/Neon/Supabase/RDS)
 - SMTP provider: SendGrid/Mailgun/Resend/SES (for real verification emails)
@@ -16,7 +17,7 @@ Use `vtg-backend/.env.production.example` as the source of truth.
 Minimum required to operate:
 
 - `NODE_ENV=production`
-- `PORT=4000`
+- `PORT=4000` (or the port supplied by the hosting platform)
 - `DATABASE_URL=...`
 - `DATABASE_SSL=true` (for managed Postgres)
 - `JWT_ACCESS_SECRET=...`
@@ -49,7 +50,7 @@ Note: `db:init` is not idempotent because schema types are created directly. Do 
 
 ## 4. Local production-like validation with Docker Compose
 
-The root `compose.yaml` now includes both Postgres and backend.
+The root `compose.yaml` includes Postgres and backend.
 
 ```bash
 docker compose up --build
@@ -65,12 +66,9 @@ API base:
 
 ## 5. Frontend -> backend wiring for online access
 
-Your frontend already uses:
+The current frontend is `frontend-v3.html` and uses same-origin `/api` endpoints by default.
 
-- localhost: `http://localhost:4000/api`
-- production default: `/api`
-
-For separate domains, define before app scripts load:
+If the frontend is hosted on a separate domain, define before app scripts load:
 
 ```html
 <script>
@@ -88,11 +86,15 @@ For separate domains, define before app scripts load:
 ## 7. Go-live acceptance checklist
 
 - `GET /health` returns 200 from public backend URL
-- Signup sends verification code by real email
+- Frontend root serves `frontend-v3.html`
+- `/assets/vtg-logo-final.webp` loads
+- `logo-override.js`, `visual-enhancer.js`, `map-enhancer.js`, `vtg-commerce.js` and related frontend assets load
+- Signup sends verification code by real email when SMTP is configured
 - `POST /api/auth/verify-email-code` accepts valid code
 - Buyer/Supplier/Bank signup succeeds after verification
 - Login works and dashboard loads API-backed data
-- Rate limiter behavior acceptable under normal traffic
+- Cart and currency conversion work with a live FX source
+- Rate limiter behavior is acceptable under normal traffic
 
 ## 8. Recommended first production hardening steps
 
@@ -101,7 +103,6 @@ For separate domains, define before app scripts load:
 - Add managed object storage for uploads (S3-compatible)
 - Add centralized logs and uptime monitoring
 - Add DB backups and restore test
-
 
 ## Production demo-mode safety
 
