@@ -1,5 +1,5 @@
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
-const GEMINI_URL = () => `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${process.env.GEMINI_API_KEY}`;
+const GEMINI_URL = () => `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 function enabled() {
   return Boolean(process.env.GEMINI_API_KEY);
@@ -54,7 +54,10 @@ async function publicChat({ message, history = [], country, role }) {
   try {
     const response = await fetch(GEMINI_URL(), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': process.env.GEMINI_API_KEY,
+      },
       body: JSON.stringify(body),
       signal: controller.signal,
     });
