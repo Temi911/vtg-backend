@@ -4,21 +4,24 @@ const fs = require('node:fs');
 const path = require('node:path');
 const app = require('../src/server');
 
-const htmlPath = path.join(__dirname, '..', '..', 'vtg-live-19-DEMO_1.html');
+const htmlPath = path.join(__dirname, '..', '..', 'frontend-v3.html');
 const html = fs.readFileSync(htmlPath, 'utf8');
 
-test('login and buyer signup screens include country selection and Chinese translations', () => {
-  assert.match(html, /id="login-country-select"/);
-  assert.match(html, /id="buyer-signup-country-select"/);
-  assert.match(html, /data-i18n="welcomeBack"/);
-  assert.match(html, /data-i18n="buyerRegistrationTitle"/);
-  assert.match(html, /buyerRegistrationTitle: '买家注册'/);
+test('current VTG frontend exposes the core trade interface', () => {
+  assert.match(html, /id="newsBtn"/);
+  assert.match(html, /id="mapBtn"/);
+  assert.match(html, /id="aiLaunch"/);
+  assert.match(html, /id="authForm"/);
+  assert.match(html, /data-role="buyer"/);
+  assert.match(html, /data-role="supplier"/);
+  assert.match(html, /data-role="bank"/);
 });
 
-test('signup flow exposes an email verification step', () => {
-  assert.match(html, /sendVerificationCode/i);
-  assert.match(html, /verification code/i);
-  assert.match(html, /Verify Email/i);
+test('frontend includes trade calculator, cart and currency conversion hooks', () => {
+  assert.match(html, /vtg-commerce\.js/);
+  assert.match(html, /api\/auth\/send-verification-code/);
+  assert.match(html, /vtg-market-news\.js/);
+  assert.match(html, /map-enhancer\.js/);
 });
 
 test('verification-code endpoint returns a clear delivery status payload', async () => {
