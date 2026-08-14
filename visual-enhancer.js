@@ -81,6 +81,9 @@
       if (!d.querySelector('script[data-vtg-commerce]')) {
         const s = d.createElement('script'); s.src = '/vtg-commerce.js?v=1'; s.dataset.vtgCommerce = '1'; s.defer = true; d.head.appendChild(s);
       }
+      if (!d.querySelector('script[data-vtg-map-fix]')) {
+        const s = d.createElement('script'); s.src = '/vtg-map-fix.js?v=1'; s.dataset.vtgMapFix = '1'; s.defer = true; d.head.appendChild(s);
+      }
       ensureIcons();
     } catch (e) { console.warn('VTG visual enhancer failed', e) }
   }
