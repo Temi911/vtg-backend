@@ -13,10 +13,6 @@
   function apply() {
     try {
       const d = document, w = window;
-
-      // Fix icon timing if the Lucide CDN library is still present anywhere.
-      // (icon-fallback.js already renders every [data-lucide]/.lucide icon
-      // via inline SVG, so this is just a harmless no-op if lucide isn't loaded.)
       const ensureIcons = () => {
         try { if (w.lucide && typeof w.lucide.createIcons === 'function') w.lucide.createIcons({ attrs: { 'stroke-width': 1.9 } }) }
         catch (e) { console.warn('VTG icon refresh', e) }
@@ -41,9 +37,8 @@
       `;
       d.head.appendChild(style);
 
-      // Supplier presence becomes a professional rotating trade-product showcase.
       const hero = d.querySelector('.productHero');
-      if (hero) {
+      if (hero && !hero.querySelector('.vtgSupplierCarousel')) {
         const old = hero.querySelector(':scope > img');
         const carousel = d.createElement('div'); carousel.className = 'vtgSupplierCarousel';
         PRODUCTS.forEach((p, i) => {
@@ -72,7 +67,6 @@
         dots.querySelectorAll('span').forEach((s, n) => s.onclick = () => { i = n; update() });
       }
 
-      // Add a visible product-category strip below the supplier presence card.
       if (hero && !d.querySelector('.vtgProductStrip')) {
         const strip = d.createElement('div'); strip.className = 'vtgProductStrip';
         PRODUCTS.slice(0, 8).forEach(p => {
@@ -84,10 +78,13 @@
         hero.parentElement.appendChild(strip);
       }
 
+      if (!d.querySelector('script[data-vtg-commerce]')) {
+        const s = d.createElement('script'); s.src = '/vtg-commerce.js?v=1'; s.dataset.vtgCommerce = '1'; s.defer = true; d.head.appendChild(s);
+      }
       ensureIcons();
     } catch (e) { console.warn('VTG visual enhancer failed', e) }
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, { once: true });
   else apply();
 })();
