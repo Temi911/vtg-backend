@@ -47,7 +47,7 @@
 
 /* VTG reliability layer: branding, image resilience, map resize, icons and live AI context. */
 (()=>{const q=s=>document.querySelector(s),qa=s=>[...document.querySelectorAll(s)];
-  const brand=()=>{qa('.brand img').forEach(img=>{img.src='/assets/vtg-logo-uploaded.svg?v=5';img.alt='Vintage Trade Global — Africa Trade Platform';img.style.width='220px';img.style.height='82px';img.style.objectFit='contain';img.style.objectPosition='left center'});qa('.brandFallback,.brandText').forEach(x=>x.style.display='none')};
+  const brand=()=>{qa('.brand img').forEach(img=>{img.src='/assets/vtg-logo-final.webp?v=20260814';img.alt='Vintage Trade Global — Africa Trade Platform';img.style.width='220px';img.style.height='82px';img.style.objectFit='contain';img.style.objectPosition='left center'});qa('.brandFallback,.brandText').forEach(x=>x.style.display='none')};
   const car=()=>{const img=q('.productHero img');if(img){img.src='https://images.unsplash.com/photo-1597687154732-9b205f4f5c1c?auto=format&fit=crop&w=1600&q=85';img.alt='Beautiful red sports car'}};
   const imgs=()=>qa('img').forEach((img,i)=>{img.decoding='async';img.referrerPolicy='no-referrer';if(i>3)img.loading='lazy';if(!img.dataset.vtgErr){img.dataset.vtgErr='1';img.addEventListener('error',()=>{img.style.opacity='0';const h=img.closest('.tradeCard,.productHero,.mini,.newsItem,.newsLarge article');if(h)h.style.background='linear-gradient(135deg,#123b57,#0e969f)'},{once:true})}});
   const loader=()=>{const l=q('#ldr');if(!l)return;const done=()=>{l.classList.add('out');setTimeout(()=>l.style.display='none',700)};addEventListener('load',()=>setTimeout(done,300),{once:true});setTimeout(done,3500)};
