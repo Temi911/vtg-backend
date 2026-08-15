@@ -6,31 +6,20 @@
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" }
+      ]
     }
   ],
   "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "https://vtg-backend-production-7ad6.up.railway.app/api/:path*"
-    },
-    {
-      "source": "/assets/vtg-logo-final.svg",
-      "destination": "/assets/vtg-logo-final.webp"
-    },
-    {
-      "source": "/assets/vtg-logo-uploaded.svg",
-      "destination": "/assets/vtg-logo-final.webp"
-    },
-    {
-      "source": "/marketplace",
-      "destination": "/marketplace.html"
-    }
-  ],
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "/frontend-v3.html",
-      "permanent": false
-    }
+    { "source": "/api/:path*", "destination": "https://vtg-backend-production-7ad6.up.railway.app/api/:path*" },
+    { "source": "/assets/vtg-logo-final.svg", "destination": "/assets/vtg-logo-final.webp" },
+    { "source": "/assets/vtg-logo-uploaded.svg", "destination": "/assets/vtg-logo-final.webp" },
+    { "source": "/marketplace", "destination": "/marketplace.html" }
   ]
 }
