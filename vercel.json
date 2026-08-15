@@ -24,10 +24,13 @@
     {
       "source": "/marketplace",
       "destination": "/marketplace.html"
-    },
+    }
+  ],
+  "redirects": [
     {
       "source": "/",
-      "destination": "/frontend-v3.html"
+      "destination": "/frontend-v3.html",
+      "permanent": false
     }
   ]
 }
