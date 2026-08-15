@@ -5,11 +5,21 @@
     business: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?q=85&w=1200&auto=format&fit=crop'
   };
 
+  const $ = id => document.getElementById(id);
+  const closeDrawer = id => {
+    const el = $(id);
+    if (el) el.classList.remove('open');
+    document.body.style.overflow = '';
+  };
+  const openDrawer = id => {
+    const el = $(id);
+    if (!el) return;
+    el.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+
   function loadIcons() {
-    if (window.lucide && typeof window.lucide.createIcons === 'function') {
-      window.lucide.createIcons({ attrs: { 'stroke-width': 1.9 } });
-      return;
-    }
+    if (window.lucide?.createIcons) return window.lucide.createIcons({ attrs: { 'stroke-width': 1.9 } });
     if (!document.querySelector('script[data-vtg-lucide-repair]')) {
       const s = document.createElement('script');
       s.src = 'https://unpkg.com/lucide@0.468.0/dist/umd/lucide.js';
@@ -25,88 +35,94 @@
       if (img.dataset.vtgRepair) return;
       img.dataset.vtgRepair = '1';
       const fallback = i === 0 ? FALLBACKS.hero : i === 1 ? FALLBACKS.logistics : FALLBACKS.business;
-      const useFallback = () => {
+      img.addEventListener('error', () => {
         if (img.dataset.vtgFallbackApplied) return;
         img.dataset.vtgFallbackApplied = '1';
         img.src = fallback;
-        img.alt = img.alt || (i === 0 ? 'Global trade and vehicle sourcing' : i === 1 ? 'Shipping and logistics' : 'International business and trade');
-      };
-      img.addEventListener('error', useFallback, { once: true });
-      if (!img.getAttribute('src') || (img.complete && img.naturalWidth === 0)) useFallback();
-    });
-
-    document.querySelectorAll('.newsItem img,.newsLarge img,.mini img,.productHero img').forEach(img => {
-      if (img.dataset.vtgRepair) return;
-      img.dataset.vtgRepair = '1';
-      img.addEventListener('error', () => {
-        if (!img.dataset.vtgFallback) {
-          img.dataset.vtgFallback = '1';
-          img.src = FALLBACKS.logistics;
-        } else {
-          img.style.display = 'none';
-        }
-      });
-      if (!img.getAttribute('src') || (img.complete && img.naturalWidth === 0)) img.dispatchEvent(new Event('error'));
+      }, { once: true });
+      if (!img.src || (img.complete && img.naturalWidth === 0)) img.src = fallback;
     });
   }
 
-  function repairButtons() {
-    const bindOnce = (id, fn) => {
-      const el = document.getElementById(id);
-      if (el && !el.dataset.vtgRepairClick) {
-        el.dataset.vtgRepairClick = '1';
-        el.addEventListener('click', fn, { capture: false });
-      }
+  function bindCore() {
+    const once = (id, fn) => {
+      const el = $(id);
+      if (!el || el.dataset.vtgRepairClick) return;
+      el.dataset.vtgRepairClick = '1';
+      el.addEventListener('click', fn);
     };
 
-    bindOnce('mapBtn', () => {
-      const drawer = document.getElementById('mapDrawer');
-      if (drawer) {
-        drawer.classList.add('open');
-        document.body.style.overflow = 'hidden';
-      }
+    once('newsBtn', () => openDrawer('newsDrawer'));
+    once('newsOpen', () => openDrawer('newsDrawer'));
+    once('heroNews', () => openDrawer('newsDrawer'));
+    once('footNews', e => { e.preventDefault(); openDrawer('newsDrawer'); });
+
+    once('mapBtn', () => {
+      openDrawer('mapDrawer');
       setTimeout(() => {
-        try {
-          if (typeof window.VTGInitMap === 'function') window.VTGInitMap();
-        } catch (e) { console.warn('VTG map repair', e); }
+        try { window.VTGInitMap?.(); } catch (e) { console.warn('VTG map init', e); }
       }, 180);
     });
-
-    bindOnce('footMap', e => {
+    once('footMap', e => {
       e.preventDefault();
-      document.getElementById('mapBtn')?.click();
+      $('mapBtn')?.click();
     });
 
-    bindOnce('newsBtn', () => {
-      const d = document.getElementById('newsDrawer');
-      if (d) d.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    });
-
-    bindOnce('newsOpen', () => document.getElementById('newsBtn')?.click());
-    bindOnce('heroNews', () => document.getElementById('newsBtn')?.click());
-    bindOnce('aiLaunch', () => document.getElementById('aiPanel')?.classList.add('open'));
-    bindOnce('aiClose', () => document.getElementById('aiPanel')?.classList.remove('open'));
+    once('aiLaunch', () => $('aiPanel')?.classList.add('open'));
+    once('aiClose', () => $('aiPanel')?.classList.remove('open'));
+    once('footAi', e => { e.preventDefault(); $('aiLaunch')?.click(); });
 
     document.querySelectorAll('[data-close]').forEach(el => {
       if (el.dataset.vtgRepairClick) return;
       el.dataset.vtgRepairClick = '1';
-      el.addEventListener('click', () => {
-        const target = document.getElementById(el.dataset.close);
-        if (target) target.classList.remove('open');
+      el.addEventListener('click', () => closeDrawer(el.dataset.close));
+    });
+
+    document.querySelectorAll('.drawer').forEach(drawer => {
+      if (drawer.dataset.vtgBackdrop) return;
+      drawer.dataset.vtgBackdrop = '1';
+      drawer.addEventListener('click', e => { if (e.target === drawer) closeDrawer(drawer.id); });
+    });
+
+    if (!document.body.dataset.vtgEscape) {
+      document.body.dataset.vtgEscape = '1';
+      document.addEventListener('keydown', e => {
+        if (e.key !== 'Escape') return;
+        document.querySelectorAll('.drawer.open').forEach(d => closeDrawer(d.id));
+        $('aiPanel')?.classList.remove('open');
+        $('authModal')?.classList.remove('open');
         document.body.style.overflow = '';
       });
-    });
+    }
+  }
+
+  function bindMapFallbackControls() {
+    const search = $('mapSearchBtn');
+    const input = $('mapSearch');
+    const locate = $('locateBtn');
+    if (search && !search.dataset.vtgRepairClick) {
+      search.dataset.vtgRepairClick = '1';
+      search.addEventListener('click', () => window.VTGInitMap?.());
+    }
+    if (input && !input.dataset.vtgRepairKey) {
+      input.dataset.vtgRepairKey = '1';
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') window.VTGInitMap?.(); });
+    }
+    if (locate && !locate.dataset.vtgRepairClick) {
+      locate.dataset.vtgRepairClick = '1';
+      locate.addEventListener('click', () => window.VTGInitMap?.());
+    }
   }
 
   function run() {
     loadIcons();
     repairImages();
-    repairButtons();
-    setTimeout(() => { loadIcons(); repairImages(); repairButtons(); }, 700);
-    setTimeout(() => { loadIcons(); repairImages(); repairButtons(); }, 1800);
+    bindCore();
+    bindMapFallbackControls();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once: true });
   else run();
+  setTimeout(run, 500);
+  setTimeout(run, 1500);
 })();
