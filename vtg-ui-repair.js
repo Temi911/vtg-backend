@@ -30,6 +30,20 @@
     }
   }
 
+  function repairBranding() {
+    document.querySelectorAll('.brandLogo').forEach(img => {
+      if (img.dataset.vtgBrandRepair) return;
+      img.dataset.vtgBrandRepair = '1';
+      img.src = '/assets/vtg-logo-final.webp?v=20260815';
+      img.alt = 'Vintage Trade Global — Africa Trade Platform';
+      img.addEventListener('error', () => {
+        img.style.display = 'none';
+        const fallback = img.parentElement?.querySelector('.brandFallback');
+        if (fallback) fallback.style.display = 'grid';
+      }, { once: true });
+    });
+  }
+
   function repairImages() {
     document.querySelectorAll('.tradeCard img').forEach((img, i) => {
       if (img.dataset.vtgRepair) return;
@@ -110,12 +124,20 @@
     }
     if (locate && !locate.dataset.vtgRepairClick) {
       locate.dataset.vtgRepairClick = '1';
-      locate.addEventListener('click', () => window.VTGInitMap?.());
+      locate.addEventListener('click', () => {
+        const map = window.__vtgMap;
+        if (map && navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(p => map.flyTo({ center: [p.coords.longitude, p.coords.latitude], zoom: 12, duration: 900 }), () => window.VTGInitMap?.());
+        } else {
+          window.VTGInitMap?.();
+        }
+      });
     }
   }
 
   function run() {
     loadIcons();
+    repairBranding();
     repairImages();
     bindCore();
     bindMapFallbackControls();
