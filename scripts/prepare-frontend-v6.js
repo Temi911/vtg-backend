@@ -1,7 +1,0 @@
-const fs = require('fs');
-const path = require('path');
-const root = path.resolve(__dirname, '..');
-const source = path.join(root, 'frontend-v5.html');
-const output = path.join(root, 'frontend-v6.html');
-const enhancement = `<script>(()=>{const style=document.createElement('style');style.textContent='.vtg-v6-status{position:fixed;left:14px;bottom:14px;z-index:970;background:rgba(6,29,46,.92);color:#fff;border-radius:10px;padding:8px 10px;font-size:8px}.vtg-v6-status b{color:#8cf3ff}.vtg-img-fallback{background:linear-gradient(135deg,#123b57,#0e969f)!important}';document.head.appendChild(style);const badge=document.createElement('div');badge.className='vtg-v6-status';badge.innerHTML='<b>VTG LIVE</b> • current-data services enabled';document.body.appendChild(badge);document.querySelectorAll('img').forEach(img=>{img.decoding='async';if(!img.closest('.brand'))img.loading=img.loading||'lazy';img.addEventListener('error',()=>img.classList.add('vtg-img-fallback'),{once:true})});const wait=()=>{if(window.maplibregl){window.dispatchEvent(new Event('resize'));return}setTimeout(wait,350)};wait()})();</script>`;
-try { let html=fs.readFileSync(source,'utf8'); html=html.replace('</body>',enhancement+'</body>'); fs.writeFileSync(output,html); console.log('[VTG frontend v6] generated from frontend-v5.html'); } catch(error) { console.error('[VTG frontend v6] '+error.message); process.exit(1); }
