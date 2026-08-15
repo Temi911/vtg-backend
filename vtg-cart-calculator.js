@@ -2,12 +2,10 @@
   const $ = s => document.querySelector(s);
   const $$ = s => [...document.querySelectorAll(s)];
 
-  // Indicative currency rates relative to USD. NOT live/verified — clearly
-  // labeled in the UI as estimates, per the "distinguish estimate vs
-  // verified government rate" requirement in the VTG brief.
+  // Indicative currency rates relative to USD. These are planning estimates,
+  // not verified government or settlement rates.
   const RATES = { USD: 1, NGN: 1550, GHS: 15.6, KES: 129, ZAR: 18.4, CNY: 7.2, GBP: 0.79, EUR: 0.92 };
   const SYMS = { USD: '$', NGN: '₦', GHS: '₵', KES: 'KSh', ZAR: 'R', CNY: '¥', GBP: '£', EUR: '€' };
-
   const PRODUCTS = {
     'Premium Vehicles': 18000,
     'Industrial Machinery': 45000,
@@ -21,18 +19,26 @@
 
   function fmt(usd, cur) {
     const v = usd * (RATES[cur] || 1);
-    return (SYMS[cur] || '') + v.toLocaleString(undefined, { maximumFractionDigits: v > 1000 ? 0 : 2 });
+    return `${SYMS[cur] || ''}${v.toLocaleString(undefined, { maximumFractionDigits: v > 1000 ? 0 : 2 })}`;
   }
-
   function loadCart() { try { return JSON.parse(localStorage.getItem('vtg_cart') || '[]') } catch { return [] } }
   function saveCart(c) { localStorage.setItem('vtg_cart', JSON.stringify(c)) }
-  function loadCurrency() { return localStorage.getItem('vtg_currency') || 'USD' }
+  function detectCurrency() {
+    const lang = (navigator.language || '').toUpperCase();
+    if (lang.includes('NG')) return 'NGN';
+    if (lang.includes('GH')) return 'GHS';
+    if (lang.includes('KE')) return 'KES';
+    if (lang.includes('ZA')) return 'ZAR';
+    if (lang.includes('CN')) return 'CNY';
+    if (lang.includes('GB')) return 'GBP';
+    if (lang.includes('DE') || lang.includes('FR') || lang.includes('IT') || lang.includes('ES')) return 'EUR';
+    return 'USD';
+  }
+  function loadCurrency() { return localStorage.getItem('vtg_currency') || detectCurrency() }
   function saveCurrency(c) { localStorage.setItem('vtg_currency', c) }
 
   function ensureUI() {
     if ($('#cartBtn')) return;
-
-    // --- Nav icons: inject Calculator and Cart buttons before "Enter VTG" ---
     const tools = $('.navtools');
     const joinBtn = $('#joinBtn');
     if (tools && joinBtn) {
@@ -50,7 +56,6 @@
       cartBtn.onclick = () => toggleDrawer('cartDrawer');
     }
 
-    // --- Extra styles for the new drawers ---
     const style = document.createElement('style');
     style.textContent = `
     .vtgField{display:grid;gap:5px;margin-bottom:11px}.vtgField label{font-size:9px;font-weight:800;color:#4f6878}
@@ -70,7 +75,6 @@
     `;
     document.head.appendChild(style);
 
-    // --- Calculator drawer ---
     const calc = document.createElement('div');
     calc.className = 'drawer'; calc.id = 'calcDrawer';
     calc.innerHTML = `<aside class="drawerPanel">
@@ -87,10 +91,10 @@
     </aside>`;
     document.body.appendChild(calc);
     $('#calcClose').onclick = () => toggleDrawer('calcDrawer', false);
+    $('#calcCurrency').value = loadCurrency();
     ['calcCurrency', 'calcPrice', 'calcQty', 'calcShip', 'calcDuty', 'calcVat'].forEach(id => $('#' + id).addEventListener('input', renderCalc));
     renderCalc();
 
-    // --- Cart drawer ---
     const cart = document.createElement('div');
     cart.className = 'drawer'; cart.id = 'cartDrawer';
     cart.innerHTML = `<aside class="drawerPanel">
@@ -104,7 +108,17 @@
     document.body.appendChild(cart);
     $('#cartClose').onclick = () => toggleDrawer('cartDrawer', false);
     $('#cartCurrency').value = loadCurrency();
-    $('#cartCurrency').addEventListener('change', e => { saveCurrency(e.target.value); renderCart() });
+    $('#cartCurrency').addEventListener('change', e => { saveCurrency(e.target.value); renderCart(); });
+
+    // Close either drawer with Escape or by clicking its backdrop.
+    $$('.drawer').forEach(drawer => drawer.addEventListener('click', e => {
+      if (e.target === drawer) toggleDrawer(drawer.id, false);
+    }));
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        ['calcDrawer', 'cartDrawer'].forEach(id => toggleDrawer(id, false));
+      }
+    });
 
     if (window.lucide) window.lucide.createIcons();
     injectAddButtons();
@@ -112,7 +126,7 @@
   }
 
   function toggleDrawer(id, on) {
-    const el = $('#' + id);
+    const el = $('#' + id); if (!el) return;
     const willOpen = on === undefined ? !el.classList.contains('open') : on;
     el.classList.toggle('open', willOpen);
     document.body.style.overflow = willOpen ? 'hidden' : '';
@@ -120,18 +134,13 @@
 
   function renderCalc() {
     const cur = $('#calcCurrency').value;
-    const price = +$('#calcPrice').value || 0, qty = +$('#calcQty').value || 1;
+    const price = +$('#calcPrice').value || 0, qty = Math.max(1, +$('#calcQty').value || 1);
     const ship = +$('#calcShip').value || 0, dutyPct = +$('#calcDuty').value || 0, vatPct = +$('#calcVat').value || 0;
     const subtotal = price * qty;
     const duty = subtotal * (dutyPct / 100);
     const vat = (subtotal + duty + ship) * (vatPct / 100);
     const total = subtotal + ship + duty + vat;
-    $('#calcOut').innerHTML = `
-      <div class="vtgCalcRow"><span>Product subtotal</span><span>${fmt(subtotal, cur)}</span></div>
-      <div class="vtgCalcRow"><span>Shipping & freight</span><span>${fmt(ship, cur)}</span></div>
-      <div class="vtgCalcRow"><span>Estimated duty (${dutyPct}%)</span><span>${fmt(duty, cur)}</span></div>
-      <div class="vtgCalcRow"><span>Estimated VAT (${vatPct}%)</span><span>${fmt(vat, cur)}</span></div>
-      <div class="vtgCalcRow total"><span>Estimated landed cost</span><span>${fmt(total, cur)}</span></div>`;
+    $('#calcOut').innerHTML = `<div class="vtgCalcRow"><span>Product subtotal</span><span>${fmt(subtotal, cur)}</span></div><div class="vtgCalcRow"><span>Shipping & freight</span><span>${fmt(ship, cur)}</span></div><div class="vtgCalcRow"><span>Estimated duty (${dutyPct}%)</span><span>${fmt(duty, cur)}</span></div><div class="vtgCalcRow"><span>Estimated VAT (${vatPct}%)</span><span>${fmt(vat, cur)}</span></div><div class="vtgCalcRow total"><span>Estimated landed cost</span><span>${fmt(total, cur)}</span></div>`;
   }
 
   function injectAddButtons() {
@@ -139,18 +148,16 @@
       $$('.vtgProductChip').forEach(chip => {
         if (chip.querySelector('.vtgAddBtn')) return;
         const nameEl = chip.querySelector('b'); if (!nameEl) return;
-        const name = nameEl.textContent.trim();
-        const price = PRODUCTS[name]; if (price == null) return;
+        const name = nameEl.textContent.trim(); const price = PRODUCTS[name];
+        if (price == null) return;
         const btn = document.createElement('button');
-        btn.className = 'vtgAddBtn'; btn.title = 'Add to cart'; btn.textContent = '+';
-        btn.onclick = e => { e.stopPropagation(); addToCart(name, price) };
+        btn.className = 'vtgAddBtn'; btn.title = 'Add to cart'; btn.setAttribute('aria-label', `Add ${name} to cart`); btn.textContent = '+';
+        btn.onclick = e => { e.stopPropagation(); addToCart(name, price); };
         chip.appendChild(btn);
       });
     };
     tryAdd();
-    // visual-enhancer.js builds the product strip asynchronously after its
-    // own load — retry briefly until the chips exist.
-    let tries = 0; const iv = setInterval(() => { tryAdd(); if (++tries > 20) clearInterval(iv) }, 300);
+    let tries = 0; const iv = setInterval(() => { tryAdd(); if (++tries > 20) clearInterval(iv); }, 300);
   }
 
   function addToCart(name, priceUsd) {
@@ -166,17 +173,12 @@
     const dot = $('#cartDot');
     if (dot) dot.style.display = cart.length ? 'block' : 'none';
     const itemsEl = $('#cartItems'); if (!itemsEl) return;
-    if (!cart.length) { itemsEl.innerHTML = '<div class="vtgEmpty">Your cart is empty. Add products from the marketplace section.</div>'; }
+    if (!cart.length) itemsEl.innerHTML = '<div class="vtgEmpty">Your cart is empty. Add products from the marketplace section.</div>';
     else {
-      itemsEl.innerHTML = cart.map((item, i) => `
-        <div class="vtgCartItem">
-          <div><b>${item.name}</b><small>${fmt(item.priceUsd, cur)} each</small></div>
-          <div class="qty"><button data-dec="${i}">−</button><span>${item.qty}</span><button data-inc="${i}">+</button></div>
-          <button class="rm" data-rm="${i}">Remove</button>
-        </div>`).join('');
-      itemsEl.querySelectorAll('[data-inc]').forEach(b => b.onclick = () => { const c = loadCart(); c[+b.dataset.inc].qty++; saveCart(c); renderCart() });
-      itemsEl.querySelectorAll('[data-dec]').forEach(b => b.onclick = () => { const c = loadCart(); const it = c[+b.dataset.dec]; it.qty = Math.max(1, it.qty - 1); saveCart(c); renderCart() });
-      itemsEl.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { const c = loadCart(); c.splice(+b.dataset.rm, 1); saveCart(c); renderCart() });
+      itemsEl.innerHTML = cart.map((item, i) => `<div class="vtgCartItem"><div><b>${item.name}</b><small>${fmt(item.priceUsd, cur)} each</small></div><div class="qty"><button aria-label="Decrease quantity" data-dec="${i}">−</button><span>${item.qty}</span><button aria-label="Increase quantity" data-inc="${i}">+</button></div><button class="rm" data-rm="${i}">Remove</button></div>`).join('');
+      itemsEl.querySelectorAll('[data-inc]').forEach(b => b.onclick = () => { const c = loadCart(); c[+b.dataset.inc].qty++; saveCart(c); renderCart(); });
+      itemsEl.querySelectorAll('[data-dec]').forEach(b => b.onclick = () => { const c = loadCart(); const it = c[+b.dataset.dec]; it.qty = Math.max(1, it.qty - 1); saveCart(c); renderCart(); });
+      itemsEl.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { const c = loadCart(); c.splice(+b.dataset.rm, 1); saveCart(c); renderCart(); });
     }
     const totalUsd = cart.reduce((s, i) => s + i.priceUsd * i.qty, 0);
     const totalEl = $('#cartTotal'); if (totalEl) totalEl.textContent = fmt(totalUsd, cur);
