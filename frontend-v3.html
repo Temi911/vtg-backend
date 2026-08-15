@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- VTG frontend v3: map controller updated to map-enhancer-v2.js -->
+<!-- VTG frontend v3: multimodal Trade Atlas controller -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -13,10 +13,10 @@
 (function(){
   function loadMapEnhancer(){
     if(window.VTGInitMap)return window.VTGInitMap();
-    if(document.querySelector('script[data-vtg-map-enhancer-v2]'))return;
+    if(document.querySelector('script[data-vtg-map-enhancer-v3]'))return;
     var s=document.createElement('script');
-    s.src='/map-enhancer-v2.js?v=1.0.0';
-    s.dataset.vtgMapEnhancerV2='1';
+    s.src='/map-enhancer-v3.js?v=20260815';
+    s.dataset.vtgMapEnhancerV3='1';
     s.onload=function(){if(window.VTGInitMap)window.VTGInitMap()};
     s.onerror=function(){var e=document.getElementById('mapDrawer');if(e)e.setAttribute('data-map-error','Trade Atlas controller failed to load')};
     document.head.appendChild(s);
