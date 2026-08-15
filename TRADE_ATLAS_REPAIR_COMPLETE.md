@@ -1,0 +1,1 @@
+Trade Atlas repair: restore the original frontend and point the existing map-enhancer.js entry point at the robust controller blob.
