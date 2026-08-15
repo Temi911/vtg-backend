@@ -56,7 +56,7 @@ async function publicChat({ message, history = [], country, role }) {
     input: buildInput(message, Array.isArray(history) ? history : []),
     system_instruction: buildInstructions(country, role),
     tools: [{ type: 'google_search', search_types: ['web_search'] }],
-    generation_config: { max_total_tokens: 2400 },
+    generation_config: { max_output_tokens: 2400 },
   };
 
   const controller = new AbortController();
