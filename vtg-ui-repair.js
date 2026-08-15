@@ -60,11 +60,21 @@
     };
 
     bindOnce('mapBtn', () => {
+      const drawer = document.getElementById('mapDrawer');
+      if (drawer) {
+        drawer.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
       setTimeout(() => {
         try {
           if (typeof window.VTGInitMap === 'function') window.VTGInitMap();
         } catch (e) { console.warn('VTG map repair', e); }
       }, 180);
+    });
+
+    bindOnce('footMap', e => {
+      e.preventDefault();
+      document.getElementById('mapBtn')?.click();
     });
 
     bindOnce('newsBtn', () => {
@@ -73,6 +83,8 @@
       document.body.style.overflow = 'hidden';
     });
 
+    bindOnce('newsOpen', () => document.getElementById('newsBtn')?.click());
+    bindOnce('heroNews', () => document.getElementById('newsBtn')?.click());
     bindOnce('aiLaunch', () => document.getElementById('aiPanel')?.classList.add('open'));
     bindOnce('aiClose', () => document.getElementById('aiPanel')?.classList.remove('open'));
 
