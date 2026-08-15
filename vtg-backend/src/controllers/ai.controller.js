@@ -3,6 +3,7 @@ const { asyncHandler } = require('../utils/asyncHandler');
 const { query } = require('../config/db');
 const ai = require('../services/ai.service');
 const liveAi = require('../services/live-ai.service');
+const openrouterAi = require('../services/openrouter-ai.service');
 const audit = require('../services/audit.service');
 
 const chatSchema = z.object({
@@ -34,35 +35,52 @@ const chat = asyncHandler(async (req, res) => {
 
 const publicChat = asyncHandler(async (req, res) => {
   const { message, history, country, role } = chatSchema.parse(req.body);
+  let lastError = null;
 
-  if (!liveAi.enabled()) {
-    return res.status(503).json({
-      error: 'VTG AI is temporarily unavailable because the live AI provider is not configured.',
-      code: 'AI_PROVIDER_NOT_CONFIGURED',
-    });
-  }
-
-  try {
-    const result = await liveAi.publicChat({ message, history, country, role });
-
+  if (liveAi.enabled()) {
     try {
-      await audit.log(null, 'Public AI Assistant Query', message.slice(0, 140), req.ip);
-    } catch (auditErr) {
-      console.warn('[ai] audit log failed, continuing without it', auditErr.message);
+      const result = await liveAi.publicChat({ message, history, country, role });
+      try {
+        await audit.log(null, 'Public AI Assistant Query', message.slice(0, 140), req.ip);
+      } catch (auditErr) {
+        console.warn('[ai] audit log failed, continuing without it', auditErr.message);
+      }
+      return res.json({
+        reply: result.reply,
+        toolsUsed: result.toolsUsed || [],
+        provider: result.provider || 'gemini',
+      });
+    } catch (err) {
+      lastError = err;
+      console.error('[ai] primary Gemini provider failed; trying OpenRouter fallback:', err.message);
     }
-
-    return res.json({
-      reply: result.reply,
-      toolsUsed: result.toolsUsed || [],
-      provider: result.provider || 'gemini',
-    });
-  } catch (err) {
-    console.error('[ai] live provider failed:', err.message);
-    return res.status(503).json({
-      error: 'VTG AI is temporarily unavailable. Please try again shortly.',
-      code: 'AI_PROVIDER_UNAVAILABLE',
-    });
   }
+
+  if (openrouterAi.enabled()) {
+    try {
+      const result = await openrouterAi.publicChat({ message, history, country, role });
+      try {
+        await audit.log(null, 'Public AI Assistant Query (fallback)', message.slice(0, 140), req.ip);
+      } catch (auditErr) {
+        console.warn('[ai] fallback audit log failed, continuing without it', auditErr.message);
+      }
+      return res.json({
+        reply: result.reply,
+        toolsUsed: result.toolsUsed || [],
+        provider: result.provider || 'openrouter',
+        fallback: true,
+      });
+    } catch (err) {
+      lastError = err;
+      console.error('[ai] OpenRouter fallback failed:', err.message);
+    }
+  }
+
+  console.error('[ai] all public AI providers unavailable:', lastError?.message || 'no provider configured');
+  return res.status(503).json({
+    error: 'VTG AI is temporarily unavailable. Please try again shortly.',
+    code: 'AI_PROVIDER_UNAVAILABLE',
+  });
 });
 
 module.exports = { chat, publicChat };
