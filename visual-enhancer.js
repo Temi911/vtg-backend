@@ -10,6 +10,15 @@
     { name: 'Shipping & Logistics', tag: 'Containers • Freight • Port services', img: 'https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?q=85&w=1600&auto=format&fit=crop' }
   ];
 
+  function loadRepairScript() {
+    if (document.querySelector('script[data-vtg-ui-repair]')) return;
+    const s = document.createElement('script');
+    s.src = '/vtg-ui-repair.js?v=2';
+    s.dataset.vtgUiRepair = '1';
+    s.defer = true;
+    document.head.appendChild(s);
+  }
+
   function apply() {
     try {
       const d = document, w = window;
@@ -18,6 +27,7 @@
         catch (e) { console.warn('VTG icon refresh', e) }
       };
       ensureIcons();
+      loadRepairScript();
 
       const style = d.createElement('style'); style.id = 'vtgVisualEnhancer'; style.textContent = `
       .vtgSupplierCarousel{position:absolute;inset:0;z-index:1;border-radius:20px;overflow:hidden;background:#0a2a40}
@@ -36,7 +46,7 @@
       body,body *,button,input,select,textarea{font-family:Arial,Helvetica,sans-serif!important}
       @media(max-width:800px){.vtgProductStrip{grid-template-columns:1fr 1fr}.vtgSupplierDots{right:12px}.vtgSupplierInfo{left:12px}}
       `;
-      d.head.appendChild(style);
+      const oldStyle = d.getElementById('vtgVisualEnhancer'); if (oldStyle) oldStyle.remove(); d.head.appendChild(style);
 
       const hero = d.querySelector('.productHero');
       if (hero && !hero.querySelector('.vtgSupplierCarousel')) {
@@ -79,13 +89,10 @@
         hero.parentElement.appendChild(strip);
       }
 
-      if (!d.querySelector('script[data-vtg-commerce]')) {
-        const s = d.createElement('script'); s.src = '/vtg-commerce.js?v=1'; s.dataset.vtgCommerce = '1'; s.defer = true; d.head.appendChild(s);
-      }
-      if (!d.querySelector('script[data-vtg-map-fix]')) {
-        const s = d.createElement('script'); s.src = '/vtg-map-fix.js?v=1'; s.dataset.vtgMapFix = '1'; s.defer = true; d.head.appendChild(s);
-      }
+      // Only load commerce if the optional file exists in the repository.
+      // The core cart/calculator is already loaded directly by the page.
       ensureIcons();
+      setTimeout(loadRepairScript, 250);
     } catch (e) { console.warn('VTG visual enhancer failed', e) }
   }
 
