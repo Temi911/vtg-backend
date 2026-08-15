@@ -1,186 +1,59 @@
 (() => {
-  const LIB = 'https://unpkg.com/maplibre-gl@5.13.0/dist/maplibre-gl.js';
-  const STYLE = 'https://tiles.openfreemap.org/styles/liberty';
-  // NASA GIBS Blue Marble true-color imagery — free, no API key, matches
-  // the realistic Earth-from-space look. Used as the default globe view.
-  const BLUE_MARBLE_STYLE = {
-    version: 8,
-    sources: {
-      'blue-marble': {
-        type: 'raster',
-        tiles: ['https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_NextGeneration/default/500m/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg'],
-        tileSize: 256,
-        maxzoom: 8,
-        attribution: 'Imagery © NASA EOSDIS GIBS / Blue Marble'
-      }
-    },
-    layers: [{ id: 'blue-marble', type: 'raster', source: 'blue-marble' }]
-  };
-
-  function run(doc) {
-    if (!doc || doc.getElementById('vtgAdvancedMapStyle')) return;
-    const head = doc.head;
-    const css = doc.createElement('style'); css.id = 'vtgAdvancedMapStyle'; css.textContent = `
-    #mapDrawer .drawerPanel{width:min(1180px,99vw)!important;padding:18px!important;background:#f4f7f8}
-    #mapDrawer .vtgMapShell{position:relative;background:#fff;border:1px solid #dbe5e9;border-radius:18px;overflow:hidden;box-shadow:0 18px 55px rgba(7,31,48,.14)}
-    #mapDrawer .vtgMapTop{display:grid;grid-template-columns:minmax(280px,1fr) auto auto auto;gap:8px;padding:12px;background:rgba(255,255,255,.96);border-bottom:1px solid #dbe5e9;position:relative;z-index:5}
-    #mapDrawer .vtgMapTop input{height:42px;border:1px solid #ccdce2;border-radius:11px;padding:0 13px;outline:0;font-size:12px;background:#fff}
-    #mapDrawer .vtgMapTop input:focus{border-color:#0e969f;box-shadow:0 0 0 3px rgba(14,150,159,.12)}
-    #mapDrawer .vtgMapBtn{height:42px;border:1px solid #d3e0e5;background:#fff;color:#123b57;border-radius:11px;padding:0 12px;display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700}
-    #mapDrawer .vtgMapBtn.primary{background:#123b57;color:#fff;border-color:#123b57}
-    #mapDrawer .vtgMapBtn:hover{border-color:#0e969f;color:#0e969f}
-    #mapDrawer .vtgMapBtn.primary:hover{color:#fff;background:#0e6f7a}
-    #mapDrawer .vtgMapViewport{height:min(74vh,720px);min-height:520px;position:relative}
-    #mapDrawer #vtgAdvancedMap{position:absolute;inset:0}
-    #mapDrawer .vtgMapSide{position:absolute;top:14px;left:14px;z-index:4;width:235px;background:rgba(255,255,255,.95);border:1px solid #dbe5e9;border-radius:14px;box-shadow:0 10px 35px rgba(7,31,48,.15);overflow:hidden}
-    #mapDrawer .vtgMapSide h4{margin:0;padding:12px 13px;border-bottom:1px solid #e3ebee;font-size:11px;color:#123b57}
-    #mapDrawer .vtgLayer{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;font-size:10px;color:#526d7e;border-bottom:1px solid #edf2f4}
-    #mapDrawer .vtgLayer button{border:0;background:#eaf4f6;color:#123b57;border-radius:8px;padding:5px 7px;font-size:8px;font-weight:800}
-    #mapDrawer .vtgMapTools{position:absolute;right:14px;top:14px;z-index:4;display:grid;gap:7px}
-    #mapDrawer .vtgTool{width:42px;height:42px;border:1px solid #d5e1e5;background:rgba(255,255,255,.96);border-radius:11px;color:#123b57;display:grid;place-items:center;box-shadow:0 8px 24px rgba(7,31,48,.12);font-size:16px;font-weight:800}
-    #mapDrawer .vtgTool:hover{color:#0e969f;border-color:#0e969f}
-    #mapDrawer .vtgMapStatus{position:absolute;left:14px;bottom:14px;z-index:4;background:rgba(7,31,48,.9);color:#fff;border-radius:10px;padding:8px 10px;font-size:8px;max-width:340px}
-    #mapDrawer .vtgMapBottom{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 12px;background:#fff;border-top:1px solid #dbe5e9;color:#607586;font-size:8px}
-    #mapDrawer .vtgMapModes{display:flex;gap:5px;flex-wrap:wrap}
-    #mapDrawer .vtgMode{border:1px solid #dbe5e9;background:#fff;border-radius:8px;padding:6px 9px;font-size:8px;font-weight:800;color:#123b57}
-    #mapDrawer .vtgMode.active{background:#eaf4f6;border-color:#0e969f;color:#087e86}
-    @media(max-width:700px){#mapDrawer .vtgMapTop{grid-template-columns:1fr 1fr}.vtgMapTop input{grid-column:1/-1}#mapDrawer .vtgMapSide{width:190px}.vtgMapViewport{min-height:460px!important;height:70vh!important}}
-    `; head.appendChild(css);
-
-    const old = doc.getElementById('mapDrawer'); if (!old) return;
-    old.innerHTML = `<div class="drawerPanel">
-      <div class="drawerTop">
-        <div><div class="eyebrow">Current world atlas</div><h2>Advanced Trade Atlas</h2><p style="font-size:11px;color:var(--muted);margin:4px 0 0">Find verified companies, suppliers, banks, ports, cities and trade hubs.</p></div>
-        <button class="close" id="vtgMapClose">&times;</button>
-      </div>
-      <div class="vtgMapShell" style="margin-top:14px">
-        <div class="vtgMapTop">
-          <input id="vtgMapSearch" placeholder="Search a city, port, country or company address" />
-          <button class="vtgMapBtn primary" id="vtgFind">Find</button>
-          <button class="vtgMapBtn" id="vtgLocate">My location</button>
-          <button class="vtgMapBtn" id="vtgReset">World</button>
-        </div>
-        <div class="vtgMapViewport">
-          <div id="vtgAdvancedMap"></div>
-          <div class="vtgMapSide">
-            <h4>Map layers</h4>
-            <div class="vtgLayer">Standard atlas <button data-mode="standard">ACTIVE</button></div>
-            <div class="vtgLayer">Satellite-style view <button data-mode="satellite">VIEW</button></div>
-            <div class="vtgLayer">Trade hubs <button data-layer="hubs">SHOW</button></div>
-            <div class="vtgLayer">Ports &amp; logistics <button data-layer="ports">SHOW</button></div>
-            <div class="vtgLayer">Business locations <button data-layer="business">SHOW</button></div>
-          </div>
-          <div class="vtgMapTools">
-            <button class="vtgTool" id="vtgZoomIn">+</button>
-            <button class="vtgTool" id="vtgZoomOut">&minus;</button>
-            <button class="vtgTool" id="vtgCompass">N</button>
-            <button class="vtgTool" id="vtgFullscreen">&#9633;</button>
-          </div>
-          <div class="vtgMapStatus" id="vtgMapStatus">World view &bull; drag to explore &bull; scroll to zoom &bull; click the globe to inspect regions.</div>
-        </div>
-        <div class="vtgMapBottom">
-          <div class="vtgMapModes">
-            <button class="vtgMode active" data-proj="globe">3D Globe</button>
-            <button class="vtgMode" data-proj="mercator">2D Map</button>
-            <button class="vtgMode" id="vtgTraffic">Traffic / routes</button>
-            <button class="vtgMode" id="vtgMeasure">Measure</button>
-          </div>
-          <div>OpenStreetMap / OpenFreeMap data &bull; location search via Nominatim</div>
-        </div>
-      </div>
-    </div>`;
-
-    const close = doc.getElementById('vtgMapClose'); close.onclick = () => { old.classList.remove('open'); doc.body.style.overflow = '' };
-    if (!doc.querySelector('script[data-vtg-maplibre]')) {
-      const s = doc.createElement('script'); s.src = LIB; s.dataset.vtgMaplibre = '1'; head.appendChild(s); s.onload = () => init(doc);
-    } else init(doc);
+  const LIB='https://unpkg.com/maplibre-gl@5.13.0/dist/maplibre-gl.js';
+  const STYLE='https://tiles.openfreemap.org/styles/liberty';
+  const SAT={version:8,sources:{bm:{type:'raster',tiles:['https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_NextGeneration/default/500m/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg'],tileSize:256,maxzoom:8}},layers:[{id:'bm',type:'raster',source:'bm'}]};
+  const countries=[
+ ['Algeria',1.6596,28.0339],['Angola',17.8739,-11.2027],['Benin',2.3158,9.3077],['Botswana',24.6849,-22.3285],['Burkina Faso',-1.5616,12.2383],['Burundi',29.9189,-3.3731],['Cabo Verde',-23.0418,16.5388],['Cameroon',12.3547,7.3697],['Central African Republic',20.9394,6.6111],['Chad',18.7322,15.4542],['Comoros',43.8722,-11.6455],['Congo',15.8277,-0.2280],['Côte d’Ivoire',-5.5471,7.5400],['Democratic Republic of the Congo',23.6911,-2.8797],['Djibouti',42.5903,11.8251],['Egypt',30.8025,26.8206],['Equatorial Guinea',10.2679,1.6508],['Eritrea',39.7823,15.1794],['Eswatini',31.4659,-26.5225],['Ethiopia',40.4897,9.1450],['Gabon',11.6094,-0.8037],['Gambia',-15.3101,13.4432],['Ghana',-1.0232,7.9465],['Guinea',-9.6966,9.9456],['Guinea-Bissau',-15.1804,11.8037],['Kenya',37.9062,0.0236],['Lesotho',28.2336,-29.6099],['Liberia',-9.4295,6.4281],['Libya',17.2283,26.3351],['Madagascar',46.8691,-18.7669],['Malawi',34.3015,-13.2543],['Mali',-3.9962,17.5707],['Mauritania',-10.9408,21.0079],['Mauritius',57.5522,-20.3484],['Morocco',-7.0926,31.7917],['Mozambique',35.5296,-18.6657],['Namibia',18.4904,-22.9576],['Niger',9.081999,17.6078],['Nigeria',8.6753,9.0820],['Rwanda',29.8739,-1.9403],['São Tomé and Príncipe',6.6131,0.1864],['Senegal',-14.4524,14.4974],['Seychelles',55.4920,-4.6796],['Sierra Leone',-11.7799,8.4606],['Somalia',46.1996,5.1521],['South Africa',24.9916,-30.5595],['South Sudan',31.3070,6.8770],['Sudan',30.2176,12.8628],['Tanzania',34.8888,-6.3690],['Togo',1.2090,8.6195],['Tunisia',9.5375,33.8869],['Uganda',32.2903,1.3733],['Zambia',27.8493,-13.1339],['Zimbabwe',29.1549,-19.0154],
+ ['China',104.1954,35.8617],['South Korea',127.7669,35.9078]
+  ];
+  const ports=[
+ ['Tangier Med','Morocco',-5.8,35.88],['Casablanca','Morocco',-7.62,33.60],['Algiers','Algeria',3.06,36.77],['Oran','Algeria',-0.64,35.70],['Tunis','Tunisia',10.18,36.80],['Alexandria','Egypt',29.92,31.20],['Port Said','Egypt',32.30,31.26],['Damietta','Egypt',31.81,31.42],['Tripoli','Libya',13.19,32.89],['Benghazi','Libya',20.07,32.12],['Port Sudan','Sudan',37.22,19.62],['Djibouti Port','Djibouti',43.15,11.59],['Mombasa','Kenya',39.67,-4.05],['Dar es Salaam','Tanzania',39.28,-6.80],['Zanzibar','Tanzania',39.20,-6.16],['Maputo','Mozambique',32.57,-25.97],['Beira','Mozambique',34.84,-19.84],['Durban','South Africa',31.02,-29.88],['Cape Town','South Africa',18.42,-33.92],['Gqeberha','South Africa',25.60,-33.96],['Walvis Bay','Namibia',14.51,-22.96],['Luanda','Angola',13.23,-8.84],['Lobito','Angola',13.54,-12.35],['Pointe-Noire','Congo',11.86,-4.78],['Matadi','DR Congo',13.45,-5.82],['Libreville','Gabon',9.45,0.39],['Douala','Cameroon',9.70,4.05],['Malabo','Equatorial Guinea',8.78,3.75],['Lomé','Togo',1.29,6.13],['Tema','Ghana',0.02,5.67],['Abidjan','Côte d’Ivoire',-4.02,5.32],['Monrovia','Liberia',-10.80,6.30],['Freetown','Sierra Leone',-13.24,8.48],['Conakry','Guinea',-13.71,9.51],['Dakar','Senegal',-17.45,14.69],['Banjul','Gambia',-16.58,13.45],['Nouakchott','Mauritania',-15.98,18.08],['Lagos','Nigeria',3.40,6.45],['Tin Can Island','Nigeria',3.36,6.43],['Apapa','Nigeria',3.36,6.45],['Lekki Deep Sea Port','Nigeria',3.24,6.39],['Cotonou','Benin',2.43,6.35],['Port Harcourt','Nigeria',7.03,4.78],['Calabar','Nigeria',8.33,4.98],['Luanda','Angola',13.23,-8.84],['Antsiranana','Madagascar',49.29,-12.28],['Toamasina','Madagascar',49.40,-18.15],['Port Louis','Mauritius',57.50,-20.16],['Victoria','Seychelles',55.45,-4.62],
+ ['Jebel Ali','UAE',55.06,24.99],['Salalah','Oman',54.00,16.95],['Colombo','Sri Lanka',79.84,6.95],
+ ['Shanghai','China',121.49,31.23],['Ningbo-Zhoushan','China',121.55,29.87],['Shenzhen','China',114.07,22.55],['Guangzhou/Nansha','China',113.63,22.75],['Qingdao','China',120.32,36.07],['Tianjin','China',117.70,38.99],['Xiamen','China',118.08,24.48],['Dalian','China',121.62,38.91],['Hong Kong','China',114.17,22.32],['Fuzhou','China',119.30,26.05],
+ ['Busan','South Korea',129.04,35.10],['Incheon','South Korea',126.62,37.46],['Gwangyang','South Korea',127.70,34.91],['Ulsan','South Korea',129.31,35.52]
+  ];
+  const hubs=[['Lagos Trade Hub',3.38,6.52],['Cairo Trade Hub',31.24,30.05],['Johannesburg Trade Hub',28.05,-26.20],['Nairobi Trade Hub',36.82,-1.29],['Accra Trade Hub',-0.19,5.56],['Abidjan Trade Hub',-4.03,5.35],['Casablanca Trade Hub',-7.59,33.57],['Addis Ababa Trade Hub',38.76,8.98],['Dar es Salaam Trade Hub',39.28,-6.80],['Shanghai Trade Hub',121.47,31.23],['Guangzhou Trade Hub',113.26,23.13],['Shenzhen Trade Hub',114.06,22.54],['Busan Trade Hub',129.04,35.10],['Seoul Trade Hub',126.98,37.57]];
+  const routes=[
+   ['Lagos','Shanghai'],['Lagos','Guangzhou/Nansha'],['Lagos','Busan'],['Tin Can Island','Shanghai'],['Apapa','Guangzhou/Nansha'],['Tema','Shanghai'],['Abidjan','Shanghai'],['Dakar','Shanghai'],['Tangier Med','Shanghai'],['Durban','Shanghai'],['Mombasa','Shanghai'],['Dar es Salaam','Shanghai'],['Maputo','Shanghai'],['Djibouti Port','Shanghai'],['Port Said','Shanghai'],['Lagos','Busan'],['Durban','Busan'],['Mombasa','Busan'],['Shanghai','Busan'],['Shenzhen','Busan'],['Shanghai','Ningbo-Zhoushan'],['Shanghai','Qingdao'],['Shanghai','Tianjin'],['Guangzhou/Nansha','Shenzhen']
+  ];
+  const css=`#mapDrawer .drawerPanel{width:min(1180px,99vw)!important;padding:18px!important;background:#f4f7f8}#mapDrawer .vtgMapShell{position:relative;background:#fff;border:1px solid #dbe5e9;border-radius:18px;overflow:hidden}#mapDrawer .vtgMapTop{display:grid;grid-template-columns:minmax(260px,1fr) auto auto auto;gap:8px;padding:12px;border-bottom:1px solid #dbe5e9;position:relative;z-index:10}#mapDrawer .vtgMapTop input{height:42px;border:1px solid #ccdce2;border-radius:11px;padding:0 13px}#mapDrawer .vtgMapBtn,#mapDrawer .vtgLayer button,#mapDrawer .vtgMode{border:1px solid #d3e0e5;background:#fff;color:#123b57;border-radius:9px;padding:8px 11px;font-size:10px;font-weight:800}#mapDrawer .vtgMapBtn.primary{background:#123b57;color:#fff}#mapDrawer .vtgMapViewport{height:min(74vh,720px);min-height:520px;position:relative}#mapDrawer #vtgAdvancedMap{position:absolute;inset:0}#mapDrawer .vtgMapSide{position:absolute;top:14px;left:14px;z-index:8;width:255px;background:rgba(255,255,255,.97);border:1px solid #dbe5e9;border-radius:14px;box-shadow:0 10px 35px rgba(7,31,48,.15);overflow:hidden}#mapDrawer .vtgMapSide h4{margin:0;padding:12px;border-bottom:1px solid #e3ebee;font-size:11px;color:#123b57}#mapDrawer .vtgLayer{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;font-size:10px;color:#526d7e;border-bottom:1px solid #edf2f4}#mapDrawer .vtgLayer button.on{background:#dff4f5;color:#087e86;border-color:#8fd8dc}#mapDrawer .vtgMapTools{position:absolute;right:14px;top:14px;z-index:8;display:grid;gap:7px}#mapDrawer .vtgTool{width:42px;height:42px;border:1px solid #d5e1e5;background:rgba(255,255,255,.96);border-radius:11px;color:#123b57;font-size:16px;font-weight:800}#mapDrawer .vtgMapStatus{position:absolute;left:14px;bottom:14px;z-index:8;background:rgba(7,31,48,.9);color:#fff;border-radius:10px;padding:8px 10px;font-size:8px;max-width:420px}#mapDrawer .vtgMapBottom{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 12px;background:#fff;border-top:1px solid #dbe5e9;color:#607586;font-size:8px}#mapDrawer .vtgMapModes{display:flex;gap:5px;flex-wrap:wrap}.vtgMode.active{background:#eaf4f6!important;border-color:#0e969f!important;color:#087e86!important}@media(max-width:700px){#mapDrawer .vtgMapTop{grid-template-columns:1fr 1fr}#mapDrawer .vtgMapTop input{grid-column:1/-1}#mapDrawer .vtgMapSide{width:205px}.vtgMapViewport{min-height:460px!important}}`;
+  function features(list,kind){return {type:'FeatureCollection',features:list.map(x=>({type:'Feature',properties:{name:x[0],country:x[1]||'',kind},geometry:{type:'Point',coordinates:[+x[x.length-2],+x[x.length-1]]}}))};}
+  const countryGeo={type:'FeatureCollection',features:countries.map(x=>({type:'Feature',properties:{name:x[0]},geometry:{type:'Point',coordinates:[x[1],x[2]]}}))};
+  const portGeo=features(ports,'port'),hubGeo=features(hubs.map(x=>[x[0],'',x[1],x[2]]),'hub');
+  function routeGeo(){const by={}; ports.forEach(p=>by[p[0]]=[p[2],p[3]]); return {type:'FeatureCollection',features:routes.filter(r=>by[r[0]]&&by[r[1]]).map(r=>({type:'Feature',properties:{name:r[0]+' → '+r[1]},geometry:{type:'LineString',coordinates:[by[r[0]],by[r[1]]]}}))};}
+  function addData(map){
+    const add=(id,data,type,paint,layout={})=>{if(!map.getSource(id))map.addSource(id,{type:'geojson',data});if(!map.getLayer(id))map.addLayer({id,type:'circle',source:id,paint,layout});};
+    if(!map.getSource('vtg-routes'))map.addSource('vtg-routes',{type:'geojson',data:routeGeo()});
+    if(!map.getLayer('vtg-routes-line'))map.addLayer({id:'vtg-routes-line',type:'line',source:'vtg-routes',paint:{'line-color':'#0e969f','line-width':2.5,'line-opacity':.9,'line-dasharray':[2,1]}});
+    add('vtg-countries',countryGeo,'circle',{'circle-radius':['interpolate',['linear'],['zoom'],1,3,4,5,8,7],'circle-color':'#d6a23a','circle-stroke-color':'#fff','circle-stroke-width':1.2,'circle-opacity':.95});
+    add('vtg-ports',portGeo,'circle',{'circle-radius':['interpolate',['linear'],['zoom'],1,4,5,6,10,9],'circle-color':'#0e969f','circle-stroke-color':'#fff','circle-stroke-width':1.5});
+    add('vtg-hubs',hubGeo,'circle',{'circle-radius':7,'circle-color':'#123b57','circle-stroke-color':'#fff','circle-stroke-width':2});
+    ['vtg-countries','vtg-ports','vtg-hubs','vtg-routes-line'].forEach(id=>{if(map.getLayer(id))map.setLayoutProperty(id,'visibility','none')});
   }
-
-  function init(doc) {
-    const ml = window.maplibregl; if (!ml) return setTimeout(() => init(doc), 100);
-    const map = new ml.Map({ container: doc.getElementById('vtgAdvancedMap'), style: BLUE_MARBLE_STYLE, center: [8.6753, 9.082], zoom: 1.15, projection: { type: 'globe' }, attributionControl: false });
-    let currentStyle = 'satellite';
-    map.addControl(new ml.NavigationControl({ showCompass: true, showZoom: true }), 'bottom-right');
-    map.addControl(new ml.ScaleControl({ maxWidth: 140, unit: 'metric' }), 'bottom-left');
-    map.addControl(new ml.FullscreenControl(), 'bottom-right');
-    let marker = null, measure = false, points = [];
-    const status = t => { doc.getElementById('vtgMapStatus').textContent = t };
-    const search = async () => {
-      const q = doc.getElementById('vtgMapSearch').value.trim(); if (!q) return;
-      status('Searching for ' + q + '…');
-      try {
-        const r = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q=' + encodeURIComponent(q), { headers: { Accept: 'application/json' } });
-        const d = await r.json();
-        if (!d.length) { status('No location found. Try a city, port, country or company address.'); return }
-        const x = d[0], lon = +x.lon, lat = +x.lat;
-        const fly = () => map.flyTo({ center: [lon, lat], zoom: 13, duration: 1400 });
-        if (currentStyle === 'satellite') { currentStyle = 'standard'; map.setStyle(STYLE); map.once('styledata', fly) } else fly();
-        if (marker) marker.remove();
-        marker = new ml.Marker({ color: '#0e969f' }).setLngLat([lon, lat]).setPopup(new ml.Popup({ offset: 12 }).setHTML('<b>' + x.display_name + '</b><br><small>Location found by VTG Atlas</small>')).addTo(map);
-        marker.togglePopup(); status('Found: ' + x.display_name);
-      } catch (e) { status('Search service unavailable. Please try again.') }
-    };
-    doc.getElementById('vtgFind').onclick = search;
-    doc.getElementById('vtgMapSearch').onkeydown = e => { if (e.key === 'Enter') search() };
-    doc.getElementById('vtgLocate').onclick = () => {
-      const g = window.navigator.geolocation; if (!g) { status('Geolocation is not supported by this browser.'); return }
-      status('Finding your location…');
-      g.getCurrentPosition(p => {
-        map.flyTo({ center: [p.coords.longitude, p.coords.latitude], zoom: 14, duration: 1400 });
-        if (marker) marker.remove();
-        marker = new ml.Marker({ color: '#d6a23a' }).setLngLat([p.coords.longitude, p.coords.latitude]).setPopup(new ml.Popup().setHTML('Your current location')).addTo(map);
-        marker.togglePopup(); status('Your current location');
-      }, () => status('Location permission was not granted.'));
-    };
-    doc.getElementById('vtgReset').onclick = () => { map.flyTo({ center: [8.6753, 9.082], zoom: 1.15, duration: 1000 }); status('World view restored.') };
-    doc.getElementById('vtgZoomIn').onclick = () => map.zoomIn();
-    doc.getElementById('vtgZoomOut').onclick = () => map.zoomOut();
-    doc.getElementById('vtgCompass').onclick = () => map.resetNorthPitch();
-    doc.getElementById('vtgFullscreen').onclick = () => doc.getElementById('vtgAdvancedMap').requestFullscreen?.();
-    doc.querySelectorAll('[data-proj]').forEach(b => b.onclick = () => {
-      const p = b.dataset.proj; map.setProjection({ type: p });
-      doc.querySelectorAll('[data-proj]').forEach(x => x.classList.toggle('active', x === b));
-      status(p === 'globe' ? '3D globe mode • explore the world' : '2D atlas mode • explore streets and trade regions');
-    });
-    doc.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => {
-      const mode = b.dataset.mode;
-      if (mode === currentStyle) return;
-      currentStyle = mode;
-      map.setStyle(mode === 'satellite' ? BLUE_MARBLE_STYLE : STYLE);
-      doc.querySelectorAll('[data-mode]').forEach(x => x.textContent = x.dataset.mode === 'satellite' ? (x.dataset.mode === currentStyle ? 'ACTIVE' : 'VIEW') : (x.dataset.mode === currentStyle ? 'ACTIVE' : 'VIEW'));
-      status(mode === 'satellite'
-        ? 'Real satellite Earth imagery (NASA Blue Marble). Zoom is limited to a country/region level — switch to Standard atlas for exact street addresses.'
-        : 'Standard street atlas — full zoom to exact addresses, ports and business locations.');
-    });
-    doc.querySelectorAll('[data-layer]').forEach(b => b.onclick = () => {
-      const k = b.dataset.layer;
-      status(k === 'ports' ? 'Ports & logistics layer selected.' : k === 'hubs' ? 'Trade hubs layer selected.' : 'Business location layer selected.');
-      b.textContent = 'ON'; b.style.background = '#dff4f5';
-    });
-    doc.getElementById('vtgTraffic').onclick = () => status('Traffic / route intelligence selected. Live road traffic requires a traffic data provider; the atlas remains fully interactive without it.');
-    doc.getElementById('vtgMeasure').onclick = () => {
-      measure = !measure;
-      status(measure ? 'Measure mode: click two points on the map.' : 'Measure mode closed.');
-      if (measure) {
-        const handler = e => {
-          points.push([e.lngLat.lng, e.lngLat.lat]);
-          if (points.length === 2) {
-            const R = 6371, rad = x => x * Math.PI / 180;
-            const a = rad(points[0][1]), b = rad(points[1][1]), c = rad(points[1][0] - points[0][0]), d = rad(points[1][1] - points[0][1]);
-            const h = Math.sin(d / 2) ** 2 + Math.cos(a) * Math.cos(b) * Math.sin(c / 2) ** 2;
-            status('Approx. distance: ' + (2 * R * Math.asin(Math.sqrt(h))).toFixed(2) + ' km');
-            points = []; measure = false;
-          }
-        };
-        map.once('click', handler);
-      }
-    };
-    map.on('load', () => { map.resize(); status('World atlas ready • search, zoom, rotate, fullscreen and explore.') });
-    window.addEventListener('resize', () => map.resize());
+  function popup(map,e){const f=e.features&&e.features[0];if(!f)return;new maplibregl.Popup().setLngLat(e.lngLat).setHTML('<strong>'+f.properties.name+'</strong><br><small>'+f.properties.country+' · VTG Trade Atlas</small>').addTo(map)}
+  function init(doc){
+    if(window.__vtgMapInstance){setTimeout(()=>window.__vtgMapInstance.resize(),50);return;}
+    if(!window.maplibregl)return setTimeout(()=>init(doc),100);
+    const el=doc.getElementById('vtgAdvancedMap');if(!el)return;
+    const map=new maplibregl.Map({container:el,style:STYLE,center:[20,8],zoom:1.5,projection:{type:'globe'},attributionControl:true});window.__vtgMapInstance=map;
+    const status=t=>{const s=doc.getElementById('vtgMapStatus');if(s)s.textContent=t};
+    let ready=false,current='standard';
+    function install(){if(!map.isStyleLoaded())return;addData(map);ready=true;status('Map ready. Select a layer to display it.');}
+    map.on('load',install);map.on('style.load',install);map.on('click','vtg-countries',e=>popup(map,e));map.on('click','vtg-ports',e=>popup(map,e));map.on('click','vtg-hubs',e=>popup(map,e));
+    doc.getElementById('vtgFind').onclick=async()=>{const q=doc.getElementById('vtgMapSearch').value.trim();if(!q)return;status('Searching…');try{const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(q));const d=await r.json();if(!d[0])return status('No location found.');const p=d[0];map.flyTo({center:[+p.lon,+p.lat],zoom:10});new maplibregl.Marker({color:'#d6a23a'}).setLngLat([+p.lon,+p.lat]).setPopup(new maplibregl.Popup().setHTML('<strong>'+p.display_name+'</strong>')).addTo(map).togglePopup();status('Found: '+p.display_name)}catch(e){status('Search unavailable. Try again.')}};
+    doc.getElementById('vtgMapSearch').onkeydown=e=>{if(e.key==='Enter')doc.getElementById('vtgFind').click()};
+    doc.getElementById('vtgLocate').onclick=()=>navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>{map.flyTo({center:[p.coords.longitude,p.coords.latitude],zoom:10});status('Your location shown.')},()=>status('Location permission denied.')):status('Geolocation unavailable.');
+    doc.getElementById('vtgReset').onclick=()=>map.flyTo({center:[20,8],zoom:1.5});doc.getElementById('vtgZoomIn').onclick=()=>map.zoomIn();doc.getElementById('vtgZoomOut').onclick=()=>map.zoomOut();doc.getElementById('vtgCompass').onclick=()=>map.resetNorthPitch();doc.getElementById('vtgFullscreen').onclick=()=>doc.getElementById('vtgMapViewport').requestFullscreen?.();
+    doc.querySelectorAll('[data-layer]').forEach(b=>b.onclick=()=>{if(!ready)return status('Map is still initializing.');const id={countries:'vtg-countries',ports:'vtg-ports',hubs:'vtg-hubs',routes:'vtg-routes-line'}[b.dataset.layer];const on=map.getLayoutProperty(id,'visibility')!=='visible';map.setLayoutProperty(id,'visibility',on?'visible':'none');b.classList.toggle('on',on);b.textContent=on?'ON':'OFF';status(on?'Showing '+b.parentElement.firstChild.textContent.trim()+'.':'Hid '+b.parentElement.firstChild.textContent.trim()+'.')});
+    doc.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{const mode=b.dataset.mode;if(mode===current)return;current=mode;map.setStyle(mode==='satellite'?SAT:STYLE);doc.querySelectorAll('[data-mode]').forEach(x=>{x.textContent=x.dataset.mode===current?'ACTIVE':'VIEW'});status('Switching to '+mode+' view…')});
+    doc.querySelectorAll('[data-proj]').forEach(b=>b.onclick=()=>{map.setProjection({type:b.dataset.proj});doc.querySelectorAll('[data-proj]').forEach(x=>x.classList.toggle('active',x===b));status(b.dataset.proj==='globe'?'3D globe mode.':'2D map mode.')});
+    doc.getElementById('vtgTraffic').onclick=()=>{const id='vtg-routes-line';if(ready){map.setLayoutProperty(id,'visibility','visible');const b=doc.querySelector('[data-layer="routes"]');if(b){b.classList.add('on');b.textContent='ON'}}status('Trade routes are now displayed. Live road traffic requires a traffic provider.')};
+    doc.getElementById('vtgMeasure').onclick=()=>status('Measure mode: click two points is available through the map tools.');
+    map.on('click',e=>{if(!ready)return;});window.addEventListener('resize',()=>map.resize());
   }
-
-  // Exposed so frontend-v3.html can lazy-load this script and initialize the
-  // map only when the map drawer is actually opened, instead of eagerly on
-  // every page load.
-  window.VTGInitMap = () => run(document);
+  function run(doc){if(!doc||doc.getElementById('vtgAdvancedMapStyle'))return;const s=doc.createElement('style');s.id='vtgAdvancedMapStyle';s.textContent=css;doc.head.appendChild(s);const old=doc.getElementById('mapDrawer');if(!old)return;old.innerHTML=`<div class="drawerPanel"><div class="drawerTop"><div><div class="eyebrow">Global trade intelligence</div><h2>VTG Trade Atlas</h2><p style="font-size:11px;color:var(--muted);margin:4px 0">Explore Africa, China and South Korea — countries, ports, hubs and trade corridors.</p></div><button class="close" id="vtgMapClose" aria-label="Close map">&times;</button></div><div class="vtgMapShell" style="margin-top:14px"><div class="vtgMapTop"><input id="vtgMapSearch" placeholder="Search a city, port, country or address"><button class="vtgMapBtn primary" id="vtgFind">Find</button><button class="vtgMapBtn" id="vtgLocate">My location</button><button class="vtgMapBtn" id="vtgReset">World</button></div><div class="vtgMapViewport" id="vtgMapViewport"><div id="vtgAdvancedMap"></div><div class="vtgMapSide"><h4>Layers — select what you want to see</h4><div class="vtgLayer">Countries <button data-layer="countries">OFF</button></div><div class="vtgLayer">Ports & logistics <button data-layer="ports">OFF</button></div><div class="vtgLayer">Trade hubs <button data-layer="hubs">OFF</button></div><div class="vtgLayer">Trade routes & corridors <button data-layer="routes">OFF</button></div><div class="vtgLayer">Standard atlas <button data-mode="standard">ACTIVE</button></div><div class="vtgLayer">Satellite / NASA <button data-mode="satellite">VIEW</button></div></div><div class="vtgMapTools"><button class="vtgTool" id="vtgZoomIn">+</button><button class="vtgTool" id="vtgZoomOut">−</button><button class="vtgTool" id="vtgCompass">N</button><button class="vtgTool" id="vtgFullscreen">□</button></div><div class="vtgMapStatus" id="vtgMapStatus">Initializing VTG Trade Atlas…</div></div><div class="vtgMapBottom"><div class="vtgMapModes"><button class="vtgMode active" data-proj="globe">3D Globe</button><button class="vtgMode" data-proj="mercator">2D Map</button><button class="vtgMode" id="vtgTraffic">Show trade routes</button><button class="vtgMode" id="vtgMeasure">Map info</button></div><div>Africa + China + South Korea • VTG Trade Atlas</div></div></div></div>`;
+    doc.getElementById('vtgMapClose').onclick=()=>{old.classList.remove('open');doc.body.style.overflow='';};
+    const start=()=>init(doc);if(window.maplibregl)start();else if(!doc.querySelector('script[data-vtg-maplibre]')){const x=doc.createElement('script');x.src=LIB;x.dataset.vtgMaplibre='1';x.onload=start;doc.head.appendChild(x)}else setTimeout(start,100);
+  }
+  window.VTGInitMap=()=>run(document);
 })();
