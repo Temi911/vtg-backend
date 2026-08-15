@@ -24,16 +24,15 @@
     document.querySelectorAll('.tradeCard img').forEach((img, i) => {
       if (img.dataset.vtgRepair) return;
       img.dataset.vtgRepair = '1';
-      img.addEventListener('error', () => {
-        const fallback = i === 0 ? FALLBACKS.hero : i === 1 ? FALLBACKS.logistics : FALLBACKS.business;
-        if (img.src !== fallback) {
-          img.src = fallback;
-        } else {
-          img.style.display = 'none';
-          img.parentElement.style.background = 'linear-gradient(135deg,#123b57 0%,#0e969f 100%)';
-        }
-      });
-      if (img.complete && img.naturalWidth === 0) img.dispatchEvent(new Event('error'));
+      const fallback = i === 0 ? FALLBACKS.hero : i === 1 ? FALLBACKS.logistics : FALLBACKS.business;
+      const useFallback = () => {
+        if (img.dataset.vtgFallbackApplied) return;
+        img.dataset.vtgFallbackApplied = '1';
+        img.src = fallback;
+        img.alt = img.alt || (i === 0 ? 'Global trade and vehicle sourcing' : i === 1 ? 'Shipping and logistics' : 'International business and trade');
+      };
+      img.addEventListener('error', useFallback, { once: true });
+      if (!img.getAttribute('src') || (img.complete && img.naturalWidth === 0)) useFallback();
     });
 
     document.querySelectorAll('.newsItem img,.newsLarge img,.mini img,.productHero img').forEach(img => {
@@ -47,7 +46,7 @@
           img.style.display = 'none';
         }
       });
-      if (img.complete && img.naturalWidth === 0) img.dispatchEvent(new Event('error'));
+      if (!img.getAttribute('src') || (img.complete && img.naturalWidth === 0)) img.dispatchEvent(new Event('error'));
     });
   }
 
