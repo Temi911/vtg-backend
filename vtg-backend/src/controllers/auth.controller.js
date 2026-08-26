@@ -5,7 +5,43 @@ const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../ut
 const { AppError } = require('../utils/AppError');
 const { asyncHandler } = require('../utils/asyncHandler');
 const audit = require('../services/audit.service');
-const https = require('https');
+const nodemailer = require('nodemailer');
+
+let cachedTransporter = null;
+function isEmailConfigured() {
+  return Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS && process.env.SMTP_FROM);
+}
+
+function getTransporter() {
+  if (cachedTransporter) return cachedTransporter;
+  cachedTransporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT) || 587,
+    secure: String(process.env.SMTP_SECURE).toLowerCase() === 'true',
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+  return cachedTransporter;
+}
+
+async function dispatchVerificationEmail(email, code) {
+  if (!isEmailConfigured()) return false;
+  try {
+    await getTransporter().sendMail({
+      from: process.env.SMTP_FROM,
+      to: email,
+      subject: 'VTG Africa verification code',
+      text: `Your VTG Africa verification code is ${code}. It expires in 15 minutes.`,
+    });
+    console.info(`[VTG] Verification email sent via SMTP for ${email}`);
+    return true;
+  } catch (error) {
+    console.warn('[VTG] SMTP verification email failed:', error.message);
+    return false;
+  }
+}
 
 const DEMO_ACCOUNTS = Object.freeze({
   'buyer@demo.vtg': {
@@ -78,67 +114,6 @@ function normalizeEmail(email) {
 
 function generateVerificationCode() {
   return String(Math.floor(100000 + Math.random() * 900000));
-}
-
-function isEmailConfigured() {
-  return Boolean(
-    (process.env.RESEND_API_KEY || process.env.SMTP_PASS) &&
-    (process.env.RESEND_FROM || process.env.SMTP_FROM)
-  );
-}
-
-function dispatchVerificationEmail(email, code) {
-  if (!isEmailConfigured()) return Promise.resolve(false);
-
-  const apiKey = process.env.RESEND_API_KEY || process.env.SMTP_PASS;
-  const from = process.env.RESEND_FROM || process.env.SMTP_FROM;
-  const payload = JSON.stringify({
-    from,
-    to: [email],
-    subject: 'VTG Africa verification code',
-    text: `Your VTG Africa verification code is ${code}. It expires in 15 minutes.`,
-  });
-
-  return new Promise((resolve) => {
-    const request = https.request({
-      hostname: 'api.resend.com',
-      path: '/emails',
-      method: 'POST',
-      timeout: 15000,
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(payload),
-      },
-    }, (response) => {
-      let body = '';
-      response.setEncoding('utf8');
-      response.on('data', (chunk) => { body += chunk; });
-      response.on('end', () => {
-        if (response.statusCode >= 200 && response.statusCode < 300) {
-          console.info(`[VTG] Verification email accepted by Resend for ${email}`);
-          resolve(true);
-          return;
-        }
-        console.warn('[VTG] Resend rejected verification email:', response.statusCode, body.slice(0, 500));
-        resolve(false);
-      });
-    });
-
-    request.on('timeout', () => {
-      request.destroy();
-      console.warn('[VTG] Resend HTTPS request timed out');
-      resolve(false);
-    });
-
-    request.on('error', (error) => {
-      console.warn('[VTG] Resend HTTPS request failed:', error.message);
-      resolve(false);
-    });
-
-    request.write(payload);
-    request.end();
-  });
 }
 
 async function issueEmailVerificationCode(email) {
