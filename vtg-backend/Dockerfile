@@ -20,9 +20,10 @@ COPY vtg-commerce.js ./vtg-commerce.js
 COPY vtg-map-fix.js ./vtg-map-fix.js
 COPY vtg-market-news.js ./vtg-market-news.js
 COPY vtg-ui-repair.js ./vtg-ui-repair.js
+COPY vtg-atlas-ui.js ./vtg-atlas-ui.js
 COPY assets/ ./assets/
 
 EXPOSE 3000
 RUN chown -R node /usr/src/app
 USER node
-CMD ["npm", "start"]
+CMD ["npm start"]
