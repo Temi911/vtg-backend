@@ -9,6 +9,7 @@ COPY vtg-backend/npm-shrinkwrap.json* ./
 RUN npm install --production --silent
 
 COPY vtg-backend/ ./
+COPY api/ ./api/
 
 # The Railway service also serves the public VTG frontend from this container.
 COPY frontend-v3.html ./frontend-v3.html

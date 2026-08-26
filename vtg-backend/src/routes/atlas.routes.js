@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { locations } = require('../../../api/atlas-locations');
+const { locations } = require('../../api/atlas-locations');
 
 const corridors = [
   {id:'NGTIN-CNSHA',name:'Tin Can Island → Shanghai',mode:'sea',from:'Tin Can Island Port',to:'Port of Shanghai',fromLng:3.3371,fromLat:6.4479,toLng:121.4737,toLat:31.2304},
