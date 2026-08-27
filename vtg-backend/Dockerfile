@@ -13,6 +13,9 @@ COPY api/ ./api/
 
 # The Railway service also serves the public VTG frontend from this container.
 COPY frontend-v3.html ./frontend-v3.html
+COPY buyer-dashboard.html ./buyer-dashboard.html
+COPY supplier-dashboard.html ./supplier-dashboard.html
+COPY bank-dashboard.html ./bank-dashboard.html
 COPY logo-override.js ./logo-override.js
 COPY map-enhancer.js ./map-enhancer.js
 COPY visual-enhancer.js ./visual-enhancer.js
