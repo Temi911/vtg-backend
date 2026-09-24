@@ -10,5 +10,6 @@ router.post('/verify-email-code', ctrl.verifyEmailCode);
 router.post('/login', ctrl.login);
 router.post('/refresh', ctrl.refresh);
 router.get('/me', requireAuth, ctrl.me);
+router.patch('/profile', requireAuth, ctrl.updateProfile);
 
 module.exports = router;
