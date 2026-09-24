@@ -141,13 +141,6 @@
       loadRepairScript();
 
       const style = d.createElement('style'); style.id = 'vtgVisualEnhancer'; style.textContent = `
-      .vtgSupplierCarousel{position:absolute;inset:0;z-index:1;border-radius:20px;overflow:hidden;background:#0a2a40}
-      .vtgSupplierCarousel img{position:absolute!important;inset:0;width:100%!important;height:100%!important;object-fit:cover!important;opacity:0;transition:opacity .8s ease,transform 7s ease;transform:scale(1.03)}
-      .vtgSupplierCarousel img.active{opacity:.62;transform:scale(1)}
-      .vtgSupplierOverlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,26,41,.28),rgba(5,26,41,.05) 55%,rgba(5,26,41,.28));pointer-events:none}
-      .vtgSupplierDots{position:absolute;right:18px;top:18px;z-index:3;display:flex;gap:5px}
-      .vtgSupplierDots span{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.5);transition:.2s;cursor:pointer}.vtgSupplierDots span.active{width:22px;border-radius:5px;background:#fff}
-      .vtgSupplierInfo{position:absolute;left:20px;top:18px;z-index:3;padding:7px 10px;border-radius:9px;background:rgba(7,31,48,.72);color:#fff;font-size:8px;font-weight:800;letter-spacing:.04em;backdrop-filter:blur(8px)}
       .productHero .copy{z-index:4}
       .tradeCard img,.newsItem img,.newsLarge img,.mini img{background:#e8f1f3}
       .vtgProductStrip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:13px}
@@ -155,48 +148,20 @@
       .vtgProductChip img{width:44px!important;height:35px!important;object-fit:cover;border-radius:7px;flex:none}
       .vtgProductChip b{display:block;font-size:8px;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vtgProductChip small{display:block;color:var(--muted);font-size:6px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
       body,body *,button,input,select,textarea{font-family:Arial,Helvetica,sans-serif!important}
-      @media(max-width:800px){.vtgProductStrip{grid-template-columns:1fr 1fr}.vtgSupplierDots{right:12px}.vtgSupplierInfo{left:12px}}
+      @media(max-width:800px){.vtgProductStrip{grid-template-columns:1fr 1fr}}
       `;
       const oldStyle = d.getElementById('vtgVisualEnhancer'); if (oldStyle) oldStyle.remove(); d.head.appendChild(style);
 
       const hero = d.querySelector('.productHero');
-      if (hero && !hero.querySelector('.vtgSupplierCarousel')) {
-        const old = hero.querySelector(':scope > img');
-        const carousel = d.createElement('div'); carousel.className = 'vtgSupplierCarousel';
-        PRODUCTS.forEach((p, i) => {
-          const im = d.createElement('img'); im.src = p.img; im.alt = p.name + ' — ' + p.tag;
-          im.className = i === 0 ? 'active' : ''; im.loading = i < 2 ? 'eager' : 'lazy';
-          im.onerror = () => { im.style.background = 'linear-gradient(135deg,#123b57,#0e969f)'; im.removeAttribute('src'); };
-          carousel.appendChild(im);
-        });
-        const overlay = d.createElement('div'); overlay.className = 'vtgSupplierOverlay'; carousel.appendChild(overlay);
-        const dots = d.createElement('div'); dots.className = 'vtgSupplierDots';
-        PRODUCTS.forEach((_, i) => { const s = d.createElement('span'); if (i === 0) s.className = 'active'; dots.appendChild(s); });
-        carousel.appendChild(dots);
-        const info = d.createElement('div'); info.className = 'vtgSupplierInfo'; info.textContent = 'SUPPLIER SHOWCASE • GLOBAL PRODUCTS'; carousel.appendChild(info);
-        if (old) old.remove();
-        hero.prepend(carousel);
-        const title = hero.querySelector('.copy h3'), para = hero.querySelector('.copy p'); let i = 0;
-        const update = () => {
-          const p = PRODUCTS[i];
-          carousel.querySelectorAll('img').forEach((x, n) => x.classList.toggle('active', n === i));
-          dots.querySelectorAll('span').forEach((x, n) => x.classList.toggle('active', n === i));
-          if (title) title.textContent = p.name + ' — supplier presence.';
-          if (para) para.textContent = p.tag + '. Upload products, specifications, company media, adverts and videos so buyers can discover and enquire.';
-        };
-        update();
-        setInterval(() => { i = (i + 1) % PRODUCTS.length; update(); }, 4200);
-        dots.querySelectorAll('span').forEach((s, n) => s.onclick = () => { i = n; update(); });
-      }
-
+      // The main product carousel is owned by frontend-v3.html.
+      // Do not inject a second carousel over the same hero area.
+      // Keep the product strip below the hero as a separate browsing aid.
       if (hero && !d.querySelector('.vtgProductStrip')) {
         const strip = d.createElement('div'); strip.className = 'vtgProductStrip';
-        PRODUCTS.slice(0, 8).forEach(p => {
-          const c = d.createElement('div'); c.className = 'vtgProductChip';
-          c.innerHTML = '<img loading="lazy" src="' + p.img + '" alt="' + p.name + '"><div><b>' + p.name + '</b><small>' + p.tag + '</small></div>';
-          c.querySelector('img').onerror = () => c.querySelector('img').remove();
-          strip.appendChild(c);
-        });
+        strip.innerHTML = PRODUCTS.slice(0, 8).map(p =>
+          '<div class="vtgProductChip"><img loading="lazy" src="' + p.img + '" alt="' + p.name + '"><div><b>' + p.name + '</b><small>' + p.tag + '</small></div></div>'
+        ).join('');
+        strip.querySelectorAll('img').forEach(img => { img.onerror = () => img.remove(); });
         hero.parentElement.appendChild(strip);
       }
 
