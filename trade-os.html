@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VTG Trade OS</title>
+<meta name="description" content="VTG Trade Operating System — discovery, intelligence, documents, logistics and trade execution in one workspace.">
+<style>
+:root{--ink:#0b1720;--muted:#60707a;--line:#dce6ea;--bg:#f5f8f9;--card:#fff;--accent:#0e969f;--accent2:#0a7078;--good:#1b8a5a;--warn:#b97916;--bad:#bd4d4d}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select{font:inherit}.shell{display:grid;grid-template-columns:250px 1fr;min-height:100vh}.side{background:#0a1820;color:#dcecef;padding:24px 16px;position:sticky;top:0;height:100vh}.brand{display:flex;gap:10px;align-items:center;font-weight:800;font-size:20px;margin:0 8px 30px}.brandMark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#13aab3,#075c67);display:grid;place-items:center;color:#fff}.nav{display:grid;gap:7px}.nav button{border:0;background:transparent;color:#a9c0c6;text-align:left;padding:12px 13px;border-radius:10px;cursor:pointer}.nav button.active,.nav button:hover{background:#102a34;color:#fff}.sideNote{position:absolute;bottom:22px;left:22px;right:22px;font-size:11px;line-height:1.5;color:#78939b}.main{padding:26px 30px 50px}.top{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:24px}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--accent2);font-weight:800}.top h1{font-size:30px;margin:4px 0}.pill{border:1px solid var(--line);background:#fff;padding:9px 12px;border-radius:999px;color:var(--muted);font-size:12px}.grid{display:grid;gap:16px}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 6px 24px rgba(12,35,43,.04)}.stat b{display:block;font-size:25px;margin:5px 0}.stat span{color:var(--muted);font-size:12px}.two{grid-template-columns:1.35fr .65fr}.three{grid-template-columns:repeat(3,1fr)}h2{font-size:19px;margin:0 0 5px}.sub{color:var(--muted);font-size:12px;margin-bottom:15px}.hero{background:linear-gradient(135deg,#08232b,#0d5d65);color:#fff;border-radius:18px;padding:26px;position:relative;overflow:hidden}.hero:after{content:"";position:absolute;width:280px;height:280px;border-radius:50%;right:-100px;top:-130px;background:rgba(76,221,219,.13)}.hero h2{font-size:28px;max-width:650px}.hero p{color:#c4dadd;max-width:700px;line-height:1.6}.actions{display:flex;gap:9px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 13px;cursor:pointer;font-weight:700;font-size:12px}.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn.dark{background:#0b252d;border-color:#0b252d;color:#fff}.tag{display:inline-block;padding:5px 8px;border-radius:999px;background:#edf8f8;color:#0b6c73;font-size:10px;font-weight:800}.row{display:flex;justify-content:space-between;gap:15px;align-items:center}.list{display:grid;gap:10px}.item{padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff}.item strong{font-size:13px}.item small{display:block;color:var(--muted);margin-top:3px}.progress{height:7px;background:#edf1f2;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;background:var(--accent);border-radius:99px}.doc{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center}.dot{width:10px;height:10px;border-radius:50%;background:var(--good)}.dot.pending{background:var(--warn)}.dot.missing{background:var(--bad)}.mapbox{min-height:260px;border-radius:14px;background:radial-gradient(circle at 35% 40%,rgba(22,169,177,.25),transparent 22%),linear-gradient(135deg,#dcecef,#f4f8f9);position:relative;overflow:hidden}.route{position:absolute;left:18%;top:58%;width:65%;height:2px;background:var(--accent);transform:rotate(-16deg);transform-origin:left}.node{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 6px rgba(14,150,159,.12)}.node.a{left:17%;top:57%}.node.b{right:17%;top:34%}.node.c{left:48%;top:25%}.nodeLabel{position:absolute;font-size:10px;font-weight:800;background:#fff;border:1px solid var(--line);padding:5px 7px;border-radius:7px}.nl1{left:13%;top:64%}.nl2{right:12%;top:41%}.nl3{left:44%;top:15%}.table{width:100%;border-collapse:collapse;font-size:12px}.table th,.table td{padding:10px;border-bottom:1px solid var(--line);text-align:left}.table th{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.08em}.feature{min-height:120px}.feature b{display:block;margin:8px 0}.hidden{display:none}.search{display:flex;gap:8px}.search input{flex:1;border:1px solid var(--line);border-radius:10px;padding:11px}.notice{padding:11px 13px;border-radius:10px;background:#eef8f8;color:#176a70;font-size:12px}.footerNote{margin-top:22px;color:#78868d;font-size:11px}
+@media(max-width:1050px){.shell{grid-template-columns:1fr}.side{position:relative;height:auto}.sideNote{position:static;margin-top:20px}.stats,.three{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}
+@media(max-width:620px){.main{padding:18px}.stats,.three{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.hero h2{font-size:23px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="side">
+  <div class="brand"><span class="brandMark">V</span> VTG Trade OS</div>
+  <nav class="nav">
+    <button class="active" data-tab="overview">Overview</button>
+    <button data-tab="intelligence">Trade Intelligence</button>
+    <button data-tab="trade-room">Trade Room</button>
+    <button data-tab="documents">Document Centre</button>
+    <button data-tab="network">Africa Network</button>
+    <button data-tab="suppliers">Supplier Network</button>
+    <button data-tab="finance">Payments & Finance</button>
+    <button data-tab="compliance">Compliance</button>
+  </nav>
+  <div class="sideNote">VTG is designed as an operating layer for African international trade. Regulated financial and government services should be delivered through appropriately authorized partners.</div>
+</aside>
+
+<main class="main">
+<header class="top">
+  <div><div class="eyebrow">Africa's digital trade operating system</div><h1 id="pageTitle">Trade Command Centre</h1></div>
+  <div class="pill">Nigeria → China • Live workspace prototype</div>
+</header>
+
+<section id="overview" class="tab">
+  <div class="hero">
+    <div class="eyebrow" style="color:#8ee7e7">VTG TRADE OS</div>
+    <h2>Discover, evaluate, document, ship and complete international trade from one workspace.</h2>
+    <p>VTG brings marketplace discovery, country-aware trade intelligence, supplier verification, documents, logistics, compliance and transaction coordination into one trade journey.</p>
+    <div class="actions"><button class="btn primary" onclick="showTab('trade-room')">Open Trade Room</button><button class="btn dark" onclick="showTab('intelligence')">Run Trade Intelligence</button></div>
+  </div>
+  <div class="grid stats" style="margin-top:16px">
+    <div class="card stat"><span>Active trade value</span><b>$1.24M</b><span>Across current workspace</span></div>
+    <div class="card stat"><span>Verified suppliers</span><b>284</b><span>Across African trade corridors</span></div>
+    <div class="card stat"><span>Documents tracked</span><b>1,842</b><span>Across open transactions</span></div>
+    <div class="card stat"><span>Countries connected</span><b>27</b><span>Prototype network coverage</span></div>
+  </div>
+  <div class="grid two" style="margin-top:16px">
+    <div class="card"><h2>One trade journey</h2><div class="sub">The core VTG workflow</div><div class="list">
+      <div class="item"><span class="tag">01 DISCOVER</span><strong>Find products and verified suppliers</strong><small>Marketplace, supplier storefronts and trade feed.</small></div>
+      <div class="item"><span class="tag">02 EVALUATE</span><strong>Understand the real landed cost</strong><small>Origin, destination, HS classification, duties, freight and other costs.</small></div>
+      <div class="item"><span class="tag">03 EXECUTE</span><strong>Coordinate the transaction</strong><small>Quote, order, documents, payment workflow, freight and communication.</small></div>
+      <div class="item"><span class="tag">04 COMPLETE</span><strong>Track clearance and delivery</strong><small>Shipment milestones, compliance status and proof of delivery.</small></div>
+    </div></div>
+    <div class="card"><h2>Open transactions</h2><div class="sub">Trade Room snapshot</div><div class="list">
+      <div class="item"><div class="row"><strong>VTG-2026-A81F</strong><span class="tag">In transit</span></div><small>Machinery • China → Nigeria</small><div class="progress" style="margin-top:9px"><i style="width:72%"></i></div></div>
+      <div class="item"><div class="row"><strong>VTG-2026-B204</strong><span class="tag">Documents</span></div><small>Electronics • China → Ghana</small><div class="progress" style="margin-top:9px"><i style="width:44%"></i></div></div>
+      <div class="item"><div class="row"><strong>VTG-2026-C991</strong><span class="tag">Supplier quote</span></div><small>Agro equipment • China → Kenya</small><div class="progress" style="margin-top:9px"><i style="width:25%"></i></div></div>
+    </div></div>
+  </div>
+  <div class="grid three" style="margin-top:16px">
+    <div class="card feature"><span class="tag">TRADE ATLAS</span><b>See the trade network</b><div class="sub">Ports, suppliers, buyers, logistics hubs and country routes in one map layer.</div></div>
+    <div class="card feature"><span class="tag">AI TRADE ENGINE</span><b>Ask the trade journey</b><div class="sub">Country-aware guidance from sourcing through delivery, with clear estimates and source boundaries.</div></div>
+    <div class="card feature"><span class="tag">DOCUMENT CENTRE</span><b>Never lose the paperwork</b><div class="sub">Track required, uploaded, verified and missing documents per transaction.</div></div>
+  </div>
+</section>
+
+<section id="intelligence" class="tab hidden">
+  <div class="grid two">
+    <div class="card"><h2>VTG Trade Intelligence</h2><div class="sub">Country-aware trade planning</div>
+      <div class="search"><input id="productInput" value="Solar panels"><button class="btn primary" onclick="runIntel()">Analyze</button></div>
+      <div class="grid three" style="margin-top:15px">
+        <div class="item"><small>Origin</small><strong>🇨🇳 China</strong></div><div class="item"><small>Destination</small><strong>🇳🇬 Nigeria</strong></div><div class="item"><small>Quantity</small><strong>500 units</strong></div>
+      </div>
+      <div id="intelResult" style="margin-top:15px">
+        <div class="notice">Prototype result: VTG should combine official tariff/regulatory data with freight and supplier data before presenting a landed-cost estimate.</div>
+      </div>
+    </div>
+    <div class="card"><h2>Landed Cost Framework</h2><div class="sub">A transparent estimate, not a customs quote</div><table class="table"><tr><th>Component</th><th>Estimate</th></tr><tr><td>Product value</td><td>$50,000</td></tr><tr><td>Freight</td><td>$4,200</td></tr><tr><td>Insurance</td><td>$600</td></tr><tr><td>Duties/taxes</td><td>Check official tariff</td></tr><tr><td>Local delivery</td><td>$1,100</td></tr><tr><td><strong>Estimated landed cost</strong></td><td><strong>Pending regulatory data</strong></td></tr></table></div>
+  </div>
+  <div class="card" style="margin-top:16px"><h2>Trade signals</h2><div class="sub">The future intelligence layer</div><div class="grid three"><div class="item"><span class="tag">FX</span><strong>USD / NGN</strong><small>Connect an approved live market-data provider.</small></div><div class="item"><span class="tag">FREIGHT</span><strong>Route conditions</strong><small>Monitor port congestion, freight changes and route disruptions.</small></div><div class="item"><span class="tag">REGULATION</span><strong>Product requirements</strong><small>Surface potentially relevant agencies and required documents by destination.</small></div></div></div>
+</section>
+
+<section id="trade-room" class="tab hidden">
+  <div class="card"><div class="row"><div><h2>Trade Room — VTG-2026-A81F</h2><div class="sub">Machinery • China → Nigeria • Buyer, supplier, logistics and finance workspace</div></div><span class="tag">72% COMPLETE</span></div>
+  <div class="grid three" style="margin-top:15px">
+    <div class="item"><small>Buyer</small><strong>OAU Industrial Supplies Ltd.</strong></div><div class="item"><small>Supplier</small><strong>Guangzhou Industrial Systems</strong></div><div class="item"><small>Trade value</small><strong>$125,000</strong></div>
+  </div>
+  <div class="grid two" style="margin-top:16px">
+    <div class="card"><h2>Milestones</h2><div class="list"><div class="item"><span class="tag">DONE</span><strong>Supplier verified</strong><small>Company and product information reviewed.</small></div><div class="item"><span class="tag">DONE</span><strong>Purchase order agreed</strong><small>Commercial terms recorded.</small></div><div class="item"><span class="tag">IN PROGRESS</span><strong>Freight & shipping</strong><small>Shipment tracking connected.</small></div><div class="item"><span class="tag">NEXT</span><strong>Customs clearance</strong><small>Required documents being prepared.</small></div></div></div>
+    <div class="card"><h2>Trade conversation</h2><div class="list"><div class="item"><strong>Supplier</strong><small>Commercial invoice uploaded. Please confirm the packing list.</small></div><div class="item"><strong>Trade Operations</strong><small>Bill of lading is pending from the carrier.</small></div><div class="item"><strong>Buyer</strong><small>Please share the latest ETA.</small></div></div><button class="btn primary" style="margin-top:10px" onclick="alert('Messaging and real-time calling will connect to the existing VTG messaging/call backend.')">Open conversation</button></div>
+  </div></div>
+</section>
+
+<section id="documents" class="tab hidden">
+  <div class="card"><h2>VTG Document Centre</h2><div class="sub">Transaction-specific document checklist and audit trail</div>
+  <div class="notice">Documents should be stored securely and access-controlled. VTG can track and organize documents without becoming the issuing authority.</div>
+  <div class="list" style="margin-top:14px">
+    <div class="item doc"><span class="dot"></span><div><strong>Commercial Invoice</strong><small>Uploaded • Verified</small></div><span class="tag">VERIFIED</span></div>
+    <div class="item doc"><span class="dot"></span><div><strong>Packing List</strong><small>Uploaded • Verified</small></div><span class="tag">VERIFIED</span></div>
+    <div class="item doc"><span class="dot pending"></span><div><strong>Bill of Lading</strong><small>Requested from carrier</small></div><span class="tag">PENDING</span></div>
+    <div class="item doc"><span class="dot missing"></span><div><strong>Import Permit</strong><small>Potentially required — confirm with applicable authority</small></div><span class="tag">MISSING</span></div>
+    <div class="item doc"><span class="dot"></span><div><strong>Certificate of Origin</strong><small>Uploaded • Verified</small></div><span class="tag">VERIFIED</span></div>
+  </div>
+  </div>
+</section>
+
+<section id="network" class="tab hidden">
+  <div class="grid two"><div class="card"><h2>VTG Africa Network</h2><div class="sub">Launchpad: Nigeria • Expansion: West, East, Southern and North Africa</div><div class="mapbox"><div class="route"></div><div class="node a"></div><div class="node b"></div><div class="node c"></div><div class="nodeLabel nl1">Lagos</div><div class="nodeLabel nl2">Mombasa</div><div class="nodeLabel nl3">Cairo</div></div></div>
+  <div class="card"><h2>Trade corridors</h2><div class="list"><div class="item"><strong>🇨🇳 China → 🇳🇬 Nigeria</strong><small>Primary launch corridor • sea freight + clearance</small></div><div class="item"><strong>🇨🇳 China → 🇬🇭 Ghana</strong><small>West Africa expansion corridor</small></div><div class="item"><strong>🇨🇳 China → 🇰🇪 Kenya</strong><small>East Africa expansion corridor</small></div><div class="item"><strong>🇨🇳 China → 🇿🇦 South Africa</strong><small>Southern Africa expansion corridor</small></div></div></div></div>
+</section>
+
+<section id="suppliers" class="tab hidden">
+  <div class="card"><h2>Verified Supplier Network</h2><div class="sub">Supplier discovery should be backed by transparent verification signals.</div><table class="table"><tr><th>Supplier</th><th>Country</th><th>Category</th><th>Status</th></tr><tr><td>Guangzhou Industrial Systems</td><td>China</td><td>Machinery</td><td><span class="tag">VERIFIED</span></td></tr><tr><td>Shenzhen Solar Works</td><td>China</td><td>Energy</td><td><span class="tag">VERIFIED</span></td></tr><tr><td>Accra Agro Equipment</td><td>Ghana</td><td>Agriculture</td><td><span class="tag">VERIFIED</span></td></tr><tr><td>Nairobi Electronics Hub</td><td>Kenya</td><td>Electronics</td><td><span class="tag">PENDING</span></td></tr></table></div>
+</section>
+
+<section id="finance" class="tab hidden">
+  <div class="grid three"><div class="card feature"><span class="tag">PAYMENTS</span><b>Connect licensed providers</b><div class="sub">Bank transfer, payment collection and cross-border settlement through approved partners.</div></div><div class="card feature"><span class="tag">TRADE FINANCE</span><b>Letter of Credit workflow</b><div class="sub">VTG already has an LC workflow foundation; expand it into a full transaction workspace.</div></div><div class="card feature"><span class="tag">FX & CRYPTO INTELLIGENCE</span><b>Market information</b><div class="sub">Show rates and market data without presenting VTG as an unauthorized financial service.</div></div></div>
+</section>
+
+<section id="compliance" class="tab hidden">
+  <div class="card"><h2>Compliance & Trust Layer</h2><div class="sub">Build trust into every trade.</div><div class="grid three"><div class="item"><span class="tag">KYC</span><strong>Buyer & supplier identity</strong><small>Collect and verify required business information.</small></div><div class="item"><span class="tag">DOCUMENTS</span><strong>Audit trail</strong><small>Record who uploaded, reviewed and changed a trade document.</small></div><div class="item"><span class="tag">RISK</span><strong>Transaction monitoring</strong><small>Flag unusual patterns for human review.</small></div></div></div>
+</section>
+
+<div class="footerNote">VTG Trade OS prototype. Estimates, regulatory requirements and financial information must be sourced from current official or authorized providers before being used for a real transaction.</div>
+</main>
+</div>
+<script>
+const titles={overview:'Trade Command Centre',intelligence:'Trade Intelligence', 'trade-room':'Trade Room',documents:'Document Centre',network:'Africa Network',suppliers:'Supplier Network',finance:'Payments & Finance',compliance:'Compliance & Trust'};
+function showTab(id){document.querySelectorAll('.tab').forEach(x=>x.classList.add('hidden'));const el=document.getElementById(id);if(el)el.classList.remove('hidden');document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));document.getElementById('pageTitle').textContent=titles[id]||'VTG Trade OS';}
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+function runIntel(){const p=document.getElementById('productInput').value.trim()||'product';document.getElementById('intelResult').innerHTML='<div class="notice"><strong>'+p.replace(/[<>]/g,'')+'</strong>: VTG would now query approved country, tariff, regulatory, freight and supplier sources, then produce a traceable trade brief and landed-cost range.</div>';}
+</script>
+</body>
+</html>
