@@ -87,8 +87,8 @@ If the frontend is hosted on a separate domain, define before app scripts load:
 
 - `GET /health` returns 200 from public backend URL
 - Frontend root serves `frontend-v3.html`
-- `/assets/vtg-logo-final.webp` loads
-- `logo-override.js`, `visual-enhancer.js`, `map-enhancer.js`, `vtg-commerce.js` and related frontend assets load
+- `/assets/vtg-logo-transparent.png` loads as the single canonical VTG logo
+- `visual-enhancer.js`, `map-enhancer.js`, `vtg-commerce.js` and related frontend assets load
 - Signup sends verification code by real email when SMTP is configured
 - `POST /api/auth/verify-email-code` accepts valid code
 - Buyer/Supplier/Bank signup succeeds after verification
