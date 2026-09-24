@@ -2,13 +2,14 @@
 <title id="title">Vintage Trade Global</title>
 <desc id="desc">VTG red logo with transparent background.</desc>
 <defs>
-  <filter id="removeLogoBackground" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+  <filter id="recolorLogo" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
     <feColorMatrix in="SourceGraphic" type="luminanceToAlpha" result="luma"/>
     <feComponentTransfer in="luma" result="cutout">
       <feFuncA type="discrete" tableValues="1 1 1 1 0"/>
     </feComponentTransfer>
-    <feComposite in="SourceGraphic" in2="cutout" operator="in"/>
+    <feFlood flood-color="#7D0200" flood-opacity="1" result="vtgRed"/>
+    <feComposite in="vtgRed" in2="cutout" operator="in"/>
   </filter>
 </defs>
-<image href="/assets/vtg-logo-final.webp" x="0" y="0" width="1200" height="464" preserveAspectRatio="none" filter="url(#removeLogoBackground)"/>
+<image href="/assets/vtg-logo-final.webp?v=20260924-blue-source" x="0" y="0" width="1200" height="464" preserveAspectRatio="none" filter="url(#recolorLogo)"/>
 </svg>
