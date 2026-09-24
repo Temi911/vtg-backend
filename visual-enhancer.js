@@ -147,7 +147,6 @@
       .vtgProductChip{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px;min-width:0}
       .vtgProductChip img{width:44px!important;height:35px!important;object-fit:cover;border-radius:7px;flex:none}
       .vtgProductChip b{display:block;font-size:8px;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vtgProductChip small{display:block;color:var(--muted);font-size:6px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-      body,body *,button,input,select,textarea{font-family:Arial,Helvetica,sans-serif!important}
       @media(max-width:800px){.vtgProductStrip{grid-template-columns:1fr 1fr}}
       `;
       const oldStyle = d.getElementById('vtgVisualEnhancer'); if (oldStyle) oldStyle.remove(); d.head.appendChild(style);
