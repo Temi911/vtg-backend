@@ -115,12 +115,14 @@ The new Trade OS should extend these foundations instead of rebuilding them.
 - Supplier Trust views
 
 ### Phase 2 — Real data
+**Current execution focus:** connect the command centre to the existing authenticated marketplace, orders, LC, messaging, calls and trade-feed foundations. No parallel mock business logic should be introduced where an existing API can be reused.
 - Connect existing marketplace/order/auth APIs
 - Connect existing LC, messaging and call workflows
 - Persist Trade Room state
 - Add document metadata and permissions
 
 ### Phase 3 — Intelligence
+**Current execution focus:** establish a single Trade Intelligence data contract so country rules, HS/tariff data, freight, FX and landed-cost outputs can be displayed consistently across Trade OS, Marketplace and Trade Room.
 - Country rules
 - HS/tariff data
 - Regulatory sources
@@ -129,6 +131,7 @@ The new Trade OS should extend these foundations instead of rebuilding them.
 - FX/market data
 
 ### Phase 4 — Trust and compliance
+**Current execution focus:** make verification status, provenance, permissions and audit events first-class objects in Trade OS before exposing higher-risk automation.
 - KYC/KYB workflow
 - Verification states
 - Risk flags
@@ -136,6 +139,7 @@ The new Trade OS should extend these foundations instead of rebuilding them.
 - Data-protection controls
 
 ### Phase 5 — Partner integrations
+**Current execution focus:** define provider adapters and status contracts first; keep regulated payment/finance execution with appropriately licensed partners.
 - Banks/payment providers
 - Logistics/freight
 - Customs/trade data sources
