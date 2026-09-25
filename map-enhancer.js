@@ -383,14 +383,14 @@
       status('Selected shipment ' + (s.reference || s.id) + ' • latest recorded point highlighted.');
     };
 
-    const clearShipments = () => {
+    const clearShipments = (resetData = true) => {
       ['vtg-shipment-routes','vtg-shipment-route-halo','vtg-shipment-milestones','vtg-shipment-active'].forEach(id => {
         if (map.getLayer(id)) map.removeLayer(id);
       });
       ['vtg-shipment-routes','vtg-shipment-milestones'].forEach(id => {
         if (map.getSource(id)) map.removeSource(id);
       });
-      shipmentData = [];
+      if (resetData) shipmentData = [];
       selectedShipmentId = null;
       stopPlayback();
       const panel = ensureShipmentPanel();
@@ -458,7 +458,7 @@
           });
         });
 
-        clearShipments();
+        clearShipments(false);
         map.addSource('vtg-shipment-routes', {
           type: 'geojson',
           data: { type: 'FeatureCollection', features: routeFeatures }
