@@ -140,7 +140,7 @@
             <div class="vtgLayer">Standard atlas <button data-mode="standard">ACTIVE</button></div><div class="vtgLayer">Dark atlas <button data-mode="dark">VIEW</button></div>
             <div class="vtgLayer">Satellite-style view <button data-mode="satellite">VIEW</button></div>
             <div class="vtgLayer">Trade hubs <button data-layer="hubs">SHOW</button></div>
-            <div class="vtgLayer">Ports &amp; logistics <button data-layer="ports">SHOW</button></div>
+            <div class="vtgLayer">Ports &amp; logistics <button data-layer="ports">SHOW</button></div><div class="vtgLayer">Trade routes <button data-layer="routes">SHOW</button></div>
             <div class="vtgLayer">Business locations <button data-layer="business">SHOW</button></div>
           </div>
           <div class="vtgMapTools">
@@ -238,12 +238,47 @@
       if (mode === currentStyle) return;
       currentStyle = mode;
       map.setStyle(mode === 'satellite' ? BLUE_MARBLE_STYLE : (mode === 'dark' ? DARK_STYLE : STYLE));
+      map.once('styledata', () => { if (routesVisible && !map.getSource('vtg-trade-routes')) addTradeRoutes(); });
       doc.querySelectorAll('[data-mode]').forEach(x => x.textContent = x.dataset.mode === 'satellite' ? (x.dataset.mode === currentStyle ? 'ACTIVE' : 'VIEW') : (x.dataset.mode === currentStyle ? 'ACTIVE' : 'VIEW'));
       themeBtn.textContent = mode === 'dark' ? 'Light mode' : 'Dark mode';
       status(mode === 'satellite'
         ? 'Real satellite Earth imagery (NASA Blue Marble). Zoom is limited to a country/region level — switch to Standard atlas for exact street addresses.'
         : 'Standard street atlas — full zoom to exact addresses, ports and business locations.');
     });
+    const TRADE_ROUTES = [
+      { id:'ng-cn', name:'Nigeria ↔ China', mode:'Sea freight corridor', coords:[[3.3903,6.4474],[10,7],[30,4],[55,8],[75,18],[100,22],[114.2696,22.5721]] },
+      { id:'za-cn', name:'Southern Africa ↔ China', mode:'Sea freight corridor', coords:[[31.0247,-29.8622],[35,-24],[45,-15],[60,-5],[75,8],[95,18],[121.9235,29.8683]] },
+      { id:'ng-kr', name:'West Africa ↔ South Korea', mode:'Sea freight corridor', coords:[[3.3903,6.4474],[20,5],[40,4],[65,8],[90,18],[110,28],[129.0403,35.1028]] }
+    ];
+    let routesVisible = false;
+    const clearRoutes = () => {
+      if (map.getLayer('vtg-trade-routes')) map.removeLayer('vtg-trade-routes');
+      if (map.getLayer('vtg-trade-routes-halo')) map.removeLayer('vtg-trade-routes-halo');
+      if (map.getSource('vtg-trade-routes')) map.removeSource('vtg-trade-routes');
+    };
+    const addTradeRoutes = () => {
+      if (map.getSource('vtg-trade-routes')) return;
+      map.addSource('vtg-trade-routes', {
+        type:'geojson',
+        data:{type:'FeatureCollection',features:TRADE_ROUTES.map(r=>({type:'Feature',properties:{name:r.name,mode:r.mode},geometry:{type:'LineString',coordinates:r.coords}}))}
+      });
+      map.addLayer({id:'vtg-trade-routes-halo',type:'line',source:'vtg-trade-routes',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#ffffff','line-width':7,'line-opacity':0.35}});
+      map.addLayer({id:'vtg-trade-routes',type:'line',source:'vtg-trade-routes',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#0e969f','line-width':3,'line-opacity':0.9,'line-dasharray':[2,2]}});
+      map.on('click','vtg-trade-routes',e=>{
+        const p=e.features?.[0]?.properties||{};
+        new ml.Popup({offset:10}).setLngLat(e.lngLat).setHTML('<b>'+p.name+'</b><br><small>'+p.mode+'<br>VTG planning corridor — not live vessel tracking.</small>').addTo(map);
+      });
+      map.on('mouseenter','vtg-trade-routes',()=>{map.getCanvas().style.cursor='pointer'});
+      map.on('mouseleave','vtg-trade-routes',()=>{map.getCanvas().style.cursor=''});
+    };
+    const showRoutes = on => {
+      routesVisible=on;
+      if (on) addTradeRoutes(); else clearRoutes();
+      const b=doc.querySelector('[data-layer="routes"]');
+      if (b) { b.textContent=on?'ON':'SHOW'; b.style.background=on?'#dff4f5':''; }
+      status(on ? 'VTG trade routes shown • Nigeria–China, Southern Africa–China and West Africa–South Korea planning corridors.' : 'Trade route layer hidden.');
+    };
+    
     let portMarkers = [], hubMarkers = [];
     const clearMarkers = arr => { arr.forEach(m => m.remove()); arr.length = 0 };
     const addMarker = (loc, color, kind) => {
@@ -255,6 +290,7 @@
     doc.querySelectorAll('[data-layer]').forEach(b => b.onclick = () => {
       const k = b.dataset.layer;
       const isOn = b.textContent.trim() === 'ON';
+      if (k === 'routes') { showRoutes(!routesVisible); return }
       if (k === 'ports') {
         if (isOn) { clearMarkers(portMarkers); b.textContent = 'SHOW'; b.style.background = ''; status('Ports & logistics layer hidden.'); return }
         portMarkers = PORTS.map(p => addMarker(p, '#0e969f', 'seaport'));
@@ -294,7 +330,7 @@
         map.once('click', handler);
       }
     };
-    map.on('load', () => { map.resize(); status('World atlas ready • search, zoom, rotate, fullscreen and explore.') });
+    map.on('load', () => { map.resize(); if (routesVisible) addTradeRoutes(); status('World atlas ready • search, zoom, rotate, fullscreen and explore.'); });
     window.addEventListener('resize', () => map.resize());
   }
 
