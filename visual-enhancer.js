@@ -25,7 +25,7 @@
     ["Agriculture & Farm Products","https://topnews.kg/uploads/posts/2025-11/1763611202-11763610640-1140060.webp"],
     ["Clothing & Textiles","https://www.rmit.edu.au/content/dam/rmit/au/en/study-with-us/interest-areas/mastheads/fashion-study-area-1920x600.jpg"],
     ["Footwear","https://www.mcarthurglen.com/globalassets/global--page-specific/global-campaign-southern-europe/2023/00-sale/assets/winter-sale_secondary-image_example-1.jpg?preset=contain-xl"],
-    ["Fashion & Accessories","https://www.cendriyon.com/wp-content/uploads/2024/08/Accessoires_de_Mode_Tendance_pour_Femmes__Les_Must_Have_de_la_Saison-1024x578.webp"],
+    ["Fashion & Accessories","https://images.unsplash.com/photo-1445205170230-053b83016050?q=85&w=1600&auto=format&fit=crop"],
     ["Watches & Wearables","https://cdn.mos.cms.futurecdn.net/z7vsVze8PmDsTxRzYPmy5.jpg"],
     ["Electronics & Technology","https://metreon.org/img/3333.jpg"],
     ["Home & Furniture","https://media.homeboxstores.com/i/homebox/163576011-163576011-HMBX07052021_01-2100.jpg?%24prodimg-m-sqr-pdp-2x%24=&%24quality-standard%24=&fmt=auto&sm=c"],
