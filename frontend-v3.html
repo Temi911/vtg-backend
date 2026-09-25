@@ -101,7 +101,7 @@ html[data-theme="dark"] .modalBox input,html[data-theme="dark"] .modalBox select
 <div class="modal" id="authModal"><div class="modalBox"><div class="modalHead"><div><span class="eyebrow">VTG account</span><h2 id="authTitle">Sign in</h2></div><button class="close" id="authClose" aria-label="Close sign in"><i data-lucide="x"></i></button></div><form class="form" id="authForm"><div class="formRow"><div><label>Email address *</label><input name="email" type="email" autocomplete="email" required></div><div><label>Password *</label><input name="password" type="password" minlength="8" autocomplete="current-password" required></div></div><div id="signupFields"></div><div class="requiredNote">* Every required field must be completed before you can continue.</div><div id="authMsg" class="formMsg"></div><div class="formRow"><button class="outline" type="button" id="switchAuth">Create account instead</button><button class="primary" type="submit" id="authSubmit">Sign in</button></div></form></div></div>
 <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.js" defer></script><script>
 const $=s=>document.querySelector(s),$=s=>[...document.querySelectorAll(s)];let authRole='buyer',authMode='login',map,mapMarker;
-const VTG_API_BASE = window.VTG_API_BASE || ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? '' : 'https://vtg-africa-api.onrender.com');
+const VTG_API_BASE = window.VTG_API_BASE || '';
 const vtgFetch = (path, options = {}) => fetch(VTG_API_BASE + path, options);
 function icons(){if(window.lucide)lucide.createIcons()}
 (function(){
