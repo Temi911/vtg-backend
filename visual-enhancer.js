@@ -24,7 +24,7 @@
     ['Office & Business Supplies','https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=90&w=1200&auto=format&fit=crop',['Office Equipment','Printers','Stationery','POS Equipment','Commercial Supplies']],
     ['Baby & Children\'s Products','https://images.unsplash.com/photo-1516627145497-ae6968895b74?q=90&w=1200&auto=format&fit=crop',['Baby Clothing','Toys','Baby Furniture','Feeding Equipment','Children\'s Products']],
     ['Cleaning & Household Supplies','https://images.unsplash.com/photo-1583947215259-38e31be8751f?q=90&w=1200&auto=format&fit=crop',['Cleaning Equipment','Detergents','Household Consumables','Commercial Cleaning','Cleaning Tools']],
-    ['Bags, Luggage & Travel','https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=90&w=1200&auto=format&fit=crop',['Suitcases','Travel Bags','Backpacks','Business Bags','Leather Goods']],
+    ['Bags, Luggage & Travel','https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=90&w=1200&auto=format&fit=crop',['Suitcases','Travel Bags','Backpacks','Business Bags','Leather Goods']],
     ['Retail & Commercial Equipment','https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=90&w=1200&auto=format&fit=crop',['Shop Fittings','Display Shelves','Refrigerated Displays','Supermarket Equipment','Vending Equipment']],
     ['Hotel, Restaurant & Catering Equipment','https://images.unsplash.com/photo-1552566626-52f8b828add9?q=90&w=1200&auto=format&fit=crop',['Commercial Kitchens','Restaurant Furniture','Catering Equipment','Bakery Equipment','Hotel Supplies']],
     ['Factory & Production Supplies','https://images.unsplash.com/photo-1565793298595-6a879b1d9492?q=90&w=1200&auto=format&fit=crop',['Raw Materials','Production Lines','Industrial Components','Factory Consumables','Production Equipment']],
@@ -156,18 +156,18 @@
       #productHero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .65s ease}
       #productHero>img.active{opacity:.94}
       #productHero .copy,#productHero .catBadge{z-index:6}
-      .vtg36Carousels{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:18px}
-      .vtgCategoryIntro{grid-column:1/-1;padding:4px 2px 8px}
-      .vtgCategoryIntro>span{font-size:7px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);font-weight:900}
-      .vtgCategoryIntro h2{margin:3px 0 2px;color:var(--navy);font-size:22px}
-      .vtgCategoryIntro p{margin:0;color:var(--muted);font-size:11px}
-      .vtgCategoryTile{min-width:0;border:1px solid var(--line);border-radius:12px;background:var(--white);padding:7px;cursor:pointer;text-align:left;box-shadow:0 5px 16px rgba(0,0,0,.05);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
-      .vtgCategoryTile:hover{transform:translateY(-2px);border-color:var(--teal);box-shadow:0 9px 22px rgba(0,0,0,.1)}
-      .vtgCategoryThumb{position:relative;display:block;height:72px;border-radius:8px;overflow:hidden;background:#eef1f3}
+      .vtg36Carousels{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;margin-top:14px}
+      .vtgCategoryIntro{grid-column:1/-1;padding:2px 1px 5px}
+      .vtgCategoryIntro>span{font-size:6.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);font-weight:900}
+      .vtgCategoryIntro h2{margin:2px 0 1px;color:var(--navy);font-size:20px}
+      .vtgCategoryIntro p{margin:0;color:var(--muted);font-size:9px}
+      .vtgCategoryTile{min-width:0;border:1px solid var(--line);border-radius:10px;background:var(--white);padding:5px;cursor:pointer;text-align:left;box-shadow:0 3px 11px rgba(0,0,0,.045);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+      .vtgCategoryTile:hover{transform:translateY(-2px);border-color:var(--teal);box-shadow:0 7px 16px rgba(0,0,0,.09)}
+      .vtgCategoryThumb{position:relative;display:block;height:54px;border-radius:7px;overflow:hidden;background:#eef1f3}
       .vtgCategoryThumb img{display:block;width:100%;height:100%;object-fit:cover}
-      .vtgCategoryThumb b{position:absolute;right:5px;bottom:5px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.95);color:#9c241d;font-size:18px;line-height:1;box-shadow:0 2px 8px rgba(0,0,0,.18)}
-      .vtgCategoryName{display:block;margin-top:7px;color:var(--navy);font-size:10px;line-height:1.2;font-weight:850}
-      .vtgCategoryCount{display:block;margin-top:3px;color:var(--muted);font-size:8px}
+      .vtgCategoryThumb b{position:absolute;right:3px;bottom:3px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.96);color:#9c241d;font-size:15px;line-height:1;box-shadow:0 2px 6px rgba(0,0,0,.16)}
+      .vtgCategoryName{display:block;margin-top:5px;color:var(--navy);font-size:8.5px;line-height:1.18;font-weight:850}
+      .vtgCategoryCount{display:block;margin-top:2px;color:var(--muted);font-size:7px;line-height:1.15}
       .vtgCategoryModal{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:18px}
       .vtgCategoryModal.open{display:flex}
       .vtgCategoryModalBackdrop{position:absolute;inset:0;background:rgba(5,12,18,.72);backdrop-filter:blur(5px)}
@@ -189,7 +189,7 @@
       html[data-theme="dark"] .vtgSubcategory{background:#1d252d;border-color:#35414b}
       html[data-theme="dark"] .vtgCategoryIntro h2{color:#f4f7f9}
       html[data-theme="dark"] .vtgCategoryIntro p,html[data-theme="dark"] .vtgCategoryCount,html[data-theme="dark"] .vtgModalContent p{color:#aebbc5}
-      @media(max-width:1050px){.vtg36Carousels{grid-template-columns:repeat(4,minmax(0,1fr))}} @media(max-width:700px){.vtg36Carousels{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.vtgCategoryThumb{height:82px}.vtgCategoryName{font-size:9px}.vtgCategoryDialog{grid-template-columns:1fr}.vtgModalImage{height:150px;min-height:150px}.vtgModalImage img{min-height:150px}.vtgModalContent{padding:18px}.vtgCategoryItems{grid-template-columns:1fr}}
+      @media(max-width:1100px){.vtg36Carousels{grid-template-columns:repeat(6,minmax(0,1fr))}} @media(max-width:800px){.vtg36Carousels{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.vtgCategoryThumb{height:52px}} @media(max-width:560px){.vtg36Carousels{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.vtgCategoryThumb{height:62px}.vtgCategoryName{font-size:9px}.vtgCategoryCount{font-size:7px}.vtgCategoryDialog{grid-template-columns:1fr}.vtgModalImage{height:150px;min-height:150px}.vtgModalImage img{min-height:150px}.vtgModalContent{padding:18px}.vtgCategoryItems{grid-template-columns:1fr}}
     `;
     document.head.appendChild(style);
   }
