@@ -145,6 +145,74 @@
     };
   }
 
+
+  function buildCategoryCarousels() {
+    const hero = document.querySelector('.productHero');
+    if (!hero || document.querySelector('.vtgCategorySection')) return;
+
+    const imgs = [...hero.querySelectorAll('img')];
+    if (!imgs.length) return;
+
+    const categories = imgs.map((img, i) => ({
+      name: img.alt || 'Trade category',
+      img: img.currentSrc || img.src,
+      index: i
+    }));
+
+    const groups = [
+      { title: 'Vehicles & Mobility', items: categories.slice(3, 6) },
+      { title: 'Fashion, Footwear & Accessories', items: categories.slice(2, 3).concat(categories.slice(7, 15)) },
+      { title: 'Industry, Construction & Materials', items: categories.slice(15, 18).concat(categories.slice(27, 28)) },
+      { title: 'Home, Consumer & Lifestyle', items: categories.slice(18, 22).concat(categories.slice(24, 27)) },
+      { title: 'Business, Energy & Essential Supplies', items: categories.slice(22, 24).concat(categories.slice(28, 30)) },
+      { title: 'Agriculture, Medical & Technology', items: categories.slice(0, 2).concat(categories.slice(6, 7)) }
+    ];
+
+    const section = document.createElement('div');
+    section.className = 'vtgCategorySection';
+    section.innerHTML = groups.map((group, gi) => {
+      const cards = group.items.map(item => `
+        <button class="vtgCategoryCard" type="button" data-category-index="${item.index}">
+          <img loading="lazy" decoding="async" src="${item.img}" alt="${item.name}">
+          <span>${item.name}</span>
+        </button>`).join('');
+      return `
+        <section class="vtgCategoryCarousel" aria-label="${group.title}">
+          <div class="vtgCategoryHead">
+            <h3>${group.title}</h3>
+            <div class="vtgCategoryControls">
+              <button type="button" class="vtgCatPrev" aria-label="Previous categories">‹</button>
+              <button type="button" class="vtgCatNext" aria-label="Next categories">›</button>
+            </div>
+          </div>
+          <div class="vtgCategoryTrack">${cards}</div>
+        </section>`;
+    }).join('');
+
+    hero.parentElement.insertBefore(section, hero.nextElementSibling);
+
+    section.querySelectorAll('.vtgCategoryCarousel').forEach(row => {
+      const track = row.querySelector('.vtgCategoryTrack');
+      row.querySelector('.vtgCatPrev').onclick = () => track.scrollBy({left: -Math.max(280, track.clientWidth * .7), behavior:'smooth'});
+      row.querySelector('.vtgCatNext').onclick = () => track.scrollBy({left: Math.max(280, track.clientWidth * .7), behavior:'smooth'});
+    });
+
+    section.querySelectorAll('.vtgCategoryCard').forEach(card => {
+      card.onclick = () => {
+        const i = Number(card.dataset.categoryIndex);
+        const slides = [...hero.querySelectorAll('img')];
+        if (!slides[i]) return;
+        slides.forEach(x => x.classList.remove('active'));
+        slides[i].classList.add('active');
+        const badge = hero.querySelector('#productCatBadge');
+        if (badge) badge.textContent = slides[i].alt || 'Trade category';
+        hero.scrollIntoView({behavior:'smooth', block:'center'});
+      };
+      const img = card.querySelector('img');
+      img.onerror = () => { card.style.display = 'none'; };
+    });
+  }
+
   function apply() {
     const d = document, w = window;
     try {
@@ -152,6 +220,19 @@
       style.id = 'vtgVisualEnhancer';
       style.textContent = `
         .productHero .copy{z-index:4}
+        .vtgCategorySection{margin-top:18px;display:grid;gap:22px}
+        .vtgCategoryCarousel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 14px 16px;overflow:hidden}
+        .vtgCategoryHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:11px}
+        .vtgCategoryHead h3{margin:0;color:var(--navy);font-size:16px}
+        .vtgCategoryControls{display:flex;gap:6px}
+        .vtgCategoryControls button{width:32px;height:32px;border:1px solid var(--line);border-radius:50%;background:#fff;color:var(--navy);font-size:22px;line-height:1;cursor:pointer}
+        .vtgCategoryTrack{display:flex;gap:11px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:3px}
+        .vtgCategoryTrack::-webkit-scrollbar{display:none}
+        .vtgCategoryCard{flex:0 0 180px;min-height:125px;padding:0;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#fff;text-align:left;cursor:pointer;scroll-snap-align:start}
+        .vtgCategoryCard img{display:block;width:100%;height:88px;object-fit:cover}
+        .vtgCategoryCard span{display:block;padding:8px 9px;font-size:9px;line-height:1.3;font-weight:800;color:var(--navy)}
+        .vtgCategoryCard:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(20,20,20,.08)}
+        @media(max-width:600px){.vtgCategoryCard{flex-basis:155px}.vtgCategoryHead h3{font-size:14px}}
         .productHero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s ease}
         .productHero>img.active{opacity:.94}
         .productHero .catBadge{z-index:5}
@@ -167,11 +248,12 @@
 
       fixLogo();
       initProductCarousel();
+      buildCategoryCarousels();
       loadRepairScript();
       upgradeAI();
       loadLiveMarket();
       setInterval(loadLiveMarket, 300000);
-      setTimeout(() => { fixLogo(); initProductCarousel(); loadRepairScript(); }, 1000);
+      setTimeout(() => { fixLogo(); initProductCarousel(); buildCategoryCarousels(); loadRepairScript(); }, 1000);
       setTimeout(() => { if(w.lucide?.createIcons) w.lucide.createIcons({attrs:{'stroke-width':1.9}}); }, 250);
     } catch (e) { console.warn('VTG visual enhancer failed', e); }
   }
