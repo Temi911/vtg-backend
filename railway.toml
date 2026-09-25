@@ -1,7 +1,10 @@
 [build]
-builder = "DOCKERFILE"
-dockerfilePath = "vtg-backend/Dockerfile"
+builder = "NIXPACKS"
+buildCommand = "cd vtg-backend && npm ci --omit=dev"
 
 [deploy]
+startCommand = "cd vtg-backend && npm start"
+preDeployCommand = ["cd vtg-backend && npm run db:init"]
+healthcheckPath = "/health"
 restartPolicyType = "ON_FAILURE"
-restartPolicyMaxRetries = 10
+restartPolicyMaxRetries = 3
