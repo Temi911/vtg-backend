@@ -1,41 +1,41 @@
 (() => {
   const CATEGORIES = [
-    ['Cars & Automobiles','https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=90&w=1200&auto=format&fit=crop',['Sedans & SUVs','Electric Vehicles','Commercial Vehicles','Auto Parts & Accessories']],
-    ['Motorcycles, Tricycles & Mobility','https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=90&w=1200&auto=format&fit=crop',['Motorcycles','Tricycles / Keke','Electric Motorcycles','Spare Parts']],
-    ['Bicycles & Personal Mobility','https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=90&w=1200&auto=format&fit=crop',['Bicycles','Electric Bicycles','Scooters','Mobility Accessories']],
-    ['Pharmaceuticals & Medical Supplies','https://www.vikshamedaccess.co.in/_next/image?q=75&url=%2FHome%2FMedicalCommodities%2FMedicines.webp&w=1200',['Medicines','Medical Equipment','Hospital Supplies','Laboratory Equipment','Medical Consumables']],
-    ['Agriculture & Farm Products','https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=90&w=1200&auto=format&fit=crop',['Farm Produce','Seeds','Fertilizers','Farm Machinery','Agricultural Equipment']],
-    ['Clothing & Textiles','https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=90&w=1200&auto=format&fit=crop',['Ready-made Clothing','Fabrics','Uniforms','Industrial Textiles','Traditional Fabrics']],
-    ['Footwear','https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=90&w=1200&auto=format&fit=crop',['Sneakers','Men\'s Shoes','Women\'s Footwear','Children\'s Shoes','Safety & Work Boots','Sandals']],
-    ['Fashion & Accessories','https://images.unsplash.com/photo-1558545541-c8e2470bbf71?q=90&w=1200&auto=format&fit=crop',['Bags','Belts & Wallets','Ties','Sunglasses','Fashion Accessories']],
-    ['Watches & Wearables','https://images.unsplash.com/photo-1524805444758-089113d48a6d?q=90&w=1200&auto=format&fit=crop',['Smartwatches','Luxury Watches','Fitness Trackers','Watch Accessories']],
-    ['Electronics & Technology','https://images.unsplash.com/photo-1518770660439-4636190af475?q=90&w=1200&auto=format&fit=crop',['Smartphones','Tablets','Computers','Computer Accessories','Consumer Electronics']],
-    ['Home & Furniture','https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=90&w=1200&auto=format&fit=crop',['Sofas','Beds & Bedroom Furniture','Office Furniture','Home Décor','Lighting']],
-    ['Kitchen & Home Appliances','https://images.unsplash.com/photo-1556911220-bff31c812dba?q=90&w=1200&auto=format&fit=crop',['Refrigerators & Freezers','Cookers','Blenders','Washing Machines','Small Appliances']],
-    ['Beauty & Personal Care','https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=90&w=1200&auto=format&fit=crop',['Skincare','Hair Products','Cosmetics','Salon Equipment','Personal Care Equipment']],
-    ['Food & Beverages','https://images.unsplash.com/photo-1542838132-92c53300491e?q=90&w=1200&auto=format&fit=crop',['Packaged Foods','Beverages','Grains','Spices','Food Ingredients']],
-    ['Construction Equipment & Machinery','https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=90&w=1200&auto=format&fit=crop',['Excavators','Loaders','Cranes','Concrete Equipment','Road Construction Equipment']],
-    ['Tools & Hardware','https://images.unsplash.com/photo-1530124566582-a618bc2615dc?q=90&w=1200&auto=format&fit=crop',['Hand Tools','Power Tools','Workshop Equipment','Fasteners','Industrial Hardware']],
-    ['Industrial Machinery & Equipment','https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=90&w=1200&auto=format&fit=crop',['Manufacturing Machinery','Processing Equipment','Factory Equipment','Compressors','Pumps']],
-    ['Steel, Iron & Metal Products','https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?q=90&w=1200&auto=format&fit=crop',['Steel Products','Aluminium','Pipes','Metal Sheets','Structural Materials']],
-    ['Solar & Renewable Energy','https://cdn1-www.bureauveritas.co.uk/sites/g/files/zypfnx216/files/2022-04/Solar_Electric_Energy1024x768_0.png',['Solar Panels','Inverters','Batteries','Solar Generators','Solar Street Lights']],
-    ['Plumbing, Water & Sanitary','https://images.unsplash.com/photo-1585704032915-c3400ca199e7?q=90&w=1200&auto=format&fit=crop',['Pipes & Fittings','Water Tanks','Water Pumps','Bathroom Fittings','Water Treatment']],
-    ['Packaging & Printing','https://image.made-in-china.com/202f0j00RFcVfBehJGUp/6-Color-Automatic-Printing-Machine-for-Corrugated-Shipping-Boxes-with-Model-1428.webp',['Cartons & Boxes','Bottles & Containers','Labels','Printing Machines','Packaging Materials']],
-    ['Office & Business Supplies','https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=90&w=1200&auto=format&fit=crop',['Office Equipment','Printers','Stationery','POS Equipment','Commercial Supplies']],
-    ['Baby & Children\'s Products','https://images.unsplash.com/photo-1516627145497-ae6968895b74?q=90&w=1200&auto=format&fit=crop',['Baby Clothing','Toys','Baby Furniture','Feeding Equipment','Children\'s Products']],
-    ['Cleaning & Household Supplies','https://images.unsplash.com/photo-1583947215259-38e31be8751f?q=90&w=1200&auto=format&fit=crop',['Cleaning Equipment','Detergents','Household Consumables','Commercial Cleaning','Cleaning Tools']],
-    ['Bags, Luggage & Travel','https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=90&w=1200&auto=format&fit=crop',['Suitcases','Travel Bags','Backpacks','Business Bags','Leather Goods']],
-    ['Retail & Commercial Equipment','https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=90&w=1200&auto=format&fit=crop',['Shop Fittings','Display Shelves','Refrigerated Displays','Supermarket Equipment','Vending Equipment']],
-    ['Hotel, Restaurant & Catering Equipment','https://images.unsplash.com/photo-1552566626-52f8b828add9?q=90&w=1200&auto=format&fit=crop',['Commercial Kitchens','Restaurant Furniture','Catering Equipment','Bakery Equipment','Hotel Supplies']],
-    ['Factory & Production Supplies','https://images.unsplash.com/photo-1565793298595-6a879b1d9492?q=90&w=1200&auto=format&fit=crop',['Raw Materials','Production Lines','Industrial Components','Factory Consumables','Production Equipment']],
-    ['Marine & Port Equipment','https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?q=90&w=1200&auto=format&fit=crop',['Marine Equipment','Port Machinery','Shipping Containers','Cargo Handling','Shipping Supplies']],
-    ['Logistics, Transport & Warehousing Equipment','https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=90&w=1200&auto=format&fit=crop',['Trucks','Trailers','Cargo Equipment','Material Handling','Warehouse Equipment']],
-    ['Building Materials','https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=90&w=1200&auto=format&fit=crop',['Tiles','Doors & Windows','Roofing','Cement Products','Interior Finishing']],
-    ['Electrical & Power Equipment','https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?q=90&w=1200&auto=format&fit=crop',['Cables','Switches','Transformers','Generators','Electrical Components']],
-    ['Telecommunications & Networking','https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=90&w=1200&auto=format&fit=crop',['Routers','Network Equipment','Fibre Equipment','Communication Devices','Telecom Infrastructure']],
-    ['Industrial Materials & Coatings','https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?q=90&w=1200&auto=format&fit=crop',['Industrial Chemicals','Adhesives','Paints','Coatings','Manufacturing Materials']],
-    ['General Merchandise','https://images.unsplash.com/photo-1601598851547-4302969d7e26?q=90&w=1200&auto=format&fit=crop',['Household Products','Consumer Goods','General Imported Goods','Wholesale Products','Everyday Supplies']],
-    ['Import, Export & Trade Services','https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?q=90&w=1200&auto=format&fit=crop',['International Sourcing','Customs Clearance','Freight Forwarding','Trade Documentation','Door-to-Door Delivery']]
+    ['Cars & Automobiles','https://loremflickr.com/1200/700/car,suv,sedan?lock=101',['Sedans & SUVs','Electric Vehicles','Commercial Vehicles','Auto Parts & Accessories']],
+    ['Motorcycles, Tricycles & Mobility','https://loremflickr.com/1200/700/motorcycle,scooter,tricycle?lock=102',['Motorcycles','Tricycles / Keke','Electric Motorcycles','Spare Parts']],
+    ['Bicycles & Personal Mobility','https://loremflickr.com/1200/700/bicycle,ebike,scooter?lock=103',['Bicycles','Electric Bicycles','Scooters','Mobility Accessories']],
+    ['Pharmaceuticals & Medical Supplies','https://loremflickr.com/1200/700/pharmacy,medicine,medical?lock=104',['Medicines','Medical Equipment','Hospital Supplies','Laboratory Equipment','Medical Consumables']],
+    ['Agriculture & Farm Products','https://loremflickr.com/1200/700/farm,agriculture,tractor,crops?lock=105',['Farm Produce','Seeds','Fertilizers','Farm Machinery','Agricultural Equipment']],
+    ['Clothing & Textiles','https://loremflickr.com/1200/700/clothing,textile,fabric?lock=106',['Ready-made Clothing','Fabrics','Uniforms','Industrial Textiles','Traditional Fabrics']],
+    ['Footwear','https://loremflickr.com/1200/700/shoes,sneakers,boots?lock=107',['Sneakers','Men\'s Shoes','Women\'s Footwear','Children\'s Shoes','Safety & Work Boots','Sandals']],
+    ['Fashion & Accessories','https://loremflickr.com/1200/700/fashion,bags,accessories?lock=108',['Bags','Belts & Wallets','Ties','Sunglasses','Fashion Accessories']],
+    ['Watches & Wearables','https://loremflickr.com/1200/700/watch,smartwatch,wristwatch?lock=109',['Smartwatches','Luxury Watches','Fitness Trackers','Watch Accessories']],
+    ['Electronics & Technology','https://loremflickr.com/1200/700/electronics,smartphone,laptop?lock=110',['Smartphones','Tablets','Computers','Computer Accessories','Consumer Electronics']],
+    ['Home & Furniture','https://loremflickr.com/1200/700/furniture,sofa,home,interior?lock=111',['Sofas','Beds & Bedroom Furniture','Office Furniture','Home Décor','Lighting']],
+    ['Kitchen & Home Appliances','https://loremflickr.com/1200/700/kitchen,appliances,refrigerator,cooker?lock=112',['Refrigerators & Freezers','Cookers','Blenders','Washing Machines','Small Appliances']],
+    ['Beauty & Personal Care','https://loremflickr.com/1200/700/cosmetics,skincare,beauty?lock=113',['Skincare','Hair Products','Cosmetics','Salon Equipment','Personal Care Equipment']],
+    ['Food & Beverages','https://loremflickr.com/1200/700/food,beverages,grocery?lock=114',['Packaged Foods','Beverages','Grains','Spices','Food Ingredients']],
+    ['Construction Equipment & Machinery','https://loremflickr.com/1200/700/excavator,crane,construction,machinery?lock=115',['Excavators','Loaders','Cranes','Concrete Equipment','Road Construction Equipment']],
+    ['Tools & Hardware','https://loremflickr.com/1200/700/tools,hardware,workshop?lock=116',['Hand Tools','Power Tools','Workshop Equipment','Fasteners','Industrial Hardware']],
+    ['Industrial Machinery & Equipment','https://loremflickr.com/1200/700/industrial,machinery,factory?lock=117',['Manufacturing Machinery','Processing Equipment','Factory Equipment','Compressors','Pumps']],
+    ['Steel, Iron & Metal Products','https://loremflickr.com/1200/700/steel,iron,metal,warehouse?lock=118',['Steel Products','Aluminium','Pipes','Metal Sheets','Structural Materials']],
+    ['Solar & Renewable Energy','https://loremflickr.com/1200/700/solar,panels,renewable,battery?lock=119',['Solar Panels','Inverters','Batteries','Solar Generators','Solar Street Lights']],
+    ['Plumbing, Water & Sanitary','https://loremflickr.com/1200/700/plumbing,pipes,water,sanitary?lock=120',['Pipes & Fittings','Water Tanks','Water Pumps','Bathroom Fittings','Water Treatment']],
+    ['Packaging & Printing','https://loremflickr.com/1200/700/packaging,boxes,printing,containers?lock=121',['Cartons & Boxes','Bottles & Containers','Labels','Printing Machines','Packaging Materials']],
+    ['Office & Business Supplies','https://loremflickr.com/1200/700/office,printer,stationery,business?lock=122',['Office Equipment','Printers','Stationery','POS Equipment','Commercial Supplies']],
+    ['Baby & Children\'s Products','https://loremflickr.com/1200/700/baby,toys,children,products?lock=123',['Baby Clothing','Toys','Baby Furniture','Feeding Equipment','Children\'s Products']],
+    ['Cleaning & Household Supplies','https://loremflickr.com/1200/700/cleaning,detergent,household?lock=124',['Cleaning Equipment','Detergents','Household Consumables','Commercial Cleaning','Cleaning Tools']],
+    ['Bags, Luggage & Travel','https://loremflickr.com/1200/700/luggage,travel,bags,suitcase?lock=125',['Suitcases','Travel Bags','Backpacks','Business Bags','Leather Goods']],
+    ['Retail & Commercial Equipment','https://loremflickr.com/1200/700/retail,supermarket,store,equipment?lock=126',['Shop Fittings','Display Shelves','Refrigerated Displays','Supermarket Equipment','Vending Equipment']],
+    ['Hotel, Restaurant & Catering Equipment','https://loremflickr.com/1200/700/restaurant,kitchen,catering,hotel?lock=127',['Commercial Kitchens','Restaurant Furniture','Catering Equipment','Bakery Equipment','Hotel Supplies']],
+    ['Factory & Production Supplies','https://loremflickr.com/1200/700/factory,production,assembly,industry?lock=128',['Raw Materials','Production Lines','Industrial Components','Factory Consumables','Production Equipment']],
+    ['Marine & Port Equipment','https://loremflickr.com/1200/700/cargo,ship,port,container?lock=129',['Marine Equipment','Port Machinery','Shipping Containers','Cargo Handling','Shipping Supplies']],
+    ['Logistics, Transport & Warehousing Equipment','https://loremflickr.com/1200/700/truck,logistics,warehouse,transport?lock=130',['Trucks','Trailers','Cargo Equipment','Material Handling','Warehouse Equipment']],
+    ['Building Materials','https://loremflickr.com/1200/700/building,tiles,roofing,materials?lock=131',['Tiles','Doors & Windows','Roofing','Cement Products','Interior Finishing']],
+    ['Electrical & Power Equipment','https://loremflickr.com/1200/700/electrical,cables,transformer,power?lock=132',['Cables','Switches','Transformers','Generators','Electrical Components']],
+    ['Telecommunications & Networking','https://loremflickr.com/1200/700/telecommunications,network,router,server?lock=133',['Routers','Network Equipment','Fibre Equipment','Communication Devices','Telecom Infrastructure']],
+    ['Industrial Materials & Coatings','https://loremflickr.com/1200/700/paint,coatings,industrial,materials?lock=134',['Industrial Chemicals','Adhesives','Paints','Coatings','Manufacturing Materials']],
+    ['General Merchandise','https://loremflickr.com/1200/700/wholesale,consumer,merchandise,warehouse?lock=135',['Household Products','Consumer Goods','General Imported Goods','Wholesale Products','Everyday Supplies']],
+    ['Import, Export & Trade Services','https://loremflickr.com/1200/700/shipping,cargo,customs,freight,trade?lock=136',['International Sourcing','Customs Clearance','Freight Forwarding','Trade Documentation','Door-to-Door Delivery']]
   ].map(([name,img,items]) => ({name,img,items}));
 
   const escapeHtml = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -87,7 +87,7 @@
       if (badge) badge.textContent = CATEGORIES[index].name;
     };
     clearInterval(window.__vtgHeroTimer);
-    window.__vtgHeroTimer = setInterval(() => show((index + 1) % slides.length), 4200);
+    window.__vtgHeroTimer = setInterval(() => show((index + 1) % slides.length), 3000);
   }
 
   function buildCategoryCarousels() {
@@ -104,7 +104,7 @@
       section.className = 'vtgCategoryTile';
       section.dataset.categoryIndex = String(i);
       section.innerHTML =
-        '<span class="vtgCategoryThumb"><img loading="lazy" decoding="async" src="'+cat.img+'" alt="'+escapeHtml(cat.name)+'"><b aria-hidden="true">+</b></span>'+
+        '<span class="vtgCategoryPlus" aria-hidden="true">+</span>'+
         '<span class="vtgCategoryName">'+escapeHtml(cat.name)+'</span>';
       section.querySelector('img').onerror = () => { section.classList.add('image-failed'); };
       wrap.appendChild(section);
@@ -165,12 +165,10 @@
       .vtgCategoryIntro{grid-column:1/-1;padding:1px 1px 3px}
       .vtgCategoryIntro>span{font-size:6.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);font-weight:900}
       .vtgCategoryIntro h2{margin:1px 0;color:var(--navy);font-size:18px}
-      .vtgCategoryTile{min-width:0;border:1px solid var(--line);border-radius:9px;background:var(--white);padding:4px;cursor:pointer;text-align:left;box-shadow:0 3px 11px rgba(0,0,0,.045);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+      .vtgCategoryTile{min-width:0;display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:9px;background:var(--white);padding:9px 8px;cursor:pointer;text-align:left;box-shadow:0 3px 11px rgba(0,0,0,.045);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
       .vtgCategoryTile:hover{transform:translateY(-2px);border-color:var(--teal);box-shadow:0 7px 16px rgba(0,0,0,.09)}
-      .vtgCategoryThumb{position:relative;display:block;height:50px;border-radius:7px;overflow:hidden;background:#eef1f3}
-      .vtgCategoryThumb img{display:block;width:100%;height:100%;object-fit:cover}
-      .vtgCategoryThumb b{position:absolute;right:3px;bottom:3px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.96);color:#9c241d;font-size:15px;line-height:1;box-shadow:0 2px 6px rgba(0,0,0,.16)}
-      .vtgCategoryName{display:block;margin-top:4px;color:var(--navy);font-size:8.5px;line-height:1.18;font-weight:850}
+      .vtgCategoryPlus{flex:0 0 20px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:#9c241d;color:#fff;font-size:15px;font-weight:900;line-height:1}
+      .vtgCategoryName{display:block;margin:0;color:var(--navy);font-size:9px;line-height:1.18;font-weight:850}
       .vtgCategoryCount{display:block;margin-top:2px;color:var(--muted);font-size:7px;line-height:1.15}
       .vtgCategoryModal{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:18px}
       .vtgCategoryModal.open{display:flex}
@@ -189,11 +187,11 @@
       body.vtgModalOpen{overflow:hidden}
       html[data-theme="dark"] .vtgCategoryTile,html[data-theme="dark"] .vtgCategoryDialog{background:#151b22;border-color:#2b3640}
       html[data-theme="dark"] .vtgCategoryName,html[data-theme="dark"] .vtgModalContent h3,html[data-theme="dark"] .vtgSubcategory{color:#f4f7f9}
-      html[data-theme="dark"] .vtgCategoryThumb{background:#202831}
+      html[data-theme="dark"] .vtgCategoryPlus{background:#b52d24}
       html[data-theme="dark"] .vtgSubcategory{background:#1d252d;border-color:#35414b}
       html[data-theme="dark"] .vtgCategoryIntro h2{color:#f4f7f9}
       html[data-theme="dark"] .vtgModalContent p{color:#aebbc5}
-      @media(max-width:1100px){.vtg36Carousels{grid-template-columns:repeat(6,minmax(0,1fr))}} @media(max-width:800px){.vtg36Carousels{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.vtgCategoryThumb{height:50px}} @media(max-width:560px){.vtg36Carousels{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.vtgCategoryThumb{height:62px}.vtgCategoryName{font-size:9px}.vtgCategoryCount{display:none}.vtgCategoryDialog{grid-template-columns:1fr}.vtgModalImage{height:150px;min-height:150px}.vtgModalImage img{min-height:150px}.vtgModalContent{padding:18px}.vtgCategoryItems{grid-template-columns:1fr}}
+      @media(max-width:1100px){.vtg36Carousels{grid-template-columns:repeat(6,minmax(0,1fr))}} @media(max-width:800px){.vtg36Carousels{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}} @media(max-width:560px){.vtg36Carousels{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.vtgCategoryName{font-size:9px}.vtgCategoryCount{display:none}.vtgCategoryDialog{grid-template-columns:1fr}.vtgModalImage{height:150px;min-height:150px}.vtgModalImage img{min-height:150px}.vtgModalContent{padding:18px}.vtgCategoryItems{grid-template-columns:1fr}}
     `;
     document.head.appendChild(style);
   }
