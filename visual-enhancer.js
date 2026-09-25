@@ -1,41 +1,41 @@
 (() => {
   const CATEGORIES = [
-    ['Cars & Automobiles','https://loremflickr.com/1200/700/car,suv,sedan?lock=101',['Sedans & SUVs','Electric Vehicles','Commercial Vehicles','Auto Parts & Accessories']],
-    ['Motorcycles, Tricycles & Mobility','https://loremflickr.com/1200/700/motorcycle,scooter,tricycle?lock=102',['Motorcycles','Tricycles / Keke','Electric Motorcycles','Spare Parts']],
-    ['Bicycles & Personal Mobility','https://loremflickr.com/1200/700/bicycle,ebike,scooter?lock=103',['Bicycles','Electric Bicycles','Scooters','Mobility Accessories']],
-    ['Pharmaceuticals & Medical Supplies','https://loremflickr.com/1200/700/pharmacy,medicine,medical?lock=104',['Medicines','Medical Equipment','Hospital Supplies','Laboratory Equipment','Medical Consumables']],
-    ['Agriculture & Farm Products','https://loremflickr.com/1200/700/farm,agriculture,tractor,crops?lock=105',['Farm Produce','Seeds','Fertilizers','Farm Machinery','Agricultural Equipment']],
-    ['Clothing & Textiles','https://loremflickr.com/1200/700/clothing,textile,fabric?lock=106',['Ready-made Clothing','Fabrics','Uniforms','Industrial Textiles','Traditional Fabrics']],
-    ['Footwear','https://loremflickr.com/1200/700/shoes,sneakers,boots?lock=107',['Sneakers','Men\'s Shoes','Women\'s Footwear','Children\'s Shoes','Safety & Work Boots','Sandals']],
-    ['Fashion & Accessories','https://loremflickr.com/1200/700/fashion,bags,accessories?lock=108',['Bags','Belts & Wallets','Ties','Sunglasses','Fashion Accessories']],
-    ['Watches & Wearables','https://loremflickr.com/1200/700/watch,smartwatch,wristwatch?lock=109',['Smartwatches','Luxury Watches','Fitness Trackers','Watch Accessories']],
-    ['Electronics & Technology','https://loremflickr.com/1200/700/electronics,smartphone,laptop?lock=110',['Smartphones','Tablets','Computers','Computer Accessories','Consumer Electronics']],
-    ['Home & Furniture','https://loremflickr.com/1200/700/furniture,sofa,home,interior?lock=111',['Sofas','Beds & Bedroom Furniture','Office Furniture','Home Décor','Lighting']],
-    ['Kitchen & Home Appliances','https://loremflickr.com/1200/700/kitchen,appliances,refrigerator,cooker?lock=112',['Refrigerators & Freezers','Cookers','Blenders','Washing Machines','Small Appliances']],
-    ['Beauty & Personal Care','https://loremflickr.com/1200/700/cosmetics,skincare,beauty?lock=113',['Skincare','Hair Products','Cosmetics','Salon Equipment','Personal Care Equipment']],
-    ['Food & Beverages','https://loremflickr.com/1200/700/food,beverages,grocery?lock=114',['Packaged Foods','Beverages','Grains','Spices','Food Ingredients']],
-    ['Construction Equipment & Machinery','https://loremflickr.com/1200/700/excavator,crane,construction,machinery?lock=115',['Excavators','Loaders','Cranes','Concrete Equipment','Road Construction Equipment']],
-    ['Tools & Hardware','https://loremflickr.com/1200/700/tools,hardware,workshop?lock=116',['Hand Tools','Power Tools','Workshop Equipment','Fasteners','Industrial Hardware']],
-    ['Industrial Machinery & Equipment','https://loremflickr.com/1200/700/industrial,machinery,factory?lock=117',['Manufacturing Machinery','Processing Equipment','Factory Equipment','Compressors','Pumps']],
-    ['Steel, Iron & Metal Products','https://loremflickr.com/1200/700/steel,iron,metal,warehouse?lock=118',['Steel Products','Aluminium','Pipes','Metal Sheets','Structural Materials']],
-    ['Solar & Renewable Energy','https://loremflickr.com/1200/700/solar,panels,renewable,battery?lock=119',['Solar Panels','Inverters','Batteries','Solar Generators','Solar Street Lights']],
-    ['Plumbing, Water & Sanitary','https://loremflickr.com/1200/700/plumbing,pipes,water,sanitary?lock=120',['Pipes & Fittings','Water Tanks','Water Pumps','Bathroom Fittings','Water Treatment']],
-    ['Packaging & Printing','https://loremflickr.com/1200/700/packaging,boxes,printing,containers?lock=121',['Cartons & Boxes','Bottles & Containers','Labels','Printing Machines','Packaging Materials']],
-    ['Office & Business Supplies','https://loremflickr.com/1200/700/office,printer,stationery,business?lock=122',['Office Equipment','Printers','Stationery','POS Equipment','Commercial Supplies']],
-    ['Baby & Children\'s Products','https://loremflickr.com/1200/700/baby,toys,children,products?lock=123',['Baby Clothing','Toys','Baby Furniture','Feeding Equipment','Children\'s Products']],
-    ['Cleaning & Household Supplies','https://loremflickr.com/1200/700/cleaning,detergent,household?lock=124',['Cleaning Equipment','Detergents','Household Consumables','Commercial Cleaning','Cleaning Tools']],
-    ['Bags, Luggage & Travel','https://loremflickr.com/1200/700/luggage,travel,bags,suitcase?lock=125',['Suitcases','Travel Bags','Backpacks','Business Bags','Leather Goods']],
-    ['Retail & Commercial Equipment','https://loremflickr.com/1200/700/retail,supermarket,store,equipment?lock=126',['Shop Fittings','Display Shelves','Refrigerated Displays','Supermarket Equipment','Vending Equipment']],
-    ['Hotel, Restaurant & Catering Equipment','https://loremflickr.com/1200/700/restaurant,kitchen,catering,hotel?lock=127',['Commercial Kitchens','Restaurant Furniture','Catering Equipment','Bakery Equipment','Hotel Supplies']],
-    ['Factory & Production Supplies','https://loremflickr.com/1200/700/factory,production,assembly,industry?lock=128',['Raw Materials','Production Lines','Industrial Components','Factory Consumables','Production Equipment']],
-    ['Marine & Port Equipment','https://loremflickr.com/1200/700/cargo,ship,port,container?lock=129',['Marine Equipment','Port Machinery','Shipping Containers','Cargo Handling','Shipping Supplies']],
-    ['Logistics, Transport & Warehousing Equipment','https://loremflickr.com/1200/700/truck,logistics,warehouse,transport?lock=130',['Trucks','Trailers','Cargo Equipment','Material Handling','Warehouse Equipment']],
-    ['Building Materials','https://loremflickr.com/1200/700/building,tiles,roofing,materials?lock=131',['Tiles','Doors & Windows','Roofing','Cement Products','Interior Finishing']],
-    ['Electrical & Power Equipment','https://loremflickr.com/1200/700/electrical,cables,transformer,power?lock=132',['Cables','Switches','Transformers','Generators','Electrical Components']],
-    ['Telecommunications & Networking','https://loremflickr.com/1200/700/telecommunications,network,router,server?lock=133',['Routers','Network Equipment','Fibre Equipment','Communication Devices','Telecom Infrastructure']],
-    ['Industrial Materials & Coatings','https://loremflickr.com/1200/700/paint,coatings,industrial,materials?lock=134',['Industrial Chemicals','Adhesives','Paints','Coatings','Manufacturing Materials']],
-    ['General Merchandise','https://loremflickr.com/1200/700/wholesale,consumer,merchandise,warehouse?lock=135',['Household Products','Consumer Goods','General Imported Goods','Wholesale Products','Everyday Supplies']],
-    ['Import, Export & Trade Services','https://loremflickr.com/1200/700/shipping,cargo,customs,freight,trade?lock=136',['International Sourcing','Customs Clearance','Freight Forwarding','Trade Documentation','Door-to-Door Delivery']]
+    ['Cars & Automobiles','https://loremflickr.com/1200/700/car?lock=101',['Sedans & SUVs','Electric Vehicles','Commercial Vehicles','Auto Parts & Accessories']],
+    ['Motorcycles, Tricycles & Mobility','https://loremflickr.com/1200/700/motorcycle?lock=102',['Motorcycles','Tricycles / Keke','Electric Motorcycles','Spare Parts']],
+    ['Bicycles & Personal Mobility','https://loremflickr.com/1200/700/bicycle?lock=103',['Bicycles','Electric Bicycles','Scooters','Mobility Accessories']],
+    ['Pharmaceuticals & Medical Supplies','https://loremflickr.com/1200/700/medicine?lock=104',['Medicines','Medical Equipment','Hospital Supplies','Laboratory Equipment','Medical Consumables']],
+    ['Agriculture & Farm Products','https://loremflickr.com/1200/700/farm?lock=105',['Farm Produce','Seeds','Fertilizers','Farm Machinery','Agricultural Equipment']],
+    ['Clothing & Textiles','https://loremflickr.com/1200/700/clothing?lock=106',['Ready-made Clothing','Fabrics','Uniforms','Industrial Textiles','Traditional Fabrics']],
+    ['Footwear','https://loremflickr.com/1200/700/shoes?lock=107',['Sneakers','Men\'s Shoes','Women\'s Footwear','Children\'s Shoes','Safety & Work Boots','Sandals']],
+    ['Fashion & Accessories','https://loremflickr.com/1200/700/fashion?lock=108',['Bags','Belts & Wallets','Ties','Sunglasses','Fashion Accessories']],
+    ['Watches & Wearables','https://loremflickr.com/1200/700/watch?lock=109',['Smartwatches','Luxury Watches','Fitness Trackers','Watch Accessories']],
+    ['Electronics & Technology','https://loremflickr.com/1200/700/electronics?lock=110',['Smartphones','Tablets','Computers','Computer Accessories','Consumer Electronics']],
+    ['Home & Furniture','https://loremflickr.com/1200/700/furniture?lock=111',['Sofas','Beds & Bedroom Furniture','Office Furniture','Home Décor','Lighting']],
+    ['Kitchen & Home Appliances','https://loremflickr.com/1200/700/kitchen?lock=112',['Refrigerators & Freezers','Cookers','Blenders','Washing Machines','Small Appliances']],
+    ['Beauty & Personal Care','https://loremflickr.com/1200/700/cosmetics?lock=113',['Skincare','Hair Products','Cosmetics','Salon Equipment','Personal Care Equipment']],
+    ['Food & Beverages','https://loremflickr.com/1200/700/food?lock=114',['Packaged Foods','Beverages','Grains','Spices','Food Ingredients']],
+    ['Construction Equipment & Machinery','https://loremflickr.com/1200/700/excavator?lock=115',['Excavators','Loaders','Cranes','Concrete Equipment','Road Construction Equipment']],
+    ['Tools & Hardware','https://loremflickr.com/1200/700/tools?lock=116',['Hand Tools','Power Tools','Workshop Equipment','Fasteners','Industrial Hardware']],
+    ['Industrial Machinery & Equipment','https://loremflickr.com/1200/700/machinery?lock=117',['Manufacturing Machinery','Processing Equipment','Factory Equipment','Compressors','Pumps']],
+    ['Steel, Iron & Metal Products','https://loremflickr.com/1200/700/steel?lock=118',['Steel Products','Aluminium','Pipes','Metal Sheets','Structural Materials']],
+    ['Solar & Renewable Energy','https://loremflickr.com/1200/700/solar?lock=119',['Solar Panels','Inverters','Batteries','Solar Generators','Solar Street Lights']],
+    ['Plumbing, Water & Sanitary','https://loremflickr.com/1200/700/plumbing?lock=120',['Pipes & Fittings','Water Tanks','Water Pumps','Bathroom Fittings','Water Treatment']],
+    ['Packaging & Printing','https://loremflickr.com/1200/700/packaging?lock=121',['Cartons & Boxes','Bottles & Containers','Labels','Printing Machines','Packaging Materials']],
+    ['Office & Business Supplies','https://loremflickr.com/1200/700/office?lock=122',['Office Equipment','Printers','Stationery','POS Equipment','Commercial Supplies']],
+    ['Baby & Children\'s Products','https://loremflickr.com/1200/700/baby?lock=123',['Baby Clothing','Toys','Baby Furniture','Feeding Equipment','Children\'s Products']],
+    ['Cleaning & Household Supplies','https://loremflickr.com/1200/700/cleaning?lock=124',['Cleaning Equipment','Detergents','Household Consumables','Commercial Cleaning','Cleaning Tools']],
+    ['Bags, Luggage & Travel','https://loremflickr.com/1200/700/luggage?lock=125',['Suitcases','Travel Bags','Backpacks','Business Bags','Leather Goods']],
+    ['Retail & Commercial Equipment','https://loremflickr.com/1200/700/retail?lock=126',['Shop Fittings','Display Shelves','Refrigerated Displays','Supermarket Equipment','Vending Equipment']],
+    ['Hotel, Restaurant & Catering Equipment','https://loremflickr.com/1200/700/restaurant?lock=127',['Commercial Kitchens','Restaurant Furniture','Catering Equipment','Bakery Equipment','Hotel Supplies']],
+    ['Factory & Production Supplies','https://loremflickr.com/1200/700/factory?lock=128',['Raw Materials','Production Lines','Industrial Components','Factory Consumables','Production Equipment']],
+    ['Marine & Port Equipment','https://loremflickr.com/1200/700/ship?lock=129',['Marine Equipment','Port Machinery','Shipping Containers','Cargo Handling','Shipping Supplies']],
+    ['Logistics, Transport & Warehousing Equipment','https://loremflickr.com/1200/700/truck?lock=130',['Trucks','Trailers','Cargo Equipment','Material Handling','Warehouse Equipment']],
+    ['Building Materials','https://loremflickr.com/1200/700/building?lock=131',['Tiles','Doors & Windows','Roofing','Cement Products','Interior Finishing']],
+    ['Electrical & Power Equipment','https://loremflickr.com/1200/700/electrical?lock=132',['Cables','Switches','Transformers','Generators','Electrical Components']],
+    ['Telecommunications & Networking','https://loremflickr.com/1200/700/telecommunications?lock=133',['Routers','Network Equipment','Fibre Equipment','Communication Devices','Telecom Infrastructure']],
+    ['Industrial Materials & Coatings','https://loremflickr.com/1200/700/paint?lock=134',['Industrial Chemicals','Adhesives','Paints','Coatings','Manufacturing Materials']],
+    ['General Merchandise','https://loremflickr.com/1200/700/wholesale?lock=135',['Household Products','Consumer Goods','General Imported Goods','Wholesale Products','Everyday Supplies']],
+    ['Import, Export & Trade Services','https://loremflickr.com/1200/700/shipping?lock=136',['International Sourcing','Customs Clearance','Freight Forwarding','Trade Documentation','Door-to-Door Delivery']]
   ].map(([name,img,items]) => ({name,img,items}));
 
   const escapeHtml = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -66,11 +66,16 @@
     const slides = CATEGORIES.map((p,i) => {
       const img = document.createElement('img');
       img.decoding = 'async';
-      img.loading = i === 0 ? 'eager' : 'lazy';
+      img.loading = 'eager';
       img.alt = p.name;
       img.src = p.img;
       img.className = i === 0 ? 'active' : '';
-      img.onerror = () => { img.style.background = 'linear-gradient(135deg,#8f1d17,#c0392b)'; };
+      img.dataset.fallback = '0';
+      img.onerror = () => {
+        if (img.dataset.fallback === '1') return;
+        img.dataset.fallback = '1';
+        img.src = 'https://picsum.photos/seed/vtg-' + (i + 101) + '/1200/700';
+      };
       return img;
     });
     old.forEach(x => x.remove());
