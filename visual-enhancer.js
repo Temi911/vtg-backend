@@ -96,7 +96,7 @@
 
     const wrap = document.createElement('div');
     wrap.className = 'vtg36Carousels';
-    wrap.innerHTML = '<div class="vtgCategoryIntro"><span>VTG MARKETPLACE</span><h2>Browse Trade Categories</h2><p>Choose a category to explore the products and supplier listings available under it.</p></div>';
+    wrap.innerHTML = '<div class="vtgCategoryIntro"><span>VTG MARKETPLACE</span><h2>Browse Trade Categories</h2></div>';
 
     CATEGORIES.forEach((cat, i) => {
       const section = document.createElement('button');
@@ -105,8 +105,7 @@
       section.dataset.categoryIndex = String(i);
       section.innerHTML =
         '<span class="vtgCategoryThumb"><img loading="lazy" decoding="async" src="'+cat.img+'" alt="'+escapeHtml(cat.name)+'"><b aria-hidden="true">+</b></span>'+
-        '<span class="vtgCategoryName">'+escapeHtml(cat.name)+'</span>'+
-        '<span class="vtgCategoryCount">'+cat.items.length+' subcategories</span>';
+        '<span class="vtgCategoryName">'+escapeHtml(cat.name)+'</span>';
       section.querySelector('img').onerror = () => { section.classList.add('image-failed'); };
       wrap.appendChild(section);
     });
@@ -162,17 +161,16 @@
       #productHero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .65s ease}
       #productHero>img.active{opacity:.94}
       #productHero .copy,#productHero .catBadge{z-index:6}
-      .vtg36Carousels{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;margin-top:14px}
-      .vtgCategoryIntro{grid-column:1/-1;padding:2px 1px 5px}
+      .vtg36Carousels{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:7px;margin-top:14px}
+      .vtgCategoryIntro{grid-column:1/-1;padding:1px 1px 3px}
       .vtgCategoryIntro>span{font-size:6.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);font-weight:900}
-      .vtgCategoryIntro h2{margin:2px 0 1px;color:var(--navy);font-size:20px}
-      .vtgCategoryIntro p{margin:0;color:var(--muted);font-size:9px}
-      .vtgCategoryTile{min-width:0;border:1px solid var(--line);border-radius:10px;background:var(--white);padding:5px;cursor:pointer;text-align:left;box-shadow:0 3px 11px rgba(0,0,0,.045);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+      .vtgCategoryIntro h2{margin:1px 0;color:var(--navy);font-size:18px}
+      .vtgCategoryTile{min-width:0;border:1px solid var(--line);border-radius:9px;background:var(--white);padding:4px;cursor:pointer;text-align:left;box-shadow:0 3px 11px rgba(0,0,0,.045);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
       .vtgCategoryTile:hover{transform:translateY(-2px);border-color:var(--teal);box-shadow:0 7px 16px rgba(0,0,0,.09)}
-      .vtgCategoryThumb{position:relative;display:block;height:54px;border-radius:7px;overflow:hidden;background:#eef1f3}
+      .vtgCategoryThumb{position:relative;display:block;height:50px;border-radius:7px;overflow:hidden;background:#eef1f3}
       .vtgCategoryThumb img{display:block;width:100%;height:100%;object-fit:cover}
       .vtgCategoryThumb b{position:absolute;right:3px;bottom:3px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.96);color:#9c241d;font-size:15px;line-height:1;box-shadow:0 2px 6px rgba(0,0,0,.16)}
-      .vtgCategoryName{display:block;margin-top:5px;color:var(--navy);font-size:8.5px;line-height:1.18;font-weight:850}
+      .vtgCategoryName{display:block;margin-top:4px;color:var(--navy);font-size:8.5px;line-height:1.18;font-weight:850}
       .vtgCategoryCount{display:block;margin-top:2px;color:var(--muted);font-size:7px;line-height:1.15}
       .vtgCategoryModal{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:18px}
       .vtgCategoryModal.open{display:flex}
@@ -194,8 +192,8 @@
       html[data-theme="dark"] .vtgCategoryThumb{background:#202831}
       html[data-theme="dark"] .vtgSubcategory{background:#1d252d;border-color:#35414b}
       html[data-theme="dark"] .vtgCategoryIntro h2{color:#f4f7f9}
-      html[data-theme="dark"] .vtgCategoryIntro p,html[data-theme="dark"] .vtgCategoryCount,html[data-theme="dark"] .vtgModalContent p{color:#aebbc5}
-      @media(max-width:1100px){.vtg36Carousels{grid-template-columns:repeat(6,minmax(0,1fr))}} @media(max-width:800px){.vtg36Carousels{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.vtgCategoryThumb{height:52px}} @media(max-width:560px){.vtg36Carousels{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.vtgCategoryThumb{height:62px}.vtgCategoryName{font-size:9px}.vtgCategoryCount{font-size:7px}.vtgCategoryDialog{grid-template-columns:1fr}.vtgModalImage{height:150px;min-height:150px}.vtgModalImage img{min-height:150px}.vtgModalContent{padding:18px}.vtgCategoryItems{grid-template-columns:1fr}}
+      html[data-theme="dark"] .vtgModalContent p{color:#aebbc5}
+      @media(max-width:1100px){.vtg36Carousels{grid-template-columns:repeat(6,minmax(0,1fr))}} @media(max-width:800px){.vtg36Carousels{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.vtgCategoryThumb{height:50px}} @media(max-width:560px){.vtg36Carousels{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.vtgCategoryThumb{height:62px}.vtgCategoryName{font-size:9px}.vtgCategoryCount{display:none}.vtgCategoryDialog{grid-template-columns:1fr}.vtgModalImage{height:150px;min-height:150px}.vtgModalImage img{min-height:150px}.vtgModalContent{padding:18px}.vtgCategoryItems{grid-template-columns:1fr}}
     `;
     document.head.appendChild(style);
   }
