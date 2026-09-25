@@ -1,0 +1,1 @@
+Restoring the original VTG frontend and replacing the map controller safely.
