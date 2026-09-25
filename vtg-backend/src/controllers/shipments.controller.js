@@ -2,6 +2,154 @@ const { z } = require('zod');
 const { query, withTransaction } = require('../config/db');
 const { AppError } = require('../utils/AppError');
 const { asyncHandler } = require('../utils/asyncHandler');
+const { locations: atlasLocations } = require('../../api/atlas-locations');
+
+function resolveAtlasLocation(text) {
+  const value = String(text || '').trim().toLowerCase();
+  if (!value) return null;
+  const exact = atlasLocations.find(x =>
+    [x.name, x.city, x.code].some(v => String(v).toLowerCase() === value)
+  );
+  if (exact) return exact;
+  return atlasLocations.find(x => {
+    const hay = `${x.name} ${x.city} ${x.country} ${x.code}`.toLowerCase();
+    return hay.includes(value) || value.includes(String(x.name).toLowerCase()) || value.includes(String(x.city).toLowerCase());
+  }) || null;
+}
+
+function mapShipmentStatus(orderStatus, percentComplete) {
+  if (orderStatus === 'delivered') return 'delivered';
+  if (orderStatus === 'cancelled') return 'cancelled';
+  if (orderStatus === 'disputed') return 'attention';
+  if (orderStatus === 'customs' || orderStatus === 'arrived') return 'arrived';
+  if (orderStatus === 'in_transit' || orderStatus === 'shipped') return percentComplete > 0 ? 'in_transit' : 'shipped';
+  return orderStatus || 'pending';
+}
+
+const listForAtlas = asyncHandler(async (req, res) => {
+  const params = [req.user.id];
+  let access = '';
+  if (req.user.role === 'admin') {
+    access = '';
+    params.length = 0;
+  } else if (req.user.role === 'buyer') {
+    access = 'WHERE o.buyer_id = $1';
+  } else if (req.user.role === 'supplier') {
+    access = 'WHERE o.supplier_id = $1';
+  } else if (req.user.role === 'bank') {
+    access = 'WHERE o.bank_id = $1';
+  } else {
+    throw new AppError('Unsupported role', 403, 'FORBIDDEN');
+  }
+
+  const shipmentsRes = await query(
+    `SELECT s.*, o.reference, o.status AS order_status, o.buyer_id, o.supplier_id,
+            bu.full_name AS buyer_name, su.full_name AS supplier_name
+     FROM shipments s
+     JOIN orders o ON o.id = s.order_id
+     JOIN users bu ON bu.id = o.buyer_id
+     JOIN users su ON su.id = o.supplier_id
+     ${access}
+     ORDER BY s.created_at DESC
+     LIMIT 100`,
+    params
+  );
+
+  const ids = shipmentsRes.rows.map(x => x.id);
+  if (!ids.length) return res.json({ ok: true, count: 0, shipments: [] });
+
+  const eventsRes = await query(
+    `SELECT * FROM tracking_events
+     WHERE shipment_id = ANY($1::uuid[])
+     ORDER BY shipment_id, sort_order ASC, event_time ASC`,
+    [ids]
+  );
+  const eventsByShipment = new Map();
+  for (const event of eventsRes.rows) {
+    if (!eventsByShipment.has(event.shipment_id)) eventsByShipment.set(event.shipment_id, []);
+    eventsByShipment.get(event.shipment_id).push(event);
+  }
+
+  const shipments = shipmentsRes.rows.map(s => {
+    const rawEvents = eventsByShipment.get(s.id) || [];
+    const points = [];
+
+    const origin = resolveAtlasLocation(s.origin_port);
+    if (origin) points.push({
+      type: 'origin',
+      name: origin.name,
+      city: origin.city,
+      country: origin.country,
+      lat: origin.lat,
+      lng: origin.lng
+    });
+
+    for (const e of rawEvents) {
+      const loc = resolveAtlasLocation(e.location);
+      if (!loc) continue;
+      const previous = points[points.length - 1];
+      if (previous && previous.lat === loc.lat && previous.lng === loc.lng) continue;
+      points.push({
+        type: e.status === 'active' ? 'active' : 'milestone',
+        name: loc.name,
+        city: loc.city,
+        country: loc.country,
+        lat: loc.lat,
+        lng: loc.lng,
+        eventId: e.id,
+        status: e.status,
+        detail: e.detail,
+        eventTime: e.event_time
+      });
+    }
+
+    const destination = resolveAtlasLocation(s.destination_port);
+    if (destination) {
+      const previous = points[points.length - 1];
+      if (!previous || previous.lat !== destination.lat || previous.lng !== destination.lng) {
+        points.push({
+          type: 'destination',
+          name: destination.name,
+          city: destination.city,
+          country: destination.country,
+          lat: destination.lat,
+          lng: destination.lng
+        });
+      }
+    }
+
+    return {
+      id: s.id,
+      orderId: s.order_id,
+      reference: s.reference,
+      containerNo: s.container_no,
+      carrier: s.carrier,
+      originPort: s.origin_port,
+      destinationPort: s.destination_port,
+      percentComplete: s.percent_complete,
+      status: mapShipmentStatus(s.order_status, s.percent_complete),
+      buyerName: req.user.role === 'admin' || req.user.role === 'buyer' ? s.buyer_name : null,
+      supplierName: req.user.role === 'admin' || req.user.role === 'supplier' ? s.supplier_name : null,
+      milestones: rawEvents.map(e => ({
+        id: e.id,
+        location: e.location,
+        detail: e.detail,
+        status: e.status,
+        eventTime: e.event_time,
+        sortOrder: e.sort_order,
+        coordinates: resolveAtlasLocation(e.location) ? {
+          lat: resolveAtlasLocation(e.location).lat,
+          lng: resolveAtlasLocation(e.location).lng,
+          name: resolveAtlasLocation(e.location).name
+        } : null
+      })),
+      routePoints: points
+    };
+  }).filter(s => s.routePoints.length >= 2);
+
+  res.json({ ok: true, count: shipments.length, shipments });
+});
+
 const audit = require('../services/audit.service');
 
 const createSchema = z.object({
@@ -56,4 +204,4 @@ const addEvent = asyncHandler(async (req, res) => {
   res.status(201).json({ event: result });
 });
 
-module.exports = { create, getForOrder, addEvent };
+module.exports = { create, getForOrder, addEvent, listForAtlas };
