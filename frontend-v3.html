@@ -93,20 +93,7 @@ const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];let
 const VTG_API_BASE = window.VTG_API_BASE || '';
 const vtgFetch = (path, options = {}) => fetch(VTG_API_BASE + path, options);
 function icons(){if(window.lucide)lucide.createIcons()}
-(function(){
-  const hero = document.getElementById('productHero');
-  if(!hero) return;
-  const imgs = hero.querySelectorAll('img');
-  const badge = document.getElementById('productCatBadge');
-  const labels = ["Pharmaceutical & Medical", "Agriculture & Farm Produce", "Clothes & Textiles", "Cars — Fuel & Electric", "Motorcycles & Tricycles", "Bicycles", "Electronics & Technology", "Men's Footwear", "Sneakers & Sports Shoes", "Women's Footwear", "Children's Shoes", "Sandals & Casual Footwear", "Smart Watches", "Luxury Watches", "Fashion Accessories", "Construction Equipment & Tools", "Metals, Steel & Aluminium", "Import, Export & Logistics", "Furniture & Home", "Home & Kitchen Appliances", "Beauty & Personal Care", "Food & Beverages", "Packaging & Printing", "Office & Business Supplies", "Solar & Renewable Energy", "Plumbing, Water & Sanitary Products", "Bags, Luggage & Leather Goods", "Industrial Machinery & Manufacturing Equipment", "Baby & Children Products", "Cleaning & Household Supplies"];
-  let i = 0;
-  setInterval(function(){
-    imgs[i].classList.remove('active');
-    i = (i + 1) % imgs.length;
-    imgs[i].classList.add('active');
-    if(badge){ badge.style.opacity = 0; setTimeout(function(){ badge.textContent = labels[i]; badge.style.opacity = 1; }, 400); }
-  }, 4000);
-})();
+
 
 (function(){
   const root = document.documentElement;
