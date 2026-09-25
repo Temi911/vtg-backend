@@ -18,7 +18,7 @@
   }
 
   const VTG_CAROUSEL_ITEMS = [
-    ["Cars & Automobiles","https://www.autoblog.com/.image/c_fill%2Cg_faces%3Acenter/MjA5MDg5Njc2NjY4MzgxMDI4/cars-for-sale-stock-lot-row.jpg"],
+    ["Cars & Automobiles","https://canadianautodealer.ca/wp-content/uploads/2025/04/3_Used-vehicle-pricing-flat_1200.jpg"],
     ["Motorcycles, Tricycles & Mobility","https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=85&w=1600&auto=format&fit=crop"],
     ["Bicycles & Personal Mobility","https://image.made-in-china.com/2f0j00IpPklAvBEQcs/250W-Brushless-High-Speed-Electric-Bike-7-8ah-Lithium-Battery-Adult-Recreational-Bicycle.jpg"],
     ["Pharmaceuticals & Medical Supplies","https://www.57357.org/_next/image?q=100&url=https%3A%2F%2Fapi.57357.org%2Fstorage%2F3472%2FWhatsApp_Image_2026_02_10_at_151346.jpeg&w=1080"],
@@ -34,7 +34,7 @@
     ["Food & Beverages","https://asset.kompas.com/crops/zzRIxeH54dueBGGsaJlk8MQYoWA%3D/100x67%3A900x600/1200x800/data/photo/2020/10/21/5f90151bf2e36.jpg"],
     ["Construction Equipment & Machinery","https://operatorpro.co.uk/images/courses/360-excavator.jpg"],
     ["Tools & Hardware","https://tradecounterdirect.com/cdn/shop/collections/power-tools-2386841.png?v=1767888527"],
-    ["Industrial Machinery & Equipment","https://d38ti8pt50cl3m.cloudfront.net/uploads/taiwan/ckeditor/pictures/759/content_89734889-6285-4a33-84cf-3f07ed7cd03a.jpg"],
+    ["Industrial Machinery & Equipment","https://www.nks-dit.de/lw_resource/datapool/systemfiles/cbox/6184/live/lw_cropper_teaserbild/lw_cropper_teaserbild.jpg"],
     ["Steel, Iron & Metal Products","https://atlantsnabcity.kz/image/catalog/catalog/metalloprokat.jpg"],
     ["Solar & Renewable Energy","https://m.economictimes.com/thumb/msid-98359811%2Cwidth-1200%2Cheight-1200%2Cresizemode-4%2Cimgsize-234962/solar-.jpg"],
     ["Plumbing, Water & Sanitary","https://s.alicdn.com/%40sc04/kf/Ha2de85c92cf14ba4bd45f7153fd363e2C/ASTM-CPVC-Plastic-Tube-Fitting-3-Way-1-2-Inch-Pn16-110-mm-90-Degree-Elbow-PVC-Pipe-Fitting.jpg"],
@@ -46,7 +46,7 @@
     ["Retail & Commercial Equipment","https://image.made-in-china.com/202f0j00NZtqcKEsgTrG/Customized-Color-Supermarket-Gondola-Shelving-Grocery-Shelves-for-Convenience-Store.webp"],
     ["Hotel, Restaurant & Catering Equipment","https://image.made-in-china.com/2f0j00UzMvECyAMncq/Star-Hotel-Commercial-Kitchen-Equipment-One-Stop-Catering-Solutions-for-Restaurants-and-Hotels.jpg"],
     ["Factory & Production Supplies","https://www.tmspl.org/images/ser1.jpg"],
-    ["Marine & Port Equipment","https://imageresizer.static9.net.au/IgO_xelWODREsx2tNo-FW66fw4Y%3D/1200x675/https%3A%2F%2Fprod.static9.net.au%2Ffs%2F9952a7ba-e61a-470c-8263-e0df00f03166"],
+    ["Marine & Port Equipment","https://gulftime.ae/wp-content/uploads/2023/01/AD-copy.jpg"],
     ["Logistics, Transport & Warehousing Equipment","https://cdn.bridge-imp.com/assets/images/c/202601_Distributionslogistik_LKW-219c1766.png"],
     ["Building Materials","https://www.nexgenexim.in/_next/image?q=75&url=%2Fimages%2Fproducts%2Froofing-tiles.webp&w=3840"],
     ["Electrical & Power Equipment","https://specap.com/_next/image?dpl=dpl_GR1mkvn39potgZieQaYjJ6YZHFpS&q=75&url=%2Fimages%2Fblog%2Fpower-electronics.webp&w=3840"],
