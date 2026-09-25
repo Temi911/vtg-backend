@@ -1,0 +1,1 @@
+Frontend recovery is being performed from the existing index.html blob.
