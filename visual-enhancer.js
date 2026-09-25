@@ -36,7 +36,7 @@
     ["Tools & Hardware","https://tradecounterdirect.com/cdn/shop/collections/power-tools-2386841.png?v=1767888527"],
     ["Industrial Machinery & Equipment","https://d38ti8pt50cl3m.cloudfront.net/uploads/taiwan/ckeditor/pictures/759/content_89734889-6285-4a33-84cf-3f07ed7cd03a.jpg"],
     ["Steel, Iron & Metal Products","https://atlantsnabcity.kz/image/catalog/catalog/metalloprokat.jpg"],
-    ["Solar & Renewable Energy","https://www.gettyimages.com/"],
+    ["Solar & Renewable Energy","https://m.economictimes.com/thumb/msid-98359811%2Cwidth-1200%2Cheight-1200%2Cresizemode-4%2Cimgsize-234962/solar-.jpg"],
     ["Plumbing, Water & Sanitary","https://s.alicdn.com/%40sc04/kf/Ha2de85c92cf14ba4bd45f7153fd363e2C/ASTM-CPVC-Plastic-Tube-Fitting-3-Way-1-2-Inch-Pn16-110-mm-90-Degree-Elbow-PVC-Pipe-Fitting.jpg"],
     ["Packaging & Printing","https://www.aalabels.com/theme/site/webimages/blog_images/custom-packaging-and-changing-market-trends-how-its-reshaping-the-business-landscape-01.webp?v=3681"],
     ["Office & Business Supplies","https://eu.evocdn.io/dealer/1898/content/media/Content_Pages/large-office-supplies-stationery-1.jpg"],
@@ -45,15 +45,15 @@
     ["Bags, Luggage & Travel","https://www.alriyadh.com/media/article/2024/06/23/img/3189514468.jpg"],
     ["Retail & Commercial Equipment","https://image.made-in-china.com/202f0j00NZtqcKEsgTrG/Customized-Color-Supermarket-Gondola-Shelving-Grocery-Shelves-for-Convenience-Store.webp"],
     ["Hotel, Restaurant & Catering Equipment","https://image.made-in-china.com/2f0j00UzMvECyAMncq/Star-Hotel-Commercial-Kitchen-Equipment-One-Stop-Catering-Solutions-for-Restaurants-and-Hotels.jpg"],
-    ["Factory & Production Supplies","https://d38ti8pt50cl3m.cloudfront.net/uploads/taiwan/ckeditor/pictures/759/content_89734889-6285-4a33-84cf-3f07ed7cd03a.jpg"],
+    ["Factory & Production Supplies","https://www.tmspl.org/images/ser1.jpg"],
     ["Marine & Port Equipment","https://imageresizer.static9.net.au/IgO_xelWODREsx2tNo-FW66fw4Y%3D/1200x675/https%3A%2F%2Fprod.static9.net.au%2Ffs%2F9952a7ba-e61a-470c-8263-e0df00f03166"],
     ["Logistics, Transport & Warehousing Equipment","https://cdn.bridge-imp.com/assets/images/c/202601_Distributionslogistik_LKW-219c1766.png"],
     ["Building Materials","https://www.nexgenexim.in/_next/image?q=75&url=%2Fimages%2Fproducts%2Froofing-tiles.webp&w=3840"],
     ["Electrical & Power Equipment","https://specap.com/_next/image?dpl=dpl_GR1mkvn39potgZieQaYjJ6YZHFpS&q=75&url=%2Fimages%2Fblog%2Fpower-electronics.webp&w=3840"],
     ["Telecommunications & Networking","https://img.directindustry.de/images_di/photo-g/61504-15857359.webp"],
     ["Industrial Materials & Coatings","https://images.yybcdn.com/sites/98500/98930/1778626839912960894098395136.jpg"],
-    ["General Merchandise","https://asset.kompas.com/crops/zzRIxeH54dueBGGsaJlk8MQYoWA%3D/100x67%3A900x600/1200x800/data/photo/2020/10/21/5f90151bf2e36.jpg"],
-    ["Import, Export & Trade Services","https://imageresizer.static9.net.au/IgO_xelWODREsx2tNo-FW66fw4Y%3D/1200x675/https%3A%2F%2Fprod.static9.net.au%2Ffs%2F9952a7ba-e61a-470c-8263-e0df00f03166"]
+    ["General Merchandise","https://glovo.dhmedia.io/image/stores-glovo/stores/77c4731e66daadbb77eb77f6cd2bd98992b3d7f04adc2102a3621d4eec5aa244?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MTI4MCwiaGVpZ2h0IjoxMjB9fSx7IndlYnAiOnsicSI6ImxvdyJ9fV0%3D"],
+    ["Import, Export & Trade Services","https://image.made-in-china.com/2f0j00PnjqEZkhEugK/Sea-Freight-Forwarder-Logistics-Service-Ocean-Shipping-Agent-to-Walvis-Bay-Namibia.webp"]
   ];
 
   function vtgCarouselFallback(name, index) {
