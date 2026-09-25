@@ -4,6 +4,7 @@ const { requireAuth, requireRole } = require('../middleware/auth');
 
 router.post('/', requireAuth, requireRole('supplier'), ctrl.create);
 router.get('/atlas', requireAuth, ctrl.listForAtlas);
+router.get('/:shipmentId/live-tracking', requireAuth, ctrl.getLiveTracking);
 router.get('/order/:orderId', requireAuth, ctrl.getForOrder);
 router.post('/:shipmentId/events', requireAuth, requireRole('supplier', 'bank', 'admin'), ctrl.addEvent);
 
