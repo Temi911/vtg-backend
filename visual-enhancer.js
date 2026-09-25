@@ -106,7 +106,6 @@
       section.innerHTML =
         '<span class="vtgCategoryPlus" aria-hidden="true">+</span>'+
         '<span class="vtgCategoryName">'+escapeHtml(cat.name)+'</span>';
-      section.querySelector('img').onerror = () => { section.classList.add('image-failed'); };
       wrap.appendChild(section);
     });
 
