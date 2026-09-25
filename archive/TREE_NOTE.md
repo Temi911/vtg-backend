@@ -1,0 +1,1 @@
+Use create_tree to restore frontend blob and map controller.
