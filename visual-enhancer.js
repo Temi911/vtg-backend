@@ -41,12 +41,18 @@
   const escapeHtml = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   function fixLogo() {
-    const imgs = document.querySelectorAll('img[src*="vtg-logo-red-transparent.png"], img.brandLogo');
+    const imgs = document.querySelectorAll('img.brandLogo, img[src*="vtg-logo-red-transparent.png"]');
     imgs.forEach(img => {
-      img.src = '/assets/vtg-logo-red-transparent.png?vtg-logo=20260925';
+      // Keep the canonical asset URL untouched. Rewriting the src after first paint
+      // can make the logo flash and then disappear on some cached deployments.
       img.style.display = 'block';
       img.style.visibility = 'visible';
       img.style.opacity = '1';
+      img.onerror = () => {
+        if (img.dataset.vtgLogoRetried === '1') return;
+        img.dataset.vtgLogoRetried = '1';
+        img.src = '/assets/vtg-logo-red-transparent.png';
+      };
     });
   }
 
