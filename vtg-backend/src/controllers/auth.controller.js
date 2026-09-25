@@ -143,7 +143,7 @@ const baseSignup = z.object({
 });
 
 const buyerSignupSchema = baseSignup.extend({
-  buyerType: z.enum(['individual', 'business', 'dealer', 'ngo']),
+  buyerType: z.enum(['individual', 'business', 'dealer', 'ngo', 'organisation']),
   companyName: z.string().optional(),
   registrationNo: z.string().optional(),
   bvn: z.string().regex(/^\d{11}$/).optional(),
@@ -232,7 +232,7 @@ const registerBuyer = asyncHandler(async (req, res) => {
     await client.query(
       `INSERT INTO buyer_profiles (user_id, buyer_type, company_name, registration_no, bvn, bank_name, bank_account_no)
        VALUES ($1,$2,$3,$4,$5,$6,$7)`,
-      [user.id, data.buyerType, data.companyName || null, data.registrationNo || null, data.bvn || null, data.bankName || null, data.bankAccountNo || null]
+      [user.id, data.buyerType === 'organisation' ? 'ngo' : data.buyerType, data.companyName || null, data.registrationNo || null, data.bvn || null, data.bankName || null, data.bankAccountNo || null]
     );
 
     // Start every buyer with zero-balance USD/NGN/CNY wallets so the dashboard has something real to show.
