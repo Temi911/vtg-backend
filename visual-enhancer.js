@@ -50,7 +50,7 @@
     ["Logistics, Transport & Warehousing Equipment","https://cdn.prod.website-files.com/6053079d4ad5d785961d4e93/6694d55266d3587eda89bbf0_kabotage.webp"],
     ["Building Materials","https://274418.selcdn.ru/cv08300-33250f0d-0664-43fc-9dbf-9d89738d114e/uploads/519844/9bd27ab0-9ca6-447a-a07f-bf87ef1ff795.jpg"],
     ["Electrical & Power Equipment","https://inwfile.com/s-gj/fwscc4.jpg"],
-    ["Telecommunications & Networking","https://www.gettyimages.com/"],
+    ["Telecommunications & Networking","https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=85&w=1600&auto=format&fit=crop"],
     ["Industrial Materials & Coatings","https://static0.innoget.com/uploads/b447b42fff050af2968cd1317a5422533a42b942.png"],
     ["General Merchandise","https://m.economictimes.com/thumb/msid-124199589%2Cwidth-1200%2Cheight-900%2Cresizemode-4%2Cimgsize-22250/consumer-companies-reaping-rich-rural-harvest.jpg"],
     ["Import, Export & Trade Services","https://kalkaalow.co.tz/images/our-work/services_pic02.jpg"]
