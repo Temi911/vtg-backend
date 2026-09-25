@@ -140,7 +140,7 @@
             <div class="vtgLayer">Standard atlas <button data-mode="standard">ACTIVE</button></div><div class="vtgLayer">Dark atlas <button data-mode="dark">VIEW</button></div>
             <div class="vtgLayer">Satellite-style view <button data-mode="satellite">VIEW</button></div>
             <div class="vtgLayer">Trade hubs <button data-layer="hubs">SHOW</button></div>
-            <div class="vtgLayer">Ports &amp; logistics <button data-layer="ports">SHOW</button></div><div class="vtgLayer">Trade routes <button data-layer="routes">SHOW</button></div>
+            <div class="vtgLayer">Ports &amp; logistics <button data-layer="ports">SHOW</button></div><div class="vtgLayer">Trade routes <button data-layer="routes">SHOW</button></div><div class="vtgLayer">My VTG shipments <button data-layer="shipments">LOAD</button></div>
             <div class="vtgLayer">Business locations <button data-layer="business">SHOW</button></div>
           </div>
           <div class="vtgMapTools">
@@ -238,7 +238,7 @@
       if (mode === currentStyle) return;
       currentStyle = mode;
       map.setStyle(mode === 'satellite' ? BLUE_MARBLE_STYLE : (mode === 'dark' ? DARK_STYLE : STYLE));
-      map.once('styledata', () => { if (routesVisible && !map.getSource('vtg-trade-routes')) addTradeRoutes(); });
+      map.once('styledata', () => { if (routesVisible && !map.getSource('vtg-trade-routes')) addTradeRoutes(); if (shipmentsVisible) addShipments(); });
       doc.querySelectorAll('[data-mode]').forEach(x => x.textContent = x.dataset.mode === 'satellite' ? (x.dataset.mode === currentStyle ? 'ACTIVE' : 'VIEW') : (x.dataset.mode === currentStyle ? 'ACTIVE' : 'VIEW'));
       themeBtn.textContent = mode === 'dark' ? 'Light mode' : 'Dark mode';
       status(mode === 'satellite'
@@ -250,7 +250,7 @@
       { id:'za-cn', name:'Southern Africa ↔ China', mode:'Sea freight corridor', coords:[[31.0247,-29.8622],[35,-24],[45,-15],[60,-5],[75,8],[95,18],[121.9235,29.8683]] },
       { id:'ng-kr', name:'West Africa ↔ South Korea', mode:'Sea freight corridor', coords:[[3.3903,6.4474],[20,5],[40,4],[65,8],[90,18],[110,28],[129.0403,35.1028]] }
     ];
-    let routesVisible = false;
+    let routesVisible = false;\n    let shipmentsVisible = false;\n    let shipmentData = [];
     const clearRoutes = () => {
       if (map.getLayer('vtg-trade-routes')) map.removeLayer('vtg-trade-routes');
       if (map.getLayer('vtg-trade-routes-halo')) map.removeLayer('vtg-trade-routes-halo');
@@ -271,6 +271,175 @@
       map.on('mouseenter','vtg-trade-routes',()=>{map.getCanvas().style.cursor='pointer'});
       map.on('mouseleave','vtg-trade-routes',()=>{map.getCanvas().style.cursor=''});
     };
+    const escHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+
+    const clearShipments = () => {
+      ['vtg-shipment-routes','vtg-shipment-route-halo','vtg-shipment-milestones','vtg-shipment-active'].forEach(id => {
+        if (map.getLayer(id)) map.removeLayer(id);
+      });
+      ['vtg-shipment-routes','vtg-shipment-milestones'].forEach(id => {
+        if (map.getSource(id)) map.removeSource(id);
+      });
+      shipmentData = [];
+    };
+
+    const addShipments = async () => {
+      const token = window.localStorage.getItem('vtg_access_token') || '';
+      if (!token) {
+        status('Sign in to VTG to load your shipment records. The atlas does not expose private shipment data publicly.');
+        return;
+      }
+      status('Loading your VTG shipment records…');
+      try {
+        const response = await fetch('/api/shipments/atlas', {
+          headers: { Authorization: 'Bearer ' + token, Accept: 'application/json' },
+          cache: 'no-store'
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data?.message || 'Shipment data unavailable');
+        shipmentData = data.shipments || [];
+        if (!shipmentData.length) {
+          status('No mapped VTG shipments are available for this account yet. Create a shipment and add tracking events to see it on the atlas.');
+          return;
+        }
+
+        const routeFeatures = shipmentData.map(s => ({
+          type: 'Feature',
+          properties: {
+            id: s.id,
+            reference: s.reference,
+            carrier: s.carrier || 'Carrier not recorded',
+            container: s.containerNo || 'Container not recorded',
+            status: s.status || 'pending',
+            percent: Number(s.percentComplete || 0),
+            origin: s.originPort || 'Origin not recorded',
+            destination: s.destinationPort || 'Destination not recorded',
+            milestoneCount: s.milestones?.length || 0
+          },
+          geometry: {
+            type: 'LineString',
+            coordinates: s.routePoints.map(p => [Number(p.lng), Number(p.lat)])
+          }
+        })).filter(f => f.geometry.coordinates.length >= 2);
+
+        const milestoneFeatures = [];
+        shipmentData.forEach(s => {
+          (s.routePoints || []).forEach(p => {
+            milestoneFeatures.push({
+              type: 'Feature',
+              properties: {
+                shipmentId: s.id,
+                reference: s.reference,
+                type: p.type || 'milestone',
+                name: p.name,
+                country: p.country || '',
+                detail: p.detail || '',
+                status: p.status || '',
+                eventTime: p.eventTime || ''
+              },
+              geometry: { type: 'Point', coordinates: [Number(p.lng), Number(p.lat)] }
+            });
+          });
+        });
+
+        clearShipments();
+        map.addSource('vtg-shipment-routes', {
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: routeFeatures }
+        });
+        map.addLayer({
+          id: 'vtg-shipment-route-halo',
+          type: 'line',
+          source: 'vtg-shipment-routes',
+          layout: { 'line-cap': 'round', 'line-join': 'round' },
+          paint: {
+            'line-color': '#ffffff',
+            'line-width': 9,
+            'line-opacity': 0.42
+          }
+        });
+        map.addLayer({
+          id: 'vtg-shipment-routes',
+          type: 'line',
+          source: 'vtg-shipment-routes',
+          layout: { 'line-cap': 'round', 'line-join': 'round' },
+          paint: {
+            'line-color': [
+              'match', ['get', 'status'],
+              'delivered', '#16865d',
+              'arrived', '#d39a27',
+              'attention', '#c44b4b',
+              'in_transit', '#0e969f',
+              'shipped', '#4b7bec',
+              '#7b8794'
+            ],
+            'line-width': 5,
+            'line-opacity': 0.95
+          }
+        });
+        map.addSource('vtg-shipment-milestones', {
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: milestoneFeatures }
+        });
+        map.addLayer({
+          id: 'vtg-shipment-milestones',
+          type: 'circle',
+          source: 'vtg-shipment-milestones',
+          paint: {
+            'circle-radius': ['match', ['get', 'type'], 'active', 8, 'destination', 7, 5],
+            'circle-color': ['match', ['get', 'type'], 'active', '#d6a23a', 'destination', '#16865d', '#0e969f'],
+            'circle-stroke-color': '#ffffff',
+            'circle-stroke-width': 2
+          }
+        });
+
+        map.on('click', 'vtg-shipment-routes', e => {
+          const p = e.features?.[0]?.properties || {};
+          const html = '<b>' + escHtml(p.reference) + '</b>' +
+            '<br><small>Status: ' + escHtml(p.status) + ' • ' + escHtml(p.percent) + '% complete</small>' +
+            '<br><small>Carrier: ' + escHtml(p.carrier) + '</small>' +
+            '<br><small>Container: ' + escHtml(p.container) + '</small>' +
+            '<br><small>Route: ' + escHtml(p.origin) + ' → ' + escHtml(p.destination) + '</small>' +
+            '<br><small>Recorded milestones: ' + escHtml(p.milestoneCount) + '</small>';
+          new ml.Popup({ offset: 10 }).setLngLat(e.lngLat).setHTML(html).addTo(map);
+        });
+        map.on('click', 'vtg-shipment-milestones', e => {
+          const p = e.features?.[0]?.properties || {};
+          const time = p.eventTime ? new Date(p.eventTime).toLocaleString() : 'Time not recorded';
+          const html = '<b>' + escHtml(p.reference) + '</b>' +
+            '<br><strong>' + escHtml(p.name) + '</strong>' +
+            '<br><small>' + escHtml(p.type) + (p.status ? ' • ' + escHtml(p.status) : '') + '</small>' +
+            (p.detail ? '<br><small>' + escHtml(p.detail) + '</small>' : '') +
+            '<br><small>' + escHtml(time) + '</small>';
+          new ml.Popup({ offset: 10 }).setLngLat(e.lngLat).setHTML(html).addTo(map);
+        });
+        ['vtg-shipment-routes','vtg-shipment-milestones'].forEach(layer => {
+          map.on('mouseenter', layer, () => { map.getCanvas().style.cursor = 'pointer'; });
+          map.on('mouseleave', layer, () => { map.getCanvas().style.cursor = ''; });
+        });
+
+        shipmentsVisible = true;
+        const b = doc.querySelector('[data-layer="shipments"]');
+        if (b) { b.textContent = 'ON'; b.style.background = '#dff4f5'; }
+        const role = roleSelect.value;
+        status(`VTG shipments loaded • ${shipmentData.length} mapped record${shipmentData.length === 1 ? '' : 's'} • ${role} view`);
+      } catch (error) {
+        status('Could not load VTG shipments. ' + (error?.message || 'Please try again.'));
+      }
+    };
+
+    const showShipments = async on => {
+      if (!on) {
+        clearShipments();
+        shipmentsVisible = false;
+        const b = doc.querySelector('[data-layer="shipments"]');
+        if (b) { b.textContent = 'LOAD'; b.style.background = ''; }
+        status('VTG shipment layer hidden.');
+        return;
+      }
+      await addShipments();
+    };
+
     const showRoutes = on => {
       routesVisible=on;
       if (on) addTradeRoutes(); else clearRoutes();
@@ -290,7 +459,7 @@
     doc.querySelectorAll('[data-layer]').forEach(b => b.onclick = () => {
       const k = b.dataset.layer;
       const isOn = b.textContent.trim() === 'ON';
-      if (k === 'routes') { showRoutes(!routesVisible); return }
+      if (k === 'routes') { showRoutes(!routesVisible); return }\n      if (k === 'shipments') { showShipments(!shipmentsVisible); return }
       if (k === 'ports') {
         if (isOn) { clearMarkers(portMarkers); b.textContent = 'SHOW'; b.style.background = ''; status('Ports & logistics layer hidden.'); return }
         portMarkers = PORTS.map(p => addMarker(p, '#0e969f', 'seaport'));
