@@ -56,6 +56,21 @@
     });
   }
 
+  function makeLocalCategoryImage(name, index) {
+    const safe = String(name || 'VTG').replace(/[&<>]/g, '');
+    const hue = (index * 37) % 360;
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700">' +
+      '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl('+hue+',48%,28%)"/><stop offset="1" stop-color="hsl('+((hue+42)%360)+',62%,44%)"/></linearGradient></defs>' +
+      '<rect width="1200" height="700" fill="url(#g)"/>' +
+      '<circle cx="930" cy="170" r="170" fill="rgba(255,255,255,.10)"/><circle cx="1030" cy="520" r="260" fill="rgba(255,255,255,.07)"/>' +
+      '<path d="M0 560 C220 480 380 650 610 535 S980 430 1200 535 V700 H0Z" fill="rgba(0,0,0,.18)"/>' +
+      '<rect x="62" y="70" width="1076" height="560" rx="34" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="3"/>' +
+      '<text x="75" y="485" fill="#fff" font-family="Arial,sans-serif" font-size="54" font-weight="700">'+safe+'</text>' +
+      '<text x="78" y="545" fill="rgba(255,255,255,.78)" font-family="Arial,sans-serif" font-size="24" letter-spacing="4">VTG MARKETPLACE</text>' +
+      '</svg>';
+    return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+  }
+
   function initProductCarousel() {
     const hero = document.querySelector('#productHero');
     if (!hero) return;
@@ -76,7 +91,7 @@
       img.onerror = () => {
         if (img.dataset.fallback === '1') return;
         img.dataset.fallback = '1';
-        img.src = 'https://picsum.photos/seed/vtg-' + (i + 101) + '/1200/700';
+        img.src = makeLocalCategoryImage(p.name, i);
       };
       return img;
     });
@@ -111,7 +126,7 @@
       section.className = 'vtgCategoryTile';
       section.dataset.categoryIndex = String(i);
       section.innerHTML =
-        '<span class="vtgCategoryThumb"><img src="'+escapeHtml(cat.img)+'" alt="" loading="lazy"></span>'+
+        
         '<span class="vtgCategoryBody"><span class="vtgCategoryPlus" aria-hidden="true">+</span><span class="vtgCategoryName">'+escapeHtml(cat.name)+'</span></span>';
       wrap.appendChild(section);
     });
