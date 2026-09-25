@@ -1,6 +1,7 @@
 (() => {
   const LIB = 'https://unpkg.com/maplibre-gl@5.13.0/dist/maplibre-gl.js';
   const STYLE = 'https://tiles.openfreemap.org/styles/liberty';
+  const DARK_STYLE = 'https://tiles.openfreemap.org/styles/dark';
   // NASA GIBS Blue Marble true-color imagery — free, no API key, matches
   // the realistic Earth-from-space look. Used as the default globe view.
   const BLUE_MARBLE_STYLE = {
@@ -130,13 +131,13 @@
           <input id="vtgMapSearch" placeholder="Search a city, port, country or company address" />
           <button class="vtgMapBtn primary" id="vtgFind">Find</button>
           <button class="vtgMapBtn" id="vtgLocate">My location</button>
-          <button class="vtgMapBtn" id="vtgReset">World</button>
+          <button class="vtgMapBtn" id="vtgTheme">Dark mode</button><button class="vtgMapBtn" id="vtgReset">World</button>
         </div>
         <div class="vtgMapViewport">
           <div id="vtgAdvancedMap"></div>
           <div class="vtgMapSide">
-            <h4>Map layers</h4>
-            <div class="vtgLayer">Standard atlas <button data-mode="standard">ACTIVE</button></div>
+            <h4>VTG intelligence</h4><div class="vtgLayer">View for <select id="vtgRole" style="font-size:9px;border:1px solid #d5e1e5;border-radius:6px;padding:4px"><option value="buyer">Buyer</option><option value="supplier">Supplier</option><option value="bank">Bank / Finance</option><option value="admin">Admin</option></select></div>
+            <div class="vtgLayer">Standard atlas <button data-mode="standard">ACTIVE</button></div><div class="vtgLayer">Dark atlas <button data-mode="dark">VIEW</button></div>
             <div class="vtgLayer">Satellite-style view <button data-mode="satellite">VIEW</button></div>
             <div class="vtgLayer">Trade hubs <button data-layer="hubs">SHOW</button></div>
             <div class="vtgLayer">Ports &amp; logistics <button data-layer="ports">SHOW</button></div>
@@ -177,6 +178,15 @@
     map.addControl(new ml.FullscreenControl(), 'bottom-right');
     let marker = null, measure = false, points = [];
     const status = t => { doc.getElementById('vtgMapStatus').textContent = t };
+    const roleCopy = {
+      buyer: 'Buyer view • supplier origin, cargo movement, destination port, ETA, documentation milestones and landed-cost planning.',
+      supplier: 'Supplier view • buyer markets, destination ports, shipment progress, delivery milestones and verified business locations.',
+      bank: 'Bank / finance view • transaction parties, cargo movement, document milestones, finance checkpoints and verification signals.',
+      admin: 'Admin view • full trade network, ports, hubs, business locations, routes and operational alerts.'
+    };
+    const roleSelect = doc.getElementById('vtgRole');
+    roleSelect.onchange = () => status(roleCopy[roleSelect.value] || roleCopy.admin);
+
     const search = async () => {
       const q = doc.getElementById('vtgMapSearch').value.trim(); if (!q) return;
       status('Searching for ' + q + '…');
@@ -214,12 +224,22 @@
       doc.querySelectorAll('[data-proj]').forEach(x => x.classList.toggle('active', x === b));
       status(p === 'globe' ? '3D globe mode • explore the world' : '2D atlas mode • explore streets and trade regions');
     });
+    const themeBtn = doc.getElementById('vtgTheme');
+    themeBtn.onclick = () => {
+      const target = currentStyle === 'dark' ? 'standard' : 'dark';
+      currentStyle = target;
+      map.setStyle(target === 'dark' ? DARK_STYLE : STYLE);
+      themeBtn.textContent = target === 'dark' ? 'Light mode' : 'Dark mode';
+      doc.querySelectorAll('[data-mode]').forEach(x => x.textContent = x.dataset.mode === target ? 'ACTIVE' : 'VIEW');
+      status(target === 'dark' ? 'Dark atlas enabled — operational low-glare view.' : 'Light atlas enabled — standard daytime trade view.');
+    };
     doc.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => {
       const mode = b.dataset.mode;
       if (mode === currentStyle) return;
       currentStyle = mode;
-      map.setStyle(mode === 'satellite' ? BLUE_MARBLE_STYLE : STYLE);
+      map.setStyle(mode === 'satellite' ? BLUE_MARBLE_STYLE : (mode === 'dark' ? DARK_STYLE : STYLE));
       doc.querySelectorAll('[data-mode]').forEach(x => x.textContent = x.dataset.mode === 'satellite' ? (x.dataset.mode === currentStyle ? 'ACTIVE' : 'VIEW') : (x.dataset.mode === currentStyle ? 'ACTIVE' : 'VIEW'));
+      themeBtn.textContent = mode === 'dark' ? 'Light mode' : 'Dark mode';
       status(mode === 'satellite'
         ? 'Real satellite Earth imagery (NASA Blue Marble). Zoom is limited to a country/region level — switch to Standard atlas for exact street addresses.'
         : 'Standard street atlas — full zoom to exact addresses, ports and business locations.');
@@ -250,7 +270,7 @@
         b.textContent = isOn ? 'SHOW' : 'ON'; b.style.background = isOn ? '' : '#dff4f5';
       }
     });
-    doc.getElementById('vtgTraffic').onclick = () => status('Traffic / route intelligence selected. Live road traffic requires a traffic data provider; the atlas remains fully interactive without it.');
+    doc.getElementById('vtgTraffic').onclick = () => status('Trade route intelligence selected. VTG can overlay verified origin → destination routes and shipment milestones when those records are available. Live vessel/road traffic requires a real data provider; the atlas never invents movement data.');
     doc.getElementById('vtgMeasure').onclick = () => {
       measure = !measure;
       status(measure ? 'Measure mode: click two points on the map (or two port/airport markers) to see distance and estimated transit time.' : 'Measure mode closed.');
