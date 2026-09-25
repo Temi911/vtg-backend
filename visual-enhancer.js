@@ -98,7 +98,7 @@
     wrap.className = 'vtg36Carousels';
     wrap.innerHTML = '<div class="vtgCategoryIntro"><span>VTG MARKETPLACE</span><h2>Browse Trade Categories</h2></div>';
 
-    CATEGORIES.forEach((cat, i) => {
+    CATEGORIES.slice(0, 9).forEach((cat, i) => {
       const section = document.createElement('button');
       section.type = 'button';
       section.className = 'vtgCategoryTile';
