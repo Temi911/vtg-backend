@@ -4299,6 +4299,16 @@ window.realLogin = async function(){
 };
 
 window.addEventListener('DOMContentLoaded', ()=>{
+  const role = (location.hash || '').replace('#','').toLowerCase();
+  if (['buyer','supplier','bank'].includes(role)) {
+    setTimeout(()=>{
+      const session = Auth.getSession();
+      if (session && session.user && session.user.role === role && typeof window.showDashboard === 'function') window.showDashboard(role);
+    }, 120);
+  }
+});
+
+window.addEventListener('DOMContentLoaded', ()=>{
   const picker = document.getElementById('language-picker');
   const dashboardPicker = document.getElementById('dashboard-language-picker');
   if(picker) picker.value = I18n.current;
