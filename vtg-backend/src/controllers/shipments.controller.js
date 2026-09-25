@@ -3,6 +3,7 @@ const { query, withTransaction } = require('../config/db');
 const { AppError } = require('../utils/AppError');
 const { asyncHandler } = require('../utils/asyncHandler');
 const { locations: atlasLocations } = require('../../api/atlas-locations');
+const { getLiveVesselPosition } = require('../services/vessel-tracking.service');
 
 function resolveAtlasLocation(text) {
   const value = String(text || '').trim().toLowerCase();
@@ -150,6 +151,45 @@ const listForAtlas = asyncHandler(async (req, res) => {
   res.json({ ok: true, count: shipments.length, shipments });
 });
 
+const getLiveTracking = asyncHandler(async (req, res) => {
+  const shipmentRes = await query(
+    `SELECT s.*, o.buyer_id, o.supplier_id
+     FROM shipments s
+     JOIN orders o ON o.id = s.order_id
+     WHERE s.id = $1
+     LIMIT 1`,
+    [req.params.shipmentId]
+  );
+  const shipment = shipmentRes.rows[0];
+  if (!shipment) throw new AppError('Shipment not found', 404);
+
+  const allowed =
+    req.user.role === 'admin' ||
+    (req.user.role === 'buyer' && shipment.buyer_id === req.user.id) ||
+    (req.user.role === 'supplier' && shipment.supplier_id === req.user.id) ||
+    (req.user.role === 'bank' && await (async () => {
+      const r = await query('SELECT bank_id FROM orders WHERE id = $1', [shipment.order_id]);
+      return r.rows[0]?.bank_id === req.user.id;
+    })());
+  if (!allowed) throw new AppError('Forbidden', 403, 'FORBIDDEN');
+
+  const tracking = await getLiveVesselPosition({
+    vesselName: shipment.vessel_name,
+    imo: shipment.vessel_imo,
+    mmsi: shipment.vessel_mmsi
+  });
+
+  res.json({
+    ok: true,
+    shipmentId: shipment.id,
+    provider: tracking.provider,
+    available: tracking.available,
+    reason: tracking.reason || null,
+    vessel: tracking.vessel || null,
+    nextMilestone: shipment.destination_port || null
+  });
+});
+
 const audit = require('../services/audit.service');
 
 const createSchema = z.object({
@@ -204,4 +244,4 @@ const addEvent = asyncHandler(async (req, res) => {
   res.status(201).json({ event: result });
 });
 
-module.exports = { create, getForOrder, addEvent, listForAtlas };
+module.exports = { create, getForOrder, addEvent, listForAtlas, getLiveTracking };
