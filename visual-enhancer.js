@@ -58,10 +58,11 @@
 
   function initProductCarousel() {
     const hero = document.querySelector('#productHero');
-    if (!hero || hero.dataset.vtgCarouselFixed === '1') return;
-    const old = [...hero.querySelectorAll(':scope > img')];
-    if (!old.length) return;
+    if (!hero) return;
+    const existingSlides = [...hero.querySelectorAll(':scope > img[data-vtg-slide]')];
+    if (existingSlides.length === CATEGORIES.length) return;
     hero.dataset.vtgCarouselFixed = '1';
+    const old = [...hero.querySelectorAll(':scope > img')];
 
     const slides = CATEGORIES.map((p,i) => {
       const img = document.createElement('img');
@@ -70,6 +71,7 @@
       img.alt = p.name;
       img.src = p.img;
       img.className = i === 0 ? 'active' : '';
+      img.dataset.vtgSlide = '1';
       img.dataset.fallback = '0';
       img.onerror = () => {
         if (img.dataset.fallback === '1') return;
@@ -171,8 +173,8 @@
       .vtgCategoryIntro h2{margin:1px 0;color:var(--navy);font-size:18px}
       .vtgCategoryTile{min-width:0;display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:9px;background:var(--white);padding:7px;cursor:pointer;text-align:left;box-shadow:0 3px 11px rgba(0,0,0,.045);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
       .vtgCategoryTile:hover{transform:translateY(-2px);border-color:var(--teal);box-shadow:0 7px 16px rgba(0,0,0,.09)}
-      .vtgCategoryThumb{flex:0 0 42px;width:42px;height:42px;border-radius:7px;overflow:hidden;background:#eef2f4}
-      .vtgCategoryThumb img{width:100%;height:100%;object-fit:cover;display:block}
+      .vtgCategoryThumb{display:none}
+      .vtgCategoryThumb img{display:none}
       .vtgCategoryBody{min-width:0;display:flex;align-items:center;gap:5px}
       .vtgCategoryPlus{flex:0 0 18px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:#9c241d;color:#fff;font-size:14px;font-weight:900;line-height:1}
       .vtgCategoryName{display:block;margin:0;color:var(--navy);font-size:8.5px;line-height:1.18;font-weight:850}
