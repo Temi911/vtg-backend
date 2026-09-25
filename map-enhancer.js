@@ -113,11 +113,29 @@
     #mapDrawer .vtgTool{width:42px;height:42px;border:1px solid #d5e1e5;background:rgba(255,255,255,.96);border-radius:11px;color:#123b57;display:grid;place-items:center;box-shadow:0 8px 24px rgba(7,31,48,.12);font-size:16px;font-weight:800}
     #mapDrawer .vtgTool:hover{color:#0e969f;border-color:#0e969f}
     #mapDrawer .vtgMapStatus{position:absolute;left:14px;bottom:14px;z-index:4;background:rgba(7,31,48,.9);color:#fff;border-radius:10px;padding:8px 10px;font-size:8px;max-width:340px}
+    #mapDrawer .vtgShipmentPanel{position:absolute;right:66px;top:14px;z-index:5;width:min(360px,calc(100% - 280px));max-height:calc(100% - 28px);overflow:auto;background:rgba(255,255,255,.97);border:1px solid #dbe5e9;border-radius:15px;box-shadow:0 14px 40px rgba(7,31,48,.18);display:none}
+    #mapDrawer .vtgShipmentPanel.open{display:block}
+    #mapDrawer .vtgShipmentHead{padding:12px 14px;border-bottom:1px solid #e3ebee;display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    #mapDrawer .vtgShipmentHead h4{margin:0;color:#123b57;font-size:12px}
+    #mapDrawer .vtgShipmentMeta{padding:10px 14px;background:#f5f9fa;display:grid;grid-template-columns:1fr 1fr;gap:7px}
+    #mapDrawer .vtgShipmentMeta div{font-size:9px;color:#607586}.vtgShipmentMeta b{display:block;color:#123b57;font-size:10px;margin-top:2px}
+    #mapDrawer .vtgShipmentPath{padding:12px 14px}.vtgPathRow{display:grid;grid-template-columns:18px 1fr;gap:8px;position:relative;padding-bottom:12px}
+    #mapDrawer .vtgPathRow:before{content:"";position:absolute;left:8px;top:17px;bottom:-2px;width:2px;background:#dbe5e9}
+    #mapDrawer .vtgPathRow:last-child:before{display:none}
+    #mapDrawer .vtgPathDot{width:16px;height:16px;border-radius:50%;background:#cbd9de;border:3px solid #fff;box-shadow:0 0 0 1px #cbd9de;z-index:1}
+    #mapDrawer .vtgPathRow.current .vtgPathDot{background:#d6a23a;box-shadow:0 0 0 2px #d6a23a}
+    #mapDrawer .vtgPathRow.done .vtgPathDot{background:#16865d;box-shadow:0 0 0 1px #16865d}
+    #mapDrawer .vtgPathRow.next .vtgPathDot{background:#0e969f;box-shadow:0 0 0 2px #0e969f}
+    #mapDrawer .vtgPathTitle{font-size:10px;font-weight:800;color:#123b57}.vtgPathDetail{font-size:8px;color:#6a7e8b;margin-top:2px;line-height:1.4}
+    #mapDrawer .vtgShipmentActions{display:flex;gap:6px;padding:0 14px 12px}
+    #mapDrawer .vtgShipmentActions button{border:1px solid #d3e0e5;background:#fff;color:#123b57;border-radius:8px;padding:7px 9px;font-size:9px;font-weight:800}
+    #mapDrawer .vtgShipmentActions button.primary{background:#123b57;color:#fff;border-color:#123b57}
+    #mapDrawer .vtgShipmentSelect{margin:10px 14px 0;width:calc(100% - 28px);border:1px solid #d5e1e5;border-radius:8px;padding:7px;font-size:9px;color:#123b57}
     #mapDrawer .vtgMapBottom{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 12px;background:#fff;border-top:1px solid #dbe5e9;color:#607586;font-size:8px}
     #mapDrawer .vtgMapModes{display:flex;gap:5px;flex-wrap:wrap}
     #mapDrawer .vtgMode{border:1px solid #dbe5e9;background:#fff;border-radius:8px;padding:6px 9px;font-size:8px;font-weight:800;color:#123b57}
     #mapDrawer .vtgMode.active{background:#eaf4f6;border-color:#0e969f;color:#087e86}
-    @media(max-width:700px){#mapDrawer .vtgMapTop{grid-template-columns:1fr 1fr}.vtgMapTop input{grid-column:1/-1}#mapDrawer .vtgMapSide{width:190px}.vtgMapViewport{min-height:460px!important;height:70vh!important}}
+    @media(max-width:700px){#mapDrawer .vtgMapTop{grid-template-columns:1fr 1fr}.vtgMapTop input{grid-column:1/-1}#mapDrawer .vtgMapSide{width:190px}.vtgShipmentPanel{left:14px!important;right:14px!important;top:auto!important;bottom:14px;width:auto!important;max-height:58%!important}.vtgMapViewport{min-height:460px!important;height:70vh!important}}
     `; head.appendChild(css);
 
     const old = doc.getElementById('mapDrawer'); if (!old) return;
@@ -135,6 +153,7 @@
         </div>
         <div class="vtgMapViewport">
           <div id="vtgAdvancedMap"></div>
+          <div class="vtgShipmentPanel" id="vtgShipmentPanel"></div>
           <div class="vtgMapSide">
             <h4>VTG intelligence</h4><div class="vtgLayer">View for <select id="vtgRole" style="font-size:9px;border:1px solid #d5e1e5;border-radius:6px;padding:4px"><option value="buyer">Buyer</option><option value="supplier">Supplier</option><option value="bank">Bank / Finance</option><option value="admin">Admin</option></select></div>
             <div class="vtgLayer">Standard atlas <button data-mode="standard">ACTIVE</button></div><div class="vtgLayer">Dark atlas <button data-mode="dark">VIEW</button></div>
@@ -273,6 +292,97 @@
     };
     const escHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 
+    const ensureShipmentPanel = () => doc.getElementById('vtgShipmentPanel');
+    const playbackPoints = s => (s?.routePoints || []).filter(p => Number.isFinite(Number(p.lat)) && Number.isFinite(Number(p.lng)));
+
+    const renderShipmentPanel = (s, opts = {}) => {
+      const panel = ensureShipmentPanel();
+      if (!panel || !s) return;
+      const points = playbackPoints(s);
+      const currentIndex = Math.min(opts.index ?? Math.max(points.length - 2, 0), Math.max(points.length - 1, 0));
+      const current = points[currentIndex] || points[0];
+      const next = points[currentIndex + 1] || (s.destinationPort ? { name: s.destinationPort, type: 'destination' } : null);
+      panel.classList.add('open');
+      panel.innerHTML = '<div class="vtgShipmentHead"><div><div style="font-size:8px;color:#0e969f;font-weight:800">SHIPMENT STATUS</div><h4>' + escHtml(s.reference || 'VTG shipment') + '</h4></div><button data-shipment-close style="border:0;background:transparent;font-size:16px;color:#607586">×</button></div>' +
+        '<select class="vtgShipmentSelect" data-shipment-select>' + shipmentData.map(x => '<option value="' + escHtml(x.id) + '"' + (x.id === s.id ? ' selected' : '') + '>' + escHtml(x.reference || x.id) + ' — ' + escHtml(x.status || 'pending') + '</option>').join('') + '</select>' +
+        '<div class="vtgShipmentMeta"><div>Status<b>' + escHtml(s.status || 'pending') + '</b></div><div>Progress<b>' + escHtml(Number(s.percentComplete || 0)) + '%</b></div><div>Latest recorded<b>' + escHtml(current?.name || 'Not recorded') + '</b></div><div>Next milestone<b>' + escHtml(next?.name || 'Destination') + '</b></div></div>' +
+        '<div class="vtgShipmentPath">' + points.map((p,i) => '<div class="vtgPathRow ' + (i < currentIndex ? 'done ' : '') + (i === currentIndex ? 'current ' : '') + (i === currentIndex + 1 ? 'next ' : '') + '"><div class="vtgPathDot"></div><div><div class="vtgPathTitle">' + escHtml(p.name || 'Shipment point') + '</div><div class="vtgPathDetail">' + escHtml(p.type || 'milestone') + (p.status ? ' • ' + escHtml(p.status) : '') + (p.eventTime ? ' • ' + escHtml(new Date(p.eventTime).toLocaleString()) : '') + (p.detail ? ' • ' + escHtml(p.detail) : '') + '</div></div></div>').join('') + '</div>' +
+        '<div class="vtgShipmentActions"><button class="primary" data-play-shipment>' + (playbackTimer ? 'Pause playback' : 'Play playback') + '</button><button data-reset-shipment>Latest</button><button data-fit-shipment>Fit route</button></div>';
+      panel.querySelector('[data-shipment-close]').onclick = () => { panel.classList.remove('open'); selectedShipmentId = null; if (playbackTimer) { clearInterval(playbackTimer); playbackTimer = null; } clearPlaybackMap(); };
+      panel.querySelector('[data-shipment-select]').onchange = e => selectShipment(e.target.value);
+      panel.querySelector('[data-play-shipment]').onclick = () => togglePlayback(s);
+      panel.querySelector('[data-reset-shipment]').onclick = () => { stopPlayback(); playbackIndex = Math.max(points.length - 2, 0); renderShipmentPanel(s, { index: playbackIndex }); updatePlaybackMap(s, playbackIndex); };
+      panel.querySelector('[data-fit-shipment]').onclick = () => fitShipment(s);
+    };
+
+    const clearPlaybackMap = () => {
+      ['vtg-shipment-playback','vtg-shipment-active-point'].forEach(id => {
+        if (map.getLayer(id)) map.removeLayer(id);
+      });
+      ['vtg-shipment-playback','vtg-shipment-active-point'].forEach(id => {
+        if (map.getSource(id)) map.removeSource(id);
+      });
+    };
+
+    const updatePlaybackMap = (s, index) => {
+      const points = playbackPoints(s);
+      if (points.length < 2) return;
+      const safeIndex = Math.max(0, Math.min(index, points.length - 1));
+      clearPlaybackMap();
+      const coords = points.slice(0, safeIndex + 1).map(p => [Number(p.lng), Number(p.lat)]);
+      map.addSource('vtg-shipment-playback', { type:'geojson', data:{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:coords}} });
+      map.addLayer({id:'vtg-shipment-playback',type:'line',source:'vtg-shipment-playback',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#d6a23a','line-width':8,'line-opacity':0.95}});
+      const p = points[safeIndex];
+      map.addSource('vtg-shipment-active-point',{type:'geojson',data:{type:'Feature',properties:{name:p.name,type:p.type},geometry:{type:'Point',coordinates:[Number(p.lng),Number(p.lat)]}});
+      map.addLayer({id:'vtg-shipment-active-point',type:'circle',source:'vtg-shipment-active-point',paint:{'circle-radius':10,'circle-color':'#d6a23a','circle-stroke-color':'#fff','circle-stroke-width':3}});
+      if (safeIndex === points.length - 1) status('Shipment playback reached the destination.');
+      else status('Shipment playback • latest recorded point: ' + (p.name || 'Unknown'));
+    };
+
+    const fitShipment = s => {
+      const points = playbackPoints(s);
+      if (points.length < 2) return;
+      const bounds = points.reduce((b,p) => b.extend([Number(p.lng),Number(p.lat)]), new ml.LngLatBounds([Number(points[0].lng),Number(points[0].lat)],[Number(points[0].lng),Number(points[0].lat)]));
+      map.fitBounds(bounds,{padding:{top:70,bottom:70,left:280,right:420},duration:900});
+    };
+
+    const stopPlayback = () => {
+      if (playbackTimer) clearInterval(playbackTimer);
+      playbackTimer = null;
+    };
+
+    const togglePlayback = s => {
+      const points = playbackPoints(s);
+      if (points.length < 2) return;
+      if (playbackTimer) { stopPlayback(); renderShipmentPanel(s,{index:playbackIndex}); return; }
+      playbackIndex = 0;
+      updatePlaybackMap(s, playbackIndex);
+      renderShipmentPanel(s,{index:playbackIndex});
+      playbackTimer = setInterval(() => {
+        playbackIndex += 1;
+        if (playbackIndex >= points.length) { playbackIndex = points.length - 1; stopPlayback(); }
+        updatePlaybackMap(s, playbackIndex);
+        renderShipmentPanel(s,{index:playbackIndex});
+      }, 1200);
+    };
+
+    const selectShipment = id => {
+      stopPlayback();
+      const s = shipmentData.find(x => String(x.id) === String(id));
+      if (!s) return;
+      selectedShipmentId = s.id;
+      playbackIndex = Math.max(playbackPoints(s).length - 2, 0);
+      renderShipmentPanel(s,{index:playbackIndex});
+      updatePlaybackMap(s, playbackIndex);
+      fitShipment(s);
+      shipmentData.forEach(x => {
+        if (map.getSource('vtg-shipment-routes')) {
+          try { map.setFeatureState({source:'vtg-shipment-routes',id:String(x.id)},{selected:String(x.id)===String(s.id)}); } catch {}
+        }
+      });
+      status('Selected shipment ' + (s.reference || s.id) + ' • latest recorded point highlighted.');
+    };
+
     const clearShipments = () => {
       ['vtg-shipment-routes','vtg-shipment-route-halo','vtg-shipment-milestones','vtg-shipment-active'].forEach(id => {
         if (map.getLayer(id)) map.removeLayer(id);
@@ -281,6 +391,11 @@
         if (map.getSource(id)) map.removeSource(id);
       });
       shipmentData = [];
+      selectedShipmentId = null;
+      stopPlayback();
+      const panel = ensureShipmentPanel();
+      if (panel) { panel.classList.remove('open'); panel.innerHTML = ''; }
+      clearPlaybackMap();
     };
 
     const addShipments = async () => {
@@ -305,6 +420,7 @@
 
         const routeFeatures = shipmentData.map(s => ({
           type: 'Feature',
+          id: String(s.id),
           properties: {
             id: s.id,
             reference: s.reference,
@@ -373,7 +489,7 @@
               'shipped', '#4b7bec',
               '#7b8794'
             ],
-            'line-width': 5,
+            'line-width': ['case', ['boolean', ['feature-state', 'selected'], false], 8, 5],
             'line-opacity': 0.95
           }
         });
@@ -394,6 +510,9 @@
         });
 
         map.on('click', 'vtg-shipment-routes', e => {
+          const clickedId = e.features?.[0]?.properties?.id;
+          if (clickedId) selectShipment(clickedId);
+          
           const p = e.features?.[0]?.properties || {};
           const html = '<b>' + escHtml(p.reference) + '</b>' +
             '<br><small>Status: ' + escHtml(p.status) + ' • ' + escHtml(p.percent) + '% complete</small>' +
@@ -419,6 +538,7 @@
         });
 
         shipmentsVisible = true;
+        selectShipment(shipmentData[0].id);
         const b = doc.querySelector('[data-layer="shipments"]');
         if (b) { b.textContent = 'ON'; b.style.background = '#dff4f5'; }
         const role = roleSelect.value;
