@@ -27,7 +27,7 @@
     ["Footwear","https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=85&w=1600&auto=format&fit=crop"],
     ["Fashion & Accessories","https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=85&w=1600&auto=format&fit=crop"],
     ["Watches & Wearables","https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=85&w=1600&auto=format&fit=crop"],
-    ["Electronics & Technology","https://images.unsplash.com/photo-1517336714739-489689fd1ca8?q=85&w=1600&auto=format&fit=crop"],
+    ["Electronics & Technology","https://myffl.com/dealer-photos/57536389/692f92a3-1ee0-486d-9056-f7d0ef17f752.jpeg"],
     ["Home & Furniture","https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=85&w=1600&auto=format&fit=crop"],
     ["Kitchen & Home Appliances","https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=85&w=1600&auto=format&fit=crop"],
     ["Beauty & Personal Care","https://images.unsplash.com/photo-1556228720-195a672e8a03?q=85&w=1600&auto=format&fit=crop"],
@@ -39,8 +39,8 @@
     ["Solar & Renewable Energy","https://images.unsplash.com/photo-1509391366360-2e959784a276?q=85&w=1600&auto=format&fit=crop"],
     ["Plumbing, Water & Sanitary","https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?q=85&w=1600&auto=format&fit=crop"],
     ["Packaging & Printing","https://images.unsplash.com/photo-1769355104335-acef3aa4c9b6?q=85&w=1600&auto=format&fit=crop"],
-    ["Office & Business Supplies","https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=85&w=1600&auto=format&fit=crop"],
-    ["Baby & Children’s Products","https://images.unsplash.com/photo-1519689680058-324335c77eba?q=85&w=1600&auto=format&fit=crop"],
+    ["Office & Business Supplies","https://peralatankantormalang.com/wp-content/uploads/2025/05/apa-itu-peralatan-kantor-3.png"],
+    ["Baby & Children’s Products","https://milou.in/cdn/shop/articles/Baby_Dress_Essentials.png?v=1785216086&width=1500"],
     ["Cleaning & Household Supplies","https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=85&w=1600&auto=format&fit=crop"],
     ["Bags, Luggage & Travel","https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=85&w=1600&auto=format&fit=crop"],
     ["Retail & Commercial Equipment","https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=85&w=1600&auto=format&fit=crop"],
@@ -115,11 +115,11 @@
     const style = document.createElement('style');
     style.id = 'vtgVisualEnhancer';
     style.textContent = `
-      .vtgFreshCarousel{margin-top:24px}
+      .vtgFreshCarousel{margin-top:24px;position:relative;z-index:1;isolation:isolate;background:transparent}
       .vtgCarouselViewport{position:relative;height:390px;border-radius:22px;overflow:hidden;background:#111;box-shadow:0 18px 45px rgba(7,31,48,.16)}
       .vtgFreshSlide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .65s ease,filter .65s ease;display:block;background:hsl(var(--vtg-hue,210),42%,28%)}
       .vtgFreshSlide.active{opacity:1}
-      .vtgCarouselViewport:after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,hsla(var(--vtg-hue,210),78%,45%,.18),rgba(0,0,0,.04) 45%,rgba(0,0,0,.78) 100%);box-shadow:inset 0 4px 0 hsl(var(--vtg-hue,210),75%,52%);pointer-events:none}
+      .vtgCarouselViewport:after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,hsla(var(--vtg-hue,210),78%,45%,.18),rgba(0,0,0,.04) 45%,rgba(0,0,0,.78) 100%);box-shadow:none;pointer-events:none}
       .vtgCarouselMeta{position:absolute;left:25px;right:25px;bottom:24px;z-index:3;display:grid;gap:5px;color:#fff}
       .vtgCarouselKicker{font-size:9px;font-weight:900;letter-spacing:.16em;color:hsl(var(--vtg-hue,210),85%,78%);text-transform:uppercase}
       .vtgCarouselTitle{font-size:clamp(22px,3vw,34px);line-height:1.1}
