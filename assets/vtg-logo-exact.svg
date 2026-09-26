@@ -4,12 +4,15 @@
 <desc id="desc">Vintage Trade Global exact logo with transparent background.</desc>
 <defs>
   <filter id="vtgTransparentBackground" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
-    <feColorMatrix in="SourceGraphic" type="matrix" result="maskStrength" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 4 4 0 0"/>
-    <feComponentTransfer in="maskStrength" result="maskBinary">
-      <feFuncA type="discrete" tableValues="0 1"/>
-    </feComponentTransfer>
-    <feComposite in="SourceGraphic" in2="maskBinary" operator="in"/>
-  </filter>
+  <feColorMatrix in="SourceGraphic" type="matrix" values="
+    1 0 0 0 0
+    0 1 0 0 0
+    0 0 1 0 0
+    0.2126 0.7152 0.0722 0 -0.08"/>
+  <feComponentTransfer>
+    <feFuncA type="linear" slope="12.5" intercept="0"/>
+  </feComponentTransfer>
+</filter>
 </defs>
 <image
     x="0"
