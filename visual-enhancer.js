@@ -1,14 +1,14 @@
 (() => {
   const escapeHtml = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const VTG_CAROUSEL_ITEMS = [
-    ["Cars & Automobiles","https://images.unsplash.com/photo-1643142314017-126b776f066a?q=85&w=1600&auto=format&fit=crop"],
+    ["Cars & Automobiles","https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=85&w=1600&auto=format&fit=crop"],
     ["Motorcycles, Tricycles & Mobility","https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=85&w=1600&auto=format&fit=crop"],
     ["Bicycles & Personal Mobility","https://images.unsplash.com/photo-1571068316344-75bc76f77890?q=85&w=1600&auto=format&fit=crop"],
     ["Pharmaceuticals & Medical Supplies","https://images.unsplash.com/photo-1584982751601-97dcc096659c?q=85&w=1600&auto=format&fit=crop"],
-    ["Agriculture & Farm Products","https://images.unsplash.com/photo-1693594550769-562982f811d6?auto=format&fit=crop&fm=jpg&q=85&w=1600"],
+    ["Agriculture & Farm Products","https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=85&w=1600&auto=format&fit=crop"],
     ["Clothing & Textiles","https://images.unsplash.com/photo-1445205170230-053b83016050?q=85&w=1600&auto=format&fit=crop"],
     ["Footwear","https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=85&w=1600&auto=format&fit=crop"],
-    ["Fashion & Accessories","https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&fm=jpg&q=85&w=1600"],
+    ["Fashion & Accessories","https://images.unsplash.com/photo-1523779917675-b6ed3a42a561?q=85&w=1600&auto=format&fit=crop"],
     ["Watches & Wearables","https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=85&w=1600&auto=format&fit=crop"],
     ["Electronics & Technology","https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=85&w=1600&auto=format&fit=crop"],
     ["Home & Furniture","https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=85&w=1600&auto=format&fit=crop"],
@@ -21,16 +21,16 @@
     ["Steel, Iron & Metal Products","https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&fm=jpg&q=85&w=1600"],
     ["Solar & Renewable Energy","https://images.unsplash.com/photo-1509391366360-2e959784a276?q=85&w=1600&auto=format&fit=crop"],
     ["Plumbing, Water & Sanitary","https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?q=85&w=1600&auto=format&fit=crop"],
-    ["Packaging & Printing","https://images.unsplash.com/photo-1769355104335-acef3aa4c9b6?q=85&w=1600&auto=format&fit=crop"],
-    ["Office & Business Supplies","https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&fm=jpg&q=85&w=1600"],
+    ["Packaging & Printing","https://images.unsplash.com/photo-1586528116493-da8b2e5c6c2a?q=85&w=1600&auto=format&fit=crop"],
+    ["Office & Business Supplies","https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=85&w=1600&auto=format&fit=crop"],
     ["Baby & Children’s Products","https://images.unsplash.com/photo-1596870230751-ebdfce98ec42?q=85&w=1600&auto=format&fit=crop"],
     ["Cleaning & Household Supplies","https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=85&w=1600&auto=format&fit=crop"],
     ["Bags, Luggage & Travel","https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=85&w=1600&auto=format&fit=crop"],
     ["Retail & Commercial Equipment","https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&fm=jpg&q=85&w=1600"],
     ["Hotel, Restaurant & Catering Equipment","https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=85&w=1600&auto=format&fit=crop"],
     ["Factory & Production Supplies","https://images.unsplash.com/photo-1647427060118-4911c9821b82?q=85&w=1600&auto=format&fit=crop"],
-    ["Marine & Port Equipment","https://images.unsplash.com/photo-1673896493356-6684ede37a7d?q=85&w=1600&auto=format&fit=crop"],
-    ["Logistics, Transport & Warehousing Equipment","https://images.unsplash.com/photo-1645736315000-6f788915923b?q=85&w=1600&auto=format&fit=crop"],
+    ["Marine & Port Equipment","https://images.unsplash.com/photo-1494412651409-8963ce7935a7?q=85&w=1600&auto=format&fit=crop"],
+    ["Logistics, Transport & Warehousing Equipment","https://images.unsplash.com/photo-1586528116493-da8b2e5c6c2a?q=85&w=1600&auto=format&fit=crop"],
     ["Building Materials","https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=85&w=1600&auto=format&fit=crop"],
     ["Electrical & Power Equipment","https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?q=85&w=1600&auto=format&fit=crop"],
     ["Telecommunications & Networking","https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=85&w=1600&auto=format&fit=crop"],
@@ -63,12 +63,12 @@
       img.className='vtgFreshSlide'+(index===0?' active':'');
       img.style.setProperty('--vtg-hue',hue);
       img.alt=item[0];
-      img.loading=index<3?'eager':'lazy';
+      img.loading='eager';
       img.decoding='async';
       img.src=item[1];
       const useFallback=()=>{ if(img.dataset.fallback) return; img.dataset.fallback='1'; img.src=vtgCarouselFallback(item[0],index); };
       img.onerror=useFallback;
-      setTimeout(()=>{ if(!img.complete || img.naturalWidth===0) useFallback(); },7000);
+      setTimeout(()=>{ if(!img.complete || img.naturalWidth===0) useFallback(); },2500);
       slides.appendChild(img);
       const dot=document.createElement('button');
       dot.type='button'; dot.className='vtgCarouselDot'+(index===0?' active':''); dot.setAttribute('aria-label','Show '+item[0]); dots.appendChild(dot);
@@ -117,15 +117,6 @@
       @media(max-width:600px){.vtgCarouselViewport{height:300px;border-radius:17px}.vtgCarouselMeta{left:17px;right:17px;bottom:17px}.vtgCarouselPrev,.vtgCarouselNext{width:36px;height:36px;font-size:25px}.vtgCarouselDots{gap:4px}.vtgCarouselDot{width:6px;height:6px}}
     `;
     document.head.appendChild(style);
-  }
-
-  function loadRepairScript() {
-    if (document.querySelector('script[data-vtg-ui-repair]')) return;
-    const s=document.createElement('script');
-    s.src='/vtg-ui-repair.js?v=5';
-    s.dataset.vtgUiRepair='1';
-    s.defer=true;
-    document.head.appendChild(s);
   }
 
   function loadLiveMarket() {
