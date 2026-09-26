@@ -1,1 +1,1 @@
-VTG branding: use the brown logo supplied by the owner, not the blue V logo.
+VTG site branding is text-only; no VTG logo image is used.
