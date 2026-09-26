@@ -1,22 +1,5 @@
 (() => {
   const escapeHtml = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-
-  function fixLogo() {
-    const imgs = document.querySelectorAll('img.brandLogo, img[src*="vtg-logo-red-transparent.png"]');
-    imgs.forEach(img => {
-      // Keep the canonical asset URL untouched. Rewriting the src after first paint
-      // can make the logo flash and then disappear on some cached deployments.
-      img.style.display = 'block';
-      img.style.visibility = 'visible';
-      img.style.opacity = '1';
-      img.onerror = () => {
-        if (img.dataset.vtgLogoRetried === '1') return;
-        img.dataset.vtgLogoRetried = '1';
-        img.src = '/assets/vtg-logo-red-transparent.png';
-      };
-    });
-  }
-
   const VTG_CAROUSEL_ITEMS = [
     ["Cars & Automobiles","https://images.unsplash.com/photo-1643142314017-126b776f066a?q=85&w=1600&auto=format&fit=crop"],
     ["Motorcycles, Tricycles & Mobility","https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=85&w=1600&auto=format&fit=crop"],
@@ -164,7 +147,7 @@
   }
 
   function apply(){
-    try{addStyles();fixLogo();buildFreshVTGCarousel();loadRepairScript();upgradeAI();loadLiveMarket();setInterval(loadLiveMarket,300000);setTimeout(()=>{fixLogo();buildFreshVTGCarousel();},1200);if(window.lucide?.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.9}});}catch(e){console.warn('VTG visual enhancer failed',e);}
+    try{addStyles();buildFreshVTGCarousel();loadRepairScript();upgradeAI();loadLiveMarket();setInterval(loadLiveMarket,300000);setTimeout(()=>{buildFreshVTGCarousel();},1200);if(window.lucide?.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.9}});}catch(e){console.warn('VTG visual enhancer failed',e);}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
 })();
