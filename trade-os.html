@@ -13,11 +13,15 @@ button,input,select{font:inherit}.shell{display:grid;grid-template-columns:250px
 @media(max-width:1050px){.shell{grid-template-columns:1fr}.side{position:relative;height:auto}.sideNote{position:static;margin-top:20px}.stats,.three{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}
 @media(max-width:620px){.main{padding:18px}.stats,.three{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.hero h2{font-size:23px}}
 .brand{display:flex;align-items:center;gap:10px;color:var(--navy);font-weight:800}</style>
-</head>
+<style id="vtg-global-logo-style">
+.vtg-global-logo{display:block;width:190px;height:auto;max-height:58px;object-fit:contain;background:transparent;border:0}
+.vtg-logo-link{display:flex;align-items:center;text-decoration:none;background:transparent}
+@media(max-width:700px){.vtg-global-logo{width:155px;max-height:48px}}
+</style></head>
 <body>
 <div class="shell">
 <aside class="side">
-  <div class="brand"> VTG Trade OS</div>
+  <a class="brand vtg-logo-link" href="/" aria-label="Vintage Trade Global"><img class="vtg-global-logo" src="/assets/vtg-logo-transparent.svg" alt="Vintage Trade Global"></a>
   <nav class="nav">
     <button class="active" data-tab="overview">Overview</button>
     <button data-tab="intelligence">Trade Intelligence</button>
@@ -32,7 +36,7 @@ button,input,select{font:inherit}.shell{display:grid;grid-template-columns:250px
 </aside>
 
 <main class="main">
-<header class="top"><a class="brand" href="/" aria-label="Vintage Trade Global">Vintage Trade Global</a>
+<header class="top"><a class="brand vtg-logo-link" href="/" aria-label="Vintage Trade Global"><img class="vtg-global-logo" src="/assets/vtg-logo-transparent.svg" alt="Vintage Trade Global"></a>
   <div><div class="eyebrow">Africa's digital trade operating system</div><h1 id="pageTitle">Trade Command Centre</h1></div>
   <div class="pill">Nigeria → China • Live workspace prototype</div>
 </header>
