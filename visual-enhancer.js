@@ -67,7 +67,7 @@
       'Cars & Automobiles':'https://hips.hearstapps.com/hmg-prod/images/5ae0e9e1-a5de-4176-9a47-9bfb397e9d22.jpeg?crop=0.74945xw%3A1xh%3Bcenter%2Ctop&resize=1200%3A%2A',
       'Motorcycles, Tricycles & Mobility':'https://factoryorder.oss-cn-chengdu.aliyuncs.com/uploads/admin/2022/04/07/200CC250CC300CCclassicalandhotsellingmodels%289%29_30885.jpg',
       'Bicycles & Personal Mobility':'https://assets.newatlas.com/dims4/default/ea73d8b/2147483647/strip/true/crop/1620x1080%2B0%2B0/resize/1620x1080%21/format/webp/quality/85/?url=https%3A%2F%2Fnewatlas-brightspot.s3.amazonaws.com%2Farchive%2F506A7544.jpg',
-      'Medical Supplies & Healthcare':'https://www.57357.org/_next/image?q=100&url=https%3A%2F%2Fapi.57357.org%2Fstorage%2F3472%2FWhatsApp_Image_2026_02_10_at_151346.jpeg&w=1080',
+      'Medical Supplies & Healthcare':'https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&w=1600&q=85',
       'Agriculture & Farm Products':'https://cloudfront-eu-central-1.images.arcpublishing.com/williamreed/HWAY4IBGKBKI5FN34NRFXPALMQ.jpg',
       'Clothing & Textiles':'https://www.mgm-ethiopia.com/assets/textiles-BF6a4IiE.jpg',
       'Footwear':'https://www.bayxbengal.com/industries/footwear.webp',
