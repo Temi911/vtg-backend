@@ -1228,7 +1228,11 @@ html { font-size: clamp(13px, 1.1vw, 16px); }
   max-width:100%;box-sizing:border-box
 }
 .brandLogo{display:block;width:150px;height:auto;max-height:48px;object-fit:contain}.vtgSiteLogo{display:flex;align-items:center;width:150px}.vtgSiteLogo img{display:block;width:150px;height:auto;max-height:48px;object-fit:contain}@media(max-width:600px){.brandLogo,.vtgSiteLogo,.vtgSiteLogo img{width:125px;max-height:42px}}</style>
-</head>
+<style id="vtg-global-logo-style">
+.vtg-global-logo{display:block;width:190px;height:auto;max-height:58px;object-fit:contain;background:transparent;border:0}
+.vtg-logo-link{display:flex;align-items:center;text-decoration:none;background:transparent}
+@media(max-width:700px){.vtg-global-logo{width:155px;max-height:48px}}
+</style></head>
 <body>
 
 <!-- LOADER -->
@@ -1247,7 +1251,7 @@ html { font-size: clamp(13px, 1.1vw, 16px); }
 <div id="screen-portal" class="screen active" role="main" style="position:relative;">
 <nav class="portal-nav">
   <div class="portal-nav-in">
-    <div class="portal-nav-brand"><span class="portal-nav-v">VTG</span> Africa</div>
+    <a class="portal-nav-brand vtg-logo-link" href="/" aria-label="Vintage Trade Global"><img class="vtg-global-logo" src="/assets/vtg-logo-transparent.svg" alt="Vintage Trade Global"></a>
     <div class="portal-nav-links">
       <a href="#portal-hero-top" onclick="return navScroll(event,'portal-hero-top')">Home</a>
       <a href="#how-it-works" onclick="return navScroll(event,'how-it-works')">Process</a>
