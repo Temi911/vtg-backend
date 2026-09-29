@@ -64,7 +64,7 @@
       slide.className='vtgFreshSlide'+(index===0?' active':'');
       slide.style.setProperty('--vtg-hue',hue);
       slide.style.backgroundImage='url("'+VTG_CAROUSEL_SHEET+'")';
-      slide.style.backgroundPosition=((index%6)*20)+'% '+(Math.floor(index/6)*20)+'%';
+      const col=index%6, row=Math.floor(index/6);\n      slide.style.backgroundPosition=(col*21.0526)+'% '+(row*20)+'%';
       slide.setAttribute('role','img');
       slide.setAttribute('aria-label',item[0]);
       slides.appendChild(slide);
@@ -98,7 +98,7 @@
     style.textContent = `
       .vtgFreshCarousel{margin-top:24px;position:relative;z-index:1;isolation:isolate;background:transparent}
       .vtgCarouselViewport{position:relative;height:390px;border-radius:22px;overflow:hidden;background:#111;box-shadow:0 18px 45px rgba(7,31,48,.16)}
-      .vtgFreshSlide{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .65s ease,filter .65s ease;display:block;background-color:hsl(var(--vtg-hue,210),42%,28%);background-repeat:no-repeat;background-size:600% 600%}
+      .vtgFreshSlide{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .65s ease,filter .65s ease;display:block;background-color:hsl(var(--vtg-hue,210),42%,28%);background-repeat:no-repeat;background-size:480% 480%}
       .vtgFreshSlide.active{opacity:1}
       .vtgCarouselViewport:after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,hsla(var(--vtg-hue,210),78%,45%,.18),rgba(0,0,0,.04) 45%,rgba(0,0,0,.78) 100%);box-shadow:none;pointer-events:none}
       .vtgCarouselMeta{position:absolute;left:25px;right:25px;bottom:24px;z-index:3;display:grid;gap:5px;color:#fff}
