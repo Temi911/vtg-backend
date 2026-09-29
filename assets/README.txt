@@ -1,1 +1,1 @@
-VTG site branding is text-only; no VTG logo image is used.
+VTG site branding uses the transparent global logo at /assets/vtg-logo-transparent.svg.
