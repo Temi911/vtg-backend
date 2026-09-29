@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 110" role="img" aria-labelledby="title desc">
+<title id="title">Vintage Trade Global</title><desc id="desc">Vintage Trade Global — Africa Trade Platform</desc>
+<defs>
+ <pattern id="vintage" width="22" height="22" patternUnits="userSpaceOnUse">
+  <rect width="22" height="22" fill="#a20d12"/>
+  <path d="M11 2L19 11L11 20L3 11Z" fill="none" stroke="#ef9a88" stroke-width="1.7"/>
+  <path d="M11 6L15 11L11 16L7 11Z" fill="none" stroke="#f5c0a9" stroke-width="1.1"/>
+  <circle cx="11" cy="11" r="1.5" fill="#f3b49f"/>
+  <path d="M1 1L5 5M17 17L21 21M21 1L17 5M5 17L1 21" stroke="#d95545" stroke-width="1"/>
+ </pattern>
+ <filter id="soft" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation=".15"/></filter>
+ <clipPath id="vclip"><path d="M7 10H31L51 76L72 10H96L65 101H39Z"/></clipPath>
+</defs>
+<g clip-path="url(#vclip)" filter="url(#soft)"><rect x="0" y="0" width="105" height="110" fill="url(#vintage)"/></g>
+<path d="M7 10H31L51 76L72 10H96L65 101H39Z" fill="none" stroke="#b51a18" stroke-width="1"/>
+<g fill="#b51a18" font-family="Georgia, 'Times New Roman', serif" font-weight="700">
+ <text x="108" y="42" font-size="27" letter-spacing="8">INTAGE</text>
+ <text x="104" y="76" font-size="27" letter-spacing="1.8">TRADE GLOBAL</text>
+</g>
+<text x="109" y="98" fill="#b51a18" font-family="Arial, Helvetica, sans-serif" font-size="8.3" letter-spacing="4.7">AFRICA TRADE PLATFORM</text>
+</svg>
