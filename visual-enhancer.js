@@ -21,7 +21,7 @@
 
   function replaceMarketplaceIntro() {
     const intro = document.querySelector('.market .sectionHead p');
-    if (intro) intro.textContent = "VTG connects product discovery, company verification, logistics, trade finance and market intelligence in one connected workflow.";
+    if (intro) intro.textContent = "Trade Documents & Compliance — Keep invoices, packing lists, shipping records and compliance steps organized around each transaction.";
   }
 
   function installTradeCarousel() {
@@ -68,6 +68,31 @@
       ["Import, Export & Trade Services","1509395176047-4a66953fd231","🌐"]
     ];
 
+    const categoryImages = {
+      "Motorcycles, Tricycles & Mobility":"https://www.jumia.com.ng/slp/motorcycle-scooter",
+      "Bicycles & Personal Mobility":"https://assets.newatlas.com/dims4/default/ea73d8b/2147483647/strip/true/crop/1620x1080%2B0%2B0/resize/1620x1080%21/format/webp/quality/85/?url=https%3A%2F%2Fnewatlas-brightspot.s3.amazonaws.com%2Farchive%2F506A7544.jpg",
+      "Medical Supplies & Healthcare":"https://www.57357.org/_next/image?q=100&url=https%3A%2F%2Fapi.57357.org%2Fstorage%2F3472%2FWhatsApp_Image_2026_02_10_at_151346.jpeg&w=1080",
+      "Agriculture & Farm Products":"https://cloudfront-eu-central-1.images.arcpublishing.com/williamreed/HWAY4IBGKBKI5FN34NRFXPALMQ.jpg",
+      "Clothing & Textiles":"https://valox.com.ua/upload/rimg/chomu-vazhlivo-slidkuvati-za-modnimi-tendentsiyami.jpg",
+      "Footwear":"https://www.bayxbengal.com/industries/footwear.webp",
+      "Fashion & Accessories":"https://valox.com.ua/upload/rimg/chomu-vazhlivo-slidkuvati-za-modnimi-tendentsiyami.jpg",
+      "Watches & Wearables":"https://cdn.mos.cms.futurecdn.net/z7vsVze8PmDsTxRzYPmy5.jpg",
+      "Electronics & Technology":"https://knjiznica-trzic.splet.arnes.si/files/2024/09/Phones-1.jpg",
+      "Home & Furniture":"https://www.ifurniture.co.nz/images/thumbs/0064512_lancaster-fabric-sofa-range-grey-2-seater.jpeg",
+      "Kitchen & Home Appliances":"https://i.postimg.cc/W4xx6fsb/IMG-0708.jpg",
+      "Solar & Renewable Energy":"https://www.sunners.com.br/images/equipamentos-de-energia-solar-fotovoltaica-01.webp",
+      "Plumbing, Water & Sanitary":"https://hilitebmt.com/static/2fcdba86c15cc1f4f70cb20e38f94f3d/3564b/sanitary-items.jpg",
+      "Packaging & Printing":"https://images.ctfassets.net/cma41nsiygxr/65KW26r0jd0J8WPmf2jtrk/fdc314fdceb622ca4e39df42e848504c/box_cat-boxes-for-objects_3.jpg",
+      "Office & Business Supplies":"https://eu.evocdn.io/dealer/1898/content/media/Content_Pages/large-office-supplies-stationery-1.jpg",
+      "Retail & Commercial Equipment":"https://img.waimaoniu.net/2456/2456-202509291705011260.jpg",
+      "Hotel, Restaurant & Catering Equipment":"https://www.costowl.com/assets/images/heroes/equipment-leasing-hero-restaurant.jpg",
+      "Factory & Production Supplies":"https://gbres.dfcfw.com/Files/iimage/20250104/BB2DB91D06947BB58683EC4A915EBE2B_w1080h720.jpg",
+      "Marine & Port Equipment":"https://multimedia.elpais.com.co/2023/07_julio/500_empresas/img_editorial/art1.jpg",
+      "Logistics, Transport & Warehousing Equipment":"https://www.klikovacdoo.com/images/Hale-i-magacini/Galerija/Hale_i_magacini_003.jpg",
+      "Building Materials":"https://www.erlgroup.com.tr/tugla.jpg",
+      "Electrical & Power Equipment":"https://specap.com/_next/image?dpl=dpl_GR1mkvn39potgZieQaYjJ6YZHFpS&q=75&url=%2Fimages%2Fblog%2Fpower-electronics.webp&w=3840"
+    };
+
     const colors = ["#b42318","#7f56d9","#027a48","#175cd3","#b54708","#c11574","#026aa2","#6941c6","#344054","#0e9384"];
     const fallback = (emoji, title, color) => "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="'+color+'"/><stop offset="1" stop-color="#071f30"/></linearGradient></defs><rect width="800" height="420" fill="url(#g)"/><circle cx="690" cy="80" r="150" fill="white" opacity=".08"/><circle cx="90" cy="350" r="180" fill="white" opacity=".06"/><text x="50%" y="48%" dominant-baseline="middle" text-anchor="middle" font-size="92">'+emoji+'</text><text x="50%" y="80%" dominant-baseline="middle" text-anchor="middle" font-family="Arial,sans-serif" font-size="28" font-weight="700" fill="white">'+title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</text></svg>'
@@ -82,8 +107,8 @@
       #vtgTradeCarousel .vtgCarouselHead span{font-size:9px;color:var(--muted)}
       #vtgTradeCarousel .vtgViewport{overflow:hidden;border-radius:18px}
       #vtgTradeCarousel .vtgTrack{display:flex;gap:14px;transition:transform .65s cubic-bezier(.16,1,.3,1);will-change:transform}
-      #vtgTradeCarousel .vtgSlide{flex:0 0 calc((100% - 42px)/4);min-width:0;background:var(--white);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 8px 25px rgba(9,38,58,.07)}
-      #vtgTradeCarousel .vtgSlide img{display:block;width:100%;height:145px;object-fit:cover;background:var(--soft)}
+      #vtgTradeCarousel .vtgSlide{flex:0 0 calc((100% - 42px)/4);min-width:0;background:var(--white);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 6px 18px rgba(9,38,58,.07)}
+      #vtgTradeCarousel .vtgSlide img{display:block;width:100%;height:165px;object-fit:cover;background:var(--soft)}
       #vtgTradeCarousel .vtgSlideBody{padding:11px 12px 13px}
       #vtgTradeCarousel .vtgSlideBody strong{display:block;font-size:10px;line-height:1.35;color:var(--ink)}
       #vtgTradeCarousel .vtgAccent{width:28px;height:3px;border-radius:999px;margin-bottom:8px}
@@ -91,7 +116,7 @@
       #vtgTradeCarousel .vtgControls button{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--white);color:var(--ink);cursor:pointer;font-size:16px}
       #vtgTradeCarousel .vtgControls button:hover{border-color:var(--teal);color:var(--teal)}
       @media(max-width:950px){#vtgTradeCarousel .vtgSlide{flex-basis:calc((100% - 14px)/2)}}
-      @media(max-width:600px){#vtgTradeCarousel .vtgSlide{flex-basis:100%}#vtgTradeCarousel .vtgSlide img{height:190px}#vtgTradeCarousel .vtgCarouselHead{align-items:center}}
+      @media(max-width:600px){#vtgTradeCarousel .vtgSlide{flex-basis:100%}#vtgTradeCarousel .vtgSlide img{height:185px}#vtgTradeCarousel .vtgCarouselHead{align-items:center}}
     `;
     document.head.appendChild(style);
 
@@ -109,12 +134,13 @@
     const track = root.querySelector('.vtgTrack');
     categories.forEach(([title,id,emoji],i)=>{
       const color = colors[i % colors.length];
-      // Use a deterministic category-specific local SVG illustration.
-      // This avoids mismatched stock photography, hotlink failures and blank cards.
-      const img = fallback(emoji,title,color);
+      const fallbackSrc = fallback(emoji,title,color);
+      const img = categoryImages[title] || fallbackSrc;
       const card = document.createElement('article');
       card.className='vtgSlide';
-      card.innerHTML=`<img loading="eager" src="${img}" alt="${title} — VTG category illustration"><div class="vtgSlideBody"><div class="vtgAccent" style="background:${color}"></div><strong>${title}</strong></div>`;
+      card.innerHTML=`<img loading="eager" src="${img}" alt="${title}" data-fallback="${fallbackSrc}"><div class="vtgSlideBody"><div class="vtgAccent" style="background:${color}"></div><strong>${title}</strong></div>`;
+      const image = card.querySelector('img');
+      image.addEventListener('error',()=>{ image.src=image.dataset.fallback; },{once:true});
       track.appendChild(card);
     });
 
