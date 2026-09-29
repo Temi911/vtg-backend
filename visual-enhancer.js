@@ -71,9 +71,17 @@
       "Logistics, Transport & Warehousing Equipment":"https://www.klikovacdoo.com/images/Hale-i-magacini/Galerija/Hale_i_magacini_003.jpg",
       "Building Materials":"https://selvamadera.co/_next/image?q=75&url=%2Fimages%2Fblog%2Fmano-obra-vs-materiales-remodelacion%2Fmateriales-construccion-antioquia.webp&w=3840",
       "Electrical & Power Equipment":"https://specap.com/_next/image?dpl=dpl_GR1mkvn39potgZieQaYjJ6YZHFpS&q=75&url=%2Fimages%2Fblog%2Fpower-electronics.webp&w=3840"
+      "Electrical & Power Equipment":"https://specap.com/_next/image?dpl=dpl_GR1mkvn39potgZieQaYjJ6YZHFpS&q=75&url=%2Fimages%2Fblog%2Fpower-electronics.webp&w=3840",
+      "Motorcycles, Tricycles & Mobility":"https://okki-shop.oss-cn-hangzhou.aliyuncs.com/1160/upload/product/621c6a94bc304dc7c04e36968930a06b40a275771ff028f9aa3d89561f64fd25.jpg",
+      "Beauty & Personal Care":"https://sweetskin.no/cdn/shop/collections/A_white_background_with_an_array_of_beauty_products_for_a_webshop_category_All_products.jpg?v=1733252341&width=750",
+      "Tools & Hardware":"https://crownksa.com/static/images/categories/hardware-banner.jpg",
+      "Baby & Children's Products":"https://image.made-in-china.com/2f0j00qALhtbJYLZok/Tombotoy-Wholesale-Multifunction-Educational-Toys-Baby-Musical-Toys-Set-Music-and-Light-Kids-Plastic-Baby-Music-Toy.webp",
+      "Cleaning & Household Supplies":"https://radioclub.ua/upload/editor/00/2025/84/e3/6784ffbb147d4_osnovnoe-uborka.jpg",
+      "Bags, Luggage & Travel":"https://cdn.auchan.fr/assets/b2c/sua/edito/sis/airport/2025/02_fevrier/sis_airport_theme_fathers_day.webp",
+      "Telecommunications & Networking":"https://www.nokia.com/sites/default/files/2024-05/resrcid34724_7750_sr_-2se-001-1920x1080.jpg?height=774&width=1376",
+      "Industrial Materials":"https://ocdn.eu/pulscms/MDA_/5ee013a4-a56d-4136-a6d7-5049d835ace4.png"
     };
-
-      "Motorcycles, Tricycles & Mobility":"https://okki-shop.oss-cn-hangzhou.aliyuncs.com/1160/upload/product/621c6a94bc304dc7c04e36968930a06b40a275771ff028f9aa3d89561f64fd25.jpg",\n      "Beauty & Personal Care":"https://sweetskin.no/cdn/shop/collections/A_white_background_with_an_array_of_beauty_products_for_a_webshop_category_All_products.jpg?v=1733252341&width=750",\n      "Tools & Hardware":"https://crownksa.com/static/images/categories/hardware-banner.jpg",\n      "Baby & Children's Products":"https://image.made-in-china.com/2f0j00qALhtbJYLZok/Tombotoy-Wholesale-Multifunction-Educational-Toys-Baby-Musical-Toys-Set-Music-and-Light-Kids-Plastic-Baby-Music-Toy.webp",\n      "Cleaning & Household Supplies":"https://radioclub.ua/upload/editor/00/2025/84/e3/6784ffbb147d4_osnovnoe-uborka.jpg",\n      "Bags, Luggage & Travel":"https://cdn.auchan.fr/assets/b2c/sua/edito/sis/airport/2025/02_fevrier/sis_airport_theme_fathers_day.webp",\n      "Telecommunications & Networking":"https://www.nokia.com/sites/default/files/2024-05/resrcid34724_7750_sr_-2se-001-1920x1080.jpg?height=774&width=1376",\n      "Industrial Materials":"https://ocdn.eu/pulscms/MDA_/5ee013a4-a56d-4136-a6d7-5049d835ace4.png",\n    const hues = [8,266,151,216,28,326,196,284,214,173];
+    const hues = [8,266,151,216,28,326,196,284,214,173];
     const fallback = (emoji,title,index) => {
       const hue=hues[index%hues.length];
       return "data:image/svg+xml;charset=UTF-8,"+encodeURIComponent(
