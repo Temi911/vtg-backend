@@ -76,7 +76,7 @@
       'Electronics & Technology':'https://knjiznica-trzic.splet.arnes.si/files/2024/09/Phones-1.jpg',
       'Home & Furniture':'https://www.ifurniture.co.nz/images/thumbs/0064512_lancaster-fabric-sofa-range-grey-2-seater.jpeg',
       'Kitchen & Home Appliances':'https://i.postimg.cc/W4xx6fsb/IMG-0708.jpg',
-      'Beauty & Personal Care':'https://tezeon.com/_next/image?q=75&url=https%3A%2F%2Fapi.tezeon.com%2Fmedia%2Fcategories%2Feauty__Personal_Care.png&w=3840',
+      'Beauty & Personal Care':'https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1600&q=85',
       'Food & Beverages':'https://supplier-offers-media-production.s3.eu-central-1.amazonaws.com/5bebefe9-0732-11f1-818e-0a58a9feac02.png',
       'Construction Equipment & Machinery':'https://cdn.prod.website-files.com/66fc1033a0da8fd78b2a4365/67a22915cb3ecbc7698dea23_thumbnail.jpeg',
       'Tools & Hardware':'https://crownksa.com/static/images/categories/hardware-banner.jpg',
@@ -88,16 +88,18 @@
       'Office & Business Supplies':'https://eu.evocdn.io/dealer/1898/content/media/Content_Pages/large-office-supplies-stationery-1.jpg',
       'Baby & Children Products':'https://static.ticimax.cloud/cdn-cgi/image/width%3D-%2Cquality%3D99/6806/uploads/blog/cocuklarin-hayal-dunyasinda-yolculuk-toy-4eae.jpg',
       'Cleaning & Household Supplies':'https://radioclub.ua/upload/editor/00/2025/84/e3/6784ffbb147d4_osnovnoe-uborka.jpg',
-      'Bags, Luggage & Travel':'https://image.made-in-china.com/202f0j00ZkrlyjIMQObq/Promotion-Trolley-Travel-Luggage-Bag-Set-Wheeled-Bag-Garment-Duffel-Bag-Toiletry-Cosmetic-Bag-Packing-Cubes-Organizer-Shopping-Tote-Bag-Laptop-Bag.webp',
+      'Bags, Luggage & Travel':'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=1600&q=85',
       'Retail & Commercial Equipment':'https://img.waimaoniu.net/2456/2456-202509291705011260.jpg',
-      'Hotel, Restaurant & Catering Equipment':'https://www.costowl.com/assets/images/heroes/equipment-leasing-hero-restaurant.jpg',
+      'Hotel, Restaurant & Catering Equipment':'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1600&q=85',
       'Factory & Production Supplies':'https://gbres.dfcfw.com/Files/iimage/20250104/BB2DB91D06947BB58683EC4A915EBE2B_w1080h720.jpg',
       'Marine & Port Equipment':'https://multimedia.elpais.com.co/2023/07_julio/500_empresas/img_editorial/art1.jpg',
       'Logistics, Transport & Warehousing Equipment':'https://www.klikovacdoo.com/images/Hale-i-magacini/Galerija/Hale_i_magacini_003.jpg',
       'Building Materials':'https://ferreteriachacabuco.cl/cdn/shop/articles/fd27443c-f441-4964-938e-c24e25948095.png?v=1772467913&width=1500',
       'Electrical & Power Equipment':'https://specap.com/_next/image?dpl=dpl_GR1mkvn39potgZieQaYjJ6YZHFpS&q=75&url=%2Fimages%2Fblog%2Fpower-electronics.webp&w=3840',
       'Telecommunications & Networking':'https://www.nokia.com/sites/default/files/2024-05/resrcid34724_7750_sr_-2se-001-1920x1080.jpg?height=774&width=1376',
-      'Industrial Materials':'https://raw-material.stinternational.org/resources/hero-industrial.jpg'
+      'Industrial Materials':'https://raw-material.stinternational.org/resources/hero-industrial.jpg',
+      'General Merchandise':'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1600&q=85',
+      'Import, Export & Trade Services':'https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1600&q=85'
     };
 
     const style=document.createElement('style');
