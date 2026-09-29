@@ -109,12 +109,12 @@
     const track = root.querySelector('.vtgTrack');
     categories.forEach(([title,id,emoji],i)=>{
       const color = colors[i % colors.length];
-      const img = 'https://images.unsplash.com/photo-'+id+'?auto=format&fit=crop&w=1000&q=82';
+      // Use a deterministic category-specific local SVG illustration.
+      // This avoids mismatched stock photography, hotlink failures and blank cards.
+      const img = fallback(emoji,title,color);
       const card = document.createElement('article');
       card.className='vtgSlide';
-      card.innerHTML=`<img loading="lazy" src="${img}" alt="${title}" data-fallback="${fallback(emoji,title,color)}"><div class="vtgSlideBody"><div class="vtgAccent" style="background:${color}"></div><strong>${title}</strong></div>`;
-      const image=card.querySelector('img');
-      image.addEventListener('error',()=>{image.src=image.dataset.fallback;},{once:true});
+      card.innerHTML=`<img loading="eager" src="${img}" alt="${title} — VTG category illustration"><div class="vtgSlideBody"><div class="vtgAccent" style="background:${color}"></div><strong>${title}</strong></div>`;
       track.appendChild(card);
     });
 
