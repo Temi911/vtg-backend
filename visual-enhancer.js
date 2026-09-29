@@ -1,43 +1,44 @@
 (() => {
   const escapeHtml = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const VTG_CAROUSEL_ITEMS = [
-    ["Cars & Automobiles","https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=85&w=1600&auto=format&fit=crop"],
-    ["Motorcycles, Tricycles & Mobility","https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=85&w=1600&auto=format&fit=crop"],
-    ["Bicycles & Personal Mobility","https://images.unsplash.com/photo-1571068316344-75bc76f77890?q=85&w=1600&auto=format&fit=crop"],
-    ["Pharmaceuticals & Medical Supplies","https://images.unsplash.com/photo-1584982751601-97dcc096659c?q=85&w=1600&auto=format&fit=crop"],
-    ["Agriculture & Farm Products","https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=85&w=1600&auto=format&fit=crop"],
-    ["Clothing & Textiles","https://images.unsplash.com/photo-1445205170230-053b83016050?q=85&w=1600&auto=format&fit=crop"],
-    ["Footwear","https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=85&w=1600&auto=format&fit=crop"],
-    ["Fashion & Accessories","https://images.unsplash.com/photo-1523779917675-b6ed3a42a561?q=85&w=1600&auto=format&fit=crop"],
-    ["Watches & Wearables","https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=85&w=1600&auto=format&fit=crop"],
-    ["Electronics & Technology","https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=85&w=1600&auto=format&fit=crop"],
-    ["Home & Furniture","https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=85&w=1600&auto=format&fit=crop"],
-    ["Kitchen & Home Appliances","https://images.unsplash.com/photo-1556911220-bff31c812dba?q=85&w=1600&auto=format&fit=crop"],
-    ["Beauty & Personal Care","https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=85&w=1600&auto=format&fit=crop"],
-    ["Food & Beverages","https://images.unsplash.com/photo-1498837167922-ddd27525d352?q=85&w=1600&auto=format&fit=crop"],
-    ["Construction Equipment & Machinery","https://images.unsplash.com/photo-1580901369227-308f6f40bdeb?q=85&w=1600&auto=format&fit=crop"],
-    ["Tools & Hardware","https://images.unsplash.com/photo-1567361808960-dec9cb578182?q=85&w=1600&auto=format&fit=crop"],
-    ["Industrial Machinery & Equipment","https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=85&w=1600&auto=format&fit=crop"],
-    ["Steel, Iron & Metal Products","https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&fm=jpg&q=85&w=1600"],
-    ["Solar & Renewable Energy","https://images.unsplash.com/photo-1509391366360-2e959784a276?q=85&w=1600&auto=format&fit=crop"],
-    ["Plumbing, Water & Sanitary","https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?q=85&w=1600&auto=format&fit=crop"],
-    ["Packaging & Printing","https://images.unsplash.com/photo-1586528116493-da8b2e5c6c2a?q=85&w=1600&auto=format&fit=crop"],
-    ["Office & Business Supplies","https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=85&w=1600&auto=format&fit=crop"],
-    ["Baby & Children’s Products","https://images.unsplash.com/photo-1596870230751-ebdfce98ec42?q=85&w=1600&auto=format&fit=crop"],
-    ["Cleaning & Household Supplies","https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=85&w=1600&auto=format&fit=crop"],
-    ["Bags, Luggage & Travel","https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=85&w=1600&auto=format&fit=crop"],
-    ["Retail & Commercial Equipment","https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&fm=jpg&q=85&w=1600"],
-    ["Hotel, Restaurant & Catering Equipment","https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=85&w=1600&auto=format&fit=crop"],
-    ["Factory & Production Supplies","https://images.unsplash.com/photo-1647427060118-4911c9821b82?q=85&w=1600&auto=format&fit=crop"],
-    ["Marine & Port Equipment","https://images.unsplash.com/photo-1494412651409-8963ce7935a7?q=85&w=1600&auto=format&fit=crop"],
-    ["Logistics, Transport & Warehousing Equipment","https://images.unsplash.com/photo-1586528116493-da8b2e5c6c2a?q=85&w=1600&auto=format&fit=crop"],
-    ["Building Materials","https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=85&w=1600&auto=format&fit=crop"],
-    ["Electrical & Power Equipment","https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?q=85&w=1600&auto=format&fit=crop"],
-    ["Telecommunications & Networking","https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=85&w=1600&auto=format&fit=crop"],
-    ["Industrial Materials & Coatings","https://images.unsplash.com/photo-1561214115-f2f134cc4912?q=85&w=1600&auto=format&fit=crop"],
-    ["General Merchandise","https://images.unsplash.com/photo-1472851294608-062f824d29cc?q=85&w=1600&auto=format&fit=crop"],
-    ["Import, Export & Trade Services","https://images.unsplash.com/photo-1494412651409-8963ce7935a7?q=85&w=1600&auto=format&fit=crop"]
+    ["Cars & Automobiles",0],
+    ["Motorcycles, Tricycles & Mobility",1],
+    ["Bicycles & Personal Mobility",2],
+    ["Pharmaceuticals & Medical Supplies",3],
+    ["Agriculture & Farm Products",4],
+    ["Clothing & Textiles",5],
+    ["Footwear",6],
+    ["Fashion & Accessories",7],
+    ["Watches & Wearables",8],
+    ["Electronics & Technology",9],
+    ["Home & Furniture",10],
+    ["Kitchen & Home Appliances",11],
+    ["Beauty & Personal Care",12],
+    ["Food & Beverages",13],
+    ["Construction Equipment & Machinery",14],
+    ["Tools & Hardware",15],
+    ["Industrial Machinery & Equipment",16],
+    ["Steel, Iron & Metal Products",17],
+    ["Solar & Renewable Energy",18],
+    ["Plumbing, Water & Sanitary",19],
+    ["Packaging & Printing",20],
+    ["Office & Business Supplies",21],
+    ["Baby & Children’s Products",22],
+    ["Cleaning & Household Supplies",23],
+    ["Bags, Luggage & Travel",24],
+    ["Retail & Commercial Equipment",25],
+    ["Hotel, Restaurant & Catering Equipment",26],
+    ["Factory & Production Supplies",27],
+    ["Marine & Port Equipment",28],
+    ["Logistics, Transport & Warehousing Equipment",29],
+    ["Building Materials",30],
+    ["Electrical & Power Equipment",31],
+    ["Telecommunications & Networking",32],
+    ["Industrial Materials & Coatings",33],
+    ["General Merchandise",34],
+    ["Import, Export & Trade Services",35]
   ];
+  const VTG_CAROUSEL_SHEET = '/assets/vtg-carousel-sprite.webp';
 
   function vtgCarouselFallback(name, index) {
     const hue = (index * 31) % 360;
@@ -58,18 +59,15 @@
     const title = wrap.querySelector('.vtgCarouselTitle');
     const count = wrap.querySelector('.vtgCarouselCount');
     VTG_CAROUSEL_ITEMS.forEach((item,index)=>{
-      const img=document.createElement('img');
+      const slide=document.createElement('div');
       const hue=(index*47)%360;
-      img.className='vtgFreshSlide'+(index===0?' active':'');
-      img.style.setProperty('--vtg-hue',hue);
-      img.alt=item[0];
-      img.loading='eager';
-      img.decoding='async';
-      img.src=item[1];
-      const useFallback=()=>{ if(img.dataset.fallback) return; img.dataset.fallback='1'; img.src=vtgCarouselFallback(item[0],index); };
-      img.onerror=useFallback;
-      setTimeout(()=>{ if(!img.complete || img.naturalWidth===0) useFallback(); },2500);
-      slides.appendChild(img);
+      slide.className='vtgFreshSlide'+(index===0?' active':'');
+      slide.style.setProperty('--vtg-hue',hue);
+      slide.style.backgroundImage='url("'+VTG_CAROUSEL_SHEET+'")';
+      slide.style.backgroundPosition=((index%6)*20)+'% '+(Math.floor(index/6)*20)+'%';
+      slide.setAttribute('role','img');
+      slide.setAttribute('aria-label',item[0]);
+      slides.appendChild(slide);
       const dot=document.createElement('button');
       dot.type='button'; dot.className='vtgCarouselDot'+(index===0?' active':''); dot.setAttribute('aria-label','Show '+item[0]); dots.appendChild(dot);
       dot.onclick=()=>show(index);
@@ -100,7 +98,7 @@
     style.textContent = `
       .vtgFreshCarousel{margin-top:24px;position:relative;z-index:1;isolation:isolate;background:transparent}
       .vtgCarouselViewport{position:relative;height:390px;border-radius:22px;overflow:hidden;background:#111;box-shadow:0 18px 45px rgba(7,31,48,.16)}
-      .vtgFreshSlide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .65s ease,filter .65s ease;display:block;background:hsl(var(--vtg-hue,210),42%,28%)}
+      .vtgFreshSlide{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .65s ease,filter .65s ease;display:block;background-color:hsl(var(--vtg-hue,210),42%,28%);background-repeat:no-repeat;background-size:600% 600%}
       .vtgFreshSlide.active{opacity:1}
       .vtgCarouselViewport:after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,hsla(var(--vtg-hue,210),78%,45%,.18),rgba(0,0,0,.04) 45%,rgba(0,0,0,.78) 100%);box-shadow:none;pointer-events:none}
       .vtgCarouselMeta{position:absolute;left:25px;right:25px;bottom:24px;z-index:3;display:grid;gap:5px;color:#fff}
