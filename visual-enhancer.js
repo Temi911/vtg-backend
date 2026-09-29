@@ -69,18 +69,19 @@
     ];
 
     const categoryImages = {
-      "Motorcycles, Tricycles & Mobility":"https://www.jumia.com.ng/slp/motorcycle-scooter",
+      "Cars & Automobiles":"https://hips.hearstapps.com/hmg-prod/images/5ae0e9e1-a5de-4176-9a47-9bfb397e9d22.jpeg?crop=0.74945xw%3A1xh%3Bcenter%2Ctop&resize=1200%3A%2A",
       "Bicycles & Personal Mobility":"https://assets.newatlas.com/dims4/default/ea73d8b/2147483647/strip/true/crop/1620x1080%2B0%2B0/resize/1620x1080%21/format/webp/quality/85/?url=https%3A%2F%2Fnewatlas-brightspot.s3.amazonaws.com%2Farchive%2F506A7544.jpg",
       "Medical Supplies & Healthcare":"https://www.57357.org/_next/image?q=100&url=https%3A%2F%2Fapi.57357.org%2Fstorage%2F3472%2FWhatsApp_Image_2026_02_10_at_151346.jpeg&w=1080",
       "Agriculture & Farm Products":"https://cloudfront-eu-central-1.images.arcpublishing.com/williamreed/HWAY4IBGKBKI5FN34NRFXPALMQ.jpg",
       "Clothing & Textiles":"https://valox.com.ua/upload/rimg/chomu-vazhlivo-slidkuvati-za-modnimi-tendentsiyami.jpg",
       "Footwear":"https://www.bayxbengal.com/industries/footwear.webp",
-      "Fashion & Accessories":"https://valox.com.ua/upload/rimg/chomu-vazhlivo-slidkuvati-za-modnimi-tendentsiyami.jpg",
+      "Fashion & Accessories":"https://claudioandco.com/cdn/shop/articles/IMG_0282.jpg?v=1772215671&width=1500",
       "Watches & Wearables":"https://cdn.mos.cms.futurecdn.net/z7vsVze8PmDsTxRzYPmy5.jpg",
       "Electronics & Technology":"https://knjiznica-trzic.splet.arnes.si/files/2024/09/Phones-1.jpg",
       "Home & Furniture":"https://www.ifurniture.co.nz/images/thumbs/0064512_lancaster-fabric-sofa-range-grey-2-seater.jpeg",
       "Kitchen & Home Appliances":"https://i.postimg.cc/W4xx6fsb/IMG-0708.jpg",
       "Solar & Renewable Energy":"https://www.sunners.com.br/images/equipamentos-de-energia-solar-fotovoltaica-01.webp",
+      "Steel, Iron & Metal Products":"https://irp-cdn.multiscreensite.com/9fec2152/dms3rep/multi/Cartagena-bodega-chipa-Agofer-e1201e26.JPG",
       "Plumbing, Water & Sanitary":"https://hilitebmt.com/static/2fcdba86c15cc1f4f70cb20e38f94f3d/3564b/sanitary-items.jpg",
       "Packaging & Printing":"https://images.ctfassets.net/cma41nsiygxr/65KW26r0jd0J8WPmf2jtrk/fdc314fdceb622ca4e39df42e848504c/box_cat-boxes-for-objects_3.jpg",
       "Office & Business Supplies":"https://eu.evocdn.io/dealer/1898/content/media/Content_Pages/large-office-supplies-stationery-1.jpg",
