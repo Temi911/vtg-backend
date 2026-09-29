@@ -19,6 +19,11 @@
   }
 
 
+  function replaceMarketplaceIntro() {
+    const intro = document.querySelector('.market .sectionHead p');
+    if (intro) intro.textContent = "VTG connects product discovery, company verification, logistics, trade finance and market intelligence in one connected workflow.";
+  }
+
   function installTradeCarousel() {
     if (document.querySelector('#vtgTradeCarousel')) return;
     const market = document.querySelector('.market .section');
@@ -136,7 +141,7 @@
   }
 
   function apply(){
-    try{upgradeAI();loadLiveMarket();installTradeCarousel();setInterval(loadLiveMarket,300000);if(window.lucide?.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.9}});}catch(e){console.warn('VTG visual enhancer failed',e);}
+    try{upgradeAI();loadLiveMarket();replaceMarketplaceIntro();installTradeCarousel();setInterval(loadLiveMarket,300000);if(window.lucide?.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.9}});}catch(e){console.warn('VTG visual enhancer failed',e);}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
 })();
