@@ -25,47 +25,23 @@
   }
 
   function installTradeCarousel() {
-    if (document.querySelector('#vtgTradeCarousel')) return;
+    if (document.querySelector('#vtgProductCarousel')) return;
     const market = document.querySelector('.market .section');
     if (!market) return;
 
     const categories = [
-      ["Cars & Automobiles","1496181133206-80ce9b88a853","🚗"],
-      ["Motorcycles, Tricycles & Mobility","1511707171634-5f897ff02aa9","🏍"],
-      ["Bicycles & Personal Mobility","1523275335684-37898b6baf30","🚲"],
-      ["Medical Supplies & Healthcare","1542291026-7eec264c27ff","⚕"],
-      ["Agriculture & Farm Products","1529139574466-a303027c1d8b","🌾"],
-      ["Clothing & Textiles","1490481651871-ab68de25d43d","👕"],
-      ["Footwear","1526170375885-4d8ecf77b99f","👟"],
-      ["Fashion & Accessories","1503602642458-232111445657","👜"],
-      ["Watches & Wearables","1556910103-1c02745aae4d","⌚"],
-      ["Electronics & Technology","1556742049-0cfed4f6a45d","💻"],
-      ["Home & Furniture","1498837167922-ddd27525d352","🛋"],
-      ["Kitchen & Home Appliances","1504674900247-0877df9cc836","🍳"],
-      ["Beauty & Personal Care","1512436991641-6745cdb1723f","✨"],
-      ["Food & Beverages","1512820790803-83ca734da794","🍎"],
-      ["Construction Equipment & Machinery","1528698827591-e19ccd7bc23d","🏗"],
-      ["Tools & Hardware","1504148455328-c376907d081c","🔧"],
-      ["Industrial Machinery & Equipment","1581091226825-a6a2a5aee158","⚙"],
-      ["Steel, Iron & Metal Products","1565793298595-6a879b1d9492","▣"],
-      ["Solar & Renewable Energy","1531058020387-3be344556be6","☀"],
-      ["Plumbing, Water & Sanitary","1516321318423-f06f85e504b3","🚿"],
-      ["Packaging & Printing","1558618666-fcd25c85cd64","📦"],
-      ["Office & Business Supplies","1486406146926-c627a92ad1ab","📎"],
-      ["Baby & Children's Products","1504307651254-35680f356dfd","🧸"],
-      ["Cleaning & Household Supplies","1558618047-3c8c76ca7d13","🧹"],
-      ["Bags, Luggage & Travel","1519710164239-da123dc03ef4","🧳"],
-      ["Retail & Commercial Equipment","1516979187457-637abb4f9353","🏪"],
-      ["Hotel, Restaurant & Catering Equipment","1542744173-8e7e53415bb0","🍽"],
-      ["Factory & Production Supplies","1517245386807-bb43f82c33c4","🏭"],
-      ["Marine & Port Equipment","1524758631624-e2822e304c36","⚓"],
-      ["Logistics, Transport & Warehousing Equipment","1509099836639-18ba1795216d","🚚"],
-      ["Building Materials","1523413651479-597eb2da0ad6","🧱"],
-      ["Electrical & Power Equipment","1473448912268-2022ce9509d8","🔌"],
-      ["Telecommunications & Networking","1486406146926-c627a92ad1ab","📡"],
-      ["Industrial Materials","1528712306091-ed0763094c98","🧪"],
-      ["General Merchandise","1500534623283-312aade485b7","🛍"],
-      ["Import, Export & Trade Services","1509395176047-4a66953fd231","🌐"]
+      ["Cars & Automobiles","🚗"],["Motorcycles, Tricycles & Mobility","🏍"],["Bicycles & Personal Mobility","🚲"],
+      ["Medical Supplies & Healthcare","⚕"],["Agriculture & Farm Products","🌾"],["Clothing & Textiles","👕"],
+      ["Footwear","👟"],["Fashion & Accessories","👜"],["Watches & Wearables","⌚"],["Electronics & Technology","💻"],
+      ["Home & Furniture","🛋"],["Kitchen & Home Appliances","🍳"],["Beauty & Personal Care","✨"],["Food & Beverages","🍎"],
+      ["Construction Equipment & Machinery","🏗"],["Tools & Hardware","🔧"],["Industrial Machinery & Equipment","⚙"],
+      ["Steel, Iron & Metal Products","▣"],["Solar & Renewable Energy","☀"],["Plumbing, Water & Sanitary","🚿"],
+      ["Packaging & Printing","📦"],["Office & Business Supplies","📎"],["Baby & Children's Products","🧸"],
+      ["Cleaning & Household Supplies","🧹"],["Bags, Luggage & Travel","🧳"],["Retail & Commercial Equipment","🏪"],
+      ["Hotel, Restaurant & Catering Equipment","🍽"],["Factory & Production Supplies","🏭"],["Marine & Port Equipment","⚓"],
+      ["Logistics, Transport & Warehousing Equipment","🚚"],["Building Materials","🧱"],["Electrical & Power Equipment","🔌"],
+      ["Telecommunications & Networking","📡"],["Industrial Materials","🧰"],["General Merchandise","🛍"],
+      ["Import, Export & Trade Services","🌐"]
     ];
 
     const categoryImages = {
@@ -83,8 +59,8 @@
       "Construction Equipment & Machinery":"https://ugabox.com/images/shop/machinery/Machinery-Equipment-online-shop-uganda.jpg",
       "Industrial Machinery & Equipment":"https://gbres.dfcfw.com/Files/iimage/20250104/BB2DB91D06947BB58683EC4A915EBE2B_w1080h720.jpg",
       "Food & Beverages":"https://supplier-offers-media-production.s3.eu-central-1.amazonaws.com/5bebefe9-0732-11f1-818e-0a58a9feac02.png",
-      "Solar & Renewable Energy":"https://www.sunners.com.br/images/equipamentos-de-energia-solar-fotovoltaica-01.webp",
       "Steel, Iron & Metal Products":"https://irp-cdn.multiscreensite.com/9fec2152/dms3rep/multi/Cartagena-bodega-chipa-Agofer-e1201e26.JPG",
+      "Solar & Renewable Energy":"https://www.sunners.com.br/images/equipamentos-de-energia-solar-fotovoltaica-01.webp",
       "Plumbing, Water & Sanitary":"https://hilitebmt.com/static/2fcdba86c15cc1f4f70cb20e38f94f3d/3564b/sanitary-items.jpg",
       "Packaging & Printing":"https://images.ctfassets.net/cma41nsiygxr/65KW26r0jd0J8WPmf2jtrk/fdc314fdceb622ca4e39df42e848504c/box_cat-boxes-for-objects_3.jpg",
       "Office & Business Supplies":"https://eu.evocdn.io/dealer/1898/content/media/Content_Pages/large-office-supplies-stationery-1.jpg",
@@ -97,79 +73,84 @@
       "Electrical & Power Equipment":"https://specap.com/_next/image?dpl=dpl_GR1mkvn39potgZieQaYjJ6YZHFpS&q=75&url=%2Fimages%2Fblog%2Fpower-electronics.webp&w=3840"
     };
 
-    const colors = ["#b42318","#7f56d9","#027a48","#175cd3","#b54708","#c11574","#026aa2","#6941c6","#344054","#0e9384"];
-    const fallback = (emoji, title, color) => "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="'+color+'"/><stop offset="1" stop-color="#071f30"/></linearGradient></defs><rect width="800" height="420" fill="url(#g)"/><circle cx="690" cy="80" r="150" fill="white" opacity=".08"/><circle cx="90" cy="350" r="180" fill="white" opacity=".06"/><text x="50%" y="48%" dominant-baseline="middle" text-anchor="middle" font-size="92">'+emoji+'</text><text x="50%" y="80%" dominant-baseline="middle" text-anchor="middle" font-family="Arial,sans-serif" font-size="28" font-weight="700" fill="white">'+title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</text></svg>'
-    );
+    const hues = [8,266,151,216,28,326,196,284,214,173];
+    const fallback = (emoji,title,index) => {
+      const hue=hues[index%hues.length];
+      return "data:image/svg+xml;charset=UTF-8,"+encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="hsl('+hue+',55%,28%)"/><stop offset="1" stop-color="hsl('+(hue+35)+',62%,42%)"/></linearGradient></defs><rect width="1200" height="700" fill="url(#g)"/><circle cx="980" cy="150" r="190" fill="#fff" opacity=".09"/><circle cx="1100" cy="650" r="300" fill="#000" opacity=".12"/><text x="70" y="500" fill="#fff" font-family="Arial,sans-serif" font-size="62" font-weight="700">'+String(title).replace(/[&<>]/g,'')+'</text><text x="72" y="555" fill="rgba(255,255,255,.75)" font-family="Arial,sans-serif" font-size="24" letter-spacing="4">VTG MARKETPLACE</text></svg>'
+      );
+    };
 
-    const style = document.createElement('style');
-    style.id = 'vtgTradeCarouselStyles';
-    style.textContent = `
-      #vtgTradeCarousel{margin-top:28px;position:relative}
-      #vtgTradeCarousel .vtgCarouselHead{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:14px}
-      #vtgTradeCarousel .vtgCarouselHead h3{margin:0;color:var(--navy);font-size:21px}
-      #vtgTradeCarousel .vtgCarouselHead span{font-size:9px;color:var(--muted)}
-      #vtgTradeCarousel .vtgViewport{overflow:hidden;border-radius:18px}
-      #vtgTradeCarousel .vtgTrack{display:flex;gap:14px;transition:transform .65s cubic-bezier(.16,1,.3,1);will-change:transform}
-      #vtgTradeCarousel .vtgSlide{flex:0 0 calc((100% - 42px)/4);min-width:0;background:var(--white);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 6px 18px rgba(9,38,58,.07)}
-      #vtgTradeCarousel .vtgSlide img{display:block;width:100%;height:165px;object-fit:cover;background:var(--soft)}
-      #vtgTradeCarousel .vtgSlideBody{padding:11px 12px 13px}
-      #vtgTradeCarousel .vtgSlideBody strong{display:block;font-size:10px;line-height:1.35;color:var(--ink)}
-      #vtgTradeCarousel .vtgAccent{width:28px;height:3px;border-radius:999px;margin-bottom:8px}
-      #vtgTradeCarousel .vtgControls{display:flex;gap:7px}
-      #vtgTradeCarousel .vtgControls button{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--white);color:var(--ink);cursor:pointer;font-size:16px}
-      #vtgTradeCarousel .vtgControls button:hover{border-color:var(--teal);color:var(--teal)}
-      @media(max-width:950px){#vtgTradeCarousel .vtgSlide{flex-basis:calc((100% - 14px)/2)}}
-      @media(max-width:600px){#vtgTradeCarousel .vtgSlide{flex-basis:100%}#vtgTradeCarousel .vtgSlide img{height:185px}#vtgTradeCarousel .vtgCarouselHead{align-items:center}}
+    const style=document.createElement('style');
+    style.id='vtgTradeCarouselStyles';
+    style.textContent=`
+      #vtgProductCarousel{margin-top:24px;position:relative;z-index:1;isolation:isolate;background:transparent}
+      #vtgProductCarousel .vtgCarouselViewport{position:relative;height:390px;border-radius:22px;overflow:hidden;background:#111;box-shadow:0 18px 45px rgba(7,31,48,.16)}
+      #vtgProductCarousel .vtgCarouselSlides{position:absolute;inset:0}
+      #vtgProductCarousel .vtgFreshSlide{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .65s ease,filter .65s ease;display:block;background:#111}
+      #vtgProductCarousel .vtgFreshSlide.active{opacity:1}
+      #vtgProductCarousel .vtgFreshSlide img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+      #vtgProductCarousel .vtgCarouselViewport:after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,.03),rgba(0,0,0,.04) 42%,rgba(0,0,0,.78) 100%);pointer-events:none}
+      #vtgProductCarousel .vtgCarouselMeta{position:absolute;left:25px;right:25px;bottom:24px;z-index:3;display:grid;gap:5px;color:#fff}
+      #vtgProductCarousel .vtgCarouselKicker{font-size:9px;font-weight:900;letter-spacing:.16em;color:rgba(255,255,255,.78);text-transform:uppercase}
+      #vtgProductCarousel .vtgCarouselTitle{font-size:clamp(22px,3vw,34px);line-height:1.1}
+      #vtgProductCarousel .vtgCarouselCount{font-size:9px;color:rgba(255,255,255,.78)}
+      #vtgProductCarousel .vtgCarouselPrev,#vtgProductCarousel .vtgCarouselNext{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:42px;height:42px;border:1px solid rgba(255,255,255,.4);border-radius:50%;background:rgba(10,15,20,.45);backdrop-filter:blur(7px);color:#fff;font-size:30px;line-height:1;cursor:pointer}
+      #vtgProductCarousel .vtgCarouselPrev{left:14px}#vtgProductCarousel .vtgCarouselNext{right:14px}
+      #vtgProductCarousel .vtgCarouselDots{display:flex;justify-content:center;gap:5px;margin-top:10px;flex-wrap:wrap}
+      #vtgProductCarousel .vtgCarouselDot{width:7px;height:7px;padding:0;border:0;border-radius:50%;background:#c7ced3;cursor:pointer}
+      #vtgProductCarousel .vtgCarouselDot.active{background:#9c241d;transform:scale(1.35)}
+      html[data-theme="dark"] #vtgProductCarousel .vtgCarouselDot{background:#4b5963}
+      html[data-theme="dark"] #vtgProductCarousel .vtgCarouselViewport{box-shadow:0 18px 45px rgba(0,0,0,.35)}
+      @media(max-width:600px){#vtgProductCarousel .vtgCarouselViewport{height:300px;border-radius:17px}#vtgProductCarousel .vtgCarouselMeta{left:17px;right:17px;bottom:17px}#vtgProductCarousel .vtgCarouselPrev,#vtgProductCarousel .vtgCarouselNext{width:36px;height:36px;font-size:25px}#vtgProductCarousel .vtgCarouselDots{gap:4px}#vtgProductCarousel .vtgCarouselDot{width:6px;height:6px}}
     `;
     document.head.appendChild(style);
 
-    const root = document.createElement('section');
-    root.id = 'vtgTradeCarousel';
-    root.innerHTML = `
-      <div class="vtgCarouselHead">
-        <div><h3>Explore Trade Categories</h3><span>Product-focused visuals across the VTG marketplace</span></div>
-        <div class="vtgControls"><button type="button" aria-label="Previous category">‹</button><button type="button" aria-label="Next category">›</button></div>
-      </div>
-      <div class="vtgViewport"><div class="vtgTrack"></div></div>
-    `;
-    market.appendChild(root);
+    const wrap=document.createElement('section');
+    wrap.id='vtgProductCarousel';
+    wrap.innerHTML='<div class="vtgCarouselViewport"><div class="vtgCarouselSlides"></div><button type="button" class="vtgCarouselPrev" aria-label="Previous category">‹</button><button type="button" class="vtgCarouselNext" aria-label="Next category">›</button><div class="vtgCarouselMeta"><span class="vtgCarouselKicker">VTG MARKETPLACE</span><strong class="vtgCarouselTitle"></strong><span class="vtgCarouselCount"></span></div></div><div class="vtgCarouselDots" aria-label="Carousel categories"></div>';
+    const slides=wrap.querySelector('.vtgCarouselSlides');
+    const dots=wrap.querySelector('.vtgCarouselDots');
+    const title=wrap.querySelector('.vtgCarouselTitle');
+    const count=wrap.querySelector('.vtgCarouselCount');
 
-    const track = root.querySelector('.vtgTrack');
-    categories.forEach(([title,id,emoji],i)=>{
-      const color = colors[i % colors.length];
-      const fallbackSrc = fallback(emoji,title,color);
-      const img = categoryImages[title] || fallbackSrc;
-      const card = document.createElement('article');
-      card.className='vtgSlide';
-      card.innerHTML=`<img loading="eager" src="${img}" alt="${title}" data-fallback="${fallbackSrc}"><div class="vtgSlideBody"><div class="vtgAccent" style="background:${color}"></div><strong>${title}</strong></div>`;
-      const image = card.querySelector('img');
-      image.addEventListener('error',()=>{ image.src=image.dataset.fallback; },{once:true});
-      track.appendChild(card);
+    categories.forEach(([name,emoji],index)=>{
+      const slide=document.createElement('div');
+      slide.className='vtgFreshSlide'+(index===0?' active':'');
+      const img=document.createElement('img');
+      img.loading='eager';
+      img.alt=name;
+      img.src=categoryImages[name]||fallback(emoji,name,index);
+      img.addEventListener('error',()=>{img.src=fallback(emoji,name,index);},{once:true});
+      slide.setAttribute('role','group');
+      slide.setAttribute('aria-label',name);
+      slide.appendChild(img);
+      slides.appendChild(slide);
+
+      const dot=document.createElement('button');
+      dot.type='button';dot.className='vtgCarouselDot'+(index===0?' active':'');dot.setAttribute('aria-label','Show '+name);
+      dots.appendChild(dot);
     });
 
-    let index=0, timer=null;
-    const getVisible=()=>window.innerWidth<=600?1:(window.innerWidth<=950?2:4);
-    const render=()=>{
-      const visible=getVisible();
-      const max=Math.max(0,categories.length-visible);
-      index=Math.min(index,max);
-      const first=track.querySelector('.vtgSlide');
-      if(!first)return;
-      const step=first.getBoundingClientRect().width+14;
-      track.style.transform=`translate3d(-${index*step}px,0,0)`;
+    let index=0,timer=null;
+    const show=nextIndex=>{
+      slides.children[index]?.classList.remove('active');
+      dots.children[index]?.classList.remove('active');
+      index=(nextIndex+categories.length)%categories.length;
+      slides.children[index]?.classList.add('active');
+      dots.children[index]?.classList.add('active');
+      title.textContent=categories[index][0];
+      count.textContent=(index+1)+' / '+categories.length;
     };
-    const next=()=>{const max=Math.max(0,categories.length-getVisible());index=index>=max?0:index+1;render();};
-    const prev=()=>{const max=Math.max(0,categories.length-getVisible());index=index<=0?max:index-1;render();};
-    root.querySelectorAll('.vtgControls button')[0].addEventListener('click',()=>{prev();restart();});
-    root.querySelectorAll('.vtgControls button')[1].addEventListener('click',()=>{next();restart();});
-    const restart=()=>{clearInterval(timer);timer=setInterval(next,3000);};
-    root.addEventListener('mouseenter',()=>clearInterval(timer));
-    root.addEventListener('mouseleave',restart);
-    window.addEventListener('resize',render);
-    requestAnimationFrame(()=>{render();restart();});
+    dots.querySelectorAll('button').forEach((dot,i)=>dot.addEventListener('click',()=>{show(i);restart();}));
+    wrap.querySelector('.vtgCarouselPrev').onclick=()=>{show(index-1);restart();};
+    wrap.querySelector('.vtgCarouselNext').onclick=()=>{show(index+1);restart();};
+    const restart=()=>{clearInterval(timer);timer=setInterval(()=>show(index+1),3000);};
+    title.textContent=categories[0][0];
+    count.textContent='1 / '+categories.length;
+    market.appendChild(wrap);
+    restart();
   }
-
   function apply(){
     try{upgradeAI();loadLiveMarket();replaceMarketplaceIntro();installTradeCarousel();setInterval(loadLiveMarket,300000);if(window.lucide?.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.9}});}catch(e){console.warn('VTG visual enhancer failed',e);}
   }
