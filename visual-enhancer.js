@@ -49,14 +49,14 @@
       "Bicycles & Personal Mobility":"https://assets.newatlas.com/dims4/default/ea73d8b/2147483647/strip/true/crop/1620x1080%2B0%2B0/resize/1620x1080%21/format/webp/quality/85/?url=https%3A%2F%2Fnewatlas-brightspot.s3.amazonaws.com%2Farchive%2F506A7544.jpg",
       "Medical Supplies & Healthcare":"https://www.57357.org/_next/image?q=100&url=https%3A%2F%2Fapi.57357.org%2Fstorage%2F3472%2FWhatsApp_Image_2026_02_10_at_151346.jpeg&w=1080",
       "Agriculture & Farm Products":"https://cloudfront-eu-central-1.images.arcpublishing.com/williamreed/HWAY4IBGKBKI5FN34NRFXPALMQ.jpg",
-      "Clothing & Textiles":"https://data.daryo.uz/media/2023/12/21/frame-68-2023-12-21t001606.619-MrnZ3Igq.png",
+      "Clothing & Textiles":"https://www.mgm-ethiopia.com/assets/textiles-BF6a4IiE.jpg",
       "Footwear":"https://www.bayxbengal.com/industries/footwear.webp",
       "Fashion & Accessories":"https://claudioandco.com/cdn/shop/articles/IMG_0282.jpg?v=1772215671&width=1500",
       "Watches & Wearables":"https://cdn.mos.cms.futurecdn.net/z7vsVze8PmDsTxRzYPmy5.jpg",
       "Electronics & Technology":"https://knjiznica-trzic.splet.arnes.si/files/2024/09/Phones-1.jpg",
       "Home & Furniture":"https://www.ifurniture.co.nz/images/thumbs/0064512_lancaster-fabric-sofa-range-grey-2-seater.jpeg",
       "Kitchen & Home Appliances":"https://i.postimg.cc/W4xx6fsb/IMG-0708.jpg",
-      "Construction Equipment & Machinery":"https://www.ingconsult.biz/uploads/content/images/stroitelna-tehnika-sany-Ingconsult.jpg",
+      "Construction Equipment & Machinery":"https://cdn.prod.website-files.com/66fc1033a0da8fd78b2a4365/67a22915cb3ecbc7698dea23_thumbnail.jpeg",
       "Industrial Machinery & Equipment":"https://gbres.dfcfw.com/Files/iimage/20250104/BB2DB91D06947BB58683EC4A915EBE2B_w1080h720.jpg",
       "Food & Beverages":"https://supplier-offers-media-production.s3.eu-central-1.amazonaws.com/5bebefe9-0732-11f1-818e-0a58a9feac02.png",
       "Steel, Iron & Metal Products":"https://irp-cdn.multiscreensite.com/9fec2152/dms3rep/multi/Cartagena-bodega-chipa-Agofer-e1201e26.JPG",
@@ -69,17 +69,17 @@
       "Factory & Production Supplies":"https://gbres.dfcfw.com/Files/iimage/20250104/BB2DB91D06947BB58683EC4A915EBE2B_w1080h720.jpg",
       "Marine & Port Equipment":"https://multimedia.elpais.com.co/2023/07_julio/500_empresas/img_editorial/art1.jpg",
       "Logistics, Transport & Warehousing Equipment":"https://www.klikovacdoo.com/images/Hale-i-magacini/Galerija/Hale_i_magacini_003.jpg",
-      "Building Materials":"https://selvamadera.co/_next/image?q=75&url=%2Fimages%2Fblog%2Fmano-obra-vs-materiales-remodelacion%2Fmateriales-construccion-antioquia.webp&w=3840",
+      "Building Materials":"https://ferreteriachacabuco.cl/cdn/shop/articles/fd27443c-f441-4964-938e-c24e25948095.png?v=1772467913&width=1500",
       "Electrical & Power Equipment":"https://specap.com/_next/image?dpl=dpl_GR1mkvn39potgZieQaYjJ6YZHFpS&q=75&url=%2Fimages%2Fblog%2Fpower-electronics.webp&w=3840"
       "Electrical & Power Equipment":"https://specap.com/_next/image?dpl=dpl_GR1mkvn39potgZieQaYjJ6YZHFpS&q=75&url=%2Fimages%2Fblog%2Fpower-electronics.webp&w=3840",
-      "Motorcycles, Tricycles & Mobility":"https://okki-shop.oss-cn-hangzhou.aliyuncs.com/1160/upload/product/621c6a94bc304dc7c04e36968930a06b40a275771ff028f9aa3d89561f64fd25.jpg",
-      "Beauty & Personal Care":"https://sweetskin.no/cdn/shop/collections/A_white_background_with_an_array_of_beauty_products_for_a_webshop_category_All_products.jpg?v=1733252341&width=750",
+      "Motorcycles, Tricycles & Mobility":"https://factoryorder.oss-cn-chengdu.aliyuncs.com/uploads/admin/2022/04/07/200CC250CC300CCclassicalandhotsellingmodels%289%29_30885.jpg",
+      "Beauty & Personal Care":"https://tezeon.com/_next/image?q=75&url=https%3A%2F%2Fapi.tezeon.com%2Fmedia%2Fcategories%2Feauty__Personal_Care.png&w=3840",
       "Tools & Hardware":"https://crownksa.com/static/images/categories/hardware-banner.jpg",
-      "Baby & Children's Products":"https://image.made-in-china.com/2f0j00qALhtbJYLZok/Tombotoy-Wholesale-Multifunction-Educational-Toys-Baby-Musical-Toys-Set-Music-and-Light-Kids-Plastic-Baby-Music-Toy.webp",
+      "Baby & Children's Products":"https://static.ticimax.cloud/cdn-cgi/image/width%3D-%2Cquality%3D99/6806/uploads/blog/cocuklarin-hayal-dunyasinda-yolculuk-toy-4eae.jpg",
       "Cleaning & Household Supplies":"https://radioclub.ua/upload/editor/00/2025/84/e3/6784ffbb147d4_osnovnoe-uborka.jpg",
-      "Bags, Luggage & Travel":"https://cdn.auchan.fr/assets/b2c/sua/edito/sis/airport/2025/02_fevrier/sis_airport_theme_fathers_day.webp",
+      "Bags, Luggage & Travel":"https://image.made-in-china.com/202f0j00ZkrlyjIMQObq/Promotion-Trolley-Travel-Luggage-Bag-Set-Wheeled-Bag-Garment-Duffel-Bag-Toiletry-Cosmetic-Bag-Packing-Cubes-Organizer-Shopping-Tote-Bag-Laptop-Bag.webp",
       "Telecommunications & Networking":"https://www.nokia.com/sites/default/files/2024-05/resrcid34724_7750_sr_-2se-001-1920x1080.jpg?height=774&width=1376",
-      "Industrial Materials":"https://ocdn.eu/pulscms/MDA_/5ee013a4-a56d-4136-a6d7-5049d835ace4.png"
+      "Industrial Materials":"https://raw-material.stinternational.org/resources/hero-industrial.jpg"
     };
     const hues = [8,266,151,216,28,326,196,284,214,173];
     const fallback = (emoji,title,index) => {
