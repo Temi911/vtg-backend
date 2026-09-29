@@ -49,14 +49,14 @@
       "Bicycles & Personal Mobility":"https://assets.newatlas.com/dims4/default/ea73d8b/2147483647/strip/true/crop/1620x1080%2B0%2B0/resize/1620x1080%21/format/webp/quality/85/?url=https%3A%2F%2Fnewatlas-brightspot.s3.amazonaws.com%2Farchive%2F506A7544.jpg",
       "Medical Supplies & Healthcare":"https://www.57357.org/_next/image?q=100&url=https%3A%2F%2Fapi.57357.org%2Fstorage%2F3472%2FWhatsApp_Image_2026_02_10_at_151346.jpeg&w=1080",
       "Agriculture & Farm Products":"https://cloudfront-eu-central-1.images.arcpublishing.com/williamreed/HWAY4IBGKBKI5FN34NRFXPALMQ.jpg",
-      "Clothing & Textiles":"https://valox.com.ua/upload/rimg/chomu-vazhlivo-slidkuvati-za-modnimi-tendentsiyami.jpg",
+      "Clothing & Textiles":"https://data.daryo.uz/media/2023/12/21/frame-68-2023-12-21t001606.619-MrnZ3Igq.png",
       "Footwear":"https://www.bayxbengal.com/industries/footwear.webp",
       "Fashion & Accessories":"https://claudioandco.com/cdn/shop/articles/IMG_0282.jpg?v=1772215671&width=1500",
       "Watches & Wearables":"https://cdn.mos.cms.futurecdn.net/z7vsVze8PmDsTxRzYPmy5.jpg",
       "Electronics & Technology":"https://knjiznica-trzic.splet.arnes.si/files/2024/09/Phones-1.jpg",
       "Home & Furniture":"https://www.ifurniture.co.nz/images/thumbs/0064512_lancaster-fabric-sofa-range-grey-2-seater.jpeg",
       "Kitchen & Home Appliances":"https://i.postimg.cc/W4xx6fsb/IMG-0708.jpg",
-      "Construction Equipment & Machinery":"https://ugabox.com/images/shop/machinery/Machinery-Equipment-online-shop-uganda.jpg",
+      "Construction Equipment & Machinery":"https://www.ingconsult.biz/uploads/content/images/stroitelna-tehnika-sany-Ingconsult.jpg",
       "Industrial Machinery & Equipment":"https://gbres.dfcfw.com/Files/iimage/20250104/BB2DB91D06947BB58683EC4A915EBE2B_w1080h720.jpg",
       "Food & Beverages":"https://supplier-offers-media-production.s3.eu-central-1.amazonaws.com/5bebefe9-0732-11f1-818e-0a58a9feac02.png",
       "Steel, Iron & Metal Products":"https://irp-cdn.multiscreensite.com/9fec2152/dms3rep/multi/Cartagena-bodega-chipa-Agofer-e1201e26.JPG",
@@ -69,11 +69,11 @@
       "Factory & Production Supplies":"https://gbres.dfcfw.com/Files/iimage/20250104/BB2DB91D06947BB58683EC4A915EBE2B_w1080h720.jpg",
       "Marine & Port Equipment":"https://multimedia.elpais.com.co/2023/07_julio/500_empresas/img_editorial/art1.jpg",
       "Logistics, Transport & Warehousing Equipment":"https://www.klikovacdoo.com/images/Hale-i-magacini/Galerija/Hale_i_magacini_003.jpg",
-      "Building Materials":"https://www.erlgroup.com.tr/tugla.jpg",
+      "Building Materials":"https://selvamadera.co/_next/image?q=75&url=%2Fimages%2Fblog%2Fmano-obra-vs-materiales-remodelacion%2Fmateriales-construccion-antioquia.webp&w=3840",
       "Electrical & Power Equipment":"https://specap.com/_next/image?dpl=dpl_GR1mkvn39potgZieQaYjJ6YZHFpS&q=75&url=%2Fimages%2Fblog%2Fpower-electronics.webp&w=3840"
     };
 
-    const hues = [8,266,151,216,28,326,196,284,214,173];
+      "Motorcycles, Tricycles & Mobility":"https://okki-shop.oss-cn-hangzhou.aliyuncs.com/1160/upload/product/621c6a94bc304dc7c04e36968930a06b40a275771ff028f9aa3d89561f64fd25.jpg",\n      "Beauty & Personal Care":"https://sweetskin.no/cdn/shop/collections/A_white_background_with_an_array_of_beauty_products_for_a_webshop_category_All_products.jpg?v=1733252341&width=750",\n      "Tools & Hardware":"https://crownksa.com/static/images/categories/hardware-banner.jpg",\n      "Baby & Children's Products":"https://image.made-in-china.com/2f0j00qALhtbJYLZok/Tombotoy-Wholesale-Multifunction-Educational-Toys-Baby-Musical-Toys-Set-Music-and-Light-Kids-Plastic-Baby-Music-Toy.webp",\n      "Cleaning & Household Supplies":"https://radioclub.ua/upload/editor/00/2025/84/e3/6784ffbb147d4_osnovnoe-uborka.jpg",\n      "Bags, Luggage & Travel":"https://cdn.auchan.fr/assets/b2c/sua/edito/sis/airport/2025/02_fevrier/sis_airport_theme_fathers_day.webp",\n      "Telecommunications & Networking":"https://www.gettyimages.com/images/creative-collection/telecommunication-cabinets-in-data-center.jpg",\n      "Industrial Materials":"https://ocdn.eu/pulscms/MDA_/5ee013a4-a56d-4136-a6d7-5049d835ace4.png",\n    const hues = [8,266,151,216,28,326,196,284,214,173];
     const fallback = (emoji,title,index) => {
       const hue=hues[index%hues.length];
       return "data:image/svg+xml;charset=UTF-8,"+encodeURIComponent(
