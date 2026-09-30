@@ -187,12 +187,14 @@ const baseSignup = z.object({
   password: z.string().min(8).regex(/[A-Z]/, 'Needs an uppercase letter').regex(/[0-9]/, 'Needs a number'),
   fullName: z.string().min(2),
   phone: z.string().min(7).optional(),
+  phoneCountry: z.string().min(2).max(80).optional(),
   preferredLanguage: z.string().min(2).max(10).optional(),
   verificationCode: z.string().min(6).max(6).optional(),
 });
 
 const buyerSignupSchema = baseSignup.extend({
   buyerType: z.enum(['individual', 'business', 'dealer', 'ngo', 'organisation']),
+  phoneCountry: allowedCountry(VTG_AFRICA_COUNTRIES, 'Buyer contact country must be an African country'),
   companyName: z.string().optional(),
   registrationNo: z.string().optional(),
   country: allowedCountry(VTG_AFRICA_COUNTRIES, 'Buyer country must be an African country').default('Nigeria'),
@@ -202,6 +204,7 @@ const buyerSignupSchema = baseSignup.extend({
 });
 
 const supplierSignupSchema = baseSignup.extend({
+  phoneCountry: allowedCountry(VTG_SUPPLIER_COUNTRIES, 'Supplier contact country must be China or South Korea'),
   companyName: z.string().min(2),
   registrationNo: z.string().min(2),
   licenseNumber: z.string().min(2),
