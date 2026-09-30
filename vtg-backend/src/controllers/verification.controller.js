@@ -8,13 +8,14 @@ const { UPLOAD_DIR } = require('../middleware/upload');
 
 const SUPPLIER_DOCS = new Set(['company_registration','business_license','tax_certificate','export_license','company_address_proof','other']);
 const BANK_DOCS = new Set(['bank_license','regulatory_certificate','company_registration','swift_bic_certificate','institution_address_proof','officer_authorization','other']);
+const AGENT_DOCS = new Set(['government_id','proof_of_address','business_registration','professional_certificate','reference_document','other']);
 
 function allowedDocTypes(role) {
-  return role === 'supplier' ? SUPPLIER_DOCS : role === 'bank' ? BANK_DOCS : new Set();
+  return role === 'supplier' ? SUPPLIER_DOCS : role === 'bank' ? BANK_DOCS : role === 'agent' ? AGENT_DOCS : new Set();
 }
 
 const upload = asyncHandler(async (req, res) => {
-  if (!['supplier','bank'].includes(req.user.role)) {
+  if (!['supplier','bank','agent'].includes(req.user.role)) {
     throw new AppError('Business verification uploads are available for suppliers and banks.', 403, 'FORBIDDEN');
   }
   if (!req.file) throw new AppError('No file was uploaded', 400);
@@ -37,7 +38,7 @@ const upload = asyncHandler(async (req, res) => {
 
 const listMine = asyncHandler(async (req, res) => {
   if (!['supplier','bank'].includes(req.user.role)) {
-    throw new AppError('Verification documents are available for suppliers and banks.', 403, 'FORBIDDEN');
+    throw new AppError('Verification documents are available for suppliers, banks and agents.', 403, 'FORBIDDEN');
   }
   const { rows } = await query(
     `SELECT id, doc_type, file_name, mime_type, file_size_bytes, status, review_notes, uploaded_at, reviewed_at
@@ -86,7 +87,7 @@ const reviewQueue = asyncHandler(async (req, res) => {
             vd.status, vd.review_notes, vd.uploaded_at, u.email, u.role
        FROM verification_documents vd
        JOIN users u ON u.id = vd.user_id
-      WHERE vd.status = 'pending' AND u.role IN ('supplier','bank')
+      WHERE vd.status = 'pending' AND u.role IN ('supplier','bank','agent')
       ORDER BY vd.uploaded_at ASC`
   );
   res.json({ documents: rows });
