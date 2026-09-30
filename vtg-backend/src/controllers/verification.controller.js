@@ -79,4 +79,16 @@ const review = asyncHandler(async (req, res) => {
   res.json({ document: rows[0] });
 });
 
-module.exports = { upload, listMine, download, review };
+
+const reviewQueue = asyncHandler(async (req, res) => {
+  const { rows } = await query(
+    `SELECT vd.id, vd.user_id, vd.doc_type, vd.file_name, vd.mime_type, vd.file_size_bytes,
+            vd.status, vd.review_notes, vd.uploaded_at, u.email, u.role
+       FROM verification_documents vd
+       JOIN users u ON u.id = vd.user_id
+      WHERE vd.status = 'pending' AND u.role IN ('supplier','bank')
+      ORDER BY vd.uploaded_at ASC`
+  );
+  res.json({ documents: rows });
+});
+\nmodule.exports = { upload, listMine, download, review, reviewQueue };
