@@ -55,6 +55,8 @@ CREATE TABLE supplier_profiles (
   user_id           UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
   company_name      TEXT NOT NULL,
   registration_no   TEXT,
+  license_number    TEXT,
+  regulator         TEXT,
   city              TEXT,
   country           TEXT DEFAULT 'China',
   swift_code        TEXT,
@@ -70,7 +72,12 @@ CREATE TABLE bank_profiles (
   swift_code        TEXT,
   branch            TEXT,
   officer_name      TEXT,
-  officer_title     TEXT
+  officer_title     TEXT,
+  country           TEXT DEFAULT 'Nigeria',
+  institution_type  TEXT,
+  regulator         TEXT,
+  license_number    TEXT,
+  work_email        TEXT
 );
 
 -- ── PRODUCTS (supplier catalogue) ──────────────────────────
