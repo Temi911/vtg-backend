@@ -217,6 +217,7 @@ const supplierSignupSchema = baseSignup.extend({
 });
 
 const agentSignupSchema = baseSignup.extend({
+  verificationCode: z.string().min(6).max(6),
   country: z.enum(['China','South Korea']),
   city: z.string().min(2).max(100),
   experienceYears: z.coerce.number().int().min(0).max(60).default(0),
@@ -272,13 +273,17 @@ function publicUser(row, profile) {
     } else if (row.role === 'bank') {
       base.bankName = profile.bank_name || null;
       base.branch = profile.branch || null;
+    } else if (row.role === 'agent') {
+      base.country = profile.country || null;
+      base.city = profile.city || null;
+      base.agentStatus = profile.status || 'pending';
     }
   }
   return base;
 }
 
 async function fetchProfile(userId, role) {
-  const table = role === 'buyer' ? 'buyer_profiles' : role === 'supplier' ? 'supplier_profiles' : role === 'bank' ? 'bank_profiles' : null;
+  const table = role === 'buyer' ? 'buyer_profiles' : role === 'supplier' ? 'supplier_profiles' : role === 'bank' ? 'bank_profiles' : role === 'agent' ? 'agent_profiles' : null;
   if (!table) return null;
   const { rows } = await query(`SELECT * FROM ${table} WHERE user_id = $1`, [userId]);
   return rows[0] || null;
@@ -357,6 +362,9 @@ const registerSupplier = asyncHandler(async (req, res) => {
 
 const registerAgent = asyncHandler(async (req,res) => {
   const data=agentSignupSchema.parse(req.body);
+  if (!(await consumeEmailVerificationCode(data.email, data.verificationCode))) {
+    throw new AppError('Email verification is required before creating an agent account', 401, 'EMAIL_NOT_VERIFIED');
+  }
   const passwordHash=await hashPassword(data.password);
   const result=await withTransaction(async(client)=>{
     const existing=await client.query('SELECT id FROM users WHERE email=$1',[data.email]);
