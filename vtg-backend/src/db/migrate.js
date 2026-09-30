@@ -60,12 +60,8 @@ async function main() {
 
 if (require.main === module) {
   main()
-    .then(() => {
-      process.exitCode = 0;
-    })
-    .catch(() => {
-      process.exitCode = 1;
-    });
+    .then(() => process.exit(0))
+    .catch(() => process.exit(1));
 }
 
 module.exports = main;
