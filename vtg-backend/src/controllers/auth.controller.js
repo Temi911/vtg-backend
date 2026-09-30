@@ -191,7 +191,9 @@ const buyerSignupSchema = baseSignup.extend({
 
 const supplierSignupSchema = baseSignup.extend({
   companyName: z.string().min(2),
-  registrationNo: z.string().optional(),
+  registrationNo: z.string().min(2),
+  licenseNumber: z.string().min(2),
+  regulator: z.string().min(2),
   country: z.string().min(2).max(80).default('China'),
   city: z.string().min(2).max(100).optional(),
   swiftCode: z.string().optional(),
@@ -202,13 +204,13 @@ const supplierSignupSchema = baseSignup.extend({
 const bankSignupSchema = baseSignup.extend({
   bankName: z.string().min(2),
   country: z.string().min(2).max(80).default('Nigeria'),
-  institutionType: z.string().min(2).max(80).optional(),
-  regulator: z.string().max(160).optional(),
-  licenseNumber: z.string().max(120).optional(),
+  institutionType: z.string().min(2).max(80),
+  regulator: z.string().min(2).max(160),
+  licenseNumber: z.string().min(2).max(120),
   swiftCode: z.string().optional(),
   branch: z.string().optional(),
-  officerTitle: z.string().optional(),
-  workEmail: z.string().email().optional(),
+  officerTitle: z.string().min(2),
+  workEmail: z.string().email(),
 });
 
 function issueTokens(user) {
@@ -313,9 +315,9 @@ const registerSupplier = asyncHandler(async (req, res) => {
     const user = userRes.rows[0];
 
     await client.query(
-      `INSERT INTO supplier_profiles (user_id, company_name, registration_no, swift_code, bank_name, bank_account_no, city, country)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
-      [user.id, data.companyName, data.registrationNo || null, data.swiftCode || null, data.bankName || null, data.bankAccountNo || null, data.city || null, data.country || 'China']
+      `INSERT INTO supplier_profiles (user_id, company_name, registration_no, license_number, regulator, swift_code, bank_name, bank_account_no, city, country)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+      [user.id, data.companyName, data.registrationNo, data.licenseNumber, data.regulator, data.swiftCode || null, data.bankName || null, data.bankAccountNo || null, data.city || null, data.country || 'China']
     );
 
     return user;
