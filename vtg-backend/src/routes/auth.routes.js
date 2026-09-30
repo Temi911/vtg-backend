@@ -5,6 +5,7 @@ const { requireAuth } = require('../middleware/auth');
 router.post('/signup/buyer', ctrl.registerBuyer);
 router.post('/signup/supplier', ctrl.registerSupplier);
 router.post('/signup/bank', ctrl.registerBank);
+router.post('/signup/agent', ctrl.registerAgent);
 router.post('/send-verification-code', ctrl.sendVerificationCode);
 router.post('/verify-email-code', ctrl.verifyEmailCode);
 router.post('/login', ctrl.login);
