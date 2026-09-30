@@ -19,3 +19,5 @@ async function start() {
 
 if(require.main===module) start().catch(err=>{console.error('Startup failed:',err);process.exit(1);});
 module.exports=app;
+
+// VTG production startup: run database migrations before serving requests.
