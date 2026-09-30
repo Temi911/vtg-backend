@@ -192,8 +192,8 @@ const buyerSignupSchema = baseSignup.extend({
   bankName: z.string().optional(),
   bankAccountNo: z.string().optional(),
 }).superRefine((data, ctx) => {
-  if (data.country.toLowerCase() === 'nigeria' && !data.bvn && !data.nin && !data.identityNumber) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['identityNumber'], message: 'For Nigeria, provide a BVN or NIN.' });
+  if (data.country.toLowerCase() === 'nigeria' && !data.bvn && !data.nin && !data.identityType) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['identityType'], message: 'Select BVN or NIN as your verification method.' });
   }
 });
 
