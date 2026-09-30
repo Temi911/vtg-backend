@@ -275,9 +275,9 @@ const registerBuyer = asyncHandler(async (req, res) => {
     const user = userRes.rows[0];
 
     await client.query(
-      `INSERT INTO buyer_profiles (user_id, buyer_type, company_name, registration_no, bvn, bank_name, bank_account_no, city, country)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
-      [user.id, data.buyerType === 'organisation' ? 'ngo' : data.buyerType, data.companyName || null, data.registrationNo || null, data.bvn || null, data.bankName || null, data.bankAccountNo || null, data.city || null, data.country || 'Nigeria']
+      `INSERT INTO buyer_profiles (user_id, buyer_type, company_name, registration_no, bank_name, bank_account_no, city, country)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+      [user.id, data.buyerType === 'organisation' ? 'ngo' : data.buyerType, data.companyName || null, data.registrationNo || null, data.bankName || null, data.bankAccountNo || null, data.city || null, data.country || 'Nigeria']
     );
 
     // Start every buyer with zero-balance USD/NGN/CNY wallets so the dashboard has something real to show.
