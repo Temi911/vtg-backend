@@ -216,6 +216,17 @@ const supplierSignupSchema = baseSignup.extend({
   bankAccountNo: z.string().optional(),
 });
 
+const agentSignupSchema = baseSignup.extend({
+  country: z.enum(['China','South Korea']),
+  city: z.string().min(2).max(100),
+  experienceYears: z.coerce.number().int().min(0).max(60).default(0),
+  regionsServed: z.string().min(2).max(1000),
+  categories: z.array(z.string()).max(30).default([]),
+  languages: z.array(z.string()).max(20).default([]),
+  bio: z.string().max(2000).optional(),
+  payoutMethod: z.string().max(80).optional(),
+});
+
 const bankSignupSchema = baseSignup.extend({
   bankName: z.string().min(2),
   country: allowedCountry(VTG_BANK_COUNTRIES, 'Bank country must be in Africa, China, or South Korea').default('Nigeria'),
@@ -344,6 +355,23 @@ const registerSupplier = asyncHandler(async (req, res) => {
   res.status(201).json({ user: publicUser(result, profile), ...tokens });
 });
 
+const registerAgent = asyncHandler(async (req,res) => {
+  const data=agentSignupSchema.parse(req.body);
+  const passwordHash=await hashPassword(data.password);
+  const result=await withTransaction(async(client)=>{
+    const existing=await client.query('SELECT id FROM users WHERE email=$1',[data.email]);
+    if(existing.rows[0]) throw new AppError('An account with this email already exists',409,'EMAIL_TAKEN');
+    const userRes=await client.query(`INSERT INTO users(email,phone,password_hash,role,full_name,preferred_language,is_verified) VALUES($1,$2,$3,'agent',$4,'en',TRUE) RETURNING *`,[data.email,data.phone||null,passwordHash,data.fullName]);
+    const user=userRes.rows[0];
+    await client.query(`INSERT INTO agent_profiles(user_id,country,city,regions_served,experience_years,categories,languages,bio,payout_method) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)`,[user.id,data.country,data.city,data.regionsServed,data.experienceYears,data.categories,data.languages,data.bio||null,data.payoutMethod||null]);
+    return user;
+  });
+  await audit.log(result.id,'Agent Application Submitted',`${data.city}, ${data.country}`,req.ip);
+  const tokens=issueTokens(result);
+  const profile=await fetchProfile(result.id,result.role);
+  res.status(201).json({user:publicUser(result,profile),...tokens});
+});
+
 const registerBank = asyncHandler(async (req, res) => {
   const data = bankSignupSchema.parse(req.body);
   if (!(await consumeEmailVerificationCode(data.email, data.verificationCode))) {
@@ -462,6 +490,7 @@ module.exports = {
   registerBuyer,
   registerSupplier,
   registerBank,
+  registerAgent,
   sendVerificationCode,
   verifyEmailCode,
   login,
