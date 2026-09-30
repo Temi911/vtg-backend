@@ -33,8 +33,45 @@ async function dispatchVerificationEmail(email, code) {
     await getTransporter().sendMail({
       from: process.env.SMTP_FROM,
       to: email,
-      subject: 'VTG Africa verification code',
-      text: `Your VTG Africa verification code is ${code}. It expires in 15 minutes.`,
+      subject: 'Welcome to Vintage Trade Global — Verify your email',
+      text: [
+        'Welcome to Vintage Trade Global (VTG)!',
+        '',
+        'Thank you for creating your VTG account. We are excited to have you join our global trade community connecting buyers, suppliers, banks and trade partners.',
+        '',
+        `Your email verification code is: ${code}`,
+        '',
+        'Please enter this code on the VTG website to verify your email address and continue creating your account.',
+        'This verification code expires in 15 minutes. For your security, please do not share this code with anyone.',
+        '',
+        'If you did not request this verification code, you can safely ignore this email.',
+        '',
+        'Welcome to VTG — Vintage Trade Global.',
+        'Connecting Africa, China and the World through trusted trade.',
+      ].join('\\n'),
+      html: `<!doctype html>
+<html>
+  <body style="margin:0;padding:0;background:#f5f1e8;font-family:Arial,sans-serif;color:#1f2933;">
+    <div style="max-width:620px;margin:32px auto;background:#ffffff;border:1px solid #e5e0d5;border-radius:14px;overflow:hidden;">
+      <div style="padding:28px 32px;background:#11161d;color:#ffffff;">
+        <h1 style="margin:0;font-size:26px;">Welcome to Vintage Trade Global</h1>
+        <p style="margin:8px 0 0;color:#d9e0e5;">Africa • China • World Trade</p>
+      </div>
+      <div style="padding:32px;">
+        <p style="font-size:17px;margin-top:0;">Thank you for creating your VTG account. We're excited to welcome you to our global trade community.</p>
+        <p>Please verify your email address using the code below:</p>
+        <div style="margin:24px 0;padding:20px;text-align:center;background:#f7f3eb;border-radius:10px;">
+          <div style="font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:#66717a;">Your verification code</div>
+          <div style="margin-top:8px;font-size:34px;font-weight:700;letter-spacing:8px;color:#b51f2d;">${code}</div>
+        </div>
+        <p><strong>Enter this code on the VTG website</strong> to verify your email address and continue creating your account.</p>
+        <p>This code expires in <strong>15 minutes</strong>. For your security, please do not share it with anyone.</p>
+        <p style="color:#66717a;font-size:14px;">If you did not request this verification code, you can safely ignore this email.</p>
+        <p style="margin-bottom:0;">Welcome to VTG — Vintage Trade Global.<br>Connecting Africa, China and the World through trusted trade.</p>
+      </div>
+    </div>
+  </body>
+</html>`,
     });
     console.info(`[VTG] Verification email sent via SMTP for ${email}`);
     return true;
