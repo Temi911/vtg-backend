@@ -277,6 +277,10 @@ function publicUser(row, profile) {
       base.country = profile.country || null;
       base.city = profile.city || null;
       base.agentStatus = profile.status || 'pending';
+    } else if (row.role === 'agent') {
+      base.country = profile.country || null;
+      base.city = profile.city || null;
+      base.agentStatus = profile.status || 'pending';
     }
   }
   return base;
@@ -362,6 +366,7 @@ const registerSupplier = asyncHandler(async (req, res) => {
 
 const registerAgent = asyncHandler(async (req,res) => {
   const data=agentSignupSchema.parse(req.body);
+  if (!(await consumeEmailVerificationCode(data.email, data.verificationCode))) throw new AppError('Email verification is required before creating an agent account', 401, 'EMAIL_NOT_VERIFIED');
   if (!(await consumeEmailVerificationCode(data.email, data.verificationCode))) {
     throw new AppError('Email verification is required before creating an agent account', 401, 'EMAIL_NOT_VERIFIED');
   }
