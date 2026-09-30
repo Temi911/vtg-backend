@@ -170,6 +170,18 @@ async function hasValidEmailVerificationCode(email, code) {
 function normalizeEmail(email) { return String(email || '').trim().toLowerCase(); }
 function generateVerificationCode() { return String(Math.floor(100000 + Math.random() * 900000)); }
 
+const VTG_AFRICA_COUNTRIES = [
+  'Algeria','Angola','Benin','Botswana','Burkina Faso','Burundi','Cabo Verde','Cameroon','Central African Republic','Chad',
+  'Comoros','DR Congo','Republic of the Congo','Côte d’Ivoire','Djibouti','Egypt','Equatorial Guinea','Eritrea','Eswatini',
+  'Ethiopia','Gabon','Gambia','Ghana','Guinea','Guinea-Bissau','Kenya','Lesotho','Liberia','Libya','Madagascar','Malawi',
+  'Mali','Mauritania','Mauritius','Morocco','Mozambique','Namibia','Niger','Nigeria','Rwanda','São Tomé and Príncipe',
+  'Senegal','Seychelles','Sierra Leone','Somalia','South Africa','South Sudan','Sudan','Tanzania','Togo','Tunisia','Uganda',
+  'Zambia','Zimbabwe'
+];
+const VTG_SUPPLIER_COUNTRIES = ['China','South Korea'];
+const VTG_BANK_COUNTRIES = [...VTG_AFRICA_COUNTRIES, ...VTG_SUPPLIER_COUNTRIES];
+const allowedCountry = (list, label) => z.string().min(2).max(80).refine(value => list.includes(value), label);
+
 const baseSignup = z.object({
   email: z.string().email(),
   password: z.string().min(8).regex(/[A-Z]/, 'Needs an uppercase letter').regex(/[0-9]/, 'Needs a number'),
@@ -183,7 +195,7 @@ const buyerSignupSchema = baseSignup.extend({
   buyerType: z.enum(['individual', 'business', 'dealer', 'ngo', 'organisation']),
   companyName: z.string().optional(),
   registrationNo: z.string().optional(),
-  country: z.string().min(2).max(80).default('Nigeria'),
+  country: allowedCountry(VTG_AFRICA_COUNTRIES, 'Buyer country must be an African country').default('Nigeria'),
   city: z.string().min(2).max(100).optional(),
   bankName: z.string().optional(),
   bankAccountNo: z.string().optional(),
@@ -194,7 +206,7 @@ const supplierSignupSchema = baseSignup.extend({
   registrationNo: z.string().min(2),
   licenseNumber: z.string().min(2),
   regulator: z.string().min(2),
-  country: z.string().min(2).max(80).default('China'),
+  country: allowedCountry(VTG_SUPPLIER_COUNTRIES, 'Supplier country must be China or South Korea').default('China'),
   city: z.string().min(2).max(100).optional(),
   swiftCode: z.string().optional(),
   bankName: z.string().optional(),
@@ -203,7 +215,7 @@ const supplierSignupSchema = baseSignup.extend({
 
 const bankSignupSchema = baseSignup.extend({
   bankName: z.string().min(2),
-  country: z.string().min(2).max(80).default('Nigeria'),
+  country: allowedCountry(VTG_BANK_COUNTRIES, 'Bank country must be in Africa, China, or South Korea').default('Nigeria'),
   institutionType: z.string().min(2).max(80),
   regulator: z.string().min(2).max(160),
   licenseNumber: z.string().min(2).max(120),
