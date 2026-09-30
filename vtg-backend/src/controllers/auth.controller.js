@@ -185,16 +185,8 @@ const buyerSignupSchema = baseSignup.extend({
   registrationNo: z.string().optional(),
   country: z.string().min(2).max(80).default('Nigeria'),
   city: z.string().min(2).max(100).optional(),
-  identityType: z.string().min(2).max(80).optional(),
-  identityNumber: z.string().min(3).max(120).optional(),
-  bvn: z.string().regex(/^\d{11}$/).optional(),
-  nin: z.string().min(6).max(40).optional(),
   bankName: z.string().optional(),
   bankAccountNo: z.string().optional(),
-}).superRefine((data, ctx) => {
-  if (data.country.toLowerCase() === 'nigeria' && !data.bvn && !data.nin && !data.identityType) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['identityType'], message: 'Select BVN or NIN as your verification method.' });
-  }
 });
 
 const supplierSignupSchema = baseSignup.extend({
@@ -202,8 +194,6 @@ const supplierSignupSchema = baseSignup.extend({
   registrationNo: z.string().optional(),
   country: z.string().min(2).max(80).default('China'),
   city: z.string().min(2).max(100).optional(),
-  identityType: z.string().min(2).max(80).optional(),
-  identityNumber: z.string().min(3).max(120).optional(),
   swiftCode: z.string().optional(),
   bankName: z.string().optional(),
   bankAccountNo: z.string().optional(),
@@ -285,9 +275,9 @@ const registerBuyer = asyncHandler(async (req, res) => {
     const user = userRes.rows[0];
 
     await client.query(
-      `INSERT INTO buyer_profiles (user_id, buyer_type, company_name, registration_no, bvn, bank_name, bank_account_no, identity_type, identity_number, city, country)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
-      [user.id, data.buyerType === 'organisation' ? 'ngo' : data.buyerType, data.companyName || null, data.registrationNo || null, data.bvn || null, data.bankName || null, data.bankAccountNo || null, data.identityType || (data.bvn ? 'BVN' : data.nin ? 'NIN' : null), data.identityNumber || data.nin || data.bvn || null, data.city || null, data.country || 'Nigeria']
+      `INSERT INTO buyer_profiles (user_id, buyer_type, company_name, registration_no, bvn, bank_name, bank_account_no, city, country)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+      [user.id, data.buyerType === 'organisation' ? 'ngo' : data.buyerType, data.companyName || null, data.registrationNo || null, data.bvn || null, data.bankName || null, data.bankAccountNo || null, data.city || null, data.country || 'Nigeria']
     );
 
     // Start every buyer with zero-balance USD/NGN/CNY wallets so the dashboard has something real to show.
@@ -323,9 +313,9 @@ const registerSupplier = asyncHandler(async (req, res) => {
     const user = userRes.rows[0];
 
     await client.query(
-      `INSERT INTO supplier_profiles (user_id, company_name, registration_no, swift_code, bank_name, bank_account_no, identity_type, identity_number, city, country)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
-      [user.id, data.companyName, data.registrationNo || null, data.swiftCode || null, data.bankName || null, data.bankAccountNo || null, data.identityType || null, data.identityNumber || data.registrationNo || null, data.city || null, data.country || 'China']
+      `INSERT INTO supplier_profiles (user_id, company_name, registration_no, swift_code, bank_name, bank_account_no, city, country)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+      [user.id, data.companyName, data.registrationNo || null, data.swiftCode || null, data.bankName || null, data.bankAccountNo || null, data.city || null, data.country || 'China']
     );
 
     return user;
