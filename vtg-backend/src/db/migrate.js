@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const { Pool } = require('pg');
 
-const isProduction = process.env.NODE_ENV === 'production';
 const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {
@@ -52,11 +51,15 @@ async function main() {
   } catch (err) {
     await client.query('ROLLBACK');
     console.error('Database migration failed:', err);
-    process.exitCode = 1;
+    throw err;
   } finally {
     client.release();
     await pool.end();
   }
 }
 
-main();
+if (require.main === module) {
+  main().catch(() => process.exit(1));
+}
+
+module.exports = main;
