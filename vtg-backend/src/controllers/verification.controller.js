@@ -16,7 +16,7 @@ function allowedDocTypes(role) {
 
 const upload = asyncHandler(async (req, res) => {
   if (!['supplier','bank','agent'].includes(req.user.role)) {
-    throw new AppError('Business verification uploads are available for suppliers and banks.', 403, 'FORBIDDEN');
+    throw new AppError('Business verification uploads are available for suppliers, banks and agents.', 403, 'FORBIDDEN');
   }
   if (!req.file) throw new AppError('No file was uploaded', 400);
   const { docType } = z.object({ docType: z.string().min(2).max(80) }).parse(req.body);
@@ -37,7 +37,7 @@ const upload = asyncHandler(async (req, res) => {
 });
 
 const listMine = asyncHandler(async (req, res) => {
-  if (!['supplier','bank'].includes(req.user.role)) {
+  if (!['supplier','bank','agent'].includes(req.user.role)) {
     throw new AppError('Verification documents are available for suppliers, banks and agents.', 403, 'FORBIDDEN');
   }
   const { rows } = await query(
