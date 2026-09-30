@@ -277,10 +277,6 @@ function publicUser(row, profile) {
       base.country = profile.country || null;
       base.city = profile.city || null;
       base.agentStatus = profile.status || 'pending';
-    } else if (row.role === 'agent') {
-      base.country = profile.country || null;
-      base.city = profile.city || null;
-      base.agentStatus = profile.status || 'pending';
     }
   }
   return base;
