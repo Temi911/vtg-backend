@@ -59,7 +59,13 @@ async function main() {
 }
 
 if (require.main === module) {
-  main().catch(() => process.exit(1));
+  main()
+    .then(() => {
+      process.exitCode = 0;
+    })
+    .catch(() => {
+      process.exitCode = 1;
+    });
 }
 
 module.exports = main;
