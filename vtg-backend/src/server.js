@@ -10,14 +10,11 @@ app.use('/api/auth',authLimiter,authRoutes);app.use('/api/profile',profileRoutes
 app.get('/',(req,res,next)=>{fs.readFile(frontendEntry,'utf8',(err,html)=>{if(err)return next(err);const script=`<script src="/vtg-news-image.js?v=20260815"></script><script>${intelligenceWidget}</script><script>${marketplaceWidget}</script>`;res.type('html').send(html.includes('</body>')?html.replace('</body>',script+'</body>'):html+script)})});app.use(express.static(workspaceRoot,{index:'frontend-v3.html'}));app.use(notFoundHandler);app.use(errorHandler);const PORT=process.env.PORT||4000;
 
 async function start() {
-  if (process.env.NODE_ENV === 'production') {
-    const migrate = require('./db/migrate');
-    await migrate();
-  }
+  console.log('Running VTG database migrations before API startup...');
+  const migrate = require('./db/migrate');
+  await migrate();
   app.listen(PORT,()=>console.log(`VTG Africa API listening on port ${PORT}`));
 }
 
 if(require.main===module) start().catch(err=>{console.error('Startup failed:',err);process.exit(1);});
 module.exports=app;
-
-// VTG production startup: run database migrations before serving requests.
