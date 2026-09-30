@@ -27,7 +27,7 @@ async function main() {
 
     const dir = path.join(__dirname, 'migrations');
     const files = fs.readdirSync(dir)
-      .filter((name) => /^\\d+.*\\.sql$/i.test(name))
+      .filter((name) => /^\d+.*\.sql$/i.test(name))
       .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
     for (const file of files) {
