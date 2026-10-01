@@ -136,6 +136,20 @@ button,input,select{font:inherit}.shell{display:grid;grid-template-columns:250px
 </div>
 
 <script>
+async function initWorkspaceGate(){
+ const token=localStorage.getItem('vtg_access_token');
+ if(!token){location.href='/signin.html';return false}
+ try{
+   const r=await fetch('/api/auth/me',{headers:{Authorization:'Bearer '+token}});
+   if(!r.ok){location.href='/signin.html';return false}
+   const d=await r.json(),u=d.user||{};
+   if(d.agreementRequired){location.href='/signup-agreement.html';return false}
+   if(u.role==='supplier'){location.href=u.businessVerificationStatus==='verified'?'/supplier-dashboard.html':'/verification.html';return false}
+   if(u.role==='bank'&&u.businessVerificationStatus!=='verified'){location.href='/verification.html';return false}
+   if(!['buyer','bank'].includes(u.role)){location.href='/signin.html';return false}
+   return true;
+ }catch(e){console.warn('[VTG] workspace gate:',e.message);return false}
+}
 async function initBuyerProfile(){
  try{
    const token=localStorage.getItem('vtg_access_token'); if(!token)return;
@@ -155,7 +169,7 @@ async function initBuyerProfile(){
    };
  }catch(e){console.warn('[VTG] buyer profile picture:',e.message)}
 }
-document.addEventListener('DOMContentLoaded',()=>setTimeout(initBuyerProfile,500));
+document.addEventListener('DOMContentLoaded',async()=>{if(await initWorkspaceGate())setTimeout(initBuyerProfile,500);});
 
 (function(){
   function ctx(){ return window.VTG_GET_CONTEXT ? window.VTG_GET_CONTEXT() : {country:'Nigeria',currency:'NGN',language:'en',role:'buyer',countryData:{code:'NG'}}; }
