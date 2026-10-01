@@ -163,14 +163,33 @@
       box.innerHTML=`
         <div class="buyerRoomItem"><div class="row"><strong>${esc(d.reference)}</strong><span class="buyerRoomBadge">${esc(d.status)}</span></div>
           <small>${esc(d.supplier_name||'Supplier')} • ${money(d.total_amount_usd)} • ${esc(d.incoterm||'FOB')}</small>
-          <div class="buyerRoomActions"><button class="btn" id="roomUpload">Upload document</button><button class="btn" id="roomPay">Start payment</button></div></div>
+          <div class="buyerRoomActions"><button class="btn" id="roomUpload">Upload document</button><button class="btn" id="roomPay">Start payment</button>${['arrived','customs'].includes(d.status)?'<button class="btn primary" id="roomDeliver">Confirm delivery</button>':''}${d.status==='delivered'?'<span class="buyerRoomBadge">Delivery confirmed</span>':''}</div></div>
         <div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Transaction timeline</strong><div class="buyerRoomTimeline" style="margin-top:10px">${timelineForOrder(d)}</div></div>
         <div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Documents</strong><div class="buyerRoomList" style="margin-top:7px">${docs.length?docs.map(x=>`<div><strong style="font-size:10px">${esc(x.doc_type)}</strong><small>${esc(x.file_name)} • ${esc(x.status||'uploaded')}</small></div>`).join(''):'<div class="buyerRoomEmpty">No order documents uploaded yet.</div>'}</div></div>
         <div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Payments</strong><div class="buyerRoomList" style="margin-top:7px">${state.payments.length?state.payments.map(x=>`<div><strong style="font-size:10px">${esc(x.method)} • ${esc(x.amount)} ${esc(x.currency)}</strong><small>${esc(x.status)} • ${esc(x.provider_ref||'Pending provider reference')}</small></div>`).join(''):'<div class="buyerRoomEmpty">No payment request initiated for this order.</div>'}</div></div>
-        ${state.shipment?`<div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Shipment</strong><small>${esc(state.shipment.container_no||'Container pending')} • ${esc(state.shipment.carrier||'Carrier pending')} • ${esc(state.shipment.origin_port||'Origin')} → ${esc(state.shipment.destination_port||'Destination')}</small><div class="buyerRoomTimeline" style="margin-top:10px">${state.shipmentEvents.length?state.shipmentEvents.map((x,i)=>`<div class="buyerRoomStep ${x.status==='done'?'done':x.status==='active'?'active':''}"><span class="buyerRoomDot"></span><div><strong>${esc(x.location)}</strong><small>${esc(x.detail||x.status||'Milestone')}</small></div></div>`).join(''):'<div class="buyerRoomEmpty">Shipment exists but no tracking milestones have been recorded yet.</div>'}</div></div>`:''}
+        ${state.shipment?`<div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Shipment</strong><div class="buyerRoomActions"><button class="btn" id="roomLiveTrack">Check live tracking</button></div><small>${esc(state.shipment.container_no||'Container pending')} • ${esc(state.shipment.carrier||'Carrier pending')} • ${esc(state.shipment.origin_port||'Origin')} → ${esc(state.shipment.destination_port||'Destination')}</small><div class="buyerRoomTimeline" style="margin-top:10px">${state.shipmentEvents.length?state.shipmentEvents.map((x,i)=>`<div class="buyerRoomStep ${x.status==='done'?'done':x.status==='active'?'active':''}"><span class="buyerRoomDot"></span><div><strong>${esc(x.location)}</strong><small>${esc(x.detail||x.status||'Milestone')}</small></div></div>`).join(''):'<div class="buyerRoomEmpty">Shipment exists but no tracking milestones have been recorded yet.</div>'}</div></div>`:''}
       `;
       document.getElementById('roomUpload')?.addEventListener('click',()=>uploadDoc(d.id));
       document.getElementById('roomPay')?.addEventListener('click',()=>payment(d));
+      document.getElementById('roomDeliver')?.addEventListener('click',()=>confirmDelivery(d));
+      document.getElementById('roomLiveTrack')?.addEventListener('click',()=>showLiveTracking(state.shipment?.id));
+    }
+
+    async function confirmDelivery(order){
+      openModal('Confirm delivery','Order '+order.reference,'<div class="notice">Confirm only after the goods have actually been received and the delivery record is ready to be closed.</div>',async()=>{
+        try{await api('/orders/'+encodeURIComponent(order.id)+'/status',{method:'PATCH',body:JSON.stringify({status:'delivered'})});modal.classList.remove('open');await refresh();await selectOrder(order.id);}
+        catch(e){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>';}
+      });
+    }
+
+    async function showLiveTracking(shipmentId){
+      if(!shipmentId){alert('No shipment is linked yet.');return}
+      try{
+        const d=await api('/shipments/'+encodeURIComponent(shipmentId)+'/live-tracking');
+        openModal('Live vessel tracking','Shipment '+shipmentId,
+          '<div class="buyerRoomItem"><strong>'+esc(d.vessel?.name||'Live vessel position unavailable')+'</strong><small>Provider: '+esc(d.provider||'Not connected')+' • Next milestone: '+esc(d.nextMilestone||'Pending')+'</small><small>'+(d.available?'Current vessel coordinates are available from the connected tracking provider.':'No live AIS/carrier position is currently available; recorded shipment milestones remain the source of truth.')+'</small></div>',
+          ()=>modal.classList.remove('open'));
+      }catch(e){alert(e.message)}
     }
 
     function uploadDoc(orderId){
