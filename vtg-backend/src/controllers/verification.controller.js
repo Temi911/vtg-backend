@@ -4,6 +4,7 @@ const { query } = require('../config/db');
 const { AppError } = require('../utils/AppError');
 const { asyncHandler } = require('../utils/asyncHandler');
 const audit = require('../services/audit.service');
+const { sendVerificationStatusEmail } = require('../services/verification-notification.service');
 const { UPLOAD_DIR } = require('../middleware/upload');
 
 const SUPPLIER_DOCS = new Set(['company_registration','business_license','tax_certificate','export_license','company_address_proof','other']);
@@ -32,7 +33,8 @@ async function refreshBusinessVerificationStatus(userId, role) {
   let logoUrl = null;
   if (role === 'supplier') logoUrl = (await query('SELECT company_logo_url FROM supplier_profiles WHERE user_id=$1',[userId])).rows[0]?.company_logo_url || null;
   if (role === 'bank') logoUrl = (await query('SELECT institution_logo_url FROM bank_profiles WHERE user_id=$1',[userId])).rows[0]?.institution_logo_url || null;
-  const verified = required.every(type => latest.get(type) === 'verified') && Boolean(logoUrl);
+  const docsVerified = required.every(type => latest.get(type) === 'verified');
+  const verified = docsVerified && Boolean(logoUrl);
   const hasRejected = required.some(type => latest.get(type) === 'rejected');
   const hasSubmitted = required.some(type => latest.has(type));
   const status = verified ? 'verified' : hasRejected ? 'needs_correction' : hasSubmitted ? 'under_review' : 'pending';
@@ -50,7 +52,11 @@ const upload = asyncHandler(async (req, res) => {
     throw new AppError('This document type is not valid for your account type.', 400, 'INVALID_DOCUMENT_TYPE');
   }
 
-  if (['supplier','bank'].includes(req.user.role)) await query('UPDATE users SET business_verification_status=$1 WHERE id=$2', ['under_review', req.user.id]);
+  let previousStatus = null;
+  if (['supplier','bank'].includes(req.user.role)) {
+    const prior = await query('SELECT business_verification_status FROM users WHERE id=$1', [req.user.id]);
+    previousStatus = prior.rows[0]?.business_verification_status || 'pending';
+  }
 
   const { rows } = await query(
     `INSERT INTO verification_documents
@@ -60,9 +66,16 @@ const upload = asyncHandler(async (req, res) => {
     [req.user.id, docType, req.file.originalname, req.file.filename, req.file.mimetype, req.file.size]
   );
 
-  if (['supplier','bank'].includes(req.user.role)) await refreshBusinessVerificationStatus(req.user.id, req.user.role);
+  let verificationStatus = 'not_required';
+  if (['supplier','bank'].includes(req.user.role)) {
+    verificationStatus = await refreshBusinessVerificationStatus(req.user.id, req.user.role);
+    if (verificationStatus !== previousStatus) {
+      const u = (await query('SELECT email, full_name, role FROM users WHERE id=$1', [req.user.id])).rows[0];
+      await sendVerificationStatusEmail({ ...u, status: verificationStatus });
+    }
+  }
   await audit.log(req.user.id, 'Verification Document Uploaded', `${docType}: ${req.file.originalname}`, req.ip);
-  res.status(201).json({ document: rows[0] });
+  res.status(201).json({ document: rows[0], verificationStatus });
 });
 
 const listMine = asyncHandler(async (req, res) => {
@@ -106,22 +119,65 @@ const review = asyncHandler(async (req, res) => {
   );
   if (!rows[0]) throw new AppError('Verification document not found', 404);
 
-  const owner = (await query('SELECT role FROM users WHERE id=$1',[rows[0].user_id])).rows[0];
-  if (owner && ['supplier','bank'].includes(owner.role)) await refreshBusinessVerificationStatus(rows[0].user_id, owner.role);
+  const owner = (await query('SELECT id, role, email, full_name, business_verification_status FROM users WHERE id=$1',[rows[0].user_id])).rows[0];
+  let verificationStatus = 'not_required';
+  let notificationSent = false;
+  if (owner && ['supplier','bank'].includes(owner.role)) {
+    verificationStatus = await refreshBusinessVerificationStatus(rows[0].user_id, owner.role);
+    if (verificationStatus === 'needs_correction' || verificationStatus === 'verified') {
+      notificationSent = await sendVerificationStatusEmail({
+        email: owner.email,
+        fullName: owner.full_name,
+        role: owner.role,
+        status: verificationStatus,
+        notes: rows[0].review_notes,
+      });
+    }
+  }
   await audit.log(req.user.id, 'Business Verification Reviewed', `${rows[0].file_name} marked ${status}`, req.ip);
-  res.json({ document: rows[0] });
+  res.json({ document: rows[0], verificationStatus, notificationSent });
 });
 
 
 const reviewQueue = asyncHandler(async (req, res) => {
   const { rows } = await query(
     `SELECT vd.id, vd.user_id, vd.doc_type, vd.file_name, vd.mime_type, vd.file_size_bytes,
-            vd.status, vd.review_notes, vd.uploaded_at, u.email, u.role
+            vd.status, vd.review_notes, vd.uploaded_at,
+            u.email, u.role, u.full_name, u.business_verification_status,
+            sp.company_name, sp.company_logo_url,
+            bp.bank_name, bp.institution_logo_url
        FROM verification_documents vd
        JOIN users u ON u.id = vd.user_id
+       LEFT JOIN supplier_profiles sp ON sp.user_id = vd.user_id
+       LEFT JOIN bank_profiles bp ON bp.user_id = vd.user_id
       WHERE vd.status = 'pending' AND u.role IN ('supplier','bank','agent')
       ORDER BY vd.uploaded_at ASC`
   );
-  res.json({ documents: rows });
+  const applicants = new Map();
+  for (const row of rows) {
+    if (!applicants.has(row.user_id)) {
+      applicants.set(row.user_id, {
+        userId: row.user_id,
+        email: row.email,
+        fullName: row.full_name,
+        role: row.role,
+        organisationName: row.company_name || row.bank_name || null,
+        logoUrl: row.company_logo_url || row.institution_logo_url || null,
+        verificationStatus: row.business_verification_status || 'not_required',
+        documents: [],
+      });
+    }
+    applicants.get(row.user_id).documents.push({
+      id: row.id,
+      docType: row.doc_type,
+      fileName: row.file_name,
+      mimeType: row.mime_type,
+      fileSizeBytes: row.file_size_bytes,
+      status: row.status,
+      reviewNotes: row.review_notes,
+      uploadedAt: row.uploaded_at,
+    });
+  }
+  res.json({ documents: rows, applicants: Array.from(applicants.values()) });
 });
 \nmodule.exports = { upload, listMine, download, review, reviewQueue, refreshBusinessVerificationStatus };
