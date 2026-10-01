@@ -42,6 +42,33 @@
     if(intro) intro.textContent='Trade Documents & Compliance — Keep invoices, packing lists, shipping records and compliance steps organized around each transaction.';
   }
 
+  function upgradeMarketIntelligence() {
+    const section=document.querySelector('#intelligence');
+    if(!section || section.dataset.vtgIntelEnhanced) return;
+    section.dataset.vtgIntelEnhanced='1';
+
+    const head=section.querySelector('.sectionHead');
+    if(head && !head.querySelector('.vtgIntelActions')){
+      const actions=document.createElement('div');
+      actions.className='vtgIntelActions';
+      actions.innerHTML='<button type="button" class="outline" data-vtg-intel-news>Open live market news</button><button type="button" class="primary" data-vtg-intel-ai>Ask VTG AI</button>';
+      head.appendChild(actions);
+      actions.querySelector('[data-vtg-intel-news]').onclick=()=>{const d=document.getElementById('newsDrawer');if(d){d.classList.add('open');document.body.style.overflow='hidden';}};
+      actions.querySelector('[data-vtg-intel-ai]').onclick=()=>{const p=document.getElementById('aiPanel');if(p)p.classList.add('open');};
+    }
+
+    const rows=[...section.querySelectorAll('.intelRow')];
+    const labels=['LIVE FEED','LIVE FEED','LIVE FEED','AVAILABLE','PLANNED','AVAILABLE'];
+    rows.forEach((row,i)=>{const badge=row.querySelector('em');if(badge&&labels[i])badge.textContent=labels[i];});
+
+    if(!document.getElementById('vtgIntelEnhancerStyles')){
+      const style=document.createElement('style');
+      style.id='vtgIntelEnhancerStyles';
+      style.textContent='.vtgIntelActions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:12px}.vtgIntelActions button{font-size:9px;padding:9px 12px}.vtgIntelActions .outline{background:var(--white);border-color:var(--line);color:var(--navy)}@media(max-width:700px){.vtgIntelActions{justify-content:flex-start}}';
+      document.head.appendChild(style);
+    }
+  }
+
   function installVTGCarousel() {
     const old=document.querySelector('#vtgProductCarousel');
     if(old) old.remove();
@@ -197,7 +224,7 @@
   }
 
   function apply(){
-    try{upgradeAI();loadLiveMarket();replaceMarketplaceIntro();installVTGCarousel();setInterval(loadLiveMarket,300000);if(window.lucide?.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.9}});}catch(e){console.warn('VTG visual enhancer failed',e);}
+    try{upgradeAI();loadLiveMarket();replaceMarketplaceIntro();upgradeMarketIntelligence();installVTGCarousel();setInterval(loadLiveMarket,300000);if(window.lucide?.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.9}});}catch(e){console.warn('VTG visual enhancer failed',e);}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
 })();
