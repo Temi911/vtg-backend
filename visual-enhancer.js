@@ -146,7 +146,54 @@
     wrap.querySelector('.vtgPrev').onclick=()=>{show(index-1);restart();};
     wrap.querySelector('.vtgNext').onclick=()=>{show(index+1);restart();};
     title.textContent=categories[0][0]; count.textContent='1 / '+categories.length;
-    market.appendChild(wrap); restart();
+    market.appendChild(wrap);
+
+    const groups=[
+      ['Vehicles & Mobility',['Cars & Automobiles','Motorcycles, Tricycles & Mobility','Bicycles & Personal Mobility']],
+      ['Health & Agriculture',['Medical Supplies & Healthcare','Agriculture & Farm Products']],
+      ['Fashion & Lifestyle',['Clothing & Textiles','Footwear','Fashion & Accessories','Watches & Wearables','Beauty & Personal Care','Baby & Children Products','Bags, Luggage & Travel']],
+      ['Electronics & Power',['Electronics & Technology','Solar & Renewable Energy','Electrical & Power Equipment','Telecommunications & Networking']],
+      ['Home & Hospitality',['Home & Furniture','Kitchen & Home Appliances','Cleaning & Household Supplies','Hotel, Restaurant & Catering Equipment']],
+      ['Industrial & Construction',['Construction Equipment & Machinery','Tools & Hardware','Industrial Machinery & Equipment','Steel, Iron & Metal Products','Plumbing, Water & Sanitary','Factory & Production Supplies','Building Materials','Industrial Materials']],
+      ['Office & Commerce',['Packaging & Printing','Office & Business Supplies','Retail & Commercial Equipment','General Merchandise']],
+      ['Food & Trade Services',['Food & Beverages','Import, Export & Trade Services']],
+      ['Logistics & Marine',['Marine & Port Equipment','Logistics, Transport & Warehousing Equipment']]
+    ];
+
+    const groupNav=document.createElement('div');
+    groupNav.className='vtgCategoryGroups';
+    groupNav.innerHTML='<div class="vtgGroupHead"><span>Explore categories</span><small>9 groups • 36 product categories</small></div><div class="vtgGroupGrid"></div>';
+    const grid=groupNav.querySelector('.vtgGroupGrid');
+    const categoryIndex=new Map(categories.map((x,i)=>[x[0],i]));
+
+    groups.forEach(([label,names])=>{
+      const button=document.createElement('button');
+      button.type='button';
+      button.className='vtgGroup';
+      button.innerHTML='<span>'+label+'</span><b>+</b>';
+      button.title='Explore '+label;
+      button.onclick=()=>{
+        const target=categoryIndex.get(names[0]);
+        if(typeof target==='number'){show(target);restart();wrap.scrollIntoView({behavior:'smooth',block:'center'});}
+      };
+      grid.appendChild(button);
+    });
+
+    style.textContent += `
+      #vtgProductCarousel .vtgCategoryGroups{margin-top:20px}
+      #vtgProductCarousel .vtgGroupHead{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:10px}
+      #vtgProductCarousel .vtgGroupHead span{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+      #vtgProductCarousel .vtgGroupHead small{font-size:11px;opacity:.65}
+      #vtgProductCarousel .vtgGroupGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+      #vtgProductCarousel .vtgGroup{display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;padding:14px 15px;border:1px solid rgba(127,143,154,.22);border-radius:14px;background:var(--white,#fff);color:var(--ink,#17212b);cursor:pointer;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+      #vtgProductCarousel .vtgGroup:hover{transform:translateY(-1px);border-color:rgba(156,36,29,.5);box-shadow:0 8px 22px rgba(7,31,48,.08)}
+      #vtgProductCarousel .vtgGroup span{font-size:13px;font-weight:700}
+      #vtgProductCarousel .vtgGroup b{font-size:20px;font-weight:400;line-height:1}
+      @media(max-width:760px){#vtgProductCarousel .vtgGroupGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+      @media(max-width:480px){#vtgProductCarousel .vtgGroupGrid{grid-template-columns:1fr}#vtgProductCarousel .vtgGroupHead{align-items:flex-start;flex-direction:column;gap:3px}}
+    `;
+    wrap.appendChild(groupNav);
+    restart();
   }
 
   function apply(){
