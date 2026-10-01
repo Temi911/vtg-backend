@@ -8,10 +8,33 @@ const { UPLOAD_DIR } = require('../middleware/upload');
 
 const SUPPLIER_DOCS = new Set(['company_registration','business_license','tax_certificate','export_license','company_address_proof','other']);
 const BANK_DOCS = new Set(['bank_license','regulatory_certificate','company_registration','swift_bic_certificate','institution_address_proof','officer_authorization','other']);
+const SUPPLIER_REQUIRED_DOCS = ['company_registration','business_license','tax_certificate','company_address_proof'];
+const BANK_REQUIRED_DOCS = ['bank_license','regulatory_certificate','company_registration','swift_bic_certificate','institution_address_proof','officer_authorization'];
+
 const AGENT_DOCS = new Set(['government_id','proof_of_address','business_registration','professional_certificate','reference_document','other']);
 
 function allowedDocTypes(role) {
   return role === 'supplier' ? SUPPLIER_DOCS : role === 'bank' ? BANK_DOCS : role === 'agent' ? AGENT_DOCS : new Set();
+}
+
+async function refreshBusinessVerificationStatus(userId, role) {
+  if (!['supplier','bank'].includes(role)) return 'not_required';
+  const required = role === 'supplier' ? SUPPLIER_REQUIRED_DOCS : BANK_REQUIRED_DOCS;
+  const { rows } = await query(
+    `SELECT doc_type, status
+       FROM verification_documents
+      WHERE user_id = $1 AND doc_type = ANY($2::text[])
+      ORDER BY uploaded_at DESC`,
+    [userId, required]
+  );
+  const latest = new Map();
+  for (const row of rows) if (!latest.has(row.doc_type)) latest.set(row.doc_type, row.status);
+  const verified = required.every(type => latest.get(type) === 'verified');
+  const hasRejected = required.some(type => latest.get(type) === 'rejected');
+  const hasSubmitted = required.some(type => latest.has(type));
+  const status = verified ? 'verified' : hasRejected ? 'needs_correction' : hasSubmitted ? 'under_review' : 'pending';
+  await query('UPDATE users SET business_verification_status=$1 WHERE id=$2', [status, userId]);
+  return status;
 }
 
 const upload = asyncHandler(async (req, res) => {
@@ -24,6 +47,8 @@ const upload = asyncHandler(async (req, res) => {
     throw new AppError('This document type is not valid for your account type.', 400, 'INVALID_DOCUMENT_TYPE');
   }
 
+  if (['supplier','bank'].includes(req.user.role)) await query('UPDATE users SET business_verification_status=$1 WHERE id=$2', ['under_review', req.user.id]);
+
   const { rows } = await query(
     `INSERT INTO verification_documents
       (user_id, doc_type, file_name, file_path, mime_type, file_size_bytes)
@@ -32,6 +57,7 @@ const upload = asyncHandler(async (req, res) => {
     [req.user.id, docType, req.file.originalname, req.file.filename, req.file.mimetype, req.file.size]
   );
 
+  if (['supplier','bank'].includes(req.user.role)) await refreshBusinessVerificationStatus(req.user.id, req.user.role);
   await audit.log(req.user.id, 'Verification Document Uploaded', `${docType}: ${req.file.originalname}`, req.ip);
   res.status(201).json({ document: rows[0] });
 });
@@ -45,7 +71,8 @@ const listMine = asyncHandler(async (req, res) => {
        FROM verification_documents WHERE user_id = $1 ORDER BY uploaded_at DESC`,
     [req.user.id]
   );
-  res.json({ documents: rows });
+  const verificationStatus = ['supplier','bank'].includes(req.user.role) ? await refreshBusinessVerificationStatus(req.user.id, req.user.role) : 'not_required';
+  res.json({ documents: rows, verificationStatus });
 });
 
 const download = asyncHandler(async (req, res) => {
@@ -76,6 +103,8 @@ const review = asyncHandler(async (req, res) => {
   );
   if (!rows[0]) throw new AppError('Verification document not found', 404);
 
+  const owner = (await query('SELECT role FROM users WHERE id=$1',[rows[0].user_id])).rows[0];
+  if (owner && ['supplier','bank'].includes(owner.role)) await refreshBusinessVerificationStatus(rows[0].user_id, owner.role);
   await audit.log(req.user.id, 'Business Verification Reviewed', `${rows[0].file_name} marked ${status}`, req.ip);
   res.json({ document: rows[0] });
 });
@@ -92,4 +121,4 @@ const reviewQueue = asyncHandler(async (req, res) => {
   );
   res.json({ documents: rows });
 });
-\nmodule.exports = { upload, listMine, download, review, reviewQueue };
+\nmodule.exports = { upload, listMine, download, review, reviewQueue, refreshBusinessVerificationStatus };
