@@ -299,6 +299,7 @@ function publicUser(row, profile) {
     locationLat: row.location_lat || null,
     locationLng: row.location_lng || null,
     isVerified: row.is_verified,
+    businessVerificationStatus: row.business_verification_status || 'not_required',
     createdAt: row.created_at,
   };
   if (profile) {
@@ -390,8 +391,8 @@ const registerSupplier = asyncHandler(async (req, res) => {
     if (existing.rows[0]) throw new AppError('An account with this email already exists', 409, 'EMAIL_TAKEN');
 
     const userRes = await client.query(
-      `INSERT INTO users (email, phone, password_hash, role, full_name, preferred_language, is_verified, vtg_user_id, marketing_subscribed, marketing_unsubscribe_token)
-       VALUES ($1,$2,$3,'supplier',$4,$5,TRUE,$6,$7,$8) RETURNING *`,
+      `INSERT INTO users (email, phone, password_hash, role, full_name, preferred_language, is_verified, business_verification_status, vtg_user_id, marketing_subscribed, marketing_unsubscribe_token)
+       VALUES ($1,$2,$3,'supplier',$4,$5,TRUE,'pending',$6,$7,$8) RETURNING *`,
       [data.email, data.phone || null, passwordHash, data.fullName, data.preferredLanguage, createVtgUserId(data.country,'supplier'), Boolean(data.marketingSubscribed), createUnsubscribeToken()]
     );
     const user = userRes.rows[0];
@@ -445,8 +446,8 @@ const registerBank = asyncHandler(async (req, res) => {
     if (existing.rows[0]) throw new AppError('An account with this email already exists', 409, 'EMAIL_TAKEN');
 
     const userRes = await client.query(
-      `INSERT INTO users (email, phone, password_hash, role, full_name, preferred_language, is_verified, vtg_user_id, marketing_subscribed, marketing_unsubscribe_token)
-       VALUES ($1,$2,$3,'bank',$4,$5,TRUE,$6,$7,$8) RETURNING *`,
+      `INSERT INTO users (email, phone, password_hash, role, full_name, preferred_language, is_verified, business_verification_status, vtg_user_id, marketing_subscribed, marketing_unsubscribe_token)
+       VALUES ($1,$2,$3,'bank',$4,$5,TRUE,'pending',$6,$7,$8) RETURNING *`,
       [data.email, data.phone || null, passwordHash, data.fullName, data.preferredLanguage, createVtgUserId(data.country,'bank'), Boolean(data.marketingSubscribed), createUnsubscribeToken()]
     );
     const user = userRes.rows[0];
