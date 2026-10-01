@@ -29,7 +29,10 @@ async function refreshBusinessVerificationStatus(userId, role) {
   );
   const latest = new Map();
   for (const row of rows) if (!latest.has(row.doc_type)) latest.set(row.doc_type, row.status);
-  const verified = required.every(type => latest.get(type) === 'verified');
+  let logoUrl = null;
+  if (role === 'supplier') logoUrl = (await query('SELECT company_logo_url FROM supplier_profiles WHERE user_id=$1',[userId])).rows[0]?.company_logo_url || null;
+  if (role === 'bank') logoUrl = (await query('SELECT institution_logo_url FROM bank_profiles WHERE user_id=$1',[userId])).rows[0]?.institution_logo_url || null;
+  const verified = required.every(type => latest.get(type) === 'verified') && Boolean(logoUrl);
   const hasRejected = required.some(type => latest.get(type) === 'rejected');
   const hasSubmitted = required.some(type => latest.has(type));
   const status = verified ? 'verified' : hasRejected ? 'needs_correction' : hasSubmitted ? 'under_review' : 'pending';
@@ -72,7 +75,7 @@ const listMine = asyncHandler(async (req, res) => {
     [req.user.id]
   );
   const verificationStatus = ['supplier','bank'].includes(req.user.role) ? await refreshBusinessVerificationStatus(req.user.id, req.user.role) : 'not_required';
-  res.json({ documents: rows, verificationStatus });
+  let logoUrl=null;if(req.user.role==='supplier')logoUrl=(await query('SELECT company_logo_url FROM supplier_profiles WHERE user_id=$1',[req.user.id])).rows[0]?.company_logo_url||null;if(req.user.role==='bank')logoUrl=(await query('SELECT institution_logo_url FROM bank_profiles WHERE user_id=$1',[req.user.id])).rows[0]?.institution_logo_url||null;res.json({ documents: rows, verificationStatus, logoUploaded:Boolean(logoUrl) });
 });
 
 const download = asyncHandler(async (req, res) => {
