@@ -14,7 +14,7 @@
 <body><div class="top"></div><main class="wrap"><div class="card" id="app"><div class="loading">Loading your VTG agreement…</div></div></main>
 <script>
 const API='';
-const token=localStorage.getItem('vtg_access_token');
+const auth=JSON.parse(localStorage.getItem('vtg-auth')||'{}'); const token=localStorage.getItem('vtg_access_token')||auth.accessToken||'';
 const app=document.getElementById('app');
 function nextForRole(role){if(role==='supplier'||role==='bank')return '/verification.html';if(role==='agent')return '/agent-dashboard.html';return '/trade-os.html'}
 async function api(path,options={}){return fetch(API+path,{...options,headers:{'Content-Type':'application/json',Authorization:'Bearer '+token,...(options.headers||{})})}
