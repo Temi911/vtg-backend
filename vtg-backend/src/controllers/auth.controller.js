@@ -184,6 +184,30 @@ function isDatabaseUnavailableError(error) {
   return Boolean(error && ['ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND', '57P01', '57P02', '57P03'].includes(error.code));
 }
 
+const VTG_AGREEMENT_VERSION = '2026-09-01';
+const VTG_PRIVACY_VERSION = '2026-09-01';
+const VTG_TERMS_VERSION = '2026-09-01';
+
+async function hasCurrentAgreement(userId) {
+  const { rows } = await query(
+    'SELECT 1 FROM user_agreements WHERE user_id=$1 AND agreement_version=$2 LIMIT 1',
+    [userId, VTG_AGREEMENT_VERSION]
+  );
+  return Boolean(rows[0]);
+}
+
+const acceptAgreement = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  await query(
+    `INSERT INTO user_agreements (user_id, agreement_version, privacy_version, terms_version, ip_address)
+     VALUES ($1,$2,$3,$4,$5)
+     ON CONFLICT (user_id, agreement_version) DO NOTHING`,
+    [userId, VTG_AGREEMENT_VERSION, VTG_PRIVACY_VERSION, VTG_TERMS_VERSION, req.ip || null]
+  );
+  await audit.log(userId, 'Account Agreement Accepted', `Privacy Policy ${VTG_PRIVACY_VERSION} and Signup Agreement ${VTG_TERMS_VERSION}`, req.ip);
+  res.json({ ok: true, agreementRequired: false, agreementVersion: VTG_AGREEMENT_VERSION });
+});
+
 function normalizeEmail(email) { return String(email || '').trim().toLowerCase(); }
 function generateVerificationCode() { return String(Math.floor(100000 + Math.random() * 900000)); }
 
@@ -341,7 +365,7 @@ const registerBuyer = asyncHandler(async (req, res) => {
   await audit.log(result.id, 'Account Created', `Buyer account created (${data.buyerType})`, req.ip);
   const tokens = issueTokens(result);
   const profile = await fetchProfile(result.id, result.role);
-  res.status(201).json({ user: publicUser(result, profile), ...tokens });
+  res.status(201).json({ user: publicUser(result, profile), ...tokens, agreementRequired: true });
 });
 
 const registerSupplier = asyncHandler(async (req, res) => {
@@ -374,7 +398,7 @@ const registerSupplier = asyncHandler(async (req, res) => {
   await audit.log(result.id, 'Account Created', 'Supplier account created', req.ip);
   const tokens = issueTokens(result);
   const profile = await fetchProfile(result.id, result.role);
-  res.status(201).json({ user: publicUser(result, profile), ...tokens });
+  res.status(201).json({ user: publicUser(result, profile), ...tokens, agreementRequired: true });
 });
 
 const registerAgent = asyncHandler(async (req,res) => {
@@ -427,7 +451,7 @@ const registerBank = asyncHandler(async (req, res) => {
   await audit.log(result.id, 'Account Created', 'Bank officer account created', req.ip);
   const tokens = issueTokens(result);
   const profile = await fetchProfile(result.id, result.role);
-  res.status(201).json({ user: publicUser(result, profile), ...tokens });
+  res.status(201).json({ user: publicUser(result, profile), ...tokens, agreementRequired: true });
 });
 
 const sendVerificationCode = asyncHandler(async (req, res) => {
@@ -481,7 +505,8 @@ const login = asyncHandler(async (req, res) => {
   await audit.log(user.id, 'Login', `${user.role} logged in`, req.ip);
   const tokens = issueTokens(user);
   const profile = await fetchProfile(user.id, user.role);
-  res.json({ user: publicUser(user, profile), ...tokens });
+  const agreementAccepted = await hasCurrentAgreement(user.id);
+  res.json({ user: publicUser(user, profile), ...tokens, agreementRequired: !agreementAccepted });
 });
 
 const refresh = asyncHandler(async (req, res) => {
@@ -508,7 +533,8 @@ const me = asyncHandler(async (req, res) => {
   const user = rows[0];
   if (!user) throw new AppError('User not found', 404);
   const profile = await fetchProfile(user.id, user.role);
-  res.json({ user: publicUser(user, profile) });
+  const agreementAccepted = await hasCurrentAgreement(user.id);
+  res.json({ user: publicUser(user, profile), agreementRequired: !agreementAccepted });
 });
 
 module.exports = {
@@ -521,5 +547,6 @@ module.exports = {
   login,
   refresh,
   me,
+  acceptAgreement,
   issueEmailVerificationCode,
 };
