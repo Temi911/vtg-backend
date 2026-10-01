@@ -167,6 +167,23 @@ async function hasValidEmailVerificationCode(email, code) {
   return Boolean(rows[0]);
 }
 
+function getDemoAccount(email, password) {
+  if (!DEMO_AUTH_ENABLED) return null;
+  const normalized = normalizeEmail(email);
+  const demoPasswords = {
+    'buyer@demo.vtg': process.env.DEMO_BUYER_PASSWORD,
+    'supplier@demo.vtg': process.env.DEMO_SUPPLIER_PASSWORD,
+    'bank@demo.vtg': process.env.DEMO_BANK_PASSWORD,
+  };
+  const expected = demoPasswords[normalized];
+  if (!expected || password !== expected) return null;
+  return DEMO_ACCOUNTS[normalized] || null;
+}
+
+function isDatabaseUnavailableError(error) {
+  return Boolean(error && ['ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND', '57P01', '57P02', '57P03'].includes(error.code));
+}
+
 function normalizeEmail(email) { return String(email || '').trim().toLowerCase(); }
 function generateVerificationCode() { return String(Math.floor(100000 + Math.random() * 900000)); }
 
@@ -362,7 +379,6 @@ const registerSupplier = asyncHandler(async (req, res) => {
 
 const registerAgent = asyncHandler(async (req,res) => {
   const data=agentSignupSchema.parse(req.body);
-  if (!(await consumeEmailVerificationCode(data.email, data.verificationCode))) throw new AppError('Email verification is required before creating an agent account', 401, 'EMAIL_NOT_VERIFIED');
   if (!(await consumeEmailVerificationCode(data.email, data.verificationCode))) {
     throw new AppError('Email verification is required before creating an agent account', 401, 'EMAIL_NOT_VERIFIED');
   }
