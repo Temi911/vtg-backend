@@ -75,7 +75,7 @@ button,input,select{font:inherit}.shell{display:grid;grid-template-columns:250px
     <div class="card"><h2>VTG Trade Intelligence</h2><div class="sub">Country-aware trade planning</div>
       <div class="search"><input id="productInput" value="Solar panels"><button class="btn primary" onclick="runIntel()">Analyze</button></div>
       <div class="grid three" style="margin-top:15px">
-        <div class="item"><small>Origin</small><strong>🇨🇳 China</strong></div><div class="item"><small>Destination</small><strong>🇳🇬 Nigeria</strong></div><div class="item"><small>Quantity</small><strong>500 units</strong></div>
+        <div class="item"><small>Origin</small><strong>🇨🇳 China</strong></div><div class="item"><small>Destination</small><strong><span data-vtg-country-flag>🇳🇬</span> <span data-vtg-country-name>Nigeria</span></strong></div><div class="item"><small>Quantity</small><strong>500 units</strong></div>
       </div>
       <div id="intelResult" style="margin-top:15px">
         <div class="notice">Prototype result: VTG should combine official tariff/regulatory data with freight and supplier data before presenting a landed-cost estimate.</div>
@@ -112,7 +112,7 @@ button,input,select{font:inherit}.shell{display:grid;grid-template-columns:250px
 
 <section id="network" class="tab hidden">
   <div class="grid two"><div class="card"><h2>VTG Africa Network</h2><div class="sub">Launchpad: Nigeria • Expansion: West, East, Southern and North Africa</div><div class="mapbox"><div class="route"></div><div class="node a"></div><div class="node b"></div><div class="node c"></div><div class="nodeLabel nl1">Lagos</div><div class="nodeLabel nl2">Mombasa</div><div class="nodeLabel nl3">Cairo</div></div></div>
-  <div class="card"><h2>Trade corridors</h2><div class="list"><div class="item"><strong>🇨🇳 China → 🇳🇬 Nigeria</strong><small>Primary launch corridor • sea freight + clearance</small></div><div class="item"><strong>🇨🇳 China → 🇬🇭 Ghana</strong><small>West Africa expansion corridor</small></div><div class="item"><strong>🇨🇳 China → 🇰🇪 Kenya</strong><small>East Africa expansion corridor</small></div><div class="item"><strong>🇨🇳 China → 🇿🇦 South Africa</strong><small>Southern Africa expansion corridor</small></div></div></div></div>
+  <div class="card"><h2>Trade corridors</h2><div class="list"><div class="item"><strong>🇨🇳 China → <span data-vtg-country-flag>🇳🇬</span> <span data-vtg-country-name>Nigeria</span></strong><small>Primary launch corridor • sea freight + clearance</small></div><div class="item"><strong>🇨🇳 China → 🇬🇭 Ghana</strong><small>West Africa expansion corridor</small></div><div class="item"><strong>🇨🇳 China → 🇰🇪 Kenya</strong><small>East Africa expansion corridor</small></div><div class="item"><strong>🇨🇳 China → 🇿🇦 South Africa</strong><small>Southern Africa expansion corridor</small></div></div></div></div>
 </section>
 
 <section id="suppliers" class="tab hidden">
@@ -127,7 +127,7 @@ button,input,select{font:inherit}.shell{display:grid;grid-template-columns:250px
   <div class="card"><h2>Compliance & Trust Layer</h2><div class="sub">Build trust into every trade.</div><div class="grid three"><div class="item"><span class="tag">KYC</span><strong>Buyer & supplier identity</strong><small>Collect and verify required business information.</small></div><div class="item"><span class="tag">DOCUMENTS</span><strong>Audit trail</strong><small>Record who uploaded, reviewed and changed a trade document.</small></div><div class="item"><span class="tag">RISK</span><strong>Transaction monitoring</strong><small>Flag unusual patterns for human review.</small></div></div></div>
 </section>
 
-<div class="footerNote">VTG Trade OS prototype. Estimates, regulatory requirements and financial information must be sourced from current official or authorized providers before being used for a real transaction.</div>
+<div class="footerNote">Your country, preferred language and local currency are used to tailor this workspace. Regulatory and financial information must still be confirmed from current official or authorized sources.</div><div class="footerNote">VTG Trade OS prototype. Estimates, regulatory requirements and financial information must be sourced from current official or authorized providers before being used for a real transaction.</div>
 </main>
 </div>
 <script>
