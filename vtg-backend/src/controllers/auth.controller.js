@@ -304,6 +304,8 @@ function publicUser(row, profile) {
       base.city = profile.city || null;
       base.companyName = profile.company_name || null;
     } else if (row.role === 'bank') {
+      base.country = profile.country || null;
+      base.city = profile.branch || null;
       base.bankName = profile.bank_name || null;
       base.branch = profile.branch || null;
     } else if (row.role === 'agent') {
