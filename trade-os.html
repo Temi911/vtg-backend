@@ -167,5 +167,6 @@ function showTab(id){document.querySelectorAll('.tab').forEach(x=>x.classList.ad
 document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
 function runIntel(){const p=document.getElementById('productInput').value.trim()||'product';document.getElementById('intelResult').innerHTML='<div class="notice"><strong>'+p.replace(/[<>]/g,'')+'</strong>: VTG would now query approved country, tariff, regulatory, freight and supplier sources, then produce a traceable trade brief and landed-cost range.</div>';}
 </script>
-<script src="/vtg-trade-workflow.js" defer></script>\n</body>
+<script src="/vtg-trade-workflow.js" defer></script>
+</body>
 </html>
