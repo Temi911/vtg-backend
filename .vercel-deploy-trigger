@@ -2,3 +2,5 @@ Deployment trigger for Vercel Git integration.
 Phase 1 public-site completion: typography + persisted dark theme finalized 2026-10-01.
 Phase 1 final deployment verification trigger: 2026-10-01T15:00Z.
 Phase 2 authentication and business verification implementation started: email verification, role onboarding, required supplier/bank logos, and verification portal polish.
+
+Phase 2A browser/code audit: fixed authentication welcome-email URL syntax and triggered production redeploy: 2026-10-01.
