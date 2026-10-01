@@ -46,7 +46,7 @@ async function sendVerificationStatusEmail({ email, fullName, role, status, note
 
   if (!copy) return false;
   const base = process.env.PUBLIC_APP_URL || 'https://vtg-staging.vercel.app';
-  const next = status === 'verified' ? '/trade-os.html' : '/verification.html';
+  const next = status === 'verified' ? (role === 'supplier' ? '/supplier-dashboard.html' : '/trade-os.html') : '/verification.html';
   const note = notes ? String(notes) : '';
   try {
     await getTransporter().sendMail({
