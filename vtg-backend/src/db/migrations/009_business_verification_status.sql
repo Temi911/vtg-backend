@@ -5,3 +5,5 @@ ALTER TABLE users
 
 CREATE INDEX IF NOT EXISTS idx_users_business_verification_status
   ON users(business_verification_status);
+
+UPDATE users SET business_verification_status='pending' WHERE role IN ('supplier','bank') AND COALESCE(business_verification_status,'not_required')='not_required';
