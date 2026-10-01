@@ -4,22 +4,22 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Sign in — Vintage Trade Global</title>
 <style>
-:root{--navy:#123b57;--teal:#0e969f;--cream:#f7f3ef;--white:#fff;--ink:#17212b;--muted:#667085;--line:#d9e0e5;--soft:#f2f6f7;--red:#9b2c24}
-*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Arial,sans-serif}
-a{text-decoration:none;color:inherit}.top{height:4px;background:linear-gradient(90deg,#d6a23a,#0e969f,#123b57)}
+:root{--navy:#8f1d17;--deep:#4a120f;--teal:#c0392b;--cyan:#e05a4f;--cream:#f5f8f8;--white:#fff;--ink:#2f1110;--muted:#667085;--line:#e4e7ec;--soft:#f9eeee;--shadow:0 18px 55px rgba(7,31,48,.13);--red:#9b2c24}html[data-theme="dark"]{--cream:#0d1117;--white:#11161d;--ink:#eef3f6;--muted:#b9c5ce;--line:#2b3640;--soft:#171d24;--navy:#d98f87;--deep:#210b09;--teal:#d94a3e;--cyan:#ef776d;--red:#d95a4e}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Arial,sans-serif;transition:background .2s,color .2s}html[data-theme="dark"] body{background:var(--cream);color:var(--ink)}
+a{text-decoration:none;color:inherit}.top{height:4px;background:linear-gradient(90deg,var(--red),var(--teal),var(--navy))}
 .shell{min-height:calc(100vh - 4px);display:grid;place-items:center;padding:28px 18px}
-.card{width:min(560px,100%);background:var(--white);border:1px solid var(--line);border-radius:22px;box-shadow:0 18px 60px rgba(18,59,87,.12);padding:30px}
+.card{width:min(560px,100%);background:var(--white);border:1px solid var(--line);border-radius:22px;box-shadow:0 18px 60px rgba(0,0,0,.12);padding:30px}
 .brand{font-weight:900;color:var(--navy);letter-spacing:.02em}.eyebrow{display:block;color:var(--teal);font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-top:25px}
 h1{font-size:34px;line-height:1.08;margin:8px 0;color:var(--navy)}.sub{color:var(--muted);font-size:13px;line-height:1.6;margin:0 0 22px}
 .roles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}.roles button{border:1px solid var(--line);background:var(--soft);border-radius:11px;padding:11px 8px;font-weight:800;color:var(--navy);cursor:pointer}.roles button.active{background:var(--teal);border-color:var(--teal);color:#fff}
-label{display:block;font-size:11px;font-weight:800;color:var(--navy);margin:13px 0 6px}input{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 13px;font:inherit;background:#fff;color:var(--ink)}
+label{display:block;font-size:11px;font-weight:800;color:var(--ink);margin:13px 0 6px}input{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 13px;font:inherit;background:var(--white);color:var(--ink)}
 .password{position:relative}.password input{padding-right:72px}.toggle{position:absolute;right:7px;top:7px;border:0;background:var(--soft);border-radius:8px;padding:7px 9px;font-size:10px;font-weight:800;color:var(--navy);cursor:pointer}
-.primary{width:100%;border:0;border-radius:11px;padding:13px;background:var(--navy);color:#fff;font-weight:900;margin-top:20px;cursor:pointer}.primary:hover{background:#0d2f46}
+.primary{width:100%;border:0;border-radius:11px;padding:13px;background:var(--teal);color:#fff;font-weight:900;margin-top:20px;cursor:pointer}.primary:hover{background:#0d2f46}
 .msg{min-height:20px;margin-top:12px;font-size:11px;color:var(--red)}.msg.ok{color:#087c65}
 .links{display:flex;justify-content:space-between;gap:12px;margin-top:18px;padding-top:18px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}.links a:hover{color:var(--teal)}
 @media(max-width:520px){.card{padding:23px}.roles{grid-template-columns:1fr}.links{flex-direction:column}}
 </style>
-</head>
+<script>(function(){try{document.documentElement.setAttribute('data-theme',localStorage.getItem('vtg-theme')||'light')}catch(e){}})();</script></head>
 <body><div class="top"></div>
 <main class="shell"><section class="card">
 <div class="brand">VINTAGE TRADE GLOBAL</div>
@@ -37,12 +37,12 @@ label{display:block;font-size:11px;font-weight:800;color:var(--navy);margin:13px
 <div id="msg" class="msg"></div>
 <button class="primary" type="submit">Sign in</button>
 </form>
-<div class="links"><a id="signup" href="/buyer-signup.html">Create Buyer Account</a><a href="/">Back to VTG home</a></div>
+<div class="links"><a id="signup" href="/signup.html">Create account</a><a href="/">Back to VTG home</a></div>
 </section></main>
 <script>
 const API=window.VTG_API_BASE||'';let role='buyer';
 const signup=document.getElementById('signup'),msg=document.getElementById('msg');
-document.querySelectorAll('[data-role]').forEach(b=>b.onclick=()=>{role=b.dataset.role;document.querySelectorAll('[data-role]').forEach(x=>x.classList.toggle('active',x===b));signup.href='/'+role+'-signup.html';signup.textContent='Create '+role.charAt(0).toUpperCase()+role.slice(1)+' Account';msg.textContent=''});
+document.querySelectorAll('[data-role]').forEach(b=>b.onclick=()=>{role=b.dataset.role;document.querySelectorAll('[data-role]').forEach(x=>x.classList.toggle('active',x===b));signup.href='/signup.html';signup.textContent='Create account';msg.textContent=''});
 document.getElementById('toggle').onclick=()=>{const p=document.getElementById('password'),b=document.getElementById('toggle');p.type=p.type==='password'?'text':'password';b.textContent=p.type==='password'?'Show':'Hide'};
 document.getElementById('form').onsubmit=async e=>{e.preventDefault();msg.className='msg';msg.textContent='';const d=Object.fromEntries(new FormData(e.currentTarget));try{const r=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:d.email,password:d.password})});const out=await r.json();if(!r.ok)throw Error(out.message||'Sign in failed');if(out.user?.role&&out.user.role!==role){const names={buyer:'Buyer',supplier:'Supplier',bank:'Bank'};throw Error('This account is registered as a '+(names[out.user.role]||out.user.role)+'. Please select '+(names[out.user.role]||out.user.role)+' above.')}if(out.accessToken){localStorage.setItem('vtg_access_token',out.accessToken);localStorage.setItem('vtg-auth',JSON.stringify({user:out.user,accessToken:out.accessToken,refreshToken:out.refreshToken||null}));localStorage.setItem('vtg-language',out.user?.preferredLanguage||'en');localStorage.setItem('vtg-country',out.user?.country||'')}msg.className='msg ok';msg.textContent='Signed in successfully. Opening your VTG workspace…';setTimeout(()=>{location.href=out.agreementRequired?'/signup-agreement.html':(out.user?.role==='supplier'||out.user?.role==='bank')?'/verification.html':'/trade-os.html'},450)}catch(err){msg.textContent=err.message||'Sign in failed'}};
 </script></body></html>
