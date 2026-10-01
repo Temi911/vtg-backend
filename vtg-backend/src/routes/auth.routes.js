@@ -11,5 +11,6 @@ router.post('/verify-email-code', ctrl.verifyEmailCode);
 router.post('/login', ctrl.login);
 router.post('/refresh', ctrl.refresh);
 router.get('/me', requireAuth, ctrl.me);
+router.post('/agreements/accept', requireAuth, ctrl.acceptAgreement);
 
 module.exports = router;
