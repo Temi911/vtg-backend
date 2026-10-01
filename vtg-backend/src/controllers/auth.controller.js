@@ -418,7 +418,7 @@ const registerAgent = asyncHandler(async (req,res) => {
   await audit.log(result.id,'Agent Application Submitted',`${data.city}, ${data.country}`,req.ip);
   const tokens=issueTokens(result);
   const profile=await fetchProfile(result.id,result.role);
-  res.status(201).json({user:publicUser(result,profile),...tokens});
+  res.status(201).json({user:publicUser(result,profile),...tokens,agreementRequired:true});
 });
 
 const registerBank = asyncHandler(async (req, res) => {
