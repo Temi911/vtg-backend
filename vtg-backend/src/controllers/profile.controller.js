@@ -3,6 +3,7 @@ const multer = require('multer');
 const { query } = require('../config/db');
 const { putObject } = require('../storage/object-storage');
 const { AppError } = require('../utils/AppError');
+const { refreshBusinessVerificationStatus } = require('./verification.controller');
 const { asyncHandler } = require('../utils/asyncHandler');
 
 const upload = multer({
@@ -80,11 +81,13 @@ const updateOrganisationLogo = [upload.single('image'), asyncHandler(async (req,
   if (req.user.role === 'supplier') {
     const { rows } = await query('UPDATE supplier_profiles SET company_logo_url=$1, company_logo_alt=$2 WHERE user_id=$3 RETURNING company_logo_url,company_logo_alt', [url, req.body.altText || 'Company logo', req.user.id]);
     if (!rows[0]) throw new AppError('Supplier profile not found.', 404);
-    return res.json({ logoUrl: rows[0].company_logo_url, logoAlt: rows[0].company_logo_alt, logoType: 'company' });
+    const verificationStatus = await refreshBusinessVerificationStatus(req.user.id, 'supplier');
+    return res.json({ logoUrl: rows[0].company_logo_url, logoAlt: rows[0].company_logo_alt, logoType: 'company', verificationStatus });
   }
   const { rows } = await query('UPDATE bank_profiles SET institution_logo_url=$1, institution_logo_alt=$2 WHERE user_id=$3 RETURNING institution_logo_url,institution_logo_alt', [url, req.body.altText || 'Bank logo', req.user.id]);
   if (!rows[0]) throw new AppError('Bank profile not found.', 404);
-  res.json({ logoUrl: rows[0].institution_logo_url, logoAlt: rows[0].institution_logo_alt, logoType: 'institution' });
+  const verificationStatus = await refreshBusinessVerificationStatus(req.user.id, 'bank');
+  res.json({ logoUrl: rows[0].institution_logo_url, logoAlt: rows[0].institution_logo_alt, logoType: 'institution', verificationStatus });
 })];
 
 const publicProfile = asyncHandler(async (req, res) => {
