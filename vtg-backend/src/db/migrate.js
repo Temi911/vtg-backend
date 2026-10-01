@@ -41,8 +41,8 @@ async function main() {
       // If that baseline already exists but schema_migrations is empty, do not replay
       // 001_baseline.sql (its CREATE TYPE statements are intentionally not idempotent).
       if (file === '001_baseline.sql') {
-        const baseline = await client.query(\
-          "SELECT 1 FROM pg_type WHERE typname = 'user_role' LIMIT 1"\
+        const baseline = await client.query(
+          "SELECT 1 FROM pg_type WHERE typname = 'user_role' LIMIT 1"
         );
         if (baseline.rowCount) {
           await client.query('INSERT INTO schema_migrations (id) VALUES ($1)', [file]);
