@@ -62,7 +62,7 @@ async function dispatchWelcomeEmail(user, language, country, role, marketingSubs
   if(!isEmailConfigured()) return false;
   const lang=normalizeLanguage(language),t=LANGUAGE_COPY[lang];
   const base=process.env.PUBLIC_APP_URL||'https://vtg-backended.vercel.app';
-  const pref=${base}/api/auth/email-preferences/${encodeURIComponent(unsubscribeToken)};
+  const pref=`${base}/api/auth/email-preferences/${encodeURIComponent(unsubscribeToken)}`;
   const dashboard=role==='supplier'||role==='bank'?'/verification.html':role==='agent'?'/agent-dashboard.html':'/trade-os.html';
   const roleText={buyer:'Buyer / Importer',supplier:'Supplier / Trading Company',bank:'Bank / Financial Institution',agent:'VTG Inspection Agent'}[role]||role;
   const id=user.vtg_user_id;
