@@ -229,11 +229,6 @@ const buyerSignupSchema = baseSignup.extend({
   phoneCountry: allowedCountry(VTG_AFRICA_COUNTRIES, 'Buyer contact country must be an African country'),
   companyName: z.string().optional(),
   registrationNo: z.string().optional(),
-  purchasePurpose: z.string().min(2).max(120),
-  productCategory: z.string().min(2).max(160),
-  tradeFrequency: z.string().min(2).max(80),
-  taxId: z.string().max(120).optional(),
-  importLicense: z.string().max(160).optional(),
   country: allowedCountry(VTG_AFRICA_COUNTRIES, 'Buyer country must be an African country').default('Nigeria'),
   city: z.string().min(2).max(100).optional(),
   bankName: z.string().optional(),
@@ -363,9 +358,9 @@ const registerBuyer = asyncHandler(async (req, res) => {
     const user = userRes.rows[0];
 
     await client.query(
-      `INSERT INTO buyer_profiles (user_id, buyer_type, company_name, registration_no, bank_name, bank_account_no, city, country, purchase_purpose, product_category, trade_frequency, tax_id, import_license)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
-      [user.id, data.buyerType === 'organisation' ? 'ngo' : data.buyerType, data.companyName || null, data.registrationNo || null, data.bankName || null, data.bankAccountNo || null, data.city || null, data.country || 'Nigeria', data.purchasePurpose, data.productCategory, data.tradeFrequency, data.taxId || null, data.importLicense || null]
+      `INSERT INTO buyer_profiles (user_id, buyer_type, company_name, registration_no, bank_name, bank_account_no, city, country)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+      [user.id, data.buyerType === 'organisation' ? 'ngo' : data.buyerType, data.companyName || null, data.registrationNo || null, data.bankName || null, data.bankAccountNo || null, data.city || null, data.country || 'Nigeria']
     );
 
     // Start every buyer with zero-balance USD/NGN/CNY wallets so the dashboard has something real to show.
