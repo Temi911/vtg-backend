@@ -37,6 +37,20 @@ async function main() {
       );
       if (already.rowCount) continue;
 
+      // The repository historically bootstrapped the database with db/schema.sql.
+      // If that baseline already exists but schema_migrations is empty, do not replay
+      // 001_baseline.sql (its CREATE TYPE statements are intentionally not idempotent).
+      if (file === '001_baseline.sql') {
+        const baseline = await client.query(\
+          "SELECT 1 FROM pg_type WHERE typname = 'user_role' LIMIT 1"\
+        );
+        if (baseline.rowCount) {
+          await client.query('INSERT INTO schema_migrations (id) VALUES ($1)', [file]);
+          console.log('Baseline schema already exists; marked 001_baseline.sql as applied.');
+          continue;
+        }
+      }
+
       const sql = fs.readFileSync(path.join(dir, file), 'utf8');
       await client.query(sql);
       await client.query(
