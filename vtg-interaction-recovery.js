@@ -36,6 +36,8 @@
     if(input) setTimeout(()=>input.focus(),30);
   }
 
+  function rebindVerification(){const b=document.getElementById('sendCode');if(!b)return;b.onclick=async()=>{const email=document.querySelector('#authForm input[name="email"]')?.value.trim();const msg=document.getElementById('authMsg');if(!email){if(msg)msg.textContent='Enter your email first.';return}b.disabled=true;try{const r=await fetch('/api/auth/send-verification-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,preferredLanguage:document.querySelector('#authForm select[name="preferredLanguage"]')?.value||'en'})});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.message||'Could not send verification code');if(msg){msg.className='formMsg ok';msg.textContent='Verification code sent. Check your email.'}let n=45;b.textContent='Resend in 45s';const t=setInterval(()=>{n--;if(n<=0){clearInterval(t);b.disabled=false;b.textContent='Send code'}else b.textContent='Resend in '+n+'s'},1000)}catch(e){b.disabled=false;if(msg){msg.className='formMsg';msg.textContent=e.message||'Could not send verification code'}}}};window.VTGRebindVerification=rebindVerification;
+
   function closeAuth(){
     const modal=document.getElementById('authModal');
     if(modal) modal.classList.remove('open');
@@ -96,8 +98,7 @@
     const intelTools=document.querySelector('.vtgIntelTools');
     if(aiLaunch && intelTools && aiLaunch.parentNode) aiLaunch.parentNode.insertBefore(intelTools, aiLaunch.nextSibling);
     const layoutStyle=document.createElement('style');
-    layoutStyle.textContent='.aiLaunch{bottom:88px!important;z-index:980!important}.vtgIntelTools{right:19px!important;bottom:18px!important;z-index:981!important}.vtgIntelPanel{display:none!important}.aiPanel{right:19px!important;bottom:88px!important;height:min(565px,calc(100dvh - 105px))!important;max-height:calc(100dvh - 105px)!important;z-index:979!important}.aiPanel.open{display:flex!important;flex-direction:column!important}.aiMsgs{min-height:0!important;overflow-y:auto!important;flex:1 1 auto!important}.aiForm{position:sticky!important;bottom:0!important;z-index:3!important;flex:0 0 auto!important;background:#fff!important}.aiContext{flex:0 0 auto!important}@media(max-width:600px){.aiLaunch{right:12px!important;bottom:76px!important}.vtgIntelTools{right:15px!important;bottom:14px!important}.aiPanel{right:8px!important;bottom:12px!important;width:calc(100vw - 16px)!important;height:min(620px,calc(100dvh - 24px))!important;max-height:calc(100dvh - 24px)!important}.aiMsgs{padding-bottom:10px!important}body:has(#aiPanel.open) .vtgIntelTools{opacity:.18;pointer-events:none}}';
-    document.head.appendChild(layoutStyle);
+    layoutStyle.textContent='.aiLaunch{width:42px!important;height:42px!important;right:18px!important;bottom:72px!important;z-index:980!important}.aiLaunch i{width:22px!important;height:22px!important}.vtgIntelTools{right:19px!important;bottom:16px!important;z-index:981!important}.vtgIntelTool{width:40px!important;height:40px!important;padding:0!important;gap:4px!important}.vtgIntelTool i{width:20px!important;height:20px!important}.vtgIntelTool span{font-size:7px!important}.vtgIntelPanel{display:none!important}.aiPanel{right:18px!important;bottom:14px!important;height:min(565px,calc(100dvh - 28px))!important;max-height:calc(100dvh - 28px)!important;z-index:979!important;overflow:hidden!important}.aiPanel.open{display:flex!important;flex-direction:column!important}body:has(#aiPanel.open) .aiLaunch{display:none!important}.aiMsgs{min-height:0!important;overflow-y:auto!important;flex:1 1 auto!important;padding-bottom:12px!important}.aiForm{position:relative!important;bottom:auto!important;z-index:5!important;flex:0 0 auto!important;background:var(--white)!important;border-top:1px solid var(--line)!important;padding-bottom:calc(8px + env(safe-area-inset-bottom))!important}.aiContext{flex:0 0 auto!important}@media(max-width:600px){.aiLaunch{width:38px!important;height:38px!important;right:10px!important;bottom:62px!important}.aiLaunch i{width:20px!important;height:20px!important}.vtgIntelTools{right:11px!important;bottom:12px!important}.vtgIntelTool{width:36px!important;height:36px!important}.vtgIntelTool i{width:18px!important;height:18px!important}.vtgIntelTool span{font-size:6px!important}.aiPanel{right:7px!important;bottom:7px!important;width:calc(100vw - 14px)!important;height:min(620px,calc(100dvh - 14px))!important;max-height:calc(100dvh - 14px)!important}.aiMsgs{padding-bottom:8px!important}}';document.head.appendChild(layoutStyle);
 
     const intel=document.getElementById('vtgIntelLaunch');
     if(intel){
@@ -136,10 +137,7 @@
         const f=document.getElementById('authForm');
         const role=f?.dataset?.vtgRole || localStorage.getItem('vtg-last-role') || 'buyer';
         const current=f?.dataset?.vtgMode || 'login';
-        const next=current==='login'?'signup':'login';
-        const fn=window.VTGOpenAuth;
-        if(typeof fn==='function') fn(role,next);
-        return;
+        const next=current==='login'?'signup':'login';const fn=window.VTGOpenAuth;if(typeof fn==='function'){fn(role,next);requestAnimationFrame(()=>{const modal=document.getElementById('authModal');const sf=document.getElementById('signupFields');if(next==='signup'&&sf&&!sf.querySelector('input[name="verificationCode"]')){const wrap=document.createElement('div');wrap.innerHTML='<div><label>Email verification code *</label><div class="verify"><input name="verificationCode" minlength="6" maxlength="6" inputmode="numeric" required><button type="button" id="sendCode">Send code</button></div></div>';sf.appendChild(wrap.firstElementChild)}if(next==='signup'&&typeof window.VTGRebindVerification==='function')window.VTGRebindVerification();if(modal)modal.classList.add('open')})}return;
       }
     },{capture:true});
 
