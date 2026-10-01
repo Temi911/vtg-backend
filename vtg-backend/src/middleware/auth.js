@@ -1,11 +1,13 @@
 const { verifyAccessToken } = require('../utils/jwt');
 const { AppError } = require('../utils/AppError');
+const { query } = require('../config/db');
+const CURRENT_AGREEMENT_VERSION = '2026-09-01';
 
 /**
  * Requires a valid `Authorization: Bearer <token>` header.
  * Attaches { id, role, email } to req.user.
  */
-function requireAuth(req, res, next) {
+async function requireAuth(req, res, next) {
   const header = req.headers.authorization || '';
   const [scheme, token] = header.split(' ');
 
@@ -16,6 +18,11 @@ function requireAuth(req, res, next) {
   try {
     const payload = verifyAccessToken(token);
     req.user = payload; // { id, role, email }
+    if (req.path === '/me' || req.path === '/agreements/accept') return next();
+    const agreement = await query('SELECT 1 FROM user_agreements WHERE user_id=$1 AND agreement_version=$2 LIMIT 1', [payload.id, CURRENT_AGREEMENT_VERSION]);
+    if (!agreement.rows[0]) {
+      return next(new AppError('Please review and accept the VTG Privacy Policy and Signup Agreement before entering your workspace.', 403, 'AGREEMENT_REQUIRED'));
+    }
     return next();
   } catch (err) {
     return next(new AppError('Invalid or expired token', 401, 'UNAUTHENTICATED'));
