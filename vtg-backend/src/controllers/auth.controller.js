@@ -229,6 +229,11 @@ const buyerSignupSchema = baseSignup.extend({
   phoneCountry: allowedCountry(VTG_AFRICA_COUNTRIES, 'Buyer contact country must be an African country'),
   companyName: z.string().optional(),
   registrationNo: z.string().optional(),
+  purchasePurpose: z.string().min(2).max(120),
+  productCategory: z.string().min(2).max(160),
+  tradeFrequency: z.string().min(2).max(80),
+  taxId: z.string().max(120).optional(),
+  importLicense: z.string().max(160).optional(),
   country: allowedCountry(VTG_AFRICA_COUNTRIES, 'Buyer country must be an African country').default('Nigeria'),
   city: z.string().min(2).max(100).optional(),
   bankName: z.string().optional(),
@@ -241,6 +246,10 @@ const supplierSignupSchema = baseSignup.extend({
   registrationNo: z.string().min(2),
   licenseNumber: z.string().min(2),
   regulator: z.string().min(2),
+  businessModel: z.string().min(2).max(100),
+  productCategory: z.string().min(2).max(160),
+  exportMarkets: z.string().min(2).max(500),
+  tradeYears: z.coerce.number().int().min(0).max(100),
   country: allowedCountry(VTG_SUPPLIER_COUNTRIES, 'Supplier country must be China or South Korea').default('China'),
   city: z.string().min(2).max(100).optional(),
   swiftCode: z.string().optional(),
@@ -270,6 +279,9 @@ const bankSignupSchema = baseSignup.extend({
   branch: z.string().optional(),
   officerTitle: z.string().min(2),
   workEmail: z.string().email(),
+  vtgServices: z.string().min(2).max(160),
+  regulatoryStatus: z.string().min(2).max(120),
+  marketsServed: z.string().min(2).max(500),
 });
 
 function issueTokens(user) {
@@ -351,9 +363,9 @@ const registerBuyer = asyncHandler(async (req, res) => {
     const user = userRes.rows[0];
 
     await client.query(
-      `INSERT INTO buyer_profiles (user_id, buyer_type, company_name, registration_no, bank_name, bank_account_no, city, country)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
-      [user.id, data.buyerType === 'organisation' ? 'ngo' : data.buyerType, data.companyName || null, data.registrationNo || null, data.bankName || null, data.bankAccountNo || null, data.city || null, data.country || 'Nigeria']
+      `INSERT INTO buyer_profiles (user_id, buyer_type, company_name, registration_no, bank_name, bank_account_no, city, country, purchase_purpose, product_category, trade_frequency, tax_id, import_license)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
+      [user.id, data.buyerType === 'organisation' ? 'ngo' : data.buyerType, data.companyName || null, data.registrationNo || null, data.bankName || null, data.bankAccountNo || null, data.city || null, data.country || 'Nigeria', data.purchasePurpose, data.productCategory, data.tradeFrequency, data.taxId || null, data.importLicense || null]
     );
 
     // Start every buyer with zero-balance USD/NGN/CNY wallets so the dashboard has something real to show.
@@ -390,9 +402,9 @@ const registerSupplier = asyncHandler(async (req, res) => {
     const user = userRes.rows[0];
 
     await client.query(
-      `INSERT INTO supplier_profiles (user_id, company_name, registration_no, license_number, regulator, swift_code, bank_name, bank_account_no, city, country)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
-      [user.id, data.companyName, data.registrationNo, data.licenseNumber, data.regulator, data.swiftCode || null, data.bankName || null, data.bankAccountNo || null, data.city || null, data.country || 'China']
+      `INSERT INTO supplier_profiles (user_id, company_name, registration_no, license_number, regulator, swift_code, bank_name, bank_account_no, city, country, business_model, product_category, export_markets, trade_years)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
+      [user.id, data.companyName, data.registrationNo, data.licenseNumber, data.regulator, data.swiftCode || null, data.bankName || null, data.bankAccountNo || null, data.city || null, data.country || 'China', data.businessModel, data.productCategory, data.exportMarkets, data.tradeYears]
     );
 
     return user;
@@ -445,9 +457,9 @@ const registerBank = asyncHandler(async (req, res) => {
     const user = userRes.rows[0];
 
     await client.query(
-      `INSERT INTO bank_profiles (user_id, bank_name, swift_code, branch, officer_name, officer_title, country, institution_type, regulator, license_number, work_email)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
-      [user.id, data.bankName, data.swiftCode || null, data.branch || null, data.fullName, data.officerTitle || null, data.country || 'Nigeria', data.institutionType || null, data.regulator || null, data.licenseNumber || null, data.workEmail || data.email]
+      `INSERT INTO bank_profiles (user_id, bank_name, swift_code, branch, officer_name, officer_title, country, institution_type, regulator, license_number, work_email, vtg_services, regulatory_status, markets_served)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
+      [user.id, data.bankName, data.swiftCode || null, data.branch || null, data.fullName, data.officerTitle || null, data.country || 'Nigeria', data.institutionType || null, data.regulator || null, data.licenseNumber || null, data.workEmail || data.email, data.vtgServices, data.regulatoryStatus, data.marketsServed]
     );
 
     return user;
