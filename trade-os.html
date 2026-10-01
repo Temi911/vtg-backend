@@ -33,8 +33,8 @@ button,input,select{font:inherit}.shell{display:grid;grid-template-columns:250px
 
 <main class="main">
 <header class="top"><a class="brand " href="/" aria-label="Vintage Trade Global"><img class="" src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a>
-  <div><div class="eyebrow">Africa's digital trade operating system</div><h1 id="pageTitle">Trade Command Centre</h1></div>
-  <div class="pill">Nigeria → China • Live workspace prototype</div>
+  <div><div class="eyebrow">Africa's digital trade operating system</div><h1 id="pageTitle">Trade Command Centre</h1><div class="sub" id="buyerWelcome" style="margin:4px 0 0">Your buyer workspace</div></div>
+  <div class="pill"><span id="buyerCorridor">China → Nigeria</span> • Live workspace</div>
 </header>
 
 <section id="overview" class="tab">
@@ -75,7 +75,7 @@ button,input,select{font:inherit}.shell{display:grid;grid-template-columns:250px
     <div class="card"><h2>VTG Trade Intelligence</h2><div class="sub">Country-aware trade planning</div>
       <div class="search"><input id="productInput" value="Solar panels"><button class="btn primary" onclick="runIntel()">Analyze</button></div>
       <div class="grid three" style="margin-top:15px">
-        <div class="item"><small>Origin</small><strong>🇨🇳 China</strong></div><div class="item"><small>Destination</small><strong><span data-vtg-country-flag>🇳🇬</span> <span data-vtg-country-name>Nigeria</span></strong></div><div class="item"><small>Quantity</small><strong>500 units</strong></div>
+        <div class="item"><small>Origin</small><strong>🇨🇳 China</strong></div><div class="item"><small>Destination</small><strong id="buyerDestination">🇳🇬 Nigeria</strong></div><div class="item"><small>Quantity</small><strong>500 units</strong></div>
       </div>
       <div id="intelResult" style="margin-top:15px">
         <div class="notice">Prototype result: VTG should combine official tariff/regulatory data with freight and supplier data before presenting a landed-cost estimate.</div>
@@ -111,8 +111,8 @@ button,input,select{font:inherit}.shell{display:grid;grid-template-columns:250px
 </section>
 
 <section id="network" class="tab hidden">
-  <div class="grid two"><div class="card"><h2>VTG Africa Network</h2><div class="sub">Launchpad: Nigeria • Expansion: West, East, Southern and North Africa</div><div class="mapbox"><div class="route"></div><div class="node a"></div><div class="node b"></div><div class="node c"></div><div class="nodeLabel nl1">Lagos</div><div class="nodeLabel nl2">Mombasa</div><div class="nodeLabel nl3">Cairo</div></div></div>
-  <div class="card"><h2>Trade corridors</h2><div class="list"><div class="item"><strong>🇨🇳 China → <span data-vtg-country-flag>🇳🇬</span> <span data-vtg-country-name>Nigeria</span></strong><small>Primary launch corridor • sea freight + clearance</small></div><div class="item"><strong>🇨🇳 China → 🇬🇭 Ghana</strong><small>West Africa expansion corridor</small></div><div class="item"><strong>🇨🇳 China → 🇰🇪 Kenya</strong><small>East Africa expansion corridor</small></div><div class="item"><strong>🇨🇳 China → 🇿🇦 South Africa</strong><small>Southern Africa expansion corridor</small></div></div></div></div>
+  <div class="grid two"><div class="card"><h2 id="networkTitle">Nigeria Trade Network</h2><div class="sub" id="networkSub">Trade routes and logistics hubs relevant to Nigeria</div><div class="mapbox"><div class="route"></div><div class="node a"></div><div class="node b"></div><div class="node c"></div><div class="nodeLabel nl1">Lagos</div><div class="nodeLabel nl2">Mombasa</div><div class="nodeLabel nl3">Cairo</div></div></div>
+  <div class="card"><h2>Trade corridors</h2><div class="notice" id="buyerContextNote" style="margin-bottom:12px">VTG is tailoring this workspace to your country and currency.</div><div class="list"><div class="item"><strong>🇨🇳 China → <span data-vtg-country-flag>🇳🇬</span> <span data-vtg-country-name>Nigeria</span></strong><small>Primary corridor • sea freight + clearance</small></div><div class="item"><strong>🇨🇳 China → 🇬🇭 Ghana</strong><small>West Africa corridor</small></div><div class="item"><strong>🇨🇳 China → 🇰🇪 Kenya</strong><small>East Africa corridor</small></div><div class="item"><strong>🇨🇳 China → 🇿🇦 South Africa</strong><small>Southern Africa corridor</small></div></div></div></div>
 </section>
 
 <section id="suppliers" class="tab hidden">
@@ -130,6 +130,37 @@ button,input,select{font:inherit}.shell{display:grid;grid-template-columns:250px
 <div class="footerNote">Your country, preferred language and local currency are used to tailor this workspace. Regulatory and financial information must still be confirmed from current official or authorized sources.</div><div class="footerNote">VTG Trade OS prototype. Estimates, regulatory requirements and financial information must be sourced from current official or authorized providers before being used for a real transaction.</div>
 </main>
 </div>
+
+<script>
+(function(){
+  function ctx(){ return window.VTG_GET_CONTEXT ? window.VTG_GET_CONTEXT() : {country:'Nigeria',currency:'NGN',language:'en',role:'buyer',countryData:{code:'NG'}}; }
+  function flag(code){if(!code||code.length!==2)return '🌍';return String.fromCodePoint(...code.toUpperCase().split('').map(x=>127397+x.charCodeAt(0)));}
+  function applyBuyerContext(){
+    const c=ctx(), d=c.countryData||{};
+    const destination=document.getElementById('buyerDestination');
+    if(destination) destination.innerHTML=flag(d.code)+' '+c.country;
+    const corridor=document.getElementById('buyerCorridor');
+    if(corridor) corridor.textContent='China → '+c.country;
+    const network=document.getElementById('networkTitle');
+    if(network) network.textContent=c.country+' Trade Network';
+    const networkSub=document.getElementById('networkSub');
+    if(networkSub) networkSub.textContent='Trade routes and logistics hubs relevant to '+c.country;
+    const currency=document.querySelectorAll('[data-vtg-currency]');
+    currency.forEach(x=>x.textContent=c.currency);
+    const welcome=document.getElementById('buyerWelcome');
+    if(welcome) welcome.textContent='Your '+c.country+' buyer workspace';
+    const tradeRoom=document.getElementById('tradeRoomRoute');
+    if(tradeRoom) tradeRoom.textContent='China → '+c.country;
+    const note=document.getElementById('buyerContextNote');
+    if(note) note.innerHTML='VTG is tailoring this workspace for <strong>'+c.country+'</strong> using <strong>'+c.currency+'</strong>. Country-specific tariffs, regulations and financial information must come from current authorized sources.';
+    document.querySelectorAll('[data-country-port-list]').forEach(el=>{
+      const ports=(d.ports||[]); el.textContent=ports.length?ports.join(' • '):'Relevant destination hubs';
+    });
+  }
+  window.addEventListener('vtg:context',applyBuyerContext);
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(applyBuyerContext,450));
+})();
+</script>
 <script>
 const titles={overview:'Trade Command Centre',intelligence:'Trade Intelligence', 'trade-room':'Trade Room',documents:'Document Centre',network:'Africa Network',suppliers:'Supplier Network',finance:'Payments & Finance',compliance:'Compliance & Trust'};
 function showTab(id){document.querySelectorAll('.tab').forEach(x=>x.classList.add('hidden'));const el=document.getElementById(id);if(el)el.classList.remove('hidden');document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));document.getElementById('pageTitle').textContent=titles[id]||'VTG Trade OS';}
