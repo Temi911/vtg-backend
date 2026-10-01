@@ -91,6 +91,14 @@
   }
 
   function bind(){
+    // Keep the two floating tools in a vertical stack: VTG AI first, Market Intelligence directly below it.
+    const aiLaunch=document.getElementById('aiLaunch');
+    const intelTools=document.querySelector('.vtgIntelTools');
+    if(aiLaunch && intelTools && aiLaunch.parentNode) aiLaunch.parentNode.insertBefore(intelTools, aiLaunch.nextSibling);
+    const layoutStyle=document.createElement('style');
+    layoutStyle.textContent='.aiLaunch{bottom:88px!important;z-index:980!important}.vtgIntelTools{right:19px!important;bottom:18px!important;z-index:981!important}.vtgIntelPanel{bottom:88px!important;z-index:991!important}@media(max-width:600px){.aiLaunch{right:12px!important;bottom:76px!important}.vtgIntelTools{right:15px!important;bottom:14px!important}.vtgIntelPanel{right:15px!important;bottom:76px!important;max-height:calc(100vh - 92px)!important}}body:has(#aiPanel.open) .vtgIntelTools{opacity:.18;pointer-events:none}';
+    document.head.appendChild(layoutStyle);
+
     const intel=document.getElementById('vtgIntelLaunch');
     if(intel){
       intel.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();openIntel('overview');},{capture:true});
@@ -117,6 +125,23 @@
         if(typeof fn==='function') fn(role,mode);
       },{capture:true});
     });
+
+    // Use one capture-level safety net for auth controls so inline handlers or competing scripts cannot leave them inert.
+    document.addEventListener('click',e=>{
+      const close=e.target.closest('#authClose');
+      if(close){e.preventDefault();e.stopImmediatePropagation();closeAuth();return;}
+      const switcher=e.target.closest('#switchAuth');
+      if(switcher){
+        e.preventDefault();e.stopImmediatePropagation();
+        const f=document.getElementById('authForm');
+        const role=f?.dataset?.vtgRole || localStorage.getItem('vtg-last-role') || 'buyer';
+        const current=f?.dataset?.vtgMode || 'login';
+        const next=current==='login'?'signup':'login';
+        const fn=window.VTGOpenAuth;
+        if(typeof fn==='function') fn(role,next);
+        return;
+      }
+    },{capture:true});
 
     const form=document.getElementById('authForm');
     if(form && form.dataset.vtgAuthBound!=='1'){
