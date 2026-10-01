@@ -186,8 +186,6 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(initBuyerProfile,500
   document.addEventListener('DOMContentLoaded',()=>setTimeout(applyBuyerContext,450));
 })();
 </script>
-
-</script>
 <script>
 const titles={overview:'Trade Command Centre',intelligence:'Trade Intelligence', 'trade-room':'Trade Room',documents:'Document Centre',network:'Africa Network',suppliers:'Supplier Network',finance:'Payments & Finance',compliance:'Compliance & Trust'};
 function showTab(id){document.querySelectorAll('.tab').forEach(x=>x.classList.add('hidden'));const el=document.getElementById(id);if(el)el.classList.remove('hidden');document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));document.getElementById('pageTitle').textContent=titles[id]||'VTG Trade OS';}
