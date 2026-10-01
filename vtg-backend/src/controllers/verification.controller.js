@@ -108,12 +108,16 @@ const review = asyncHandler(async (req, res) => {
   const { status, notes } = z.object({
     status: z.enum(['verified','rejected']),
     notes: z.string().max(1000).optional()
+  }).superRefine((value, ctx) => {
+    if (value.status === 'rejected' && !String(value.notes || '').trim()) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['notes'], message: 'A review note is required when rejecting a document.' });
+    }
   }).parse(req.body);
 
   const { rows } = await query(
     `UPDATE verification_documents
         SET status = $1, reviewer_id = $2, review_notes = $3, reviewed_at = now()
-      WHERE id = $4
+      WHERE id = $4 AND status = 'pending'
       RETURNING id, user_id, doc_type, file_name, status, review_notes, uploaded_at, reviewed_at`,
     [status, req.user.id, notes || null, req.params.id]
   );
