@@ -12,5 +12,6 @@ router.post('/login', ctrl.login);
 router.post('/refresh', ctrl.refresh);
 router.get('/me', requireAuth, ctrl.me);
 router.post('/agreements/accept', requireAuth, ctrl.acceptAgreement);
+router.get('/email-preferences/:token', ctrl.emailPreference);
 
 module.exports = router;
