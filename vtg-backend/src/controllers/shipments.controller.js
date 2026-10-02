@@ -234,8 +234,23 @@ const getForOrder = asyncHandler(async (req, res) => {
   const shipmentRes = await query('SELECT * FROM shipments WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1', [req.params.orderId]);
   const shipment = shipmentRes.rows[0];
   if (!shipment) throw new AppError('No shipment found for this order', 404);
-  const events = await query('SELECT * FROM tracking_events WHERE shipment_id = $1 ORDER BY sort_order ASC', [shipment.id]);
-  res.json({ shipment, events: events.rows });
+  const events = await query('SELECT * FROM tracking_events WHERE shipment_id = $1 ORDER BY sort_order ASC, event_time ASC', [shipment.id]);
+  const routePoints = [];
+  const origin = resolveAtlasLocation(shipment.origin_port);
+  if(origin) routePoints.push({type:'origin',name:origin.name,city:origin.city,country:origin.country,lat:origin.lat,lng:origin.lng});
+  for(const e of events.rows){
+    const loc=resolveAtlasLocation(e.location);
+    if(!loc) continue;
+    const prev=routePoints[routePoints.length-1];
+    if(prev&&prev.lat===loc.lat&&prev.lng===loc.lng) continue;
+    routePoints.push({type:e.status==='active'?'active':'milestone',name:loc.name,city:loc.city,country:loc.country,lat:loc.lat,lng:loc.lng,status:e.status,detail:e.detail,eventTime:e.event_time});
+  }
+  const destination=resolveAtlasLocation(shipment.destination_port);
+  if(destination){
+    const prev=routePoints[routePoints.length-1];
+    if(!prev||prev.lat!==destination.lat||prev.lng!==destination.lng) routePoints.push({type:'destination',name:destination.name,city:destination.city,country:destination.country,lat:destination.lat,lng:destination.lng});
+  }
+  res.json({ shipment, events: events.rows, routePoints });
 });
 
 const addEventSchema = z.object({
