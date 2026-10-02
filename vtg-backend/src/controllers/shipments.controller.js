@@ -202,6 +202,12 @@ const createSchema = z.object({
 
 const create = asyncHandler(async (req, res) => {
   const data = createSchema.parse(req.body);
+  const orderRes = await query('SELECT id, supplier_id FROM orders WHERE id = $1 LIMIT 1', [data.orderId]);
+  const order = orderRes.rows[0];
+  if (!order) throw new AppError('Order not found', 404);
+  if (req.user.role !== 'admin' && order.supplier_id !== req.user.id) {
+    throw new AppError('Only the supplier assigned to this order can create its shipment', 403, 'FORBIDDEN');
+  }
   const { rows } = await query(
     `INSERT INTO shipments (order_id, container_no, carrier, origin_port, destination_port)
      VALUES ($1,$2,$3,$4,COALESCE($5,'Tin Can Island, Lagos')) RETURNING *`,
@@ -212,6 +218,19 @@ const create = asyncHandler(async (req, res) => {
 });
 
 const getForOrder = asyncHandler(async (req, res) => {
+  const accessRes = await query(
+    'SELECT id, buyer_id, supplier_id, bank_id FROM orders WHERE id = $1 LIMIT 1',
+    [req.params.orderId]
+  );
+  const order = accessRes.rows[0];
+  if (!order) throw new AppError('Order not found', 404);
+  const allowed =
+    req.user.role === 'admin' ||
+    req.user.id === order.buyer_id ||
+    req.user.id === order.supplier_id ||
+    req.user.id === order.bank_id;
+  if (!allowed) throw new AppError('Forbidden', 403, 'FORBIDDEN');
+
   const shipmentRes = await query('SELECT * FROM shipments WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1', [req.params.orderId]);
   const shipment = shipmentRes.rows[0];
   if (!shipment) throw new AppError('No shipment found for this order', 404);
