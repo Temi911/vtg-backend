@@ -177,14 +177,14 @@
       box.innerHTML=`
         <div class="buyerRoomItem"><div class="row"><strong>${esc(d.reference)}</strong><span class="buyerRoomBadge">${esc(d.status)}</span></div>
           <small>${esc(d.supplier_name||'Supplier')} • ${money(d.total_amount_usd)} • ${esc(d.incoterm||'FOB')}</small>
-          <div class="buyerRoomActions"><button class="btn" id="roomUpload">Upload document</button>${!['delivered','cancelled'].includes(d.status)?'<button class="btn" id="roomPay">Start payment</button>':''}${['arrived','customs'].includes(d.status)?'<button class="btn primary" id="roomDeliver">Confirm delivery</button>':''}${d.status==='delivered'?'<span class="buyerRoomBadge">Delivery confirmed</span>':''}${orderActions(d)}</div></div>
+          <div class="buyerRoomActions"><button class="btn" id="roomUpload">Upload document</button>${!['delivered','cancelled'].includes(d.status)?'<button class="btn" id="roomPay">Start payment</button>':''}${!['delivered','cancelled'].includes(d.status)?'<button class="btn primary" id="roomInspect">Request inspection</button>':''}${['arrived','customs'].includes(d.status)?'<button class="btn primary" id="roomDeliver">Confirm delivery</button>':''}${d.status==='delivered'?'<span class="buyerRoomBadge">Delivery confirmed</span>':''}${orderActions(d)}</div></div>
         <div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Transaction timeline</strong><div class="buyerRoomTimeline" style="margin-top:10px">${timelineForOrder(d)}</div></div>
         <div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Documents</strong><div class="buyerRoomList" style="margin-top:7px">${docs.length?docs.map(x=>`<div class="buyerRoomItem"><div class="row"><strong style="font-size:10px">${esc(x.doc_type)}</strong><span class="buyerRoomBadge">${esc(x.status||'uploaded')}</span></div><small>${esc(x.file_name)}</small><div class="buyerRoomActions"><button class="btn" data-doc-download="${esc(x.id)}">Download</button></div></div>`).join(''):'<div class="buyerRoomEmpty">No order documents uploaded yet.</div>'}</div></div>
         <div class="buyerRoomActions" style="margin-top:8px"><button class="btn" id="roomConversation">Message supplier</button></div></div><div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Payments</strong><div class="buyerRoomList" style="margin-top:7px">${state.payments.length?state.payments.map(x=>`<div><strong style="font-size:10px">${esc(x.method)} • ${esc(x.amount)} ${esc(x.currency)}</strong><small>${esc(x.status)} • ${esc(x.provider_ref||'Pending provider reference')}</small></div>`).join(''):'<div class="buyerRoomEmpty">No payment request initiated for this order.</div>'}</div></div>
         ${state.shipment?`<div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Shipment</strong><div class="buyerRoomActions"><button class="btn" id="roomLiveTrack">Check live tracking</button></div><small>${esc(state.shipment.container_no||'Container pending')} • ${esc(state.shipment.carrier||'Carrier pending')} • ${esc(state.shipment.origin_port||'Origin')} → ${esc(state.shipment.destination_port||'Destination')}</small><div class="buyerRoomTimeline" style="margin-top:10px">${state.shipmentEvents.length?state.shipmentEvents.map((x,i)=>`<div class="buyerRoomStep ${x.status==='done'?'done':x.status==='active'?'active':''}"><span class="buyerRoomDot"></span><div><strong>${esc(x.location)}</strong><small>${esc(x.detail||x.status||'Milestone')}</small></div></div>`).join(''):'<div class="buyerRoomEmpty">Shipment exists but no tracking milestones have been recorded yet.</div>' + (state.shipmentRoute.length ? '<div class="buyerRoomSub" style="margin-top:8px"><strong>Mapped route:</strong> '+state.shipmentRoute.map(x=>esc(x.name)).join(' → ')+'</div>' : '')}</div></div>`:''}
       `;
       document.getElementById('roomUpload')?.addEventListener('click',()=>uploadDoc(d.id));
-      document.getElementById('roomPay')?.addEventListener('click',()=>payment(d));document.getElementById('roomConversation')?.addEventListener('click',()=>openOrderConversation(d));
+      document.getElementById('roomPay')?.addEventListener('click',()=>payment(d));document.getElementById('roomInspect')?.addEventListener('click',()=>requestInspection(d));document.getElementById('roomConversation')?.addEventListener('click',()=>openOrderConversation(d));
       document.getElementById('roomCancel')?.addEventListener('click',()=>changeOrderStatus(d,'cancelled'));
       document.getElementById('roomDispute')?.addEventListener('click',()=>changeOrderStatus(d,'disputed'));
       document.getElementById('roomDeliver')?.addEventListener('click',()=>confirmDelivery(d));
@@ -249,7 +249,55 @@
     }
 
     function openOrderConversation(order){openModal('Supplier conversation','Order '+order.reference,`<div id="roomConversationMessages" class="buyerRoomList"><div class="buyerRoomEmpty">Loading conversation…</div></div><div class="buyerRoomField" style="margin-top:10px"><label>Message supplier</label><textarea id="roomConversationInput" placeholder="Write a trade-related message…"></textarea></div>`,async()=>{const input=document.getElementById('roomConversationInput');const body=input?.value.trim();if(!body){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">Write a message first.</div>';return}try{const conv=await api('/messages');const match=(conv.conversations||[]).find(x=>String(x.order_id)===String(order.id));if(!match)throw new Error('No supplier conversation is linked to this order yet.');await api('/messages/'+encodeURIComponent(match.id)+'/messages',{method:'POST',body:JSON.stringify({body})});modal.classList.remove('open')}catch(e){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>'}});api('/messages').then(d=>{const match=(d.conversations||[]).find(x=>String(x.order_id)===String(order.id));if(!match){document.getElementById('roomConversationMessages').innerHTML='<div class="buyerRoomEmpty">No supplier conversation is linked to this order yet.</div>';return}return api('/messages/'+encodeURIComponent(match.id)+'/messages').then(m=>{document.getElementById('roomConversationMessages').innerHTML=(m.messages||[]).map(x=>'<div class="buyerRoomItem"><strong>'+esc(x.sender_id===getUserId()?'You':'Supplier')+'</strong><small>'+esc(x.body)+'</small></div>').join('')||'<div class="buyerRoomEmpty">No messages yet.</div>'})}).catch(e=>{const el=document.getElementById('roomConversationMessages');if(el)el.innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>'})}
-function payment(order){
+
+    function requestInspection(order){
+      openModal('Request pre-shipment inspection','Order '+order.reference,
+        `<div class="notice">A VTG Agent can inspect the goods before shipment. The inspection fee is separate from the trade payment.</div>
+        <div class="buyerRoomField"><label>Origin country</label><select id="roomInspectCountry"><option>China</option><option>South Korea</option></select></div>
+        <div class="buyerRoomField"><label>City</label><input id="roomInspectCity" placeholder="Guangzhou"></div>
+        <div class="buyerRoomField"><label>Product</label><input id="roomInspectProduct" value="${esc(order.items?.[0]?.description||'')}"></div>
+        <div class="buyerRoomField"><label>Category</label><input id="roomInspectCategory" placeholder="Electronics, machinery, clothing..."></div>
+        <div class="buyerRoomField"><label>Quantity</label><input id="roomInspectQuantity" type="number" min="1" value="1"></div>
+        <div class="buyerRoomField"><label>Inspection level</label><select id="roomInspectLevel"><option value="basic">Basic</option><option value="standard" selected>Standard</option><option value="advanced">Advanced</option></select></div>
+        <div class="buyerRoomField"><label>Supplier name</label><input id="roomInspectSupplier" value="${esc(order.supplier_name||'')}"></div>
+        <div class="buyerRoomField"><label>Supplier address</label><input id="roomInspectAddress"></div>
+        <div class="buyerRoomField"><label>Checks requested</label><textarea id="roomInspectChecks" placeholder="Quantity, model, packaging, labels, visible defects, accessories..."></textarea></div>
+        <label><input id="roomInspectVideo" type="checkbox"> Short video evidence</label><br><label><input id="roomInspectUrgent" type="checkbox"> Urgent inspection</label>`,async()=>{
+          try{
+            const body={orderId:order.id,country:document.getElementById('roomInspectCountry').value,city:document.getElementById('roomInspectCity').value.trim(),productName:document.getElementById('roomInspectProduct').value.trim(),category:document.getElementById('roomInspectCategory').value.trim(),quantity:Number(document.getElementById('roomInspectQuantity').value),serviceLevel:document.getElementById('roomInspectLevel').value,supplierName:document.getElementById('roomInspectSupplier').value.trim(),supplierAddress:document.getElementById('roomInspectAddress').value.trim(),requestedChecks:document.getElementById('roomInspectChecks').value.trim(),addVideo:document.getElementById('roomInspectVideo').checked,urgent:document.getElementById('roomInspectUrgent').checked};
+            if(!body.city||!body.productName||!body.category||!body.supplierName||!body.supplierAddress||!body.requestedChecks){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">Complete the inspection details first.</div>';return}
+            const d=await api('/inspections/requests',{method:'POST',body:JSON.stringify(body)});modal.classList.remove('open');openModal('Inspection request created','Order '+order.reference,'<div class="notice">Request <b>'+esc(d.request?.reference||'created')+'</b> created. Inspection fee: <b>
+      openModal('Start payment','Order '+order.reference,`
+        <div class="buyerRoomField"><label>Payment method</label><select id="roomPayMethod"><option value="tt">Bank transfer / TT</option><option value="escrow">Escrow</option><option value="forex">Forex</option><option value="dp">Documentary payment</option><option value="crypto">Crypto</option></select></div>
+        <div class="buyerRoomField"><label>Amount (USD)</label><input id="roomPayAmount" type="number" min="0.01" step="0.01" value="${esc(Number(order.total_amount_usd)||0)}"></div>
+        <div class="buyerRoomField"><label>Currency</label><select id="roomPayCurrency"><option>USD</option><option>NGN</option><option>CNY</option></select></div>
+        <div class="notice">Payment initiation records the chosen rail and provider response. It does not itself confirm settlement.</div>
+      `,async()=>{
+        try{await api('/payments',{method:'POST',body:JSON.stringify({method:document.getElementById('roomPayMethod').value,orderId:order.id,amount:Number(document.getElementById('roomPayAmount').value),currency:document.getElementById('roomPayCurrency').value,counterpartyName:order.supplier_name||undefined})});modal.classList.remove('open');await selectOrder(order.id)}
+        catch(e){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>'}
+      });
+    }
+
+    async function refresh(){
+      try{
+        const [q,o]=await Promise.all([api('/quotes'),api('/orders')]);
+        state.quotes=q.quotes||[]; state.orders=o.orders||[]; renderTransactions();
+        if(state.selected?.type==='order'){const still=state.orders.find(x=>String(x.id)===String(state.selected.data.id));if(still)await selectOrder(still.id)}
+      }catch(e){document.getElementById('buyerRoomTransactions').innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>'}
+    }
+
+    refresh();
+  }
+
+  function boot(){style();mount()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();+Number(d.payment?.amountUsd||0).toFixed(2)+'</b>.</div><p class="buyerRoomEmpty">Continue to the Product Verification Centre to pay the inspection fee and track agent assignment.</p>',()=>modal.classList.remove('open'));
+            const b=document.createElement('button');b.className='btn primary';b.textContent='Open Product Verification Centre';b.onclick=()=>location.href='/buyer-verifications.html';document.getElementById('buyerRoomModalMsg')?.appendChild(b);
+          }catch(e){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>'}
+        });
+    }
+
+    function payment(order){
       openModal('Start payment','Order '+order.reference,`
         <div class="buyerRoomField"><label>Payment method</label><select id="roomPayMethod"><option value="tt">Bank transfer / TT</option><option value="escrow">Escrow</option><option value="forex">Forex</option><option value="dp">Documentary payment</option><option value="crypto">Crypto</option></select></div>
         <div class="buyerRoomField"><label>Amount (USD)</label><input id="roomPayAmount" type="number" min="0.01" step="0.01" value="${esc(Number(order.total_amount_usd)||0)}"></div>
