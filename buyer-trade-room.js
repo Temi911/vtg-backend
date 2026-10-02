@@ -94,8 +94,8 @@
       state.quotes.forEach(q=>rows.push(`
         <div class="buyerRoomItem">
           <div class="row"><strong>${esc(q.reference)}</strong><span class="buyerRoomBadge">${esc(q.status)}</span></div>
-          <small>Quote • ${esc(q.supplier_name||'Supplier')} • ${money(q.total_amount_usd)}</small>
-          <div class="buyerRoomActions"><button class="btn" data-q="${esc(q.id)}">Open quote</button>${q.status==='accepted'&&!q.converted_order_id?'<button class="btn primary" data-convert="'+esc(q.id)+'">Create order</button>':''}</div>
+          <small>Quote • ${esc(q.supplier_name||'Supplier')} • ${money(q.total_amount_usd)} • ${esc(q.incoterm||'FOB')}</small>
+          <div class="buyerRoomActions"><button class="btn" data-q="${esc(q.id)}">Open quote</button>${q.status==='accepted'&&!q.converted_order_id?'<button class="btn primary" data-convert="'+esc(q.id)+'">Create order</button>':''}${q.converted_order_id?'<button class="btn" data-o="'+esc(q.converted_order_id)+'">Open order</button>':''}</div>
         </div>`));
       state.orders.forEach(o=>rows.push(`
         <div class="buyerRoomItem">
@@ -115,7 +115,10 @@
         <div class="notice">This will create the order using the accepted quote's supplier, commercial total, incoterm and line items. The quote will then be marked converted.</div>
       `,async()=>{
         try{const d=await api('/quotes/'+encodeURIComponent(id)+'/convert-to-order',{method:'POST'});modal.classList.remove('open');await refresh();selectOrder(d.order.id);}
-        catch(e){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>';}
+        catch(e){
+          if(/already|converted|conflict/i.test(e.message||'')){modal.classList.remove('open');await refresh();const latest=state.quotes.find(x=>String(x.id)===String(id));if(latest?.converted_order_id)selectOrder(latest.converted_order_id);return}
+          document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>';
+        }
       });
     }
 
@@ -153,10 +156,12 @@
       if(s.type==='quote'){
         box.innerHTML=`
           <div class="buyerRoomItem"><div class="row"><strong>${esc(d.reference)}</strong><span class="buyerRoomBadge">${esc(d.status)}</span></div>
-          <small>Supplier: ${esc(d.supplier_name||'Supplier')} • ${money(d.total_amount_usd)} • ${esc(d.incoterm||'FOB')}</small>
-          <div class="buyerRoomActions">${d.status==='accepted'&&!d.converted_order_id?'<button class="btn primary" id="roomConvert">Create order</button>':''}</div></div>
+          <small>Supplier: ${esc(d.supplier_name||'Supplier')} • ${money(d.total_amount_usd)} • ${esc(d.incoterm||'FOB')} • Valid until ${esc(d.validity_until||'Not specified')}</small>
+          <div class="buyerRoomActions">${d.status==='accepted'&&!d.converted_order_id?'<button class="btn primary" id="roomConvert">Create order</button>':''}${d.converted_order_id?'<button class="btn" id="roomConvertedOrder">Open created order</button>':''}</div>
+          ${d.notes?'<div class="buyerRoomSub" style="margin-top:9px"><strong>Trade notes:</strong> '+esc(d.notes)+'</div>':''}</div>
           <div style="margin-top:12px"><strong style="font-size:11px">Line items</strong><div class="buyerRoomList" style="margin-top:7px">${(s.items||[]).map(i=>`<div class="buyerRoomItem"><strong>${esc(i.description)}</strong><small>${esc(i.quantity)} × ${money(i.unit_price_usd)}</small></div>`).join('')}</div></div>`;
         document.getElementById('roomConvert')?.addEventListener('click',()=>convertQuote(d.id));
+        document.getElementById('roomConvertedOrder')?.addEventListener('click',()=>selectOrder(d.converted_order_id));
         return;
       }
       const docs=state.documents;
