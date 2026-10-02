@@ -46,6 +46,25 @@ async function getQuote(id, user) {
 
 const create = asyncHandler(async (req,res)=>{
   const data=createSchema.parse(req.body);
+  const supplierRes=await query(
+    `SELECT id,role,business_verification_status FROM users WHERE id=$1 LIMIT 1`,
+    [data.supplierId]
+  );
+  const supplier=supplierRes.rows[0];
+  if(!supplier || supplier.role!=='supplier') throw new AppError('Selected supplier is not valid',400,'INVALID_SUPPLIER');
+  if(supplier.business_verification_status!=='verified') throw new AppError('Quotes can only be requested from verified suppliers',409,'SUPPLIER_NOT_VERIFIED');
+
+  const productIds=[...new Set(data.items.map(i=>i.productId).filter(Boolean))];
+  if(productIds.length){
+    const products=await query(
+      `SELECT id FROM products WHERE id=ANY($1::uuid[]) AND supplier_id=$2 AND is_active=TRUE`,
+      [productIds,data.supplierId]
+    );
+    if(products.rows.length!==productIds.length) throw new AppError('One or more selected products do not belong to this supplier or are inactive',400,'INVALID_QUOTE_PRODUCT');
+  }
+  if(data.validityUntil && new Date(data.validityUntil+'T23:59:59Z') < new Date()) {
+    throw new AppError('Quote validity date must be in the future',400,'INVALID_VALIDITY');
+  }
   const total=data.items.reduce((sum,i)=>sum+i.quantity*i.unitPriceUsd,0);
   const q=await withTransaction(async client=>{
     const qr=await client.query(
