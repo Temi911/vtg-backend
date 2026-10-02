@@ -145,8 +145,17 @@
 
     function timelineForOrder(o){
       const map=[['pending','Order created'],['confirmed','Supplier confirmed'],['lc_issued','Finance / LC milestone'],['shipped','Shipment departed'],['in_transit','In transit'],['arrived','Arrived at destination'],['customs','Customs clearance'],['delivered','Delivered']];
+      if(o.status==='cancelled') return map.map(x=>`<div class="buyerRoomStep"><span class="buyerRoomDot"></span><div><strong>${x[1]}</strong><small>Not completed</small></div></div>`).join('')+`<div class="buyerRoomStep active"><span class="buyerRoomDot"></span><div><strong>Order cancelled</strong><small>Closed milestone</small></div></div>`;
+      if(o.status==='disputed') return map.map(x=>`<div class="buyerRoomStep"><span class="buyerRoomDot"></span><div><strong>${x[1]}</strong><small>Review required</small></div></div>`).join('')+`<div class="buyerRoomStep active"><span class="buyerRoomDot"></span><div><strong>Order disputed</strong><small>Requires resolution</small></div></div>`;
       const idx=map.findIndex(x=>x[0]===o.status);
       return map.map((x,i)=>`<div class="buyerRoomStep ${i<(idx<0?0:idx)?'done':i===(idx<0?0:idx)?'active':''}"><span class="buyerRoomDot"></span><div><strong>${x[1]}</strong><small>${i<(idx<0?0:idx)?'Completed':i===(idx<0?0:idx)?'Current milestone':'Next milestone'}</small></div></div>`).join('');
+    }
+    function orderActions(o){
+      const a=[];
+      if(['pending','confirmed','lc_issued'].includes(o.status)) a.push('<button class="btn" id="roomCancel">Request cancellation</button>');
+      if(!['delivered','cancelled','disputed'].includes(o.status)) a.push('<button class="btn" id="roomDispute">Open dispute</button>');
+      if(o.status==='disputed') a.push('<span class="buyerRoomBadge">Resolution required</span>');
+      return a.join('');
     }
 
     function renderDetail(){
@@ -168,7 +177,7 @@
       box.innerHTML=`
         <div class="buyerRoomItem"><div class="row"><strong>${esc(d.reference)}</strong><span class="buyerRoomBadge">${esc(d.status)}</span></div>
           <small>${esc(d.supplier_name||'Supplier')} • ${money(d.total_amount_usd)} • ${esc(d.incoterm||'FOB')}</small>
-          <div class="buyerRoomActions"><button class="btn" id="roomUpload">Upload document</button><button class="btn" id="roomPay">Start payment</button>${['arrived','customs'].includes(d.status)?'<button class="btn primary" id="roomDeliver">Confirm delivery</button>':''}${d.status==='delivered'?'<span class="buyerRoomBadge">Delivery confirmed</span>':''}</div></div>
+          <div class="buyerRoomActions"><button class="btn" id="roomUpload">Upload document</button>${!['delivered','cancelled'].includes(d.status)?'<button class="btn" id="roomPay">Start payment</button>':''}${['arrived','customs'].includes(d.status)?'<button class="btn primary" id="roomDeliver">Confirm delivery</button>':''}${d.status==='delivered'?'<span class="buyerRoomBadge">Delivery confirmed</span>':''}${orderActions(d)}</div></div>
         <div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Transaction timeline</strong><div class="buyerRoomTimeline" style="margin-top:10px">${timelineForOrder(d)}</div></div>
         <div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Documents</strong><div class="buyerRoomList" style="margin-top:7px">${docs.length?docs.map(x=>`<div><strong style="font-size:10px">${esc(x.doc_type)}</strong><small>${esc(x.file_name)} • ${esc(x.status||'uploaded')}</small></div>`).join(''):'<div class="buyerRoomEmpty">No order documents uploaded yet.</div>'}</div></div>
         <div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Payments</strong><div class="buyerRoomList" style="margin-top:7px">${state.payments.length?state.payments.map(x=>`<div><strong style="font-size:10px">${esc(x.method)} • ${esc(x.amount)} ${esc(x.currency)}</strong><small>${esc(x.status)} • ${esc(x.provider_ref||'Pending provider reference')}</small></div>`).join(''):'<div class="buyerRoomEmpty">No payment request initiated for this order.</div>'}</div></div>
@@ -176,8 +185,23 @@
       `;
       document.getElementById('roomUpload')?.addEventListener('click',()=>uploadDoc(d.id));
       document.getElementById('roomPay')?.addEventListener('click',()=>payment(d));
+      document.getElementById('roomCancel')?.addEventListener('click',()=>changeOrderStatus(d,'cancelled'));
+      document.getElementById('roomDispute')?.addEventListener('click',()=>changeOrderStatus(d,'disputed'));
       document.getElementById('roomDeliver')?.addEventListener('click',()=>confirmDelivery(d));
       document.getElementById('roomLiveTrack')?.addEventListener('click',()=>showLiveTracking(state.shipment?.id));
+    }
+
+    async function changeOrderStatus(order,status){
+      const title=status==='disputed'?'Open order dispute':'Request order cancellation';
+      const note=status==='disputed'
+        ?'<div class="notice">This marks the order for resolution. Add a short reason so the supplier/admin can understand the issue.</div><div class="buyerRoomField"><label>Reason</label><input id="roomStatusReason" maxlength="500" placeholder="Briefly describe the issue"></div>'
+        :'<div class="notice">Cancellation is available only before the order reaches shipping milestones. Confirm this request carefully.</div>';
+      openModal(title,'Order '+order.reference,note,async()=>{
+        try{
+          await api('/orders/'+encodeURIComponent(order.id)+'/status',{method:'PATCH',body:JSON.stringify({status})});
+          modal.classList.remove('open');await refresh();await selectOrder(order.id);
+        }catch(e){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>';}
+      });
     }
 
     async function confirmDelivery(order){
