@@ -179,7 +179,7 @@
           <small>${esc(d.supplier_name||'Supplier')} • ${money(d.total_amount_usd)} • ${esc(d.incoterm||'FOB')}</small>
           <div class="buyerRoomActions"><button class="btn" id="roomUpload">Upload document</button>${!['delivered','cancelled'].includes(d.status)?'<button class="btn" id="roomPay">Start payment</button>':''}${['arrived','customs'].includes(d.status)?'<button class="btn primary" id="roomDeliver">Confirm delivery</button>':''}${d.status==='delivered'?'<span class="buyerRoomBadge">Delivery confirmed</span>':''}${orderActions(d)}</div></div>
         <div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Transaction timeline</strong><div class="buyerRoomTimeline" style="margin-top:10px">${timelineForOrder(d)}</div></div>
-        <div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Documents</strong><div class="buyerRoomList" style="margin-top:7px">${docs.length?docs.map(x=>`<div><strong style="font-size:10px">${esc(x.doc_type)}</strong><small>${esc(x.file_name)} • ${esc(x.status||'uploaded')}</small></div>`).join(''):'<div class="buyerRoomEmpty">No order documents uploaded yet.</div>'}</div></div>
+        <div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Documents</strong><div class="buyerRoomList" style="margin-top:7px">${docs.length?docs.map(x=>`<div class="buyerRoomItem"><div class="row"><strong style="font-size:10px">${esc(x.doc_type)}</strong><span class="buyerRoomBadge">${esc(x.status||'uploaded')}</span></div><small>${esc(x.file_name)}</small><div class="buyerRoomActions"><button class="btn" data-doc-download="${esc(x.id)}">Download</button></div></div>`).join(''):'<div class="buyerRoomEmpty">No order documents uploaded yet.</div>'}</div></div>
         <div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Payments</strong><div class="buyerRoomList" style="margin-top:7px">${state.payments.length?state.payments.map(x=>`<div><strong style="font-size:10px">${esc(x.method)} • ${esc(x.amount)} ${esc(x.currency)}</strong><small>${esc(x.status)} • ${esc(x.provider_ref||'Pending provider reference')}</small></div>`).join(''):'<div class="buyerRoomEmpty">No payment request initiated for this order.</div>'}</div></div>
         ${state.shipment?`<div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Shipment</strong><div class="buyerRoomActions"><button class="btn" id="roomLiveTrack">Check live tracking</button></div><small>${esc(state.shipment.container_no||'Container pending')} • ${esc(state.shipment.carrier||'Carrier pending')} • ${esc(state.shipment.origin_port||'Origin')} → ${esc(state.shipment.destination_port||'Destination')}</small><div class="buyerRoomTimeline" style="margin-top:10px">${state.shipmentEvents.length?state.shipmentEvents.map((x,i)=>`<div class="buyerRoomStep ${x.status==='done'?'done':x.status==='active'?'active':''}"><span class="buyerRoomDot"></span><div><strong>${esc(x.location)}</strong><small>${esc(x.detail||x.status||'Milestone')}</small></div></div>`).join(''):'<div class="buyerRoomEmpty">Shipment exists but no tracking milestones have been recorded yet.</div>'}</div></div>`:''}
       `;
@@ -189,6 +189,7 @@
       document.getElementById('roomDispute')?.addEventListener('click',()=>changeOrderStatus(d,'disputed'));
       document.getElementById('roomDeliver')?.addEventListener('click',()=>confirmDelivery(d));
       document.getElementById('roomLiveTrack')?.addEventListener('click',()=>showLiveTracking(state.shipment?.id));
+      box.querySelectorAll('[data-doc-download]').forEach(b=>b.onclick=()=>downloadDocument(b.dataset.docDownload));
     }
 
     async function changeOrderStatus(order,status){
@@ -202,6 +203,12 @@
           modal.classList.remove('open');await refresh();await selectOrder(order.id);
         }catch(e){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>';}
       });
+    }
+
+    function downloadDocument(id){
+      const t=token();
+      if(!t){alert('Please sign in again.');return}
+      window.open(API+'/documents/'+encodeURIComponent(id)+'/download?token='+encodeURIComponent(t),'_blank','noopener');
     }
 
     async function confirmDelivery(order){
