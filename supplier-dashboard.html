@@ -34,4 +34,5 @@ $('#storeForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.cur
 $('#publishBtn').onclick=async()=>{try{const r=await fetch('/api/marketplace/storefront/publish',{method:'POST',headers:headers()});const d=await r.json();if(!r.ok)throw new Error(d.message||'Could not publish');storefront=d.storefront;fillForm(storefront);$('#storeMsg').className='msg ok';$('#storeMsg').textContent='Your storefront is now published.'}catch(e){$('#storeMsg').className='msg err';$('#storeMsg').textContent=e.message}};
 $('#feedForm').onsubmit=async e=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.currentTarget).entries());$('#feedMsg').textContent='Publishing…';try{const r=await fetch('/api/marketplace/feed',{method:'POST',headers:headers(),body:JSON.stringify(data)});const d=await r.json();if(!r.ok)throw new Error(d.message||'Could not publish');$('#feedMsg').className='msg ok';$('#feedMsg').textContent='Published successfully.';e.currentTarget.reset()}catch(err){$('#feedMsg').className='msg err';$('#feedMsg').textContent=err.message}};
 $('#signOut').onclick=()=>{localStorage.removeItem('vtg_access_token');location.href='/'};boot();
-</script></body></html>
+</script><script src="/supplier-trade-os.js"></script>
+</body></html>
