@@ -208,7 +208,10 @@ const create = asyncHandler(async (req, res) => {
   if (req.user.role !== 'admin' && order.supplier_id !== req.user.id) {
     throw new AppError('Only the supplier assigned to this order can create its shipment', 403, 'FORBIDDEN');
   }
-  if (req.user.role !== 'admin' && !['confirmed','lc_issued','shipped'].includes(order.status)) {\n    throw new AppError('A shipment can only be created after the order is confirmed', 409, 'INVALID_SHIPMENT_ORDER_STATUS');\n  }\n  const existing = await query('SELECT id FROM shipments WHERE order_id = $1 LIMIT 1', [data.orderId]);
+  if (req.user.role !== 'admin' && !['confirmed','lc_issued','shipped'].includes(order.status)) {
+    throw new AppError('A shipment can only be created after the order is confirmed', 409, 'INVALID_SHIPMENT_ORDER_STATUS');
+  }
+  const existing = await query('SELECT id FROM shipments WHERE order_id = $1 LIMIT 1', [data.orderId]);
   if(existing.rows[0]) throw new AppError('A shipment is already linked to this order', 409, 'SHIPMENT_EXISTS');
 
   const { rows } = await query(
