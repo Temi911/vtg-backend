@@ -269,7 +269,9 @@
       { id:'za-cn', name:'Southern Africa ↔ China', mode:'Sea freight corridor', coords:[[31.0247,-29.8622],[35,-24],[45,-15],[60,-5],[75,8],[95,18],[121.9235,29.8683]] },
       { id:'ng-kr', name:'West Africa ↔ South Korea', mode:'Sea freight corridor', coords:[[3.3903,6.4474],[20,5],[40,4],[65,8],[90,18],[110,28],[129.0403,35.1028]] }
     ];
-    let routesVisible = false;\n    let shipmentsVisible = false;\n    let shipmentData = [];
+    let routesVisible = false;
+    let shipmentsVisible = false;
+    let shipmentData = [];
     const clearRoutes = () => {
       if (map.getLayer('vtg-trade-routes')) map.removeLayer('vtg-trade-routes');
       if (map.getLayer('vtg-trade-routes-halo')) map.removeLayer('vtg-trade-routes-halo');
@@ -579,7 +581,8 @@
     doc.querySelectorAll('[data-layer]').forEach(b => b.onclick = () => {
       const k = b.dataset.layer;
       const isOn = b.textContent.trim() === 'ON';
-      if (k === 'routes') { showRoutes(!routesVisible); return }\n      if (k === 'shipments') { showShipments(!shipmentsVisible); return }
+      if (k === 'routes') { showRoutes(!routesVisible); return }
+      if (k === 'shipments') { showShipments(!shipmentsVisible); return }
       if (k === 'ports') {
         if (isOn) { clearMarkers(portMarkers); b.textContent = 'SHOW'; b.style.background = ''; status('Ports & logistics layer hidden.'); return }
         portMarkers = PORTS.map(p => addMarker(p, '#0e969f', 'seaport'));
