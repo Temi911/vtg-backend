@@ -10,7 +10,7 @@ app.use('/api/auth',authLimiter,authRoutes);app.use('/api/agent',agentRoutes);ap
 app.get('/',(req,res,next)=>{fs.readFile(frontendEntry,'utf8',(err,html)=>{if(err)return next(err);const script=`<script src="/vtg-news-image.js?v=20260815"></script><script>${intelligenceWidget}</script><script>${marketplaceWidget}</script>`;res.type('html').send(html.includes('</body>')?html.replace('</body>',script+'</body>'):html+script)})});app.use(express.static(workspaceRoot,{index:'frontend-v3.html'}));app.use(notFoundHandler);app.use(errorHandler);const PORT=process.env.PORT||3000;
 
 async function start() {
-  app.listen(PORT,()=>console.log(`VTG Africa API listening on port ${PORT}`));
+  app.listen(PORT,'0.0.0.0',()=>console.log(`VTG Africa API listening on port ${PORT}`));
 }
 
 if(require.main===module) start().catch(err=>{console.error('Startup failed:',err);process.exit(1);});
