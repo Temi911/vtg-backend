@@ -158,6 +158,22 @@ const verifyAndPay = asyncHandler(async (req, res) => {
       throw new AppError(`LC cannot be paid from status "${lc.status}"`, 409, 'INVALID_STATE');
     }
 
+    const docsRes = await client.query(
+      'SELECT id, file_name, status FROM documents WHERE order_id = $1 OR lc_id = $2',
+      [lc.order_id, lc.id]
+    );
+    if (!docsRes.rows.length) {
+      throw new AppError('Payment blocked: no documents have been presented for review', 409, 'DOCUMENT_REVIEW_REQUIRED');
+    }
+    const pending = docsRes.rows.filter(d => !d.status || d.status === 'pending');
+    const rejected = docsRes.rows.filter(d => d.status === 'rejected');
+    if (pending.length) {
+      throw new AppError('Payment blocked: documents are still awaiting bank review', 409, 'DOCUMENT_REVIEW_REQUIRED');
+    }
+    if (rejected.length) {
+      throw new AppError('Payment blocked: one or more documents were rejected', 409, 'DOCUMENT_REVIEW_FAILED');
+    }
+
     const swiftRef = `MT103-${uuidv4().slice(0, 10).toUpperCase()}`;
     const updated = await client.query(
       `UPDATE letters_of_credit
