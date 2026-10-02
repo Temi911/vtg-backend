@@ -9,7 +9,7 @@ const dashboard = asyncHandler(async (req,res)=>{
     query("SELECT COUNT(*) FILTER (WHERE status='pending')::int AS pending, COUNT(*) FILTER (WHERE status='verified')::int AS verified, COUNT(*) FILTER (WHERE status='rejected')::int AS rejected FROM verification_documents"),
     query("SELECT status, COUNT(*)::int AS count FROM orders GROUP BY status ORDER BY status"),
     query("SELECT status, COUNT(*)::int AS count FROM letters_of_credit GROUP BY status ORDER BY status"),
-    query("SELECT status, COUNT(*)::int AS count FROM payments GROUP BY status ORDER BY status"),
+    query("SELECT status, COUNT(*)::int AS count FROM payment_requests GROUP BY status ORDER BY status"),
     query("SELECT status, COUNT(*)::int AS count FROM shipments GROUP BY status ORDER BY status")
   ]);
   res.json({users:users.rows,verification:verification.rows[0],orders:orders.rows,lcs:lcs.rows,payments:payments.rows,shipments:shipments.rows});
