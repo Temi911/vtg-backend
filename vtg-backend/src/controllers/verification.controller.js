@@ -184,4 +184,5 @@ const reviewQueue = asyncHandler(async (req, res) => {
   }
   res.json({ documents: rows, applicants: Array.from(applicants.values()) });
 });
-\nmodule.exports = { upload, listMine, download, review, reviewQueue, refreshBusinessVerificationStatus };
+
+module.exports = { upload, listMine, download, review, reviewQueue, refreshBusinessVerificationStatus };
