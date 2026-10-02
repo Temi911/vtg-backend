@@ -194,7 +194,7 @@
     async function changeOrderStatus(order,status){
       const title=status==='disputed'?'Open order dispute':'Request order cancellation';
       const note=status==='disputed'
-        ?'<div class="notice">This marks the order for resolution. Add a short reason so the supplier/admin can understand the issue.</div><div class="buyerRoomField"><label>Reason</label><input id="roomStatusReason" maxlength="500" placeholder="Briefly describe the issue"></div>'
+        ?'<div class="notice">This marks the order for resolution. The supplier/admin can then review the order through the trade workflow.</div>'
         :'<div class="notice">Cancellation is available only before the order reaches shipping milestones. Confirm this request carefully.</div>';
       openModal(title,'Order '+order.reference,note,async()=>{
         try{
