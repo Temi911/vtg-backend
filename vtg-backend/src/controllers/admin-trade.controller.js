@@ -13,8 +13,7 @@ const overview = asyncHandler(async (req,res)=>{
             ORDER BY o.updated_at DESC LIMIT 100`),
     query(`SELECT lc.id,lc.reference,lc.status,lc.amount_usd,lc.issuing_bank_name,lc.issuing_bank_id,
                    lc.swift_mt700_ref,lc.swift_mt103_ref,lc.created_at,lc.updated_at,
-                   o.reference AS order_reference,bu.full_name AS buyer_name,su.full_name AS supplier_name,
-                   COALESCE(bu.full_name,'') AS buyer_name
+                   o.reference AS order_reference,bu.full_name AS buyer_name,su.full_name AS supplier_name
             FROM letters_of_credit lc
             JOIN orders o ON o.id=lc.order_id
             JOIN users bu ON bu.id=lc.buyer_id
@@ -32,7 +31,7 @@ const overview = asyncHandler(async (req,res)=>{
             ORDER BY s.created_at DESC LIMIT 100`),
     query(`SELECT d.id,d.doc_type,d.file_name,d.status,d.notes,d.created_at,d.updated_at,
                    d.order_id,d.lc_id,u.full_name AS owner_name,u.email AS owner_email
-            FROM documents d JOIN users u ON u.id=d.user_id
+            FROM documents d JOIN users u ON u.id=d.uploaded_by
             ORDER BY d.updated_at DESC LIMIT 100`)
   ]);
   res.json({
