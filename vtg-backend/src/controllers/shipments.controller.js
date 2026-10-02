@@ -202,13 +202,13 @@ const createSchema = z.object({
 
 const create = asyncHandler(async (req, res) => {
   const data = createSchema.parse(req.body);
-  const orderRes = await query('SELECT id, supplier_id FROM orders WHERE id = $1 LIMIT 1', [data.orderId]);
+  const orderRes = await query('SELECT id, supplier_id, status FROM orders WHERE id = $1 LIMIT 1', [data.orderId]);
   const order = orderRes.rows[0];
   if (!order) throw new AppError('Order not found', 404);
   if (req.user.role !== 'admin' && order.supplier_id !== req.user.id) {
     throw new AppError('Only the supplier assigned to this order can create its shipment', 403, 'FORBIDDEN');
   }
-  const existing = await query('SELECT id FROM shipments WHERE order_id = $1 LIMIT 1', [data.orderId]);
+  if (req.user.role !== 'admin' && !['confirmed','lc_issued','shipped'].includes(order.status)) {\n    throw new AppError('A shipment can only be created after the order is confirmed', 409, 'INVALID_SHIPMENT_ORDER_STATUS');\n  }\n  const existing = await query('SELECT id FROM shipments WHERE order_id = $1 LIMIT 1', [data.orderId]);
   if(existing.rows[0]) throw new AppError('A shipment is already linked to this order', 409, 'SHIPMENT_EXISTS');
 
   const { rows } = await query(
