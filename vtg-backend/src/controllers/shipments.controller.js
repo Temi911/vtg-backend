@@ -208,6 +208,9 @@ const create = asyncHandler(async (req, res) => {
   if (req.user.role !== 'admin' && order.supplier_id !== req.user.id) {
     throw new AppError('Only the supplier assigned to this order can create its shipment', 403, 'FORBIDDEN');
   }
+  const existing = await query('SELECT id FROM shipments WHERE order_id = $1 LIMIT 1', [data.orderId]);
+  if(existing.rows[0]) throw new AppError('A shipment is already linked to this order', 409, 'SHIPMENT_EXISTS');
+
   const { rows } = await query(
     `INSERT INTO shipments (order_id, container_no, carrier, origin_port, destination_port)
      VALUES ($1,$2,$3,$4,COALESCE($5,'Tin Can Island, Lagos')) RETURNING *`,
@@ -263,6 +266,20 @@ const addEventSchema = z.object({
 
 const addEvent = asyncHandler(async (req, res) => {
   const data = addEventSchema.parse(req.body);
+  const shipmentRes = await query(
+    `SELECT s.*, o.status AS order_status, o.supplier_id, o.buyer_id, o.bank_id
+       FROM shipments s JOIN orders o ON o.id = s.order_id
+      WHERE s.id = $1 LIMIT 1`,
+    [req.params.shipmentId]
+  );
+  const shipment = shipmentRes.rows[0];
+  if(!shipment) throw new AppError('Shipment not found',404);
+  const allowed = req.user.role === 'admin' ||
+    (req.user.role === 'supplier' && shipment.supplier_id === req.user.id) ||
+    (req.user.role === 'bank' && shipment.bank_id === req.user.id);
+  if(!allowed) throw new AppError('You are not assigned to this shipment',403,'FORBIDDEN');
+  if(['delivered','cancelled'].includes(shipment.order_status)) throw new AppError('Shipment cannot be updated after the order is closed',409,'ORDER_CLOSED');
+
   const result = await withTransaction(async (client) => {
     const evRes = await client.query(
       `INSERT INTO tracking_events (shipment_id, location, detail, status, sort_order)
