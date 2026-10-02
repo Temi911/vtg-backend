@@ -74,7 +74,7 @@
       </div>`;
     document.body.appendChild(modal);
 
-    let state={quotes:[],orders:[],selected:null,documents:[],shipment:null,shipmentEvents:[],payments:[]};
+    let state={quotes:[],orders:[],selected:null,documents:[],shipment:null,shipmentEvents:[],shipmentRoute:[],payments:[]};
 
     function openModal(title,meta,body,submit){
       document.getElementById('buyerRoomModalTitle').textContent=title;
@@ -137,7 +137,7 @@
           api('/payments').catch(()=>({paymentRequests:[]}))
         ]);
         state.documents=docs.documents||[];
-        state.shipment=ship?.shipment||null; state.shipmentEvents=ship?.events||[];
+        state.shipment=ship?.shipment||null; state.shipmentEvents=ship?.events||[]; state.shipmentRoute=ship?.routePoints||[];
         state.payments=(pay.paymentRequests||[]).filter(x=>String(x.order_id)===String(id));
         renderDetail();
       }catch(e){alert(e.message)}
@@ -181,7 +181,7 @@
         <div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Transaction timeline</strong><div class="buyerRoomTimeline" style="margin-top:10px">${timelineForOrder(d)}</div></div>
         <div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Documents</strong><div class="buyerRoomList" style="margin-top:7px">${docs.length?docs.map(x=>`<div class="buyerRoomItem"><div class="row"><strong style="font-size:10px">${esc(x.doc_type)}</strong><span class="buyerRoomBadge">${esc(x.status||'uploaded')}</span></div><small>${esc(x.file_name)}</small><div class="buyerRoomActions"><button class="btn" data-doc-download="${esc(x.id)}">Download</button></div></div>`).join(''):'<div class="buyerRoomEmpty">No order documents uploaded yet.</div>'}</div></div>
         <div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Payments</strong><div class="buyerRoomList" style="margin-top:7px">${state.payments.length?state.payments.map(x=>`<div><strong style="font-size:10px">${esc(x.method)} • ${esc(x.amount)} ${esc(x.currency)}</strong><small>${esc(x.status)} • ${esc(x.provider_ref||'Pending provider reference')}</small></div>`).join(''):'<div class="buyerRoomEmpty">No payment request initiated for this order.</div>'}</div></div>
-        ${state.shipment?`<div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Shipment</strong><div class="buyerRoomActions"><button class="btn" id="roomLiveTrack">Check live tracking</button></div><small>${esc(state.shipment.container_no||'Container pending')} • ${esc(state.shipment.carrier||'Carrier pending')} • ${esc(state.shipment.origin_port||'Origin')} → ${esc(state.shipment.destination_port||'Destination')}</small><div class="buyerRoomTimeline" style="margin-top:10px">${state.shipmentEvents.length?state.shipmentEvents.map((x,i)=>`<div class="buyerRoomStep ${x.status==='done'?'done':x.status==='active'?'active':''}"><span class="buyerRoomDot"></span><div><strong>${esc(x.location)}</strong><small>${esc(x.detail||x.status||'Milestone')}</small></div></div>`).join(''):'<div class="buyerRoomEmpty">Shipment exists but no tracking milestones have been recorded yet.</div>'}</div></div>`:''}
+        ${state.shipment?`<div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Shipment</strong><div class="buyerRoomActions"><button class="btn" id="roomLiveTrack">Check live tracking</button></div><small>${esc(state.shipment.container_no||'Container pending')} • ${esc(state.shipment.carrier||'Carrier pending')} • ${esc(state.shipment.origin_port||'Origin')} → ${esc(state.shipment.destination_port||'Destination')}</small><div class="buyerRoomTimeline" style="margin-top:10px">${state.shipmentEvents.length?state.shipmentEvents.map((x,i)=>`<div class="buyerRoomStep ${x.status==='done'?'done':x.status==='active'?'active':''}"><span class="buyerRoomDot"></span><div><strong>${esc(x.location)}</strong><small>${esc(x.detail||x.status||'Milestone')}</small></div></div>`).join(''):'<div class="buyerRoomEmpty">Shipment exists but no tracking milestones have been recorded yet.</div>' + (state.shipmentRoute.length ? '<div class="buyerRoomSub" style="margin-top:8px"><strong>Mapped route:</strong> '+state.shipmentRoute.map(x=>esc(x.name)).join(' → ')+'</div>' : '')}</div></div>`:''}
       `;
       document.getElementById('roomUpload')?.addEventListener('click',()=>uploadDoc(d.id));
       document.getElementById('roomPay')?.addEventListener('click',()=>payment(d));
