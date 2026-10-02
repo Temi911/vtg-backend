@@ -7,7 +7,7 @@ COPY vtg-backend/package.json ./
 COPY vtg-backend/package-lock.json ./
 RUN npm install --omit=dev --silent
 
-COPY vtg-backend/ ./ 
+COPY vtg-backend/ ./
 COPY api/ ./api/
 
 # The Railway service also serves the public VTG frontend from this container.
@@ -23,5 +23,6 @@ EXPOSE 3000
 RUN chown -R node /usr/src/app
 USER node
 
-# Run database migrations before starting the API.
-CMD ["sh", "-c", "node src/db/migrate.js && node src/server.js"]
+# Database migrations are handled by Railway's pre-deploy command.
+# Start the API process directly so the container has one clear long-running process.
+CMD ["node", "src/server.js"]
