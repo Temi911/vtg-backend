@@ -28,6 +28,30 @@ const createOrderSchema = z.object({
 
 const create = asyncHandler(async (req, res) => {
   const data = createOrderSchema.parse(req.body);
+
+  const supplierRes = await query(
+    `SELECT id, role, business_verification_status FROM users WHERE id=$1 LIMIT 1`,
+    [data.supplierId]
+  );
+  const supplier = supplierRes.rows[0];
+  if (!supplier || supplier.role !== 'supplier') {
+    throw new AppError('Selected supplier is not valid', 400, 'INVALID_SUPPLIER');
+  }
+  if (supplier.business_verification_status !== 'verified') {
+    throw new AppError('Orders can only be placed with verified suppliers', 409, 'SUPPLIER_NOT_VERIFIED');
+  }
+
+  const productIds = [...new Set(data.items.map(i => i.productId).filter(Boolean))];
+  if (productIds.length) {
+    const products = await query(
+      `SELECT id FROM products WHERE id=ANY($1::uuid[]) AND supplier_id=$2 AND is_active=TRUE`,
+      [productIds, data.supplierId]
+    );
+    if (products.rows.length !== productIds.length) {
+      throw new AppError('One or more selected products do not belong to this supplier or are inactive', 400, 'INVALID_ORDER_PRODUCT');
+    }
+  }
+
   const reference = generateReference();
   const totalAmount = data.items.reduce((sum, i) => sum + i.quantity * i.unitPriceUsd, 0);
 
