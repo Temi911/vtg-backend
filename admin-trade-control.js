@@ -2,7 +2,7 @@
   const token=localStorage.getItem('vtg_access_token');
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const fmt=n=>n==null?'—':Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
-  const badge=s=>'<span class="atc-badge">'+esc(String(s||'').replace(/_/g,' '))+'</span>';
+  const badge=s=>'<span class="atc-badge">'+esc(String(s||'').replace(/_/g,' '))+'</span>'; const financeFlag=p=>p.finance_exception&&p.finance_exception!=='normal'?'<span class="atc-badge">'+esc(p.finance_exception.replace(/_/g,' '))+'</span>':'';
   async function load(){
     if(!token) throw Error('Please sign in as an administrator.');
     const r=await fetch('/api/admin/trade/overview',{headers:{Authorization:'Bearer '+token}});
