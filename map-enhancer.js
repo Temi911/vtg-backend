@@ -290,7 +290,12 @@
     function renderShipmentRoutes() {
       clearShipmentLayer();
       if (!shipmentRoutesVisible || !shipments.length) return;
-      const visibleShipments=shipments.filter(s=>s.status!=='cancelled' && (shipmentStatusFilter==='all'||s.status===shipmentStatusFilter));
+      const visibleShipments=shipments.filter(s=>{
+        if(s.status==='cancelled') return false;
+        if(shipmentStatusFilter==='all') return true;
+        if(shipmentStatusFilter==='customs') return Boolean(s.customs?.status&&s.customs.status!=='not_started'&&!['cleared','released'].includes(s.customs.status));
+        return s.status===shipmentStatusFilter;
+      });
       const features=visibleShipments.filter(s=>(s.routePoints||[]).length>=2).map(s=>({
         type:'Feature',
         properties:{shipmentId:s.id,reference:s.reference||'Shipment'},
