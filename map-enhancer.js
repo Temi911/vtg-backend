@@ -199,6 +199,9 @@
       #mapDrawer .atlasLiveBox b{font-size:8px;letter-spacing:.12em;color:#ff9a9f}
       #mapDrawer .atlasLiveBox span{font-size:11px;color:#eef3f5;font-weight:900}
       #mapDrawer .atlasLiveBox small{font-size:8px;color:#aebbc2;line-height:1.5}
+      #mapDrawer .atlasLiveBox.stale{border-color:rgba(240,198,107,.3);background:rgba(240,198,107,.06)}
+      #mapDrawer .atlasLiveBox.unavailable{border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.025)}
+      #mapDrawer .atlasLiveBox.unavailable b{color:#aebbc2}
       #mapDrawer .atlasUnifiedStep.stage-finance{border-left:3px solid #8aa7ff}
       #mapDrawer .atlasUnifiedStep.stage-logistics{border-left:3px solid #f0c66b}
       #mapDrawer .atlasUnifiedStep.stage-customs{border-left:3px solid #d71920}
@@ -641,7 +644,7 @@ function atlasTimelinePoint(t,s){
             <button type="button" data-atlas-stage="inspection">Inspection</button>
             <button type="button" data-atlas-stage="delivery">Delivery</button>
           </div>
-          ${s.liveTracking?.available ? `<div class="atlasLiveBox"><b>LIVE VESSEL POSITION</b><span>${esc(String(s.liveTracking.latitude ?? "—"))}, ${esc(String(s.liveTracking.longitude ?? "—"))}</span><small>${s.liveTracking.speedKnots != null ? esc(String(s.liveTracking.speedKnots))+" kn" : "Speed unavailable"}${s.liveTracking.nextPort ? " • Next: "+esc(s.liveTracking.nextPort) : ""}${s.liveTracking.eta ? " • ETA: "+esc(new Date(s.liveTracking.eta).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})) : ""}</small></div>` : ""}
+          <div class="atlasLiveBox ${s.liveTracking?.available ? (liveTrackingState(s.liveTracking).state==='stale'?'stale':'') : 'unavailable'}"><b>VESSEL TRACKING <span class="atlasLiveFreshness">${esc(s.liveTracking?.available ? liveTrackingState(s.liveTracking).label : 'Unavailable')}</span></b><span>${s.liveTracking?.available ? esc(String(s.liveTracking.latitude ?? "—"))+', '+esc(String(s.liveTracking.longitude ?? "—")) : 'Live vessel position unavailable'}</span><small>${s.liveTracking?.available ? ((s.liveTracking.speedKnots != null ? esc(String(s.liveTracking.speedKnots))+" kn" : "Speed unavailable")+(s.liveTracking.course != null ? " • Course "+esc(String(s.liveTracking.course))+"°" : "")+(s.liveTracking.nextPort ? " • Next: "+esc(s.liveTracking.nextPort) : "")+(s.liveTracking.eta ? " • ETA: "+esc(new Date(s.liveTracking.eta).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})) : "")) : 'The shipment map will continue using its latest operational position.'}</small></div>
           <div class="atlasStats">
             <div class="atlasStat"><small>Progress</small><b>${esc(String(s.percentComplete ?? 0))}%</b></div>
             <div class="atlasStat"><small>Vessel</small><b>${esc(vessel.name||'Not assigned')}</b></div>
