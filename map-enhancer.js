@@ -300,32 +300,6 @@
       const panel=qs(doc,'#vtgAtlasInfo');
       panel.classList.add('open');
       panel.innerHTML='<div class="atlasHero"><div class="atlasLoading">Loading shipment intelligence…</div><button class="atlasInfoClose" id="atlasInfoClose">×</button></div><div class="atlasInfoBody"><div class="atlasLoading">Loading shipment details…</div></div>';
-      const mediaHost = panel.querySelector('.atlasInfoBody');
-      if (mediaHost) {
-        const origin = s.originPort || s.origin_port || 'Origin port';
-        const destination = s.destinationPort || s.destination_port || 'Destination port';
-        const vesselName = vessel.name || s.carrier || 'Container vessel';
-        mediaHost.insertAdjacentHTML('beforeend', '<div class="atlasSectionTitle atlasMediaTitle">Trade media</div><div class="atlasMedia"><div class="atlasMediaGrid"><article class="atlasMediaCard"><img id="atlasMediaOrigin" alt="'+esc(origin)+' port"><div><b>Origin</b><small>'+esc(origin)+'</small></div></article><article class="atlasMediaCard"><img id="atlasMediaVessel" alt="'+esc(vesselName)+' vessel"><div><b>Vessel / cargo</b><small>'+esc(vesselName)+'</small></div></article><article class="atlasMediaCard"><img id="atlasMediaDestination" alt="'+esc(destination)+' port"><div><b>Destination</b><small>'+esc(destination)+'</small></div></article><article class="atlasMediaCard"><img id="atlasMediaRoute" alt="International shipping route"><div><b>Trade corridor</b><small>Africa ↔ China / South Korea</small></div></article></div><div class="atlasMediaStatus" id="atlasMediaStatus">Loading real trade imagery…</div></div>');
-        const hero = panel.querySelector('#atlasShipmentHeroImage');
-        const fallback = 'https://images.unsplash.com/photo-1606185540834-d6e7483ee1a4?q=85&w=1400&auto=format&fit=crop';
-        if (hero && !hero.getAttribute('src')) hero.src = fallback;
-        Promise.all([
-          getTradeImage(origin + ' container port terminal'),
-          getTradeImage(vesselName + ' container ship vessel'),
-          getTradeImage(destination + ' container port terminal'),
-          getTradeImage((origin + ' ' + destination + ' container shipping trade route').trim())
-        ]).then(([a,b,c,d]) => {
-          const urls = [
-            ['#atlasMediaOrigin',a],['#atlasMediaVessel',b],['#atlasMediaDestination',c],['#atlasMediaRoute',d]
-          ];
-          let count=0;
-          urls.forEach(([sel,url])=>{ const el=panel.querySelector(sel); if(el && url){el.src=url; count++;} });
-          const statusEl=panel.querySelector('#atlasMediaStatus');
-          if(statusEl) statusEl.textContent = count ? count+' real trade images loaded from public geographic/media sources.' : 'Trade imagery is temporarily unavailable; shipment data remains live.';
-          if(hero && b) hero.src=b;
-        });
-      }
-      qs(doc,'#atlasInfoClose').onclick=()=>panel.classList.remove('open');
       const p=s.journey?.current || s.routePoints?.[0];
       if(p) map.flyTo({center:[Number(p.lng),Number(p.lat)],zoom:5.2,duration:1000});
       const vessel=s.vessel||{};
@@ -361,6 +335,21 @@
           <div class="atlasDescription">${esc(String(s.delivery?.status||'pending').replace(/_/g,' '))}${s.delivery?.recipientName?' • Recipient: '+esc(s.delivery.recipientName):''}${s.delivery?.proofAttached?' • Proof of delivery attached':''}${s.delivery?.confirmedAt?' • '+esc(new Date(s.delivery.confirmedAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):''}</div>
           <div class="atlasActions"><button class="atlasAction primary" id="atlasOpenShipment">Open shipment</button><button class="atlasAction" id="atlasOpenOrder">Open order</button></div>
         </div>`;
+      const mediaStatus=qs(doc,'#atlasMediaStatus');
+      Promise.all([
+        getTradeImage(origin + ' container port terminal'),
+        getTradeImage(vesselName + ' container ship vessel'),
+        getTradeImage(destination + ' container port terminal'),
+        getTradeImage((origin + ' ' + destination + ' container shipping trade route').trim())
+      ]).then(([a,b,c,d])=>{
+        const urls=[['#atlasMediaOrigin',a],['#atlasMediaVessel',b],['#atlasMediaDestination',c],['#atlasMediaRoute',d]];
+        let count=0;
+        urls.forEach(([sel,url])=>{const el=panel.querySelector(sel);if(el&&url){el.src=url;el.onerror=()=>el.removeAttribute('src');count++;}});
+        const hero=panel.querySelector('#atlasShipmentHeroImage');
+        const placeholder=panel.querySelector('#atlasShipmentHeroPlaceholder');
+        if(hero&&b){hero.src=b;hero.onload=()=>{hero.style.display='block';if(placeholder)placeholder.style.display='none';};hero.onerror=()=>{hero.removeAttribute('src');hero.style.display='none';if(placeholder)placeholder.style.display='grid';};}
+        if(mediaStatus) mediaStatus.textContent=count?count+' real trade images loaded from public geographic/media sources.':'No public trade image matched this shipment yet; live shipment data remains available.';
+      }).catch(()=>{if(mediaStatus)mediaStatus.textContent='Trade imagery is temporarily unavailable; live shipment data remains available.';});
       qs(doc,'#atlasInfoClose').onclick=()=>panel.classList.remove('open');
       qs(doc,'#atlasOpenShipment').onclick=()=>{ window.location.href='/trade-os.html?shipment='+encodeURIComponent(s.id); };
       qs(doc,'#atlasOpenOrder').onclick=()=>{ window.location.href='/trade-os.html?order='+encodeURIComponent(s.orderId); };
