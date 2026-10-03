@@ -1048,6 +1048,13 @@ function atlasTimelinePoint(t,s){
       if(b.dataset.filter) filterType=b.dataset.filter;
       if(b.dataset.region) {filterRegion=b.dataset.region; filterType='all';}
       if(b.dataset.filter==='all') filterRegion='all';
+      if(b.dataset.filter || b.dataset.region){
+        shipmentStatusFilter='all';
+        shipmentRoutesVisible=false;
+        qs(doc,'#atlasShipmentsToggle')?.classList.remove('active');
+        qsa(doc,'[data-shipment-status]').forEach(x=>x.classList.toggle('active',x.dataset.shipmentStatus==='all'));
+        renderShipmentRoutes();
+      }
       renderMarkers();
     });
     qs(doc,'#atlasShipmentsToggle').onclick=()=>{
