@@ -88,6 +88,10 @@
       #mapDrawer .atlasSearch input::placeholder{color:#8c9aa5}
       #mapDrawer .atlasSearch button{border:0;border-radius:10px;background:#d71920;color:#fff;padding:8px 11px;font-size:9px;font-weight:900;cursor:pointer}
       #mapDrawer .atlasChips{pointer-events:auto;display:flex;gap:7px;flex-wrap:wrap}
+      #mapDrawer .atlasOpsSummary{pointer-events:auto;display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 2px}
+      #mapDrawer .atlasOpsPill{border:1px solid rgba(255,255,255,.13);background:rgba(5,9,14,.68);color:#dce4ea;border-radius:999px;padding:6px 9px;font-size:7px;font-weight:900;cursor:pointer;backdrop-filter:blur(14px)}
+      #mapDrawer .atlasOpsPill strong{font-size:9px;margin-right:3px;color:#fff}
+      #mapDrawer .atlasOpsPill.active{border-color:#e05c4c;background:rgba(215,25,32,.16);color:#fff}
       #mapDrawer .atlasRoleScope{margin-left:7px;padding:3px 7px;border:1px solid rgba(255,255,255,.12);border-radius:999px;color:#cbd5dc;font-size:7px;letter-spacing:.04em}
       #mapDrawer .atlasNextBox{margin:8px 0 12px;padding:10px 11px;border:1px solid rgba(240,198,107,.22);border-radius:12px;background:rgba(240,198,107,.06);display:grid;gap:3px}
       #mapDrawer .atlasNextBox b{font-size:7px;letter-spacing:.1em;color:#d7b55e}
@@ -212,6 +216,7 @@
           </div>
           <div class="atlasLive"><i></i> LIVE TRADE ATLAS <span id="atlasRoleScope" class="atlasRoleScope">Loading workspace…</span></div>
           <div class="atlasCount" id="vtgAtlasCount">Loading locations…</div>
+          <div class="atlasOpsSummary" id="atlasOpsSummary" aria-label="Shipment operational summary"></div>
           <div class="atlasWeather"><b id="atlasWeatherTitle">Trade conditions</b><small id="atlasWeatherText">Monitoring global trade corridors and shipment activity</small></div>
           <div class="atlasInfo" id="vtgAtlasInfo"></div>
           <div class="atlasLegend"><span class="legendDot port"></span> Seaport <span style="margin-left:7px" class="legendDot air"></span> Airport <span style="margin-left:8px">Click any location for details</span></div>
@@ -423,6 +428,40 @@
       qs(doc,'#atlasOpenOrder').onclick=()=>{ window.location.href='/trade-os.html?order='+encodeURIComponent(s.orderId); };
     }
 
+    function operationalCounts(){
+      const active=shipments.filter(s=>s.status!=='cancelled');
+      return {
+        all:active.length,
+        in_transit:active.filter(s=>s.status==='in_transit'||s.status==='shipped').length,
+        arrived:active.filter(s=>s.status==='arrived').length,
+        customs:active.filter(s=>{const x=s.customs?.status;return x&&x!=='not_started'&&!['cleared','released'].includes(x)}).length,
+        attention:active.filter(s=>s.status==='attention'||s.status==='disputed').length,
+        delivered:active.filter(s=>s.status==='delivered'||s.delivery?.status==='confirmed').length
+      };
+    }
+    function renderOperationalSummary(){
+      const box=qs(doc,'#atlasOpsSummary');
+      if(!box)return;
+      const n=operationalCounts();
+      const pills=[
+        ['all','ALL',n.all],['in_transit','IN TRANSIT',n.in_transit],['arrived','AT PORT',n.arrived],
+        ['customs','CUSTOMS',n.customs],['attention','ATTENTION',n.attention],['delivered','DELIVERED',n.delivered]
+      ];
+      box.innerHTML=pills.map(([key,label,count])=>'<button type="button" class="atlasOpsPill '+(shipmentStatusFilter===key?'active':'')+'" data-op-status="'+key+'"><strong>'+count+'</strong>'+label+'</button>').join('');
+      qsa(box,'[data-op-status]').forEach(btn=>btn.onclick=()=>{
+        const key=btn.dataset.opStatus;
+        shipmentStatusFilter=key==='customs'?'customs':key;
+        shipmentRoutesVisible=true;
+        qs(doc,'#atlasShipmentsToggle')?.classList.add('active');
+        qsa(doc,'[data-shipment-status]').forEach(x=>x.classList.remove('active'));
+        const statusBtn=qs(doc,'[data-shipment-status="'+(key==='all'?'all':key)+'"]');
+        if(statusBtn)statusBtn.classList.add('active');
+        renderOperationalSummary();
+        renderShipmentRoutes();
+        renderMarkers();
+      });
+    }
+
     function atlasRoleScope(){
       const path=String(location.pathname||'').toLowerCase();
       let role='';
@@ -447,6 +486,7 @@
         }
         const d=await r.json();
         shipments=Array.isArray(d.shipments)?d.shipments:[];
+        renderOperationalSummary();
         renderShipmentRoutes();
         const selected = selectedShipmentId && shipments.find(s=>String(s.id)===String(selectedShipmentId));
         if (selected && qs(doc,'#vtgAtlasInfo')?.classList.contains('open')) {
