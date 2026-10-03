@@ -103,6 +103,10 @@
       #mapDrawer .atlasStat b{display:block;margin-top:4px;color:#eef3f5;font-size:10px}
       #mapDrawer .atlasSectionTitle{font-size:8px;text-transform:uppercase;letter-spacing:.13em;color:#e05c63;font-weight:900;margin:14px 0 7px}
       #mapDrawer .atlasDescription{font-size:10px;line-height:1.6;color:#b7c3ca}
+      #mapDrawer .atlasLiveBox{display:grid;gap:4px;padding:10px;border:1px solid rgba(215,25,32,.28);border-radius:12px;background:rgba(215,25,32,.07);margin-bottom:10px}
+      #mapDrawer .atlasLiveBox b{font-size:8px;letter-spacing:.12em;color:#ff9a9f}
+      #mapDrawer .atlasLiveBox span{font-size:11px;color:#eef3f5;font-weight:900}
+      #mapDrawer .atlasLiveBox small{font-size:8px;color:#aebbc2;line-height:1.5}
       #mapDrawer .atlasTimeline{display:grid;gap:0;margin-top:6px}
       #mapDrawer .atlasStep{position:relative;display:grid;grid-template-columns:18px 1fr;gap:9px;padding:0 0 13px}
       #mapDrawer .atlasStep:not(:last-child):before{content:"";position:absolute;left:8px;top:16px;bottom:0;width:1px;background:rgba(255,255,255,.13)}
@@ -281,6 +285,7 @@
           <button class="atlasInfoClose" id="atlasInfoClose">×</button>
         </div>
         <div class="atlasInfoBody">
+          ${s.liveTracking?.available ? `<div class="atlasLiveBox"><b>LIVE VESSEL POSITION</b><span>${esc(String(s.liveTracking.latitude ?? "—"))}, ${esc(String(s.liveTracking.longitude ?? "—"))}</span><small>${s.liveTracking.speedKnots != null ? esc(String(s.liveTracking.speedKnots))+" kn" : "Speed unavailable"}${s.liveTracking.nextPort ? " • Next: "+esc(s.liveTracking.nextPort) : ""}${s.liveTracking.eta ? " • ETA: "+esc(new Date(s.liveTracking.eta).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})) : ""}</small></div>` : ""}
           <div class="atlasStats">
             <div class="atlasStat"><small>Progress</small><b>${esc(String(s.percentComplete ?? 0))}%</b></div>
             <div class="atlasStat"><small>Vessel</small><b>${esc(vessel.name||'Not assigned')}</b></div>
