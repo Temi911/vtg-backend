@@ -209,6 +209,21 @@ const listMine = asyncHandler(async (req, res) => {
   res.json({ paymentRequests: rows });
 });
 
+// GET /payments/ledger — authenticated finance ledger view
+const ledger = asyncHandler(async (req, res) => {
+  const { rows } = await query(
+    `SELECT l.id,l.payment_id,l.order_id,l.entry_type,l.amount,l.currency,l.provider_ref,l.recorded_by,l.note,l.created_at,
+            p.method,p.status AS payment_status,p.initiated_by,o.reference AS order_reference
+       FROM payment_settlement_ledger l
+       JOIN payment_requests p ON p.id=l.payment_id
+       LEFT JOIN orders o ON o.id=l.order_id
+      WHERE l.recorded_by=$1 OR p.initiated_by=$1 OR o.bank_id=$1
+      ORDER BY l.created_at DESC LIMIT 100`,
+    [req.user.id]
+  );
+  res.json({ ledger: rows });
+});
+
 // GET /payments/forex-rates
 const forexRates = asyncHandler(async (req, res) => {
   const { rows } = await query('SELECT base_currency, quote_currency, rate, updated_at FROM forex_rates');
@@ -239,4 +254,4 @@ const compliance = asyncHandler(async (req, res) => {
   res.json({ compliance: rows });
 });
 
-module.exports = { initiate, listMine, getReconciliation, updateStatus, forexRates, convert, compliance };
+module.exports = { initiate, listMine, getReconciliation, updateStatus, ledger, forexRates, convert, compliance };
