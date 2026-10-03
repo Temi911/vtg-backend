@@ -412,7 +412,7 @@
           </div>
           <div class="atlasSectionTitle">Unified trade timeline</div>
           ${s.timeline?.length ? '<div class="atlasUnifiedTimeline">'+s.timeline.map((t,i)=>'<div class="atlasUnifiedStep '+esc(t.status||'pending')+'"><span class="atlasUnifiedDot"></span><div><b>'+esc(t.label)+'</b><small>'+esc(t.detail||'')+(t.time?' • '+esc(new Date(t.time).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):'')+'</small></div><em>'+esc(String(t.stage||'').replace(/_/g,' '))+'</em></div>').join('')+'</div>' : '<div class="atlasDescription">No combined finance, logistics, customs, inspection or delivery milestones have been recorded yet.</div>'}
-          ${anchor}          <div class="atlasSectionTitle">Operational timeline</div>
+                    <div class="atlasSectionTitle">Operational timeline</div>
           ${s.liveTracking?.nextPort || s.journey?.next ? '<div class="atlasNextBox"><b>NEXT OPERATIONAL POINT</b><span>'+esc(s.liveTracking?.nextPort || s.journey?.next?.name || destination)+'</span><small>'+(s.liveTracking?.eta ? 'ETA '+esc(new Date(s.liveTracking.eta).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})) : 'Next recorded milestone in the shipment journey')+'</small></div>' : ''}
           <div class="atlasTimeline">${rows.map((r,i)=>'<button type="button" class="atlasStep '+esc(r.status)+'" data-atlas-event-index="'+i+'"><span class="atlasStepDot"></span><div><b>'+esc(r.label)+'</b><small>'+esc(r.detail)+(r.time?' • '+esc(r.time):'')+'</small></div></button>').join('')}</div>
           <div class="atlasSectionTitle">Trade parties</div>
