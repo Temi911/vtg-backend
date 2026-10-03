@@ -36,15 +36,17 @@
   async function loadLedger(){
     const box=document.getElementById('atc-ledger');
     if(!box)return;
+    const q=new URLSearchParams();
+    const get=id=>document.getElementById(id)?.value?.trim()||'';
+    [['atc-ledger-type','entryType'],['atc-ledger-method','method'],['atc-ledger-currency','currency'],['atc-ledger-from','from'],['atc-ledger-to','to'],['atc-ledger-order','orderReference']].forEach(([id,key])=>{const v=get(id);if(v)q.set(key,v)});
     try{
-      const r=await fetch('/api/payments/ledger',{headers:{Authorization:'Bearer '+token}});
+      const r=await fetch('/api/payments/ledger?'+q.toString(),{headers:{Authorization:'Bearer '+token}});
       const j=await r.json();
       if(!r.ok)throw Error(j.error?.message||j.message||'Unable to load settlement ledger');
-      const rows=j.ledger||[];
-      const totals=rows.reduce((a,x)=>{const n=Number(x.amount||0);const k=x.entry_type==='refund'?'refund':'settlement';a[k][x.currency]=(a[k][x.currency]||0)+n;return a},{settlement:{},refund:{}});
+      const rows=j.ledger||[], summary=j.summary||{settlements:{},refunds:{}};
       const sum=o=>Object.entries(o).map(([c,n])=>esc(c)+' '+fmt(n)).join(' · ')||'0';
-      box.innerHTML='<div class="atc-ledger-summary"><span><b>Settlements</b> '+sum(totals.settlement)+'</span><span><b>Refunds</b> '+sum(totals.refund)+'</span></div>'+
-        (rows.length?rows.map(x=>'<div class="atc-ledger-row"><div><b>'+esc(x.order_reference||'Unlinked payment')+'</b><small>'+esc(String(x.method||'').toUpperCase())+' · '+esc(x.provider_ref||'No provider ref')+' · '+new Date(x.created_at).toLocaleString()+'</small></div><span class="atc-badge">'+esc(x.entry_type)+'</span><b>'+esc(x.currency)+' '+fmt(x.amount)+'</b></div>').join(''):'<div class="atc-empty">No settlement or refund entries recorded.</div>')+
+      box.innerHTML='<div class="atc-ledger-summary"><span><b>Settlements</b> '+sum(summary.settlements||{})+'</span><span><b>Refunds</b> '+sum(summary.refunds||{})+'</span><span><b>Entries</b> '+rows.length+'</span></div>'+
+        (rows.length?rows.map(x=>'<div class="atc-ledger-row"><div><b>'+esc(x.order_reference||'Unlinked payment')+'</b><small>'+esc(String(x.method||'').toUpperCase())+' · '+esc(x.provider_ref||'No provider ref')+' · '+new Date(x.created_at).toLocaleString()+'</small></div><span class="atc-badge">'+esc(x.entry_type)+'</span><b>'+esc(x.currency)+' '+fmt(x.amount)+'</b></div>').join(''):'<div class="atc-empty">No ledger entries match these filters.</div>')+
         '<p class="atc-provider-note">Internal VTG reconciliation record only. This ledger does not prove that external funds moved or settled through a licensed provider.</p>';
     }catch(e){box.innerHTML='<div class="atc-empty">'+esc(e.message)+'</div>'}
   }
