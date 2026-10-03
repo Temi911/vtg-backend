@@ -118,7 +118,14 @@ const updateStatus = asyncHandler(async (req, res) => {
 });
 
 const listMine = asyncHandler(async (req, res) => {
-  const { rows } = await query('SELECT * FROM payment_requests WHERE initiated_by = $1 ORDER BY created_at DESC', [req.user.id]);
+  const { rows } = await query(
+    `SELECT p.*, o.reference AS order_reference, o.status AS order_status
+       FROM payment_requests p
+       LEFT JOIN orders o ON o.id = p.order_id
+      WHERE p.initiated_by = $1
+      ORDER BY p.created_at DESC`,
+    [req.user.id]
+  );
   res.json({ paymentRequests: rows });
 });
 
