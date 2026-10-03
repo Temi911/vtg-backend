@@ -48,6 +48,22 @@
     } catch (_) { return ''; }
   }
 
+  async function getTradeImage(query) {
+    try {
+      const q = encodeURIComponent(String(query || '').trim());
+      if (!q) return '';
+      const url = 'https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=' +
+        q + '&gsrnamespace=6&gsrlimit=8&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=1200&format=json&origin=*';
+      const r = await fetch(url, {headers:{Accept:'application/json'}});
+      const d = await r.json();
+      const pages = Object.values(d?.query?.pages || {});
+      const usable = pages.find(p => p.imageinfo?.[0]?.thumburl && /.(jpe?g|png|webp)$/i.test(p.imageinfo[0].thumburl))
+        || pages.find(p => p.imageinfo?.[0]?.thumburl)
+        || pages.find(p => p.imageinfo?.[0]?.url);
+      return usable?.imageinfo?.[0]?.thumburl || usable?.imageinfo?.[0]?.url || '';
+    } catch (_) { return ''; }
+  }
+
   function run(doc) {
     if (!doc || doc.getElementById('vtgAtlasPremiumStyle')) return;
     const drawer = doc.getElementById('mapDrawer');
@@ -134,6 +150,15 @@
       #mapDrawer .atlasWeather small{color:#8f9da7}
       @keyframes vtgLive{50%{opacity:.35;transform:scale(.75)}}
       #mapDrawer .atlasEmpty{padding:24px;color:#9eabb4;font-size:9px}
+      #mapDrawer .atlasMedia{margin-top:14px}
+      #mapDrawer .atlasMediaGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+      #mapDrawer .atlasMediaCard{position:relative;min-height:116px;border:1px solid rgba(255,255,255,.10);border-radius:13px;overflow:hidden;background:#0c131a}
+      #mapDrawer .atlasMediaCard img{width:100%;height:116px;object-fit:cover;display:block;opacity:.9}
+      #mapDrawer .atlasMediaCard:after{content:"";position:absolute;inset:35% 0 0;background:linear-gradient(transparent,rgba(0,0,0,.88))}
+      #mapDrawer .atlasMediaCard div{position:absolute;left:9px;right:9px;bottom:8px;z-index:2}
+      #mapDrawer .atlasMediaCard b{display:block;color:#fff;font-size:8px}
+      #mapDrawer .atlasMediaCard small{display:block;color:#c2cbd0;font-size:7px;margin-top:2px}
+      #mapDrawer .atlasMediaStatus{color:#7f8e99;font-size:7px;margin-top:7px}
       @media(max-width:1000px){#mapDrawer .atlasChips{display:none}#mapDrawer .atlasTop{left:14px;right:70px}#mapDrawer .atlasInfo{right:14px;top:auto;bottom:14px;max-height:64vh;width:min(430px,calc(100vw - 28px))}#mapDrawer .atlasLegend{left:14px;bottom:78px}#mapDrawer .atlasMode{bottom:14px}}
       @media(max-width:620px){#mapDrawer .atlasBrand{display:none}#mapDrawer .atlasSearch{max-width:none}#mapDrawer .atlasSearch button{padding:8px}#mapDrawer .atlasInfo{max-height:68vh}.atlasHero{height:150px!important}#mapDrawer .atlasStats{grid-template-columns:1fr 1fr}#mapDrawer .atlasMode button{padding:8px 7px}}
     `;
@@ -275,6 +300,31 @@
       const panel=qs(doc,'#vtgAtlasInfo');
       panel.classList.add('open');
       panel.innerHTML='<div class="atlasHero"><div class="atlasLoading">Loading shipment intelligence…</div><button class="atlasInfoClose" id="atlasInfoClose">×</button></div><div class="atlasInfoBody"><div class="atlasLoading">Loading shipment details…</div></div>';
+      const mediaHost = panel.querySelector('.atlasInfoBody');
+      if (mediaHost) {
+        const origin = s.originPort || s.origin_port || 'Origin port';
+        const destination = s.destinationPort || s.destination_port || 'Destination port';
+        const vesselName = vessel.name || s.carrier || 'Container vessel';
+        mediaHost.insertAdjacentHTML('beforeend', '<div class="atlasSectionTitle atlasMediaTitle">Trade media</div><div class="atlasMedia"><div class="atlasMediaGrid"><article class="atlasMediaCard"><img id="atlasMediaOrigin" alt="'+esc(origin)+' port"><div><b>Origin</b><small>'+esc(origin)+'</small></div></article><article class="atlasMediaCard"><img id="atlasMediaVessel" alt="'+esc(vesselName)+' vessel"><div><b>Vessel / cargo</b><small>'+esc(vesselName)+'</small></div></article><article class="atlasMediaCard"><img id="atlasMediaDestination" alt="'+esc(destination)+' port"><div><b>Destination</b><small>'+esc(destination)+'</small></div></article><article class="atlasMediaCard"><img id="atlasMediaRoute" alt="International shipping route"><div><b>Trade corridor</b><small>Africa ↔ China / South Korea</small></div></article></div><div class="atlasMediaStatus" id="atlasMediaStatus">Loading real trade imagery…</div></div>');
+        const hero = panel.querySelector('#atlasShipmentHeroImage');
+        const fallback = 'https://images.unsplash.com/photo-1606185540834-d6e7483ee1a4?q=85&w=1400&auto=format&fit=crop';
+        if (hero && !hero.getAttribute('src')) hero.src = fallback;
+        Promise.all([
+          getTradeImage(origin + ' container port terminal'),
+          getTradeImage(vesselName + ' container ship vessel'),
+          getTradeImage(destination + ' container port terminal'),
+          getTradeImage((origin + ' ' + destination + ' container shipping trade route').trim())
+        ]).then(([a,b,c,d]) => {
+          const urls = [
+            ['#atlasMediaOrigin',a],['#atlasMediaVessel',b],['#atlasMediaDestination',c],['#atlasMediaRoute',d]
+          ];
+          let count=0;
+          urls.forEach(([sel,url])=>{ const el=panel.querySelector(sel); if(el && url){el.src=url; count++;} });
+          const statusEl=panel.querySelector('#atlasMediaStatus');
+          if(statusEl) statusEl.textContent = count ? count+' real trade images loaded from public geographic/media sources.' : 'Trade imagery is temporarily unavailable; shipment data remains live.';
+          if(hero && b) hero.src=b;
+        });
+      }
       qs(doc,'#atlasInfoClose').onclick=()=>panel.classList.remove('open');
       const p=s.journey?.current || s.routePoints?.[0];
       if(p) map.flyTo({center:[Number(p.lng),Number(p.lat)],zoom:5.2,duration:1000});
@@ -284,7 +334,7 @@
       const status=shipmentLabel(s.status);
       panel.innerHTML=`
         <div class="atlasHero">
-          <div style="height:100%;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,rgba(215,25,32,.35),transparent 55%);font-size:54px">🚢</div>
+          <img id="atlasShipmentHeroImage" src="https://images.unsplash.com/photo-1606185540834-d6e7483ee1a4?q=85&w=1400&auto=format&fit=crop" alt="Real container ship used for VTG shipment context" style="width:100%;height:100%;object-fit:cover;display:block;opacity:.82"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(4,7,11,.94))"></div>
           <div class="atlasHeroText"><span class="atlasType">🚢 Shipment • ${esc(status)}</span><h2>${esc(s.reference||'Shipment')}</h2><p>${esc(s.originPort||'Origin')} → ${esc(s.destinationPort||'Destination')}</p></div>
           <button class="atlasInfoClose" id="atlasInfoClose">×</button>
         </div>
