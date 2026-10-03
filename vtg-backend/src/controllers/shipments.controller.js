@@ -186,6 +186,8 @@ const audit = require('../services/audit.service');
 const createSchema = z.object({
   orderId: z.string().uuid(), containerNo: z.string().optional(), carrier: z.string().optional(),
   originPort: z.string().optional(), destinationPort: z.string().optional(),
+  vesselName: z.string().optional(), vesselImo: z.string().optional(), vesselMmsi: z.string().optional(),
+  voyageNo: z.string().optional(), trackingProvider: z.string().optional(),
 });
 
 const create = asyncHandler(async (req, res) => {
@@ -203,14 +205,50 @@ const create = asyncHandler(async (req, res) => {
   if (existing.rows[0]) throw new AppError('A shipment is already linked to this order', 409, 'SHIPMENT_EXISTS');
 
   const { rows } = await query(
-    `INSERT INTO shipments (order_id, container_no, carrier, origin_port, destination_port)
-     VALUES ($1,$2,$3,$4,COALESCE($5,'Tin Can Island, Lagos')) RETURNING *`,
-    [data.orderId, data.containerNo || null, data.carrier || null, data.originPort || null, data.destinationPort || null]
+    `INSERT INTO shipments (order_id, container_no, carrier, origin_port, destination_port, vessel_name, vessel_imo, vessel_mmsi, voyage_no, tracking_provider)
+     VALUES ($1,$2,$3,$4,COALESCE($5,'Tin Can Island, Lagos'),$6,$7,$8,$9,$10) RETURNING *`,
+    [data.orderId, data.containerNo || null, data.carrier || null, data.originPort || null, data.destinationPort || null,
+      data.vesselName || null, data.vesselImo || null, data.vesselMmsi || null, data.voyageNo || null, data.trackingProvider || null]
   );
   await audit.log(req.user.id, 'Shipment Created', `Shipment created for order ${data.orderId}`, req.ip);
   res.status(201).json({ shipment: rows[0] });
 });
 
+const vesselSchema = z.object({
+  vesselName: z.string().trim().min(1).optional(),
+  vesselImo: z.string().trim().min(1).optional(),
+  vesselMmsi: z.string().trim().min(1).optional(),
+  voyageNo: z.string().trim().min(1).optional(),
+  trackingProvider: z.string().trim().min(1).optional()
+}).refine(v => Object.values(v).some(Boolean), { message: 'At least one vessel/tracking field is required.' });
+
+const updateVessel = asyncHandler(async (req, res) => {
+  const data = vesselSchema.parse(req.body);
+  const shipmentRes = await query(
+    `SELECT s.id, o.supplier_id, o.buyer_id, o.bank_id, o.status AS order_status
+       FROM shipments s JOIN orders o ON o.id = s.order_id
+      WHERE s.id = $1 LIMIT 1`, [req.params.shipmentId]
+  );
+  const shipment = shipmentRes.rows[0];
+  if (!shipment) throw new AppError('Shipment not found', 404);
+  const allowed = req.user.role === 'admin' ||
+    (req.user.role === 'supplier' && shipment.supplier_id === req.user.id) ||
+    (req.user.role === 'bank' && shipment.bank_id === req.user.id);
+  if (!allowed) throw new AppError('You are not assigned to this shipment', 403, 'FORBIDDEN');
+  if (['delivered','cancelled'].includes(shipment.order_status)) {
+    throw new AppError('Shipment cannot be changed after the order is closed', 409, 'ORDER_CLOSED');
+  }
+  const result = await query(
+    `UPDATE shipments SET
+       vessel_name = COALESCE($1, vessel_name), vessel_imo = COALESCE($2, vessel_imo),
+       vessel_mmsi = COALESCE($3, vessel_mmsi), voyage_no = COALESCE($4, voyage_no),
+       tracking_provider = COALESCE($5, tracking_provider)
+     WHERE id = $6 RETURNING *`,
+    [data.vesselName || null, data.vesselImo || null, data.vesselMmsi || null, data.voyageNo || null, data.trackingProvider || null, req.params.shipmentId]
+  );
+  await audit.log(req.user.id, 'Vessel Tracking Updated', `Vessel metadata updated for shipment ${req.params.shipmentId}`, req.ip);
+  res.json({ shipment: result.rows[0] });
+});
 const getForOrder = asyncHandler(async (req, res) => {
   const accessRes = await query(
     'SELECT id, buyer_id, supplier_id, bank_id FROM orders WHERE id = $1 LIMIT 1',
@@ -324,4 +362,4 @@ const addEvent = asyncHandler(async (req, res) => {
   res.status(201).json({ event: result });
 });
 
-module.exports = { create, getForOrder, addEvent, listForAtlas, getLiveTracking };
+module.exports = { create, getForOrder, addEvent, listForAtlas, getLiveTracking, updateVessel };
