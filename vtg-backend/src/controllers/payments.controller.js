@@ -64,6 +64,40 @@ const initiate = asyncHandler(async (req, res) => {
   res.status(201).json({ paymentRequest: rows[0] });
 });
 
+const updateStatus = asyncHandler(async (req, res) => {
+  const data = z.object({
+    status: z.enum(['processing','completed','failed','refunded']),
+  }).parse(req.body);
+  const { rows: currentRows } = await query(
+    `SELECT p.*, o.buyer_id, o.supplier_id, o.bank_id, o.reference AS order_reference
+     FROM payment_requests p
+     LEFT JOIN orders o ON o.id = p.order_id
+     WHERE p.id = $1`,
+    [req.params.id]
+  );
+  const current = currentRows[0];
+  if (!current) throw new AppError('Payment request not found', 404, 'PAYMENT_NOT_FOUND');
+  if (req.user.role !== 'admin' && current.bank_id !== req.user.id) {
+    throw new AppError('Only the assigned bank or an administrator can update this payment', 403, 'FORBIDDEN');
+  }
+  const allowed = {
+    pending: ['processing','failed'],
+    processing: ['completed','failed'],
+    completed: ['refunded'],
+    failed: [],
+    refunded: [],
+  };
+  if (!allowed[current.status]?.includes(data.status)) {
+    throw new AppError(`Invalid payment status transition: ${current.status} → ${data.status}`, 409, 'INVALID_PAYMENT_TRANSITION');
+  }
+  const { rows } = await query(
+    'UPDATE payment_requests SET status=$1, updated_at=now() WHERE id=$2 RETURNING *',
+    [data.status, req.params.id]
+  );
+  await audit.log(req.user.id, 'Payment Status Updated', `${current.order_reference || 'Unlinked payment'} — ${current.provider_ref} → ${data.status}`, req.ip);
+  res.json({ paymentRequest: rows[0] });
+});
+
 const listMine = asyncHandler(async (req, res) => {
   const { rows } = await query('SELECT * FROM payment_requests WHERE initiated_by = $1 ORDER BY created_at DESC', [req.user.id]);
   res.json({ paymentRequests: rows });
