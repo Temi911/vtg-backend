@@ -168,7 +168,8 @@
       #mapDrawer .atlasLiveBox b{font-size:8px;letter-spacing:.12em;color:#ff9a9f}
       #mapDrawer .atlasLiveBox span{font-size:11px;color:#eef3f5;font-weight:900}
       #mapDrawer .atlasLiveBox small{font-size:8px;color:#aebbc2;line-height:1.5}
-      #mapDrawer .atlasTimeline{display:grid;gap:0;margin-top:6px}
+      #mapDrawer .atlasUnifiedTimeline{display:grid;gap:8px;margin:8px 0 16px}.atlasUnifiedStep{display:grid;grid-template-columns:12px 1fr auto;gap:9px;align-items:center;padding:10px 11px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.025)}.atlasUnifiedStep b{display:block;font-size:12px}.atlasUnifiedStep small{display:block;margin-top:3px;color:#aeb9c2;font-size:10px;line-height:1.35}.atlasUnifiedStep em{font-style:normal;text-transform:capitalize;font-size:9px;color:#9da9b2}.atlasUnifiedDot{width:8px;height:8px;border-radius:50%;background:#7d8790}.atlasUnifiedStep.done .atlasUnifiedDot{background:#49c98b}.atlasUnifiedStep.active .atlasUnifiedDot{background:#e3b341;box-shadow:0 0 0 4px rgba(227,179,65,.12)}.atlasUnifiedStep.attention .atlasUnifiedDot,.atlasUnifiedStep.disputed .atlasUnifiedDot{background:#e14b55}
+.atlasTimeline{display:grid;gap:0;margin-top:6px}
       #mapDrawer .atlasStep{position:relative;display:grid;grid-template-columns:18px 1fr;gap:9px;padding:0 0 13px}
       #mapDrawer .atlasStep:not(:last-child):before{content:"";position:absolute;left:8px;top:16px;bottom:0;width:1px;background:rgba(255,255,255,.13)}
       #mapDrawer .atlasStepDot{width:17px;height:17px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:#10161c;z-index:2;box-shadow:0 0 0 3px rgba(255,255,255,.025)}
@@ -409,7 +410,9 @@
             ${vessel.name ? 'Vessel: '+esc(vessel.name)+(vessel.imo?' • IMO '+esc(vessel.imo):'')+'<br>' : ''}
             ${esc(s.originPort||'Origin not recorded')} → ${esc(s.destinationPort||'Destination not recorded')}
           </div>
-          <div class="atlasSectionTitle">Operational timeline</div>
+          <div class="atlasSectionTitle">Unified trade timeline</div>
+          ${s.timeline?.length ? '<div class="atlasUnifiedTimeline">'+s.timeline.map((t,i)=>'<div class="atlasUnifiedStep '+esc(t.status||'pending')+'"><span class="atlasUnifiedDot"></span><div><b>'+esc(t.label)+'</b><small>'+esc(t.detail||'')+(t.time?' • '+esc(new Date(t.time).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):'')+'</small></div><em>'+esc(String(t.stage||'').replace(/_/g,' '))+'</em></div>').join('')+'</div>' : '<div class="atlasDescription">No combined finance, logistics, customs, inspection or delivery milestones have been recorded yet.</div>'}
+          ${anchor}          <div class="atlasSectionTitle">Operational timeline</div>
           ${s.liveTracking?.nextPort || s.journey?.next ? '<div class="atlasNextBox"><b>NEXT OPERATIONAL POINT</b><span>'+esc(s.liveTracking?.nextPort || s.journey?.next?.name || destination)+'</span><small>'+(s.liveTracking?.eta ? 'ETA '+esc(new Date(s.liveTracking.eta).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})) : 'Next recorded milestone in the shipment journey')+'</small></div>' : ''}
           <div class="atlasTimeline">${rows.map((r,i)=>'<button type="button" class="atlasStep '+esc(r.status)+'" data-atlas-event-index="'+i+'"><span class="atlasStepDot"></span><div><b>'+esc(r.label)+'</b><small>'+esc(r.detail)+(r.time?' • '+esc(r.time):'')+'</small></div></button>').join('')}</div>
           <div class="atlasSectionTitle">Trade parties</div>
