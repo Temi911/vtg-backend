@@ -168,6 +168,10 @@
       #mapDrawer .legendDot{width:8px;height:8px;border-radius:50%;display:inline-block;box-shadow:0 0 12px currentColor}
       #mapDrawer .legendDot.port{background:#f0c66b;color:#f0c66b}
       #mapDrawer .legendDot.air{background:#66d7df;color:#66d7df}
+      #mapDrawer .legendDot.ship{background:#e05c4c;color:#e05c4c}
+      #mapDrawer .legendDot.live{background:#fff;color:#fff}
+      #mapDrawer .legendDot.next{background:#f0c66b;color:#f0c66b}
+      #mapDrawer .legendDot.destination{background:#65c987;color:#65c987}
       #mapDrawer .atlasControls{position:absolute;right:22px;bottom:22px;z-index:15;display:grid;gap:7px}
       #mapDrawer .atlasControl{width:42px;height:42px;border:1px solid rgba(255,255,255,.14);border-radius:13px;background:rgba(5,9,14,.7);backdrop-filter:blur(16px);color:#e8edf0;font-weight:900;cursor:pointer}
       #mapDrawer .atlasControl:hover{border-color:#d71920;color:#ffb5b8}
@@ -282,7 +286,14 @@
           <div class="atlasShipmentList" id="atlasShipmentList" aria-label="Shipment operations"></div>
           <div class="atlasWeather"><b id="atlasWeatherTitle">Trade conditions</b><small id="atlasWeatherText">Monitoring global trade corridors and shipment activity</small></div>
           <div class="atlasInfo" id="vtgAtlasInfo"></div>
-          <div class="atlasLegend"><span class="legendDot port"></span> Seaport <span style="margin-left:7px" class="legendDot air"></span> Airport <span style="margin-left:8px">Click any location for details</span></div>
+          <div class="atlasLegend" aria-label="Trade Atlas map legend">
+            <span class="legendDot port"></span> Seaport
+            <span style="margin-left:7px" class="legendDot air"></span> Airport
+            <span style="margin-left:7px" class="legendDot ship"></span> Shipment
+            <span style="margin-left:7px" class="legendDot live"></span> Live vessel
+            <span style="margin-left:7px" class="legendDot next"></span> Next
+            <span style="margin-left:7px" class="legendDot destination"></span> Destination
+          </div>
           <div class="atlasMode">
             <button class="active" data-mapmode="night">Night</button>
             <button data-mapmode="day">Day</button>
