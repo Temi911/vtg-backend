@@ -89,6 +89,12 @@
       #mapDrawer .atlasSearch button{border:0;border-radius:10px;background:#d71920;color:#fff;padding:8px 11px;font-size:9px;font-weight:900;cursor:pointer}
       #mapDrawer .atlasChips{pointer-events:auto;display:flex;gap:7px;flex-wrap:wrap}
       #mapDrawer .atlasRoleScope{margin-left:7px;padding:3px 7px;border:1px solid rgba(255,255,255,.12);border-radius:999px;color:#cbd5dc;font-size:7px;letter-spacing:.04em}
+      #mapDrawer .atlasNextBox{margin:8px 0 12px;padding:10px 11px;border:1px solid rgba(240,198,107,.22);border-radius:12px;background:rgba(240,198,107,.06);display:grid;gap:3px}
+      #mapDrawer .atlasNextBox b{font-size:7px;letter-spacing:.1em;color:#d7b55e}
+      #mapDrawer .atlasNextBox span{font-size:11px;font-weight:900;color:#f3f6f7}
+      #mapDrawer .atlasNextBox small{font-size:8px;color:#93a0aa}
+      #mapDrawer .atlasStep{width:100%;border:0;text-align:left;background:transparent;color:inherit;display:flex;gap:10px;padding:7px 0;cursor:pointer}
+      #mapDrawer .atlasStep:hover{background:rgba(255,255,255,.035);border-radius:9px}
       #mapDrawer .atlasFilterLabel{width:100%;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:#7f8c96;margin-top:3px}
       #mapDrawer .atlasChip.shipmentStatus{padding:6px 9px;font-size:7px}
 
@@ -374,7 +380,8 @@
             ${esc(s.originPort||'Origin not recorded')} → ${esc(s.destinationPort||'Destination not recorded')}
           </div>
           <div class="atlasSectionTitle">Operational timeline</div>
-          <div class="atlasTimeline">${rows.map(r=>'<div class="atlasStep '+esc(r.status)+'"><span class="atlasStepDot"></span><div><b>'+esc(r.label)+'</b><small>'+esc(r.detail)+(r.time?' • '+esc(r.time):'')+'</small></div></div>').join('')}</div>
+          ${s.liveTracking?.nextPort || s.journey?.next ? '<div class="atlasNextBox"><b>NEXT OPERATIONAL POINT</b><span>'+esc(s.liveTracking?.nextPort || s.journey?.next?.name || destination)+'</span><small>'+(s.liveTracking?.eta ? 'ETA '+esc(new Date(s.liveTracking.eta).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})) : 'Next recorded milestone in the shipment journey')+'</small></div>' : ''}
+          <div class="atlasTimeline">${rows.map((r,i)=>'<button type="button" class="atlasStep '+esc(r.status)+'" data-atlas-event-index="'+i+'"><span class="atlasStepDot"></span><div><b>'+esc(r.label)+'</b><small>'+esc(r.detail)+(r.time?' • '+esc(r.time):'')+'</small></div></button>').join('')}</div>
           <div class="atlasSectionTitle">Trade parties</div>
           <div class="atlasDescription">${s.buyerName?'Buyer: '+esc(s.buyerName)+'<br>':''}${s.supplierName?'Supplier: '+esc(s.supplierName):'Supplier details restricted by access role.'}</div>
           <div class="atlasSectionTitle">Customs & clearance</div>
@@ -405,6 +412,12 @@
         if(hero&&b){hero.src=b;hero.onload=()=>{hero.style.display='block';if(placeholder)placeholder.style.display='none';};hero.onerror=()=>{hero.removeAttribute('src');hero.style.display='none';if(placeholder)placeholder.style.display='grid';};}
         if(mediaStatus) mediaStatus.textContent=count?count+' real trade images loaded from public geographic/media sources.':'No public trade image matched this shipment yet; live shipment data remains available.';
       }).catch(()=>{if(mediaStatus)mediaStatus.textContent='Trade imagery is temporarily unavailable; live shipment data remains available.';});
+      qsa(panel,'[data-atlas-event-index]').forEach(btn=>btn.onclick=()=>{
+        const idx=Number(btn.dataset.atlasEventIndex);
+        const event=Array.isArray(s.milestones)?s.milestones[idx]:null;
+        const p=event?.coordinates;
+        if(p&&Number.isFinite(Number(p.lng))&&Number.isFinite(Number(p.lat))) map.flyTo({center:[Number(p.lng),Number(p.lat)],zoom:7,duration:900});
+      });
       qs(doc,'#atlasInfoClose').onclick=()=>panel.classList.remove('open');
       qs(doc,'#atlasOpenShipment').onclick=()=>{ window.location.href='/trade-os.html?shipment='+encodeURIComponent(s.id); };
       qs(doc,'#atlasOpenOrder').onclick=()=>{ window.location.href='/trade-os.html?order='+encodeURIComponent(s.orderId); };
