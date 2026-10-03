@@ -77,11 +77,20 @@ const listForAtlas = asyncHandler(async (req, res) => {
 
   const shipmentsRes = await query(
     `SELECT s.*, o.reference, o.status AS order_status, o.buyer_id, o.supplier_id,
-            bu.full_name AS buyer_name, su.full_name AS supplier_name
+            bu.full_name AS buyer_name, su.full_name AS supplier_name,
+            sc.status AS customs_status, sc.authority AS customs_authority,
+            sc.declaration_ref AS customs_declaration_ref,
+            sc.assessment_amount_usd AS customs_assessment_amount_usd,
+            sc.duties_amount_usd AS customs_duties_amount_usd,
+            sc.taxes_amount_usd AS customs_taxes_amount_usd,
+            sc.other_charges_usd AS customs_other_charges_usd,
+            sc.submitted_at AS customs_submitted_at, sc.assessed_at AS customs_assessed_at,
+            sc.cleared_at AS customs_cleared_at, sc.released_at AS customs_released_at
      FROM shipments s
      JOIN orders o ON o.id = s.order_id
      JOIN users bu ON bu.id = o.buyer_id
      JOIN users su ON su.id = o.supplier_id
+     LEFT JOIN shipment_customs sc ON sc.shipment_id = s.id
      ${access}
      ORDER BY s.created_at DESC
      LIMIT 100`,
@@ -136,6 +145,19 @@ const listForAtlas = asyncHandler(async (req, res) => {
       carrier: s.carrier, originPort: s.origin_port, destinationPort: s.destination_port,
       vessel: { name: s.vessel_name, imo: s.vessel_imo, mmsi: s.vessel_mmsi, voyageNo: s.voyage_no, trackingProvider: s.tracking_provider },
       percentComplete: s.percent_complete, status: mapShipmentStatus(s.order_status, s.percent_complete),
+      customs: {
+        status: s.customs_status || 'not_started',
+        authority: s.customs_authority || null,
+        declarationRef: s.customs_declaration_ref || null,
+        assessmentAmountUsd: s.customs_assessment_amount_usd ?? null,
+        dutiesAmountUsd: s.customs_duties_amount_usd ?? null,
+        taxesAmountUsd: s.customs_taxes_amount_usd ?? null,
+        otherChargesUsd: s.customs_other_charges_usd ?? null,
+        submittedAt: s.customs_submitted_at || null,
+        assessedAt: s.customs_assessed_at || null,
+        clearedAt: s.customs_cleared_at || null,
+        releasedAt: s.customs_released_at || null
+      },
       buyerName: req.user.role === 'admin' || req.user.role === 'buyer' ? s.buyer_name : null,
       supplierName: req.user.role === 'admin' || req.user.role === 'supplier' ? s.supplier_name : null,
       milestones: rawEvents.map(e => {
@@ -147,7 +169,16 @@ const listForAtlas = asyncHandler(async (req, res) => {
         };
       }),
       routePoints: points,
-      journey
+      journey,
+      logistics: {
+        order: { id: s.order_id, reference: s.reference, status: s.order_status },
+        shipment: { id: s.id, containerNo: s.container_no, carrier: s.carrier, percentComplete: s.percent_complete },
+        vessel: { name: s.vessel_name, imo: s.vessel_imo, mmsi: s.vessel_mmsi, voyageNo: s.voyage_no },
+        ports: { origin: s.origin_port, destination: s.destination_port },
+        customs: { status: s.customs_status || 'not_started', clearedAt: s.customs_cleared_at || null, releasedAt: s.customs_released_at || null },
+        buyer: { id: s.buyer_id, name: req.user.role === 'admin' || req.user.role === 'buyer' ? s.buyer_name : null },
+        supplier: { id: s.supplier_id, name: req.user.role === 'admin' || req.user.role === 'supplier' ? s.supplier_name : null }
+      }
     };
   }).filter(s => s.routePoints.length >= 2);
 
