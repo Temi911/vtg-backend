@@ -11,7 +11,8 @@
   }
   function render(d){
     const k=document.getElementById('atc-kpis');
-    k.innerHTML=[['Open orders',d.summary.openOrders],['LC records',d.summary.lcs],['Payment records',d.summary.payments],['Active shipments',d.summary.activeShipments]]
+    const ex={overdue:d.payments.filter(p=>p.finance_exception==='overdue').length,failed:d.payments.filter(p=>p.finance_exception==='failed').length,refunded:d.payments.filter(p=>p.finance_exception==='refunded').length,attention:d.payments.filter(p=>p.finance_exception==='attention').length};
+    k.innerHTML=[['Open orders',d.summary.openOrders],['LC records',d.summary.lcs],['Payment records',d.summary.payments],['Active shipments',d.summary.activeShipments],['Overdue payments',ex.overdue],['Failed payments',ex.failed],['Refunded payments',ex.refunded],['Needs attention',ex.attention]]
       .map(x=>'<div class="atc-card"><small>'+x[0]+'</small><strong>'+x[1]+'</strong></div>').join('');
     document.getElementById('atc-orders').innerHTML=d.orders.length?d.orders.map(o=>'<div class="atc-row"><div><b>'+esc(o.reference)+'</b><small>'+esc(o.buyer_name)+' → '+esc(o.supplier_name)+'</small></div><span>'+badge(o.status)+'</span><b>$'+fmt(o.total_amount_usd)+'</b></div>').join(''):'<div class="atc-empty">No orders found.</div>';
     document.getElementById('atc-lcs').innerHTML=d.lcs.length?d.lcs.map(x=>'<div class="atc-row"><div><b>'+esc(x.reference)+'</b><small>'+esc(x.order_reference)+' · '+esc(x.issuing_bank_name||'Bank not assigned')+'</small></div><span>'+badge(x.status)+'</span><b>$'+fmt(x.amount_usd)+'</b></div>').join(''):'<div class="atc-empty">No letters of credit found.</div>';
