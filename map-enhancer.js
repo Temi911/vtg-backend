@@ -304,18 +304,43 @@
       const currentIndex = Math.min(opts.index ?? Math.max(points.length - 2, 0), Math.max(points.length - 1, 0));
       const current = points[currentIndex] || points[0];
       const next = points[currentIndex + 1] || (s.destinationPort ? { name: s.destinationPort, type: 'destination' } : null);
+      const journey = s.journey || {};
+      const journeyCurrent = journey.current || current;
+      const journeyNext = journey.next || next;
+      const journeyDestination = journey.destination || (s.destinationPort ? { name: s.destinationPort, type: 'destination' } : null);
+      const journeyCard = (label, point, cls) => '<div class="vtgJourneyCard ' + cls + '"><small>' + label + '</small><b>' + escHtml(point?.name || 'Not recorded') + '</b><span>' + escHtml([point?.city, point?.country].filter(Boolean).join(', ') || point?.type || '') + '</span></div>';
       panel.classList.add('open');
       panel.innerHTML = '<div class="vtgShipmentHead"><div><div style="font-size:8px;color:#0e969f;font-weight:800">SHIPMENT STATUS</div><h4>' + escHtml(s.reference || 'VTG shipment') + '</h4></div><button data-shipment-close style="border:0;background:transparent;font-size:16px;color:#607586">×</button></div>' +
         '<select class="vtgShipmentSelect" data-shipment-select>' + shipmentData.map(x => '<option value="' + escHtml(x.id) + '"' + (x.id === s.id ? ' selected' : '') + '>' + escHtml(x.reference || x.id) + ' — ' + escHtml(x.status || 'pending') + '</option>').join('') + '</select>' +
-        '<div class="vtgShipmentMeta"><div>Status<b>' + escHtml(s.status || 'pending') + '</b></div><div>Progress<b>' + escHtml(Number(s.percentComplete || 0)) + '%</b></div><div>Latest recorded<b>' + escHtml(current?.name || 'Not recorded') + '</b></div><div>Next milestone<b>' + escHtml(next?.name || 'Destination') + '</b></div></div>' +
+        '<div class="vtgShipmentMeta"><div>Status<b>' + escHtml(s.status || 'pending') + '</b></div><div>Progress<b>' + escHtml(Number(s.percentComplete || 0)) + '%</b></div><div>Latest recorded<b>' + escHtml(journeyCurrent?.name || 'Not recorded') + '</b></div><div>Next milestone<b>' + escHtml(journeyNext?.name || 'Destination') + '</b></div></div>' +
+        '<div class="vtgJourneyStrip">' + journeyCard('ORIGIN', points[0], 'origin') + journeyCard('CURRENT', journeyCurrent, 'current') + journeyCard('NEXT', journeyNext, 'next') + journeyCard('DESTINATION', journeyDestination, 'destination') + '</div>' +
+        '<div class="vtgJourneyNote"><b>Recorded milestones:</b> ' + escHtml(journey.recordedCount ?? s.milestones?.length ?? 0) + ' &nbsp; • &nbsp; <b>Live vessel data:</b> Not connected</div>' +
         '<div class="vtgShipmentPath">' + points.map((p,i) => '<div class="vtgPathRow ' + (i < currentIndex ? 'done ' : '') + (i === currentIndex ? 'current ' : '') + (i === currentIndex + 1 ? 'next ' : '') + '"><div class="vtgPathDot"></div><div><div class="vtgPathTitle">' + escHtml(p.name || 'Shipment point') + '</div><div class="vtgPathDetail">' + escHtml(p.type || 'milestone') + (p.status ? ' • ' + escHtml(p.status) : '') + (p.eventTime ? ' • ' + escHtml(new Date(p.eventTime).toLocaleString()) : '') + (p.detail ? ' • ' + escHtml(p.detail) : '') + '</div></div></div>').join('') + '</div>' +
-        '<div class="vtgShipmentActions"><button class="primary" data-play-shipment>' + (playbackTimer ? 'Pause playback' : 'Play playback') + '</button><button data-reset-shipment>Latest</button><button data-fit-shipment>Fit route</button></div>';
-      panel.querySelector('[data-shipment-close]').onclick = () => { panel.classList.remove('open'); selectedShipmentId = null; if (playbackTimer) { clearInterval(playbackTimer); playbackTimer = null; } clearPlaybackMap(); };
+        '<div class="vtgShipmentActions"><button class="primary" data-live-shipment>Live tracking</button><button class="primary" data-play-shipment>' + (playbackTimer ? 'Pause playback' : 'Play playback') + '</button><button data-reset-shipment>Latest</button><button data-fit-shipment>Fit route</button></div><div class="vtgLiveResult" data-live-result></div>';
+      panel.querySelector('[data-shipment-close]').onclick = () => { panel.classList.remove('open'); selectedShipmentId = null; stopPlayback(); clearPlaybackMap(); };
       panel.querySelector('[data-shipment-select]').onchange = e => selectShipment(e.target.value);
+      panel.querySelector('[data-live-shipment]').onclick = async () => {
+        const out = panel.querySelector('[data-live-result]');
+        out.textContent = 'Checking connected vessel/carrier tracking…';
+        try {
+          const token = window.localStorage.getItem('vtg_access_token') || '';
+          const response = await fetch('/api/shipments/' + encodeURIComponent(s.id) + '/live-tracking', { headers: { Authorization: 'Bearer ' + token, Accept: 'application/json' }, cache: 'no-store' });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(data.message || 'Live tracking unavailable');
+          out.innerHTML = data.available && data.vessel ? '<b>Live position available.</b> Provider: ' + escHtml(data.provider || 'connected provider') : '<b>Live tracking not connected.</b> ' + escHtml(data.reason || 'No live vessel/carrier position is available.');
+        } catch (err) { out.textContent = err.message || 'Live tracking unavailable.'; }
+      };
       panel.querySelector('[data-play-shipment]').onclick = () => togglePlayback(s);
       panel.querySelector('[data-reset-shipment]').onclick = () => { stopPlayback(); playbackIndex = Math.max(points.length - 2, 0); renderShipmentPanel(s, { index: playbackIndex }); updatePlaybackMap(s, playbackIndex); };
       panel.querySelector('[data-fit-shipment]').onclick = () => fitShipment(s);
     };
+    const addJourneyStyles = () => {
+      if (doc.getElementById('vtg-journey-styles')) return;
+      const style = doc.createElement('style'); style.id = 'vtg-journey-styles';
+      style.textContent = '.vtgJourneyStrip{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}.vtgJourneyCard{border:1px solid #dbe5e9;border-radius:9px;padding:8px;background:#fff}.vtgJourneyCard small{display:block;font-size:7px;font-weight:800;letter-spacing:.08em;color:#607586}.vtgJourneyCard b{display:block;font-size:9px;margin-top:3px}.vtgJourneyCard span{display:block;font-size:7px;color:#718391;margin-top:2px}.vtgJourneyNote{font-size:8px;color:#607586;background:#f5f8f9;border-radius:8px;padding:8px;margin-bottom:9px}.vtgLiveResult{font-size:8px;line-height:1.45;margin-top:8px;padding:8px;border-radius:8px;background:#f5f8f9}.vtgShipmentActions{display:flex;gap:6px;flex-wrap:wrap}@media(max-width:600px){.vtgJourneyStrip{grid-template-columns:1fr 1fr}}';
+      doc.head.appendChild(style);
+    };
+    addJourneyStyles();
 
     const clearPlaybackMap = () => {
       ['vtg-shipment-playback','vtg-shipment-active-point'].forEach(id => {
