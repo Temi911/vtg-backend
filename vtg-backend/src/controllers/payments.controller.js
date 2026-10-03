@@ -99,6 +99,7 @@ const initiate = asyncHandler(async (req, res) => {
 const updateStatus = asyncHandler(async (req, res) => {
   const data = z.object({
     status: z.enum(['processing','completed','failed','refunded']),
+    note: z.string().trim().max(500).optional(),
   }).parse(req.body);
   const { rows: currentRows } = await query(
     `SELECT p.*, o.buyer_id, o.supplier_id, o.bank_id, o.reference AS order_reference
@@ -124,6 +125,9 @@ const updateStatus = asyncHandler(async (req, res) => {
   if (!allowed[current.status]?.includes(data.status)) {
     throw new AppError(`Invalid payment status transition: ${current.status} → ${data.status}`, 409, 'INVALID_PAYMENT_TRANSITION');
   }
+  if (['completed','failed','refunded'].includes(data.status) && !data.note) {
+    throw new AppError('A reconciliation note is required for completed, failed or refunded payments', 422, 'RECONCILIATION_NOTE_REQUIRED');
+  }
   if (data.status === 'completed' && current.order_id) {
     const { rows: orderRows } = await query('SELECT status FROM orders WHERE id = $1', [current.order_id]);
     const order = orderRows[0];
@@ -132,10 +136,11 @@ const updateStatus = asyncHandler(async (req, res) => {
     }
   }
   const { rows } = await query(
-    'UPDATE payment_requests SET status=$1, updated_at=now() WHERE id=$2 RETURNING *',
-    [data.status, req.params.id]
+    'UPDATE payment_requests SET status=$1, updated_at=now() WHERE id=$2 AND status=$3 RETURNING *',
+    [data.status, req.params.id, current.status]
   );
-  await query('INSERT INTO payment_status_history (payment_id, from_status, to_status, actor_id, note) VALUES ($1,$2,$3,$4,$5)', [req.params.id, current.status, data.status, req.user.id, 'Payment status transition']);
+  if (!rows[0]) throw new AppError('Payment changed before this update was saved; refresh the finance trail', 409, 'PAYMENT_CONCURRENT_UPDATE');
+  await query('INSERT INTO payment_status_history (payment_id, from_status, to_status, actor_id, note) VALUES ($1,$2,$3,$4,$5)', [req.params.id, current.status, data.status, req.user.id, data.note || 'Payment status transition']);
   await audit.log(req.user.id, 'Payment Status Updated', `${current.order_reference || 'Unlinked payment'} — ${current.provider_ref} → ${data.status}`, req.ip);
   res.json({ paymentRequest: rows[0] });
 });
