@@ -42,7 +42,7 @@ button,input,select{font:inherit}.shell{display:grid;grid-template-columns:250px
     <div class="eyebrow" style="color:#8ee7e7">VTG TRADE OS</div>
     <h2>Discover, evaluate, document, ship and complete international trade from one workspace.</h2>
     <p>VTG brings marketplace discovery, country-aware trade intelligence, supplier verification, documents, logistics, compliance and transaction coordination into one trade journey.</p>
-    <div class="actions"><button class="btn primary" onclick="showTab('trade-room')">Open Trade Room</button><button class="btn dark" onclick="showTab('intelligence')">Run Trade Intelligence</button></div>
+    <div class="actions"><button class="btn primary" onclick="showTab('trade-room')">Open Trade Room</button><button class="btn dark" onclick="showTab('intelligence')">Run Trade Intelligence</button><button class="btn" type="button" data-open-trade-atlas>Open Trade Atlas</button></div>
   </div>
   <div id="buyerProfileCard" class="card profileCard">
     <div class="profileIdentity"><div><img id="buyerProfileAvatar" class="profileAvatar" alt="Optional buyer profile picture"></div><div><strong>Buyer profile picture</strong><div class="sub" style="margin:4px 0 0">Optional. Add a picture if you want buyers and trade contacts to recognise your profile.</div></div></div>
@@ -135,6 +135,7 @@ button,input,select{font:inherit}.shell{display:grid;grid-template-columns:250px
 </main>
 </div>
 
+<script src="/trade-atlas-launcher.js"></script>
 <script>
 async function initWorkspaceGate(){
  const token=localStorage.getItem('vtg_access_token');
