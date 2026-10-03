@@ -93,6 +93,11 @@
             #mapDrawer .atlasShipmentMarker[data-status="delivered"]{background:rgba(49,156,92,.9);box-shadow:0 0 0 5px rgba(49,156,92,.12),0 8px 25px rgba(0,0,0,.45)}
       #mapDrawer .atlasShipmentMarker[data-status="arrived"]{background:rgba(240,175,55,.92)}
       #mapDrawer .atlasShipmentMarker[data-status="attention"]{background:rgba(215,25,32,.98)}
+      #mapDrawer .atlasOperationalPortMarker{position:relative;width:31px;height:31px;border:1px solid rgba(240,198,107,.5);border-radius:11px;background:rgba(20,18,12,.9);color:#f0c66b;display:grid;place-items:center;padding:0;cursor:pointer;box-shadow:0 0 0 4px rgba(240,198,107,.08),0 7px 22px rgba(0,0,0,.4)}
+      #mapDrawer .atlasOperationalPortMarker.customs{border-color:rgba(215,25,32,.72);color:#ff8f95;box-shadow:0 0 0 4px rgba(215,25,32,.1),0 7px 22px rgba(0,0,0,.4)}
+      #mapDrawer .atlasPortIcon{position:relative;z-index:2;font-size:14px}
+      #mapDrawer .atlasPortHalo{position:absolute;inset:-4px;border:1px solid currentColor;border-radius:14px;opacity:.22;animation:vtgPortPulse 2.8s ease-out infinite}
+      @keyframes vtgPortPulse{0%{transform:scale(.8);opacity:.4}80%{transform:scale(1.35);opacity:0}100%{opacity:0}}
       #mapDrawer .atlasShipmentMarker{position:relative;width:34px;height:34px;border:1px solid rgba(255,255,255,.24);border-radius:50%;background:rgba(215,25,32,.88);box-shadow:0 0 0 5px rgba(215,25,32,.10),0 8px 25px rgba(0,0,0,.45);display:grid;place-items:center;color:#fff;cursor:pointer;padding:0}
       #mapDrawer .atlasShipmentIcon{position:relative;z-index:2;font-size:16px;line-height:1}
       #mapDrawer .atlasShipmentPulse{position:absolute;inset:-5px;border:1px solid rgba(224,92,76,.55);border-radius:50%;animation:vtgAtlasPulse 2s ease-out infinite}
@@ -454,6 +459,37 @@
       const v=visible();
       v.forEach(x=>markers.push(markerFor(x)));
       qs(doc,'#vtgAtlasCount').textContent=v.length+' locations • '+(v.filter(x=>x.type==='seaport').length)+' seaports • '+(v.filter(x=>x.type==='airport').length)+' airports';
+      renderOperationalPortMarkers();
+    }
+
+    function operationalPorts() {
+      const byKey=new Map();
+      locations.filter(x=>x.type==='seaport').forEach(x=>byKey.set(String(x.code||x.name),x));
+      shipments.forEach(s=>{
+        [s.originPort,s.origin_port,s.destinationPort,s.destination_port,s.liveTracking?.nextPort].filter(Boolean).forEach(name=>{
+          const hit=locations.find(x=>String(x.name).toLowerCase()===String(name).toLowerCase() || String(x.code||'').toLowerCase()===String(name).toLowerCase());
+          if(hit) byKey.set(String(hit.code||hit.name),hit);
+        });
+      });
+      return [...byKey.values()];
+    }
+
+    function renderOperationalPortMarkers() {
+      doc.querySelectorAll('.atlasOperationalPortMarker').forEach(el=>el.remove());
+      operationalPorts().forEach(x=>{
+        const related=shipments.filter(s=>{
+          const names=[s.originPort,s.origin_port,s.destinationPort,s.destination_port,s.liveTracking?.nextPort].filter(Boolean).map(v=>String(v).toLowerCase());
+          return names.includes(String(x.name).toLowerCase()) || names.includes(String(x.code||'').toLowerCase());
+        });
+        const customs=related.map(s=>s.customs?.status).filter(Boolean);
+        const active=customs.some(v=>!['cleared','released','not_started'].includes(v));
+        const el=doc.createElement('button');
+        el.type='button'; el.className='atlasOperationalPortMarker '+(active?'customs':'');
+        el.title=x.name+' • '+(related.length?related.length+' linked shipment'+(related.length===1?'':'s'):'Trade gateway');
+        el.innerHTML='<span class="atlasPortHalo"></span><span class="atlasPortIcon">⚓</span>';
+        el.onclick=e=>{e.stopPropagation();selectLocation(x);};
+        new ml.Marker({element:el,anchor:'center'}).setLngLat([Number(x.lng),Number(x.lat)]).addTo(map);
+      });
     }
 
     async function selectLocation(x) {
