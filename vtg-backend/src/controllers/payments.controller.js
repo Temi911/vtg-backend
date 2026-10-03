@@ -123,6 +123,13 @@ const updateStatus = asyncHandler(async (req, res) => {
   if (!allowed[current.status]?.includes(data.status)) {
     throw new AppError(`Invalid payment status transition: ${current.status} → ${data.status}`, 409, 'INVALID_PAYMENT_TRANSITION');
   }
+  if (data.status === 'completed' && current.order_id) {
+    const { rows: orderRows } = await query('SELECT status FROM orders WHERE id = $1', [current.order_id]);
+    const order = orderRows[0];
+    if (!order || ['cancelled', 'delivered'].includes(order.status)) {
+      throw new AppError('A completed payment cannot be recorded against a cancelled or completed order', 409, 'ORDER_NOT_PAYABLE');
+    }
+  }
   const { rows } = await query(
     'UPDATE payment_requests SET status=$1, updated_at=now() WHERE id=$2 RETURNING *',
     [data.status, req.params.id]
