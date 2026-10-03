@@ -148,6 +148,23 @@ const DpProvider = {
   },
 };
 
+
+function providerStatus(method, label) {
+  const configured = LIVE_ENABLED && Boolean(process.env[`VTG_${method.toUpperCase()}_PROVIDER`]);
+  return { method, label, mode: LIVE_ENABLED ? (configured ? 'live-configured' : 'live-unavailable') : 'mock', configured };
+}
+
+function getProviderStatus() {
+  return [
+    providerStatus('tt','Telegraphic Transfer'),
+    providerStatus('escrow','Escrow'),
+    providerStatus('crypto','Crypto'),
+    providerStatus('forex','Forex'),
+    providerStatus('dp','Documents Against Payment'),
+    providerStatus('lc','Letter of Credit'),
+  ];
+}
+
 const PaymentProviders = {
   lc: LcProvider,
   tt: TtProvider,
@@ -157,4 +174,4 @@ const PaymentProviders = {
   dp: DpProvider,
 };
 
-module.exports = { PaymentProviders };
+module.exports = { PaymentProviders, getProviderStatus };
