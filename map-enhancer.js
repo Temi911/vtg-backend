@@ -108,6 +108,11 @@
       #mapDrawer .atlasOpsPill.active{border-color:#e05c4c;background:rgba(215,25,32,.16);color:#fff}
       #mapDrawer .atlasRoleScope{margin-left:7px;padding:3px 7px;border:1px solid rgba(255,255,255,.12);border-radius:999px;color:#cbd5dc;font-size:7px;letter-spacing:.04em}
       #mapDrawer .atlasNextBox{margin:8px 0 12px;padding:10px 11px;border:1px solid rgba(240,198,107,.22);border-radius:12px;background:rgba(240,198,107,.06);display:grid;gap:3px}
+      #mapDrawer .atlasFactGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:7px 0 11px}
+      #mapDrawer .atlasFact{min-width:0;padding:8px;border:1px solid rgba(255,255,255,.09);border-radius:10px;background:rgba(255,255,255,.025)}
+      #mapDrawer .atlasFact small{display:block;color:#7f8c96;font-size:6px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
+      #mapDrawer .atlasFact b{display:block;color:#e7edf0;font-size:7px;line-height:1.35;overflow:hidden;text-overflow:ellipsis}
+
       #mapDrawer .atlasNextBox b{font-size:7px;letter-spacing:.1em;color:#d7b55e}
       #mapDrawer .atlasNextBox span{font-size:11px;font-weight:900;color:#f3f6f7}
       #mapDrawer .atlasNextBox small{font-size:8px;color:#93a0aa}
@@ -411,6 +416,18 @@
           <div class="atlasDescription">${s.buyerName?'Buyer: '+esc(s.buyerName)+'<br>':''}${s.supplierName?'Supplier: '+esc(s.supplierName):'Supplier details restricted by access role.'}</div>
           <div class="atlasSectionTitle">Customs & clearance</div>
           <div class="atlasDescription">${esc(String(customs.status||'not_started').replace(/_/g,' '))}${customs.authority?' • '+esc(customs.authority):''}${customs.declarationRef?' • Declaration '+esc(customs.declarationRef):''}</div>
+          <div class="atlasFactGrid">
+            <div class="atlasFact"><small>Declaration</small><b>${esc(customs.declarationRef||'Not recorded')}</b></div>
+            <div class="atlasFact"><small>Assessment</small><b>${customs.assessedAt?esc(new Date(customs.assessedAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):'Not assessed'}</b></div>
+            <div class="atlasFact"><small>Cleared</small><b>${customs.clearedAt?esc(new Date(customs.clearedAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):'Pending'}</b></div>
+            <div class="atlasFact"><small>Released</small><b>${customs.releasedAt?esc(new Date(customs.releasedAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):'Pending'}</b></div>
+          </div>
+          <div class="atlasSectionTitle">Delivery & proof</div>
+          <div class="atlasDescription">${esc(delivery.status||'Awaiting confirmation')}${delivery.recipientName?' • Recipient: '+esc(delivery.recipientName):''}${delivery.notes?' • '+esc(delivery.notes):''}</div>
+          <div class="atlasFactGrid">
+            <div class="atlasFact"><small>Proof</small><b>${delivery.proofAttached?'Attached':'Not attached'}</b></div>
+            <div class="atlasFact"><small>Confirmed</small><b>${delivery.confirmedAt?esc(new Date(delivery.confirmedAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):'Pending'}</b></div>
+          </div>
           <div class="atlasSectionTitle atlasMediaTitle">Trade media</div>
           <div class="atlasMedia"><div class="atlasMediaGrid">
             <article class="atlasMediaCard"><img id="atlasMediaOrigin" alt="${esc(origin)} port"><div><b>Origin</b><small>${esc(origin)}</small></div></article>
