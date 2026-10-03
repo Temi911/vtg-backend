@@ -139,11 +139,36 @@ const listForAtlas = asyncHandler(async (req, res) => {
       }
     }
     const journey = journeySummary(rawEvents, origin, destination);
+    let liveTracking = null;
+    if (s.vessel_name || s.vessel_imo || s.vessel_mmsi) {
+      try {
+        const tracking = await getLiveVesselPosition({
+          vesselName: s.vessel_name, imo: s.vessel_imo, mmsi: s.vessel_mmsi
+        });
+        if (tracking.available && tracking.vessel) {
+          liveTracking = {
+            provider: tracking.provider || null,
+            available: true,
+            latitude: tracking.vessel.latitude ?? tracking.vessel.lat ?? null,
+            longitude: tracking.vessel.longitude ?? tracking.vessel.lng ?? null,
+            speedKnots: tracking.vessel.speedKnots ?? tracking.vessel.speed ?? null,
+            course: tracking.vessel.course ?? null,
+            heading: tracking.vessel.heading ?? null,
+            timestamp: tracking.vessel.timestamp ?? tracking.vessel.lastUpdated ?? null,
+            nextPort: tracking.vessel.nextPort || tracking.vessel.destination || destination?.name || null,
+            eta: tracking.vessel.eta || tracking.vessel.estimatedArrival || null
+          };
+        }
+      } catch (_) {
+        // Atlas remains usable when the external AIS provider is unavailable.
+      }
+    }
 
     return {
       id: s.id, orderId: s.order_id, reference: s.reference, containerNo: s.container_no,
       carrier: s.carrier, originPort: s.origin_port, destinationPort: s.destination_port,
       vessel: { name: s.vessel_name, imo: s.vessel_imo, mmsi: s.vessel_mmsi, voyageNo: s.voyage_no, trackingProvider: s.tracking_provider },
+      liveTracking,
       percentComplete: s.percent_complete, status: mapShipmentStatus(s.order_status, s.percent_complete),
       customs: {
         status: s.customs_status || 'not_started',
