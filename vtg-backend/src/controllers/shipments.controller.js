@@ -134,6 +134,7 @@ const listForAtlas = asyncHandler(async (req, res) => {
     return {
       id: s.id, orderId: s.order_id, reference: s.reference, containerNo: s.container_no,
       carrier: s.carrier, originPort: s.origin_port, destinationPort: s.destination_port,
+      vessel: { name: s.vessel_name, imo: s.vessel_imo, mmsi: s.vessel_mmsi, voyageNo: s.voyage_no, trackingProvider: s.tracking_provider },
       percentComplete: s.percent_complete, status: mapShipmentStatus(s.order_status, s.percent_complete),
       buyerName: req.user.role === 'admin' || req.user.role === 'buyer' ? s.buyer_name : null,
       supplierName: req.user.role === 'admin' || req.user.role === 'supplier' ? s.supplier_name : null,
