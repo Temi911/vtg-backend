@@ -168,7 +168,7 @@
       #mapDrawer .atlasLiveBox b{font-size:8px;letter-spacing:.12em;color:#ff9a9f}
       #mapDrawer .atlasLiveBox span{font-size:11px;color:#eef3f5;font-weight:900}
       #mapDrawer .atlasLiveBox small{font-size:8px;color:#aebbc2;line-height:1.5}
-      #mapDrawer .atlasUnifiedTimeline{display:grid;gap:8px;margin:8px 0 16px}.atlasUnifiedStep{display:grid;grid-template-columns:12px 1fr auto;gap:9px;align-items:center;padding:10px 11px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.025)}.atlasUnifiedStep b{display:block;font-size:12px}.atlasUnifiedStep small{display:block;margin-top:3px;color:#aeb9c2;font-size:10px;line-height:1.35}.atlasUnifiedStep em{font-style:normal;text-transform:capitalize;font-size:9px;color:#9da9b2}.atlasUnifiedDot{width:8px;height:8px;border-radius:50%;background:#7d8790}.atlasUnifiedStep.done .atlasUnifiedDot{background:#49c98b}.atlasUnifiedStep.active .atlasUnifiedDot{background:#e3b341;box-shadow:0 0 0 4px rgba(227,179,65,.12)}.atlasUnifiedStep.attention .atlasUnifiedDot,.atlasUnifiedStep.disputed .atlasUnifiedDot{background:#e14b55}
+      #mapDrawer .atlasUnifiedTimeline{display:grid;gap:8px;margin:8px 0 16px}.atlasUnifiedStep{cursor:pointer;transition:transform .16s ease,border-color .16s ease,background .16s ease}.atlasUnifiedStep:hover{transform:translateX(2px);border-color:rgba(215,25,32,.48);background:rgba(215,25,32,.06)}.atlasUnifiedStep{display:grid;grid-template-columns:12px 1fr auto;gap:9px;align-items:center;padding:10px 11px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.025)}.atlasUnifiedStep b{display:block;font-size:12px}.atlasUnifiedStep small{display:block;margin-top:3px;color:#aeb9c2;font-size:10px;line-height:1.35}.atlasUnifiedStep em{font-style:normal;text-transform:capitalize;font-size:9px;color:#9da9b2}.atlasUnifiedDot{width:8px;height:8px;border-radius:50%;background:#7d8790}.atlasUnifiedStep.done .atlasUnifiedDot{background:#49c98b}.atlasUnifiedStep.active .atlasUnifiedDot{background:#e3b341;box-shadow:0 0 0 4px rgba(227,179,65,.12)}.atlasUnifiedStep.attention .atlasUnifiedDot,.atlasUnifiedStep.disputed .atlasUnifiedDot{background:#e14b55}
 .atlasTimeline{display:grid;gap:0;margin-top:6px}
       #mapDrawer .atlasStep{position:relative;display:grid;grid-template-columns:18px 1fr;gap:9px;padding:0 0 13px}
       #mapDrawer .atlasStep:not(:last-child):before{content:"";position:absolute;left:8px;top:16px;bottom:0;width:1px;background:rgba(255,255,255,.13)}
@@ -377,6 +377,16 @@
       return rows;
     }
 
+function atlasTimelinePoint(t,s){
+      const current=s.journey?.current, next=s.journey?.next;
+      const origin=s.routePoints?.[0], destination=s.routePoints?.[s.routePoints.length-1];
+      const stage=String(t?.stage||'').toLowerCase();
+      if(stage==='customs'||stage==='delivery') return destination||current||next||origin;
+      if(stage==='inspection') return origin||current||next||destination;
+      if(stage==='finance') return origin||current||next||destination;
+      return current||next||destination||origin;
+    }
+
     async function selectShipment(s) {
       selectedShipmentId = s?.id || null;
       const panel=qs(doc,'#vtgAtlasInfo');
@@ -411,7 +421,7 @@
             ${esc(s.originPort||'Origin not recorded')} → ${esc(s.destinationPort||'Destination not recorded')}
           </div>
           <div class="atlasSectionTitle">Unified trade timeline</div>
-          ${s.timeline?.length ? '<div class="atlasUnifiedTimeline">'+s.timeline.map((t,i)=>'<div class="atlasUnifiedStep '+esc(t.status||'pending')+'"><span class="atlasUnifiedDot"></span><div><b>'+esc(t.label)+'</b><small>'+esc(t.detail||'')+(t.time?' • '+esc(new Date(t.time).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):'')+'</small></div><em>'+esc(String(t.stage||'').replace(/_/g,' '))+'</em></div>').join('')+'</div>' : '<div class="atlasDescription">No combined finance, logistics, customs, inspection or delivery milestones have been recorded yet.</div>'}
+          ${s.timeline?.length ? '<div class="atlasUnifiedTimeline">'+s.timeline.map((t,i)=>'<button type="button" class="atlasUnifiedStep '+esc(t.status||'pending')+'" data-atlas-unified-index="'+i+'"><span class="atlasUnifiedDot"></span><div><b>'+esc(t.label)+'</b><small>'+esc(t.detail||'')+(t.time?' • '+esc(new Date(t.time).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):'')+'</small></div><em>'+esc(String(t.stage||'').replace(/_/g,' '))+'</em></button>').join('')+'</div>' : '<div class="atlasDescription">No combined finance, logistics, customs, inspection or delivery milestones have been recorded yet.</div>'}
                     <div class="atlasSectionTitle">Operational timeline</div>
           ${s.liveTracking?.nextPort || s.journey?.next ? '<div class="atlasNextBox"><b>NEXT OPERATIONAL POINT</b><span>'+esc(s.liveTracking?.nextPort || s.journey?.next?.name || destination)+'</span><small>'+(s.liveTracking?.eta ? 'ETA '+esc(new Date(s.liveTracking.eta).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})) : 'Next recorded milestone in the shipment journey')+'</small></div>' : ''}
           <div class="atlasTimeline">${rows.map((r,i)=>'<button type="button" class="atlasStep '+esc(r.status)+'" data-atlas-event-index="'+i+'"><span class="atlasStepDot"></span><div><b>'+esc(r.label)+'</b><small>'+esc(r.detail)+(r.time?' • '+esc(r.time):'')+'</small></div></button>').join('')}</div>
@@ -472,6 +482,12 @@
         if(hero&&b){hero.src=b;hero.onload=()=>{hero.style.display='block';if(placeholder)placeholder.style.display='none';};hero.onerror=()=>{hero.removeAttribute('src');hero.style.display='none';if(placeholder)placeholder.style.display='grid';};}
         if(mediaStatus) mediaStatus.textContent=count?count+' real trade images loaded from public geographic/media sources.':'No public trade image matched this shipment yet; live shipment data remains available.';
       }).catch(()=>{if(mediaStatus)mediaStatus.textContent='Trade imagery is temporarily unavailable; live shipment data remains available.';});
+      qsa(panel,'[data-atlas-unified-index]').forEach(btn=>btn.onclick=()=>{
+        const idx=Number(btn.dataset.atlasUnifiedIndex);
+        const t=Array.isArray(s.timeline)?s.timeline[idx]:null;
+        const p=atlasTimelinePoint(t,s);
+        if(p&&Number.isFinite(Number(p.lng))&&Number.isFinite(Number(p.lat))) map.flyTo({center:[Number(p.lng),Number(p.lat)],zoom:6.6,duration:900});
+      });
       qsa(panel,'[data-atlas-event-index]').forEach(btn=>btn.onclick=()=>{
         const idx=Number(btn.dataset.atlasEventIndex);
         const event=Array.isArray(s.milestones)?s.milestones[idx]:null;
