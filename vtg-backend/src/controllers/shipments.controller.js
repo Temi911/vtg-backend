@@ -378,10 +378,14 @@ const listForAtlas = asyncHandler(async (req, res) => {
 
 const getLiveTracking = asyncHandler(async (req, res) => {
   const shipmentRes = await query(
-    `SELECT s.*, o.buyer_id, o.supplier_id, o.bank_id
+    `SELECT s.*, o.buyer_id, o.supplier_id, o.bank_id,
+            EXISTS (
+              SELECT 1 FROM inspection_requests ir
+              WHERE ir.order_id = o.id AND ir.assigned_agent_id = $2
+            ) AS agent_assigned
      FROM shipments s JOIN orders o ON o.id = s.order_id
      WHERE s.id = $1 LIMIT 1`,
-    [req.params.shipmentId]
+    [req.params.shipmentId, req.user.id]
   );
   const shipment = shipmentRes.rows[0];
   if (!shipment) throw new AppError('Shipment not found', 404);
@@ -390,7 +394,8 @@ const getLiveTracking = asyncHandler(async (req, res) => {
     req.user.role === 'admin' ||
     (req.user.role === 'buyer' && shipment.buyer_id === req.user.id) ||
     (req.user.role === 'supplier' && shipment.supplier_id === req.user.id) ||
-    (req.user.role === 'bank' && shipment.bank_id === req.user.id);
+    (req.user.role === 'bank' && shipment.bank_id === req.user.id) ||
+    (req.user.role === 'agent' && shipment.agent_assigned === true);
   if (!allowed) throw new AppError('Forbidden', 403, 'FORBIDDEN');
 
   const tracking = await getLiveVesselPosition({
