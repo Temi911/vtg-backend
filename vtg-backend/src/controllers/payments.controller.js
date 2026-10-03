@@ -223,22 +223,28 @@ const ledger = asyncHandler(async (req, res) => {
   if (filters.from && filters.to && filters.from > filters.to) {
     throw new AppError('The ledger start date cannot be after the end date', 422, 'INVALID_DATE_RANGE');
   }
+
   const isAdmin = req.user.role === 'admin';
   const where = [];
   const params = [];
-  const add = (sql, value) => { params.push(value); where.push(sql.replace('?', '$' + params.length)); };
-  if (!isAdmin) add('(l.recorded_by=? OR p.initiated_by=? OR o.bank_id=?)', req.user.id);
+  const add = (sql, value) => {
+    params.push(value);
+    where.push(sql.replace('?', '$' + params.length));
+  };
+
   if (!isAdmin) {
     const n = params.length;
-    params.push(req.user.id, req.user.id);
-    where[where.length - 1] = `(l.recorded_by=$${n+1} OR p.initiated_by=$${n+2} OR o.bank_id=$${n+2})`;
+    params.push(req.user.id, req.user.id, req.user.id);
+    where.push(`(l.recorded_by=$${n + 1} OR p.initiated_by=$${n + 2} OR o.bank_id=$${n + 3})`);
   }
+
   if (filters.entryType) add('l.entry_type=?', filters.entryType);
   if (filters.method) add('p.method=?', filters.method);
   if (filters.currency) add('l.currency=?', filters.currency);
   if (filters.from) add('l.created_at>=?::date', filters.from);
   if (filters.to) add('l.created_at<?::date + interval \'1 day\'', filters.to);
   if (filters.orderReference) add('o.reference ILIKE ?', '%' + filters.orderReference + '%');
+
   const { rows } = await query(
     `SELECT l.id,l.payment_id,l.order_id,l.entry_type,l.amount,l.currency,l.provider_ref,l.recorded_by,l.note,l.created_at,
             p.method,p.status AS payment_status,p.initiated_by,o.reference AS order_reference
