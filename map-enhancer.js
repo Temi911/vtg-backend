@@ -208,6 +208,10 @@
       #mapDrawer .atlasStep.active .atlasStepDot{background:#e05c4c;border-color:#ffb5b8;box-shadow:0 0 0 4px rgba(224,92,76,.14),0 0 16px rgba(224,92,76,.35)}
       #mapDrawer .atlasStep b{display:block;color:#eef3f5;font-size:9px}
       #mapDrawer .atlasStep small{display:block;color:#8997a1;font-size:7px;margin-top:3px;line-height:1.45}
+      #mapDrawer .atlasStageNav{display:flex;gap:5px;overflow-x:auto;margin:0 0 12px;padding-bottom:2px;scrollbar-width:none}
+      #mapDrawer .atlasStageNav::-webkit-scrollbar{display:none}
+      #mapDrawer .atlasStageNav button{flex:0 0 auto;padding:6px 8px;border:1px solid rgba(255,255,255,.10);border-radius:9px;background:rgba(255,255,255,.035);color:#9eabb3;font-size:7px;font-weight:900;cursor:pointer}
+      #mapDrawer .atlasStageNav button:hover{border-color:#d71920;color:#fff;background:rgba(215,25,32,.12)}
       #mapDrawer .atlasJourneyStrip{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:6px;align-items:center;margin:0 0 13px;padding:10px;border:1px solid rgba(255,255,255,.10);border-radius:12px;background:rgba(255,255,255,.035)}
       #mapDrawer .atlasJourneyStrip>div{min-width:0}
       #mapDrawer .atlasJourneyStrip small{display:block;color:#788791;font-size:7px;font-weight:900;letter-spacing:.08em;margin-bottom:3px}
@@ -617,6 +621,13 @@ function atlasTimelinePoint(t,s){
             <span>→</span>
             <div><small>DESTINATION</small><b>${esc(destination)}</b></div>
           </div>
+          <div class="atlasStageNav" aria-label="Trade stages">
+            <button type="button" data-atlas-stage="finance">Finance</button>
+            <button type="button" data-atlas-stage="logistics">Logistics</button>
+            <button type="button" data-atlas-stage="customs">Customs</button>
+            <button type="button" data-atlas-stage="inspection">Inspection</button>
+            <button type="button" data-atlas-stage="delivery">Delivery</button>
+          </div>
           ${s.liveTracking?.available ? `<div class="atlasLiveBox"><b>LIVE VESSEL POSITION</b><span>${esc(String(s.liveTracking.latitude ?? "—"))}, ${esc(String(s.liveTracking.longitude ?? "—"))}</span><small>${s.liveTracking.speedKnots != null ? esc(String(s.liveTracking.speedKnots))+" kn" : "Speed unavailable"}${s.liveTracking.nextPort ? " • Next: "+esc(s.liveTracking.nextPort) : ""}${s.liveTracking.eta ? " • ETA: "+esc(new Date(s.liveTracking.eta).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})) : ""}</small></div>` : ""}
           <div class="atlasStats">
             <div class="atlasStat"><small>Progress</small><b>${esc(String(s.percentComplete ?? 0))}%</b></div>
@@ -691,7 +702,11 @@ function atlasTimelinePoint(t,s){
         if(hero&&b){hero.src=b;hero.onload=()=>{hero.style.display='block';if(placeholder)placeholder.style.display='none';};hero.onerror=()=>{hero.removeAttribute('src');hero.style.display='none';if(placeholder)placeholder.style.display='grid';};}
         if(mediaStatus) mediaStatus.textContent=count?count+' real trade images loaded from public geographic/media sources.':'No public trade image matched this shipment yet; live shipment data remains available.';
       }).catch(()=>{if(mediaStatus)mediaStatus.textContent='Trade imagery is temporarily unavailable; live shipment data remains available.';});
-      qsa(panel,'[data-atlas-unified-index]').forEach(btn=>btn.onclick=async()=>{
+      qsa(panel,'[data-atlas-stage]').forEach(btn=>btn.onclick=async()=>{
+          const stage=String(btn.dataset.atlasStage||'logistics');
+          await focusShipmentStage(s,stage,atlasTimelinePoint({stage},s));
+        });
+        qsa(panel,'[data-atlas-unified-index]').forEach(btn=>btn.onclick=async()=>{
         const idx=Number(btn.dataset.atlasUnifiedIndex);
         const t=Array.isArray(s.timeline)?s.timeline[idx]:null;
         const p=atlasTimelinePoint(t,s);
