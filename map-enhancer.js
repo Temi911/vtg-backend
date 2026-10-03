@@ -414,7 +414,7 @@
       if(!point||!Number.isFinite(Number(point.lng))||!Number.isFinite(Number(point.lat))) return;
       const popup=doc.createElement('div');
       popup.className='atlasRoutePopup';
-      const title=kind==='next'?'NEXT OPERATIONAL POINT':'DESTINATION';
+      const title=kind==='next'?'NEXT OPERATIONAL POINT':kind==='destination'?'DESTINATION':'CURRENT VESSEL POSITION';
       const name=point.name || (kind==='destination'?s.destinationPort:(s.liveTracking?.nextPort||s.nextPort)) || 'Operational point';
       const status=s.status||'In transit';
       popup.innerHTML='<strong>'+title+'</strong><span>'+name+'</span><small>'+status+(s.liveTracking?.eta&&kind==='next'?' • ETA '+s.liveTracking.eta:'')+'</small>';
