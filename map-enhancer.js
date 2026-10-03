@@ -362,10 +362,10 @@
       return best;
     }
 
-    function pushProgressFeature(features, shipmentId, stage, points) {
+    function pushProgressFeature(features, shipmentId, stage, points, meta={}) {
       const coords=(points||[]).filter(validPoint).map(p=>[Number(p.lng),Number(p.lat)]);
       if(coords.length<2) return;
-      features.push({type:'Feature',properties:{shipmentId,stage},geometry:{type:'LineString',coordinates:coords}});
+      features.push({type:'Feature',properties:{shipmentId,stage,pointName:meta.pointName||'',nextPort:meta.nextPort||'',status:meta.status||''},geometry:{type:'LineString',coordinates:coords}});
     }
 
     function renderShipmentProgress(visibleShipments) {
@@ -385,9 +385,9 @@
         const endCurrent=nextIdx>=0&&nextIdx>currentIdx?nextIdx:Math.min(route.length-1,currentIdx+1);
 
         pushProgressFeature(completed,s.id,'completed',[route[0],...route.slice(1,Math.max(1,currentIdx+1)),currentPoint]);
-        pushProgressFeature(current,s.id,'current',[currentPoint,nextPoint||destination]);
+        pushProgressFeature(current,s.id,'current',[currentPoint,nextPoint||destination],{pointName:next?.name||'',nextPort:s.liveTracking?.nextPort||next?.name||'',status:s.status||''});
         if(validPoint(nextPoint)&&nextIdx>=0&&nextIdx<route.length-1){
-          pushProgressFeature(remaining,s.id,'remaining',[nextPoint,...route.slice(nextIdx+1)]);
+          pushProgressFeature(remaining,s.id,'remaining',[nextPoint,...route.slice(nextIdx+1)],{pointName:destination?.name||s.destinationPort||'Destination',status:s.status||''});
         } else if(validPoint(destination)&&destination!==currentPoint){
           pushProgressFeature(remaining,s.id,'remaining',[currentPoint,destination]);
         }
