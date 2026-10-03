@@ -6,6 +6,8 @@ router.post('/', requireAuth, requireRole('supplier'), ctrl.create);
 router.get('/atlas', requireAuth, ctrl.listForAtlas);
 router.get('/:shipmentId/live-tracking', requireAuth, ctrl.getLiveTracking);
 router.get('/:shipmentId/customs', requireAuth, ctrl.getCustoms);
+router.get('/:shipmentId/delivery', requireAuth, ctrl.getDelivery);
+router.patch('/:shipmentId/delivery', requireAuth, ctrl.updateDelivery);
 router.post('/:shipmentId/customs', requireAuth, requireRole('supplier', 'bank', 'admin'), ctrl.createCustoms);
 router.patch('/:shipmentId/customs', requireAuth, requireRole('supplier', 'bank', 'admin'), ctrl.updateCustoms);
 router.patch('/:shipmentId/vessel', requireAuth, requireRole('supplier', 'bank', 'admin'), ctrl.updateVessel);
