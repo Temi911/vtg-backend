@@ -103,6 +103,14 @@
       #mapDrawer .atlasStat b{display:block;margin-top:4px;color:#eef3f5;font-size:10px}
       #mapDrawer .atlasSectionTitle{font-size:8px;text-transform:uppercase;letter-spacing:.13em;color:#e05c63;font-weight:900;margin:14px 0 7px}
       #mapDrawer .atlasDescription{font-size:10px;line-height:1.6;color:#b7c3ca}
+      #mapDrawer .atlasTimeline{display:grid;gap:0;margin-top:6px}
+      #mapDrawer .atlasStep{position:relative;display:grid;grid-template-columns:18px 1fr;gap:9px;padding:0 0 13px}
+      #mapDrawer .atlasStep:not(:last-child):before{content:"";position:absolute;left:8px;top:16px;bottom:0;width:1px;background:rgba(255,255,255,.13)}
+      #mapDrawer .atlasStepDot{width:17px;height:17px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:#10161c;z-index:2;box-shadow:0 0 0 3px rgba(255,255,255,.025)}
+      #mapDrawer .atlasStep.done .atlasStepDot{background:#d71920;border-color:#d71920}
+      #mapDrawer .atlasStep.active .atlasStepDot{background:#e05c4c;border-color:#ffb5b8;box-shadow:0 0 0 4px rgba(224,92,76,.14),0 0 16px rgba(224,92,76,.35)}
+      #mapDrawer .atlasStep b{display:block;color:#eef3f5;font-size:9px}
+      #mapDrawer .atlasStep small{display:block;color:#8997a1;font-size:7px;margin-top:3px;line-height:1.45}
       #mapDrawer .atlasActions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:15px}
       #mapDrawer .atlasAction{padding:10px;border-radius:11px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:#dfe7eb;font-size:8px;font-weight:900;cursor:pointer}
       #mapDrawer .atlasAction.primary{background:#d71920;border-color:#d71920;color:#fff}
@@ -220,6 +228,81 @@
       map.addSource('vtg-shipment-routes',{type:'geojson',data:{type:'FeatureCollection',features}});
       map.addLayer({id:'vtg-shipment-route-glow',type:'line',source:'vtg-shipment-routes',paint:{'line-color':'#e05c4c','line-width':6,'line-opacity':.18,'line-blur':3}});
       map.addLayer({id:'vtg-shipment-route',type:'line',source:'vtg-shipment-routes',paint:{'line-color':'#e05c4c','line-width':2.4,'line-opacity':.9,'line-dasharray':[2,1.3]}});
+    }
+
+    function shipmentLabel(status) {
+      const labels = {
+        pending:'Order / shipment pending', shipped:'Shipment departed', in_transit:'In transit',
+        arrived:'Arrived at destination', delivered:'Delivered', cancelled:'Cancelled', attention:'Attention required'
+      };
+      return labels[status] || String(status || 'pending').replace(/_/g,' ');
+    }
+
+    function shipmentMilestoneRows(s) {
+      const events = Array.isArray(s.milestones) ? s.milestones : [];
+      const rows = events.map(e => ({
+        label: e.location || 'Shipment milestone',
+        detail: e.detail || (e.status === 'done' ? 'Completed' : e.status === 'active' ? 'Current operational point' : 'Pending'),
+        status: e.status || 'pending',
+        time: e.eventTime ? new Date(e.eventTime).toLocaleString([], {dateStyle:'medium',timeStyle:'short'}) : ''
+      }));
+      if (s.customs?.status && s.customs.status !== 'not_started') {
+        rows.push({
+          label: 'Customs clearance',
+          detail: 'Status: ' + String(s.customs.status).replace(/_/g,' '),
+          status: ['cleared','released'].includes(s.customs.status) ? 'done' : 'active',
+          time: s.customs.clearedAt ? new Date(s.customs.clearedAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'}) : ''
+        });
+      }
+      rows.push({
+        label:'Final delivery',
+        detail:s.status==='delivered'?'Delivery completed':'Awaiting clearance / delivery confirmation',
+        status:s.status==='delivered'?'done':'pending',
+        time:''
+      });
+      return rows;
+    }
+
+    async function selectShipment(s) {
+      const panel=qs(doc,'#vtgAtlasInfo');
+      panel.classList.add('open');
+      panel.innerHTML='<div class="atlasHero"><div class="atlasLoading">Loading shipment intelligence…</div><button class="atlasInfoClose" id="atlasInfoClose">×</button></div><div class="atlasInfoBody"><div class="atlasLoading">Loading shipment details…</div></div>';
+      qs(doc,'#atlasInfoClose').onclick=()=>panel.classList.remove('open');
+      const p=s.journey?.current || s.routePoints?.[0];
+      if(p) map.flyTo({center:[Number(p.lng),Number(p.lat)],zoom:5.2,duration:1000});
+      const vessel=s.vessel||{};
+      const customs=s.customs||{};
+      const rows=shipmentMilestoneRows(s);
+      const status=shipmentLabel(s.status);
+      panel.innerHTML=`
+        <div class="atlasHero">
+          <div style="height:100%;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,rgba(215,25,32,.35),transparent 55%);font-size:54px">🚢</div>
+          <div class="atlasHeroText"><span class="atlasType">🚢 Shipment • ${esc(status)}</span><h2>${esc(s.reference||'Shipment')}</h2><p>${esc(s.originPort||'Origin')} → ${esc(s.destinationPort||'Destination')}</p></div>
+          <button class="atlasInfoClose" id="atlasInfoClose">×</button>
+        </div>
+        <div class="atlasInfoBody">
+          <div class="atlasStats">
+            <div class="atlasStat"><small>Progress</small><b>${esc(String(s.percentComplete ?? 0))}%</b></div>
+            <div class="atlasStat"><small>Vessel</small><b>${esc(vessel.name||'Not assigned')}</b></div>
+            <div class="atlasStat"><small>Customs</small><b>${esc(String(customs.status||'not_started').replace(/_/g,' '))}</b></div>
+          </div>
+          <div class="atlasSectionTitle">Order → shipment → vessel → port → customs → buyer</div>
+          <div class="atlasDescription">
+            <b style="color:#eef3f5">${esc(s.reference||'Order')}</b> • Shipment ${esc(String(s.id).slice(0,8))}<br>
+            ${vessel.name ? 'Vessel: '+esc(vessel.name)+(vessel.imo?' • IMO '+esc(vessel.imo):'')+'<br>' : ''}
+            ${esc(s.originPort||'Origin not recorded')} → ${esc(s.destinationPort||'Destination not recorded')}
+          </div>
+          <div class="atlasSectionTitle">Operational timeline</div>
+          <div class="atlasTimeline">${rows.map(r=>'<div class="atlasStep '+esc(r.status)+'"><span class="atlasStepDot"></span><div><b>'+esc(r.label)+'</b><small>'+esc(r.detail)+(r.time?' • '+esc(r.time):'')+'</small></div></div>').join('')}</div>
+          <div class="atlasSectionTitle">Trade parties</div>
+          <div class="atlasDescription">${s.buyerName?'Buyer: '+esc(s.buyerName)+'<br>':''}${s.supplierName?'Supplier: '+esc(s.supplierName):'Supplier details restricted by access role.'}</div>
+          <div class="atlasSectionTitle">Customs & clearance</div>
+          <div class="atlasDescription">${esc(String(customs.status||'not_started').replace(/_/g,' '))}${customs.authority?' • '+esc(customs.authority):''}${customs.declarationRef?' • Declaration '+esc(customs.declarationRef):''}</div>
+          <div class="atlasActions"><button class="atlasAction primary" id="atlasOpenShipment">Open shipment</button><button class="atlasAction" id="atlasOpenOrder">Open order</button></div>
+        </div>`;
+      qs(doc,'#atlasInfoClose').onclick=()=>panel.classList.remove('open');
+      qs(doc,'#atlasOpenShipment').onclick=()=>{ window.location.href='/trade-os.html?shipment='+encodeURIComponent(s.id); };
+      qs(doc,'#atlasOpenOrder').onclick=()=>{ window.location.href='/trade-os.html?order='+encodeURIComponent(s.orderId); };
     }
 
     async function loadShipments() {
@@ -371,6 +454,13 @@
       wh.textContent=hour>=6&&hour<18?'Global trade network':'Trade network • night view';
       wt.textContent='Africa ↔ China ↔ South Korea • shipments, ports and corridors';
     }
+    map.on('click','vtg-shipment-route',(e)=>{
+      const id=e.features?.[0]?.properties?.shipmentId;
+      const shipment=shipments.find(s=>String(s.id)===String(id));
+      if(shipment) selectShipment(shipment);
+    });
+    map.on('mouseenter','vtg-shipment-route',()=>{map.getCanvas().style.cursor='pointer';});
+    map.on('mouseleave','vtg-shipment-route',()=>{map.getCanvas().style.cursor='';});
     map.on('load',()=>{addCorridorLayer();applyRasterMood();renderShipmentRoutes();});
   }
 
