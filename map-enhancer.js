@@ -202,6 +202,8 @@
     const markers = [];
     let shipments = [];
     let shipmentRoutesVisible = false;
+    let atlasRefreshInFlight = false;
+    let selectedShipmentId = null;
     let filterType='all', filterRegion='all', mapMode=themeIsDark(doc)?'dark':'night';
 
     function addCorridorLayer() {
@@ -268,6 +270,7 @@
     }
 
     async function selectShipment(s) {
+      selectedShipmentId = s?.id || null;
       const panel=qs(doc,'#vtgAtlasInfo');
       panel.classList.add('open');
       panel.innerHTML='<div class="atlasHero"><div class="atlasLoading">Loading shipment intelligence…</div><button class="atlasInfoClose" id="atlasInfoClose">×</button></div><div class="atlasInfoBody"><div class="atlasLoading">Loading shipment details…</div></div>';
@@ -311,13 +314,30 @@
     }
 
     async function loadShipments() {
+      if (atlasRefreshInFlight) return;
+      atlasRefreshInFlight = true;
       try {
         const r=await fetch('/api/shipments/atlas',{headers:{Accept:'application/json'}});
         if(!r.ok) return;
         const d=await r.json();
         shipments=Array.isArray(d.shipments)?d.shipments:[];
         renderShipmentRoutes();
-      } catch (_) {}
+        const selected = selectedShipmentId && shipments.find(s=>String(s.id)===String(selectedShipmentId));
+        if (selected && qs(doc,'#vtgAtlasInfo')?.classList.contains('open')) {
+          const panel=qs(doc,'#vtgAtlasInfo');
+          const live = selected.liveTracking?.available ? selected.liveTracking : null;
+          const liveBox = panel.querySelector('.atlasLiveBox');
+          if (liveBox && live) {
+            liveBox.innerHTML = '<b>LIVE VESSEL POSITION</b><span>'+esc(String(live.latitude ?? '—'))+', '+esc(String(live.longitude ?? '—'))+'</span><small>'+
+              (live.speedKnots != null ? esc(String(live.speedKnots))+' kn' : 'Speed unavailable')+
+              (live.nextPort ? ' • Next: '+esc(live.nextPort) : '')+
+              (live.eta ? ' • ETA: '+esc(new Date(live.eta).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})) : '')+
+              '</small>';
+          }
+        }
+      } catch (_) {} finally {
+        atlasRefreshInFlight = false;
+      }
     }
 
     const applyRasterMood = () => {
@@ -452,6 +472,8 @@
 
     loadLocations();
     loadShipments();
+    // Keep Atlas operational state fresh without creating a tight polling loop.
+    window.setInterval(loadShipments, 60000);
     const wt=qs(doc,'#atlasWeatherText');
     const wh=qs(doc,'#atlasWeatherTitle');
     if (wt && wh) {
