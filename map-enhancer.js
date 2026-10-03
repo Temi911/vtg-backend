@@ -88,6 +88,7 @@
       #mapDrawer .atlasSearch input::placeholder{color:#8c9aa5}
       #mapDrawer .atlasSearch button{border:0;border-radius:10px;background:#d71920;color:#fff;padding:8px 11px;font-size:9px;font-weight:900;cursor:pointer}
       #mapDrawer .atlasChips{pointer-events:auto;display:flex;gap:7px;flex-wrap:wrap}
+      #mapDrawer .atlasOpsLiveMeta{pointer-events:auto;margin:3px 0 6px;color:#74838d;font-size:7px;font-weight:800;letter-spacing:.03em}
       #mapDrawer .atlasOpsSummary{pointer-events:auto;display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 2px}
       #mapDrawer .atlasShipmentList{pointer-events:auto;display:grid;gap:6px;margin:8px 0 10px;max-height:230px;overflow:auto;padding-right:2px}
       #mapDrawer .atlasShipmentList::-webkit-scrollbar{width:4px}
@@ -277,6 +278,7 @@
           <div class="atlasLive"><i></i> LIVE TRADE ATLAS <span id="atlasRoleScope" class="atlasRoleScope">Loading workspace…</span></div>
           <div class="atlasCount" id="vtgAtlasCount">Loading locations…</div>
           <div class="atlasOpsSummary" id="atlasOpsSummary" aria-label="Shipment operational summary"></div>
+          <div class="atlasOpsLiveMeta" id="atlasOpsLiveMeta">Vessel tracking status</div>
           <div class="atlasShipmentList" id="atlasShipmentList" aria-label="Shipment operations"></div>
           <div class="atlasWeather"><b id="atlasWeatherTitle">Trade conditions</b><small id="atlasWeatherText">Monitoring global trade corridors and shipment activity</small></div>
           <div class="atlasInfo" id="vtgAtlasInfo"></div>
@@ -785,6 +787,10 @@ function atlasTimelinePoint(t,s){
         ['customs','CUSTOMS',n.customs],['attention','ATTENTION',n.attention],['delivered','DELIVERED',n.delivered]
       ];
       box.innerHTML=pills.map(([key,label,count])=>'<button type="button" class="atlasOpsPill '+(shipmentStatusFilter===key?'active':'')+'" data-op-status="'+key+'"><strong>'+count+'</strong>'+label+'</button>').join('');
+      const liveCount=shipments.filter(s=>s.liveTracking?.available).length;
+      const staleCount=shipments.filter(s=>s.liveTracking?.available&&liveTrackingState(s.liveTracking).state==='stale').length;
+      const meta=qs(doc,'#atlasOpsLiveMeta');
+      if(meta) meta.textContent=liveCount+' live vessel'+(liveCount===1?'':'s')+(staleCount?' • '+staleCount+' stale':'');
       qsa(box,'[data-op-status]').forEach(btn=>btn.onclick=()=>{
         const key=btn.dataset.opStatus;
         shipmentStatusFilter=key==='customs'?'customs':key;
