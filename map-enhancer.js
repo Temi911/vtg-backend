@@ -563,16 +563,26 @@
       doc.querySelectorAll('.atlasOperationalPortMarker').forEach(el=>el.remove());
       operationalPorts().forEach(x=>{
         const related=shipments.filter(s=>{
+
           const names=[s.originPort,s.origin_port,s.destinationPort,s.destination_port,s.liveTracking?.nextPort].filter(Boolean).map(v=>String(v).toLowerCase());
           return names.includes(String(x.name).toLowerCase()) || names.includes(String(x.code||'').toLowerCase());
+        });
+        const filteredRelated=related.filter(s=>{
+          if(shipmentStatusFilter==='all') return true;
+          if(shipmentStatusFilter==='customs') return Boolean(s.customs?.status&&s.customs.status!=='not_started'&&!['cleared','released'].includes(s.customs.status));
+          return s.status===shipmentStatusFilter;
         });
         const customs=related.map(s=>s.customs?.status).filter(Boolean);
         const active=customs.some(v=>!['cleared','released','not_started'].includes(v));
         const el=doc.createElement('button');
         el.type='button'; el.className='atlasOperationalPortMarker '+(active?'customs':'');
-        el.title=x.name+' • '+(related.length?related.length+' linked shipment'+(related.length===1?'':'s'):'Trade gateway');
+        el.title=x.name+' • '+(filteredRelated.length?filteredRelated.length+' matching shipment'+(filteredRelated.length===1?'':'s'):'Trade gateway');
         el.innerHTML='<span class="atlasPortHalo"></span><span class="atlasPortIcon">⚓</span>';
-        el.onclick=e=>{e.stopPropagation();selectLocation(x);};
+        el.onclick=e=>{
+          e.stopPropagation();
+          if(filteredRelated.length===1) selectShipment(filteredRelated[0]);
+          else selectLocation(x);
+        };
         new ml.Marker({element:el,anchor:'center'}).setLngLat([Number(x.lng),Number(x.lat)]).addTo(map);
       });
     }
