@@ -306,6 +306,9 @@
       const customs=s.customs||{};
       const rows=shipmentMilestoneRows(s);
       const status=shipmentLabel(s.status);
+      const origin=s.originPort||s.origin_port||'Origin port';
+      const destination=s.destinationPort||s.destination_port||'Destination port';
+      const vesselName=vessel.name||s.carrier||'Container vessel';
       panel.innerHTML=`
         <div class="atlasHero">
           <img id="atlasShipmentHeroImage" src="https://images.unsplash.com/photo-1606185540834-d6e7483ee1a4?q=85&w=1400&auto=format&fit=crop" alt="Real container ship used for VTG shipment context" style="width:100%;height:100%;object-fit:cover;display:block;opacity:.82"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(4,7,11,.94))"></div>
@@ -331,6 +334,13 @@
           <div class="atlasDescription">${s.buyerName?'Buyer: '+esc(s.buyerName)+'<br>':''}${s.supplierName?'Supplier: '+esc(s.supplierName):'Supplier details restricted by access role.'}</div>
           <div class="atlasSectionTitle">Customs & clearance</div>
           <div class="atlasDescription">${esc(String(customs.status||'not_started').replace(/_/g,' '))}${customs.authority?' • '+esc(customs.authority):''}${customs.declarationRef?' • Declaration '+esc(customs.declarationRef):''}</div>
+          <div class="atlasSectionTitle atlasMediaTitle">Trade media</div>
+          <div class="atlasMedia"><div class="atlasMediaGrid">
+            <article class="atlasMediaCard"><img id="atlasMediaOrigin" alt="${esc(origin)} port"><div><b>Origin</b><small>${esc(origin)}</small></div></article>
+            <article class="atlasMediaCard"><img id="atlasMediaVessel" alt="${esc(vesselName)} vessel"><div><b>Vessel / cargo</b><small>${esc(vesselName)}</small></div></article>
+            <article class="atlasMediaCard"><img id="atlasMediaDestination" alt="${esc(destination)} port"><div><b>Destination</b><small>${esc(destination)}</small></div></article>
+            <article class="atlasMediaCard"><img id="atlasMediaRoute" alt="${esc(origin)} to ${esc(destination)} shipping corridor"><div><b>Trade corridor</b><small>${esc(origin)} ↔ ${esc(destination)}</small></div></article>
+          </div><div class="atlasMediaStatus" id="atlasMediaStatus">Loading real trade imagery…</div></div>
           <div class="atlasSectionTitle">Final delivery</div>
           <div class="atlasDescription">${esc(String(s.delivery?.status||'pending').replace(/_/g,' '))}${s.delivery?.recipientName?' • Recipient: '+esc(s.delivery.recipientName):''}${s.delivery?.proofAttached?' • Proof of delivery attached':''}${s.delivery?.confirmedAt?' • '+esc(new Date(s.delivery.confirmedAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):''}</div>
           <div class="atlasActions"><button class="atlasAction primary" id="atlasOpenShipment">Open shipment</button><button class="atlasAction" id="atlasOpenOrder">Open order</button></div>
