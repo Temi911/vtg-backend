@@ -422,6 +422,12 @@
             <div class="atlasFact"><small>Cleared</small><b>${customs.clearedAt?esc(new Date(customs.clearedAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):'Pending'}</b></div>
             <div class="atlasFact"><small>Released</small><b>${customs.releasedAt?esc(new Date(customs.releasedAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):'Pending'}</b></div>
           </div>
+          ${s.finance ? '<div class="atlasSectionTitle">Finance & trade settlement</div><div class="atlasDescription">'+
+            '<b>Order value:</b> '+esc(String(s.finance.orderTotalUsd ?? '—'))+' '+esc(s.finance.orderCurrency||'USD')+
+            (s.finance.incoterm?' • Incoterm: '+esc(s.finance.incoterm):'')+
+            (s.finance.lc ? '<br><b>Letter of Credit:</b> '+esc(s.finance.lc.reference||'—')+' • '+esc(String(s.finance.lc.status||'requested').replace(/_/g,' '))+(s.finance.lc.amountUsd!=null?' • '+esc(String(s.finance.lc.amountUsd))+' USD':'')+(s.finance.lc.issuingBankName?' • '+esc(s.finance.lc.issuingBankName):'') : '<br><b>Letter of Credit:</b> Not recorded')+
+            (s.finance.latestPayment ? '<br><b>Latest payment:</b> '+esc(String(s.finance.latestPayment.method||'payment').toUpperCase())+' • '+esc(String(s.finance.latestPayment.amount??'—'))+' '+esc(s.finance.latestPayment.currency||'')+' • '+esc(String(s.finance.latestPayment.status||'pending').replace(/_/g,' ')) : '<br><b>Latest payment:</b> None recorded')+
+            '</div><div class="atlasFactGrid"><div class="atlasFact"><small>Active payments</small><b>'+esc(String(s.finance.activePaymentCount||0))+'</b></div><div class="atlasFact"><small>Completed payments</small><b>'+esc(String(s.finance.completedPaymentCount||0))+'</b></div><div class="atlasFact"><small>Settled amount</small><b>'+esc(String(s.finance.completedPaymentAmount??0))+' '+esc(s.finance.orderCurrency||'USD')+'</b></div><div class="atlasFact"><small>LC expiry</small><b>'+esc(s.finance.lc?.expiryDate||'Not recorded')+'</b></div></div>' : ''}
           ${s.inspection ? '<div class="atlasSectionTitle">Inspection / verification</div><div class="atlasDescription">'+
             '<b>'+esc(s.inspection.reference||'Inspection request')+'</b> • '+esc(s.inspection.productName||'Product verification')+' • '+esc(String(s.inspection.quantity??'—'))+
             (s.inspection.serviceLevel?' • '+esc(s.inspection.serviceLevel):'')+
