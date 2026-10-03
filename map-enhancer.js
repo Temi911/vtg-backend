@@ -540,16 +540,6 @@ function atlasTimelinePoint(t,s){
       return current||next||destination||origin;
     }
 
-    function atlasStageMeta(s, stage){
-      const key=String(stage||'logistics').toLowerCase();
-      const customs=s?.customs||{}, inspection=s?.inspection||{}, finance=s?.finance||{}, delivery=s?.delivery||{};
-      if(key==='customs') return {title:'Customs & clearance',status:String(customs.status||'not_started').replace(/_/g,' '),detail:customs.declarationRef?'Declaration '+customs.declarationRef:(customs.authority||'Destination customs processing'),point:atlasTimelinePoint({stage:'customs'},s)};
-      if(key==='inspection') return {title:'Inspection & verification',status:String(inspection.status||'requested').replace(/_/g,' '),detail:inspection.productName||'Pre-shipment verification',point:atlasTimelinePoint({stage:'inspection'},s)};
-      if(key==='finance') return {title:'Trade finance',status:String(finance.lc?.status||finance.latestPayment?.status||'pending').replace(/_/g,' '),detail:finance.lc?.reference?'LC '+finance.lc.reference:(finance.latestPayment?.method||'Settlement activity'),point:atlasTimelinePoint({stage:'finance'},s)};
-      if(key==='delivery') return {title:'Final delivery',status:String(delivery.status||'pending').replace(/_/g,' '),detail:delivery.recipientName?'Recipient '+delivery.recipientName:'Delivery confirmation',point:atlasTimelinePoint({stage:'delivery'},s)};
-      return {title:'Logistics movement',status:String(s?.status||'in_transit').replace(/_/g,' '),detail:s?.liveTracking?.nextPort?'Next '+s.liveTracking.nextPort:(s?.journey?.next?.name||'Shipment route'),point:point||atlasTimelinePoint({stage:'logistics'},s)};
-    }
-
     async function focusShipmentStage(s, stage, point){
       if(!s) return;
       await selectShipment(s);
@@ -568,9 +558,6 @@ function atlasTimelinePoint(t,s){
         target.classList.add('active');
         window.setTimeout(()=>target.classList.remove('active'),1400);
       }
-      const meta=atlasStageMeta(s,stage);
-      const stageTitle=qs(doc,'#vtgAtlasInfo .atlasStageFocus');
-      if(stageTitle) stageTitle.innerHTML='<b>'+esc(meta.title)+'</b><span>'+esc(meta.status)+'</span><small>'+esc(meta.detail)+'</small>';
     }
 
     async function selectShipment(s) {
@@ -607,7 +594,6 @@ function atlasTimelinePoint(t,s){
             ${vessel.name ? 'Vessel: '+esc(vessel.name)+(vessel.imo?' • IMO '+esc(vessel.imo):'')+'<br>' : ''}
             ${esc(s.originPort||'Origin not recorded')} → ${esc(s.destinationPort||'Destination not recorded')}
           </div>
-          <div class="atlasStageFocus"><b>Shipment movement</b><span>${esc(String(s.status||'in_transit').replace(/_/g,' '))}</span><small>${esc(s.journey?.next?.name ? 'Next '+s.journey.next.name : 'Route intelligence')}</small></div>
           <div class="atlasSectionTitle">Unified trade timeline</div>
           ${s.timeline?.length ? '<div class="atlasUnifiedTimeline">'+s.timeline.map((t,i)=>'<button type="button" class="atlasUnifiedStep '+esc(t.status||'pending')+'" data-atlas-unified-index="'+i+'"><span class="atlasUnifiedDot"></span><div><b>'+esc(t.label)+'</b><small>'+esc(t.detail||'')+(t.time?' • '+esc(new Date(t.time).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):'')+'</small></div><em>'+esc(String(t.stage||'').replace(/_/g,' '))+'</em></button>').join('')+'</div>' : '<div class="atlasDescription">No combined finance, logistics, customs, inspection or delivery milestones have been recorded yet.</div>'}
                     <div class="atlasSectionTitle">Operational timeline</div>
@@ -1045,7 +1031,4 @@ function atlasTimelinePoint(t,s){
   };
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>window.VTGInitMap(),{once:true});
   else window.VTGInitMap();
-})()    .atlasStageFocus{display:grid;gap:3px;margin:10px 0 14px;padding:12px 14px;border:1px solid rgba(240,198,107,.28);border-radius:12px;background:linear-gradient(135deg,rgba(240,198,107,.09),rgba(255,255,255,.025));}
-    .atlasStageFocus b{font-size:13px;color:#f4f6f7}.atlasStageFocus span{text-transform:capitalize;font-size:11px;color:#f0c66b}.atlasStageFocus small{font-size:11px;color:#aeb8c0}
-    .atlasUnifiedStep.active{outline:1px solid rgba(240,198,107,.72);box-shadow:0 0 0 3px rgba(240,198,107,.08);transform:translateX(2px)}
-;
+})();
