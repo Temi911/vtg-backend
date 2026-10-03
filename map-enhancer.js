@@ -830,6 +830,19 @@ function atlasTimelinePoint(t,s){
         if (selected && qs(doc,'#vtgAtlasInfo')?.classList.contains('open')) {
           const panel=qs(doc,'#vtgAtlasInfo');
           const live = selected.liveTracking?.available ? selected.liveTracking : null;
+          const journeyStrip = panel.querySelector('.atlasJourneyStrip');
+          if (journeyStrip) {
+            const originName = selected.originPort||selected.origin_port||'Origin port';
+            const destinationName = selected.destinationPort||selected.destination_port||'Destination port';
+            const currentName = selected.journey?.current?.name || (selected.liveTracking?.available ? 'Vessel in transit' : originName);
+            const nextName = selected.journey?.next?.name || selected.liveTracking?.nextPort || 'Next operational point';
+            const cells = journeyStrip.querySelectorAll('b');
+            if (cells.length >= 3) {
+              cells[0].textContent = currentName;
+              cells[1].textContent = nextName;
+              cells[2].textContent = destinationName;
+            }
+          }
           const liveBox = panel.querySelector('.atlasLiveBox');
           if (liveBox && live) {
             const freshness=liveTrackingState(live);
