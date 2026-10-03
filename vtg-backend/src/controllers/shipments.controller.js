@@ -170,7 +170,7 @@ const listForAtlas = asyncHandler(async (req, res) => {
     eventsByShipment.get(event.shipment_id).push(event);
   }
 
-  const shipments = shipmentsRes.rows.map(s => {
+  const shipments = (await Promise.all(shipmentsRes.rows.map(async s => {
     const rawEvents = eventsByShipment.get(s.id) || [];
     const points = [];
     const origin = resolveAtlasLocation(s.origin_port);
@@ -317,7 +317,7 @@ const listForAtlas = asyncHandler(async (req, res) => {
         supplier: { id: s.supplier_id, name: req.user.role === 'admin' || req.user.role === 'supplier' ? s.supplier_name : null }
       }
     };
-  }).filter(s => s.routePoints.length >= 2);
+  }))).filter(s => s.routePoints.length >= 2);
 
   res.json({ ok: true, count: shipments.length, shipments });
 });
