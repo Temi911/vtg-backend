@@ -98,10 +98,10 @@ const ForexProvider = {
   method: 'forex',
   async initiate({ amount, currency, counterpartyName }) {
     return {
-      status: 'completed',
+      status: 'pending',
       providerRef: mockRef('FX'),
       raw: {
-        note: 'MOCK: settled instantly using the stored forex_rates table. Wire a live FX execution API here.',
+        note: 'MOCK: no real FX transaction was executed. The stored forex_rates table is informational only; wire a licensed FX execution API here.',
         amount,
         currency,
         counterpartyName,
