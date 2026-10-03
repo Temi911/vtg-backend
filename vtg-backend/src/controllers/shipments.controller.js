@@ -27,6 +27,39 @@ function mapShipmentStatus(orderStatus, percentComplete) {
   return orderStatus || 'pending';
 }
 
+function journeySummary(rawEvents, origin, destination) {
+  const resolvePoint = (event) => {
+    const loc = resolveAtlasLocation(event.location);
+    return loc ? {
+      name: loc.name, city: loc.city, country: loc.country,
+      lat: loc.lat, lng: loc.lng, eventId: event.id,
+      status: event.status, detail: event.detail, eventTime: event.event_time
+    } : null;
+  };
+  const recorded = rawEvents.map(resolvePoint).filter(Boolean);
+  const active = rawEvents.find(e => e.status === 'active');
+  const lastDone = [...rawEvents].reverse().find(e => e.status === 'done');
+  const nextPending = rawEvents.find(e => e.status === 'pending');
+  const currentEvent = active || lastDone;
+  const current = currentEvent ? resolvePoint(currentEvent) : (origin ? {
+    name: origin.name, city: origin.city, country: origin.country,
+    lat: origin.lat, lng: origin.lng, status: 'origin'
+  } : null);
+  const next = nextPending ? resolvePoint(nextPending) : (destination ? {
+    name: destination.name, city: destination.city, country: destination.country,
+    lat: destination.lat, lng: destination.lng, status: 'destination'
+  } : null);
+  return {
+    current: current ? { ...current, type: active ? 'active' : currentEvent ? 'milestone' : 'origin' } : null,
+    next: next ? { ...next, type: nextPending ? 'milestone' : 'destination' } : null,
+    destination: destination ? {
+      name: destination.name, city: destination.city, country: destination.country,
+      lat: destination.lat, lng: destination.lng, type: 'destination'
+    } : null,
+    recordedCount: recorded.length
+  };
+}
+
 const listForAtlas = asyncHandler(async (req, res) => {
   const params = [req.user.id];
   let access = '';
@@ -96,6 +129,7 @@ const listForAtlas = asyncHandler(async (req, res) => {
         points.push({ type: 'destination', name: destination.name, city: destination.city, country: destination.country, lat: destination.lat, lng: destination.lng });
       }
     }
+    const journey = journeySummary(rawEvents, origin, destination);
 
     return {
       id: s.id, orderId: s.order_id, reference: s.reference, containerNo: s.container_no,
@@ -111,7 +145,8 @@ const listForAtlas = asyncHandler(async (req, res) => {
           coordinates: loc ? { lat: loc.lat, lng: loc.lng, name: loc.name } : null
         };
       }),
-      routePoints: points
+      routePoints: points,
+      journey
     };
   }).filter(s => s.routePoints.length >= 2);
 
@@ -208,7 +243,8 @@ const getForOrder = asyncHandler(async (req, res) => {
       routePoints.push({type:'destination',name:destination.name,city:destination.city,country:destination.country,lat:destination.lat,lng:destination.lng});
     }
   }
-  res.json({ shipment, events: events.rows, routePoints });
+  const journey = journeySummary(events.rows, origin, destination);
+  res.json({ shipment, events: events.rows, routePoints, journey });
 });
 
 const addEventSchema = z.object({
