@@ -552,6 +552,8 @@
     }
 
 function atlasTimelinePoint(t,s){
+      const direct=t?.coordinates;
+      if(direct&&Number.isFinite(Number(direct.lng))&&Number.isFinite(Number(direct.lat))) return direct;
       const current=s.journey?.current, next=s.journey?.next;
       const origin=s.routePoints?.[0], destination=s.routePoints?.[s.routePoints.length-1];
       const stage=String(t?.stage||'').toLowerCase();
