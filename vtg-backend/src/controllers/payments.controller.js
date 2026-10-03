@@ -1,5 +1,5 @@
 const { z } = require('zod');
-const { query } = require('../config/db');
+const { query, withTransaction } = require('../config/db');
 const { AppError } = require('../utils/AppError');
 const { asyncHandler } = require('../utils/asyncHandler');
 const { PaymentProviders } = require('../services/paymentProviders');
@@ -135,12 +135,29 @@ const updateStatus = asyncHandler(async (req, res) => {
       throw new AppError('A completed payment cannot be recorded against a cancelled or completed order', 409, 'ORDER_NOT_PAYABLE');
     }
   }
-  const { rows } = await query(
-    'UPDATE payment_requests SET status=$1, updated_at=now() WHERE id=$2 AND status=$3 RETURNING *',
-    [data.status, req.params.id, current.status]
-  );
-  if (!rows[0]) throw new AppError('Payment changed before this update was saved; refresh the finance trail', 409, 'PAYMENT_CONCURRENT_UPDATE');
-  await query('INSERT INTO payment_status_history (payment_id, from_status, to_status, actor_id, note) VALUES ($1,$2,$3,$4,$5)', [req.params.id, current.status, data.status, req.user.id, data.note || 'Payment status transition']);
+  const rows = await withTransaction(async (client) => {
+    const updated = await client.query(
+      'UPDATE payment_requests SET status=$1, updated_at=now() WHERE id=$2 AND status=$3 RETURNING *',
+      [data.status, req.params.id, current.status]
+    );
+    if (!updated.rows[0]) throw new AppError('Payment changed before this update was saved; refresh the finance trail', 409, 'PAYMENT_CONCURRENT_UPDATE');
+    const note = data.note || 'Payment status transition';
+    await client.query(
+      'INSERT INTO payment_status_history (payment_id, from_status, to_status, actor_id, note) VALUES ($1,$2,$3,$4,$5)',
+      [req.params.id, current.status, data.status, req.user.id, note]
+    );
+    if (data.status === 'completed' || data.status === 'refunded') {
+      const entryType = data.status === 'completed' ? 'settlement' : 'refund';
+      await client.query(
+        `INSERT INTO payment_settlement_ledger
+          (payment_id, order_id, entry_type, amount, currency, provider_ref, recorded_by, note)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+         ON CONFLICT (payment_id, entry_type) DO NOTHING`,
+        [req.params.id, current.order_id || null, entryType, current.amount, current.currency, current.provider_ref || null, req.user.id, note]
+      );
+    }
+    return updated.rows[0];
+  });
   await audit.log(req.user.id, 'Payment Status Updated', `${current.order_reference || 'Unlinked payment'} — ${current.provider_ref} → ${data.status}`, req.ip);
   res.json({ paymentRequest: rows[0] });
 });
@@ -158,6 +175,10 @@ const getReconciliation = asyncHandler(async (req, res) => {
     allowed = bankRows[0]?.bank_id === req.user.id;
   }
   if (!allowed) throw new AppError('Forbidden',403,'FORBIDDEN');
+  const { rows: ledger } = await query(
+    'SELECT id,entry_type,amount,currency,provider_ref,recorded_by,note,created_at FROM payment_settlement_ledger WHERE payment_id=$1 ORDER BY created_at ASC',
+    [payment.id]
+  );
   const { rows: history } = await query(
     'SELECT h.id,h.from_status,h.to_status,h.note,h.created_at,u.full_name AS actor_name,u.role AS actor_role FROM payment_status_history h LEFT JOIN users u ON u.id=h.actor_id WHERE h.payment_id=$1 ORDER BY h.created_at ASC',
     [payment.id]
@@ -166,7 +187,7 @@ const getReconciliation = asyncHandler(async (req, res) => {
     'SELECT al.id,al.action,al.detail,al.created_at,u.full_name AS actor_name,u.role AS actor_role FROM audit_log al LEFT JOIN users u ON u.id=al.actor_id WHERE al.detail ILIKE $1 ORDER BY al.created_at DESC LIMIT 50',
     ['%'+(payment.provider_ref || payment.id)+'%']
   );
-  res.json({payment,history,audit});
+  res.json({payment,history,ledger,audit});
 });
 
 const listMine = asyncHandler(async (req, res) => {
