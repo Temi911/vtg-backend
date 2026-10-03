@@ -42,6 +42,14 @@ function assertLiveProviderConfigured(method) {
   throw new Error(`Live payment mode is enabled but no licensed ${method.toUpperCase()} provider adapter is configured`);
 }
 
+// No live adapters are registered yet. Keep readiness truthful: an environment
+// variable alone must never make a rail appear live-capable.
+const LIVE_ADAPTERS = Object.freeze({});
+
+function isLiveAdapterReady(method) {
+  return typeof LIVE_ADAPTERS[method] === 'function';
+}
+
 function mockRef(prefix) {
   return `${prefix}-${Date.now()}-${uuidv4().slice(0, 8).toUpperCase()}`;
 }
@@ -150,7 +158,7 @@ const DpProvider = {
 
 
 function providerStatus(method, label) {
-  const configured = LIVE_ENABLED && Boolean(process.env[`VTG_${method.toUpperCase()}_PROVIDER`]);
+  const configured = LIVE_ENABLED && isLiveAdapterReady(method);
   return { method, label, mode: LIVE_ENABLED ? (configured ? 'live-configured' : 'live-unavailable') : 'mock', configured };
 }
 
