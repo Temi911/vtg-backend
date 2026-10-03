@@ -19,7 +19,7 @@ const overview = asyncHandler(async (req,res)=>{
             JOIN users bu ON bu.id=lc.buyer_id
             JOIN users su ON su.id=lc.supplier_id
             ORDER BY lc.updated_at DESC LIMIT 100`),
-    query(`SELECT p.*,o.reference AS order_reference
+    query(`SELECT p.*,o.reference AS order_reference, CASE WHEN p.status IN ('pending','processing') AND p.created_at < now() - interval '48 hours' THEN 'overdue' WHEN p.status='failed' THEN 'failed' WHEN p.status='refunded' THEN 'refunded' WHEN p.status='processing' THEN 'attention' ELSE 'normal' END AS finance_exception
             FROM payment_requests p LEFT JOIN orders o ON o.id=p.order_id
             ORDER BY p.created_at DESC LIMIT 100`),
     query(`SELECT s.*,o.reference AS order_reference,o.status AS order_status,
