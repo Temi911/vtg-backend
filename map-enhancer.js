@@ -127,6 +127,10 @@
       #mapDrawer .atlasShipmentMarker[data-status="arrived"]{background:rgba(240,175,55,.92)}
       #mapDrawer .atlasShipmentMarker[data-status="attention"]{background:rgba(215,25,32,.98)}
       #mapDrawer .atlasOperationalPortMarker{position:relative;width:31px;height:31px;border:1px solid rgba(240,198,107,.5);border-radius:11px;background:rgba(20,18,12,.9);color:#f0c66b;display:grid;place-items:center;padding:0;cursor:pointer;box-shadow:0 0 0 4px rgba(240,198,107,.08),0 7px 22px rgba(0,0,0,.4)}
+      #mapDrawer .atlasRoutePopup{min-width:170px;max-width:240px;padding:10px 12px;border:1px solid rgba(255,255,255,.16);border-radius:12px;background:rgba(13,17,23,.94);box-shadow:0 12px 30px rgba(0,0,0,.35);color:#eef3f6;backdrop-filter:blur(10px);font-family:Manrope,sans-serif;pointer-events:none}
+      #mapDrawer .atlasRoutePopup strong{display:block;font-size:9px;letter-spacing:.12em;color:#f0c66b;margin-bottom:4px}
+      #mapDrawer .atlasRoutePopup span{display:block;font-size:12px;font-weight:700}
+      #mapDrawer .atlasRoutePopup small{display:block;margin-top:4px;font-size:10px;color:#b9c5ce}
       #mapDrawer .atlasNextOperationalMarker{position:relative;width:38px;height:38px;border:1px solid rgba(240,198,107,.82);border-radius:50%;background:rgba(34,27,9,.94);color:#f6cf72;display:grid;place-items:center;padding:0;cursor:pointer;box-shadow:0 0 0 0 rgba(240,198,107,.35),0 0 24px rgba(240,198,107,.28);animation:vtgAtlasNextPulse 2.2s ease-out infinite}
       #mapDrawer .atlasNextOperationalMarker .core{font-size:15px;line-height:1}
       #mapDrawer .atlasNextOperationalMarker .label{position:absolute;left:50%;top:-15px;transform:translateX(-50%);white-space:nowrap;padding:3px 6px;border-radius:999px;background:#f0c66b;color:#171006;font:900 6px Manrope,system-ui;letter-spacing:.08em}
@@ -401,6 +405,18 @@
       map.addLayer({id:'vtg-shipment-current',type:'line',source:'vtg-shipment-progress',filter:['==',['get','stage'],'current'],paint:{'line-color':'#f0c66b','line-width':3.4,'line-opacity':.98,'line-dasharray':[1,1]}});
     }
 
+    function showAtlasRoutePopup(s, kind, point) {
+      if(!point||!Number.isFinite(Number(point.lng))||!Number.isFinite(Number(point.lat))) return;
+      const popup=doc.createElement('div');
+      popup.className='atlasRoutePopup';
+      const title=kind==='next'?'NEXT OPERATIONAL POINT':'DESTINATION';
+      const name=point.name || (kind==='destination'?s.destinationPort:(s.liveTracking?.nextPort||s.nextPort)) || 'Operational point';
+      const status=s.status||'In transit';
+      popup.innerHTML='<strong>'+title+'</strong><span>'+name+'</span><small>'+status+(s.liveTracking?.eta&&kind==='next'?' • ETA '+s.liveTracking.eta:'')+'</small>';
+      const marker=new ml.Marker({element:popup,anchor:'bottom'}).setLngLat([Number(point.lng),Number(point.lat)]).addTo(map);
+      window.setTimeout(()=>{ try{marker.remove();}catch(_){} },4200);
+    }
+
     function addProgressPointMarkers(visibleShipments) {
       visibleShipments.forEach(s=>{
         const next=s.journey?.next;
@@ -409,7 +425,7 @@
           const el=doc.createElement('button');
           el.type='button'; el.className='atlasNextOperationalMarker'; el.title='Next operational point • '+(next.name||'Next point');
           el.innerHTML='<span class="label">NEXT</span><span class="core">◆</span>';
-          el.onclick=e=>{e.stopPropagation();focusShipmentStage(s,'logistics',next);};
+          el.onclick=e=>{e.stopPropagation();focusShipmentStage(s,'logistics',next);showAtlasRoutePopup(s,'next',next);};
           shipmentMarkers.push(new ml.Marker({element:el,anchor:'center'}).setLngLat([Number(next.lng),Number(next.lat)]).addTo(map));
         }
         if(validPoint(destination)){
@@ -418,7 +434,7 @@
           const el=doc.createElement('button');
           el.type='button'; el.className='atlasDestinationMarker'; el.title='Destination • '+(s.destinationPort||'Destination');
           el.innerHTML='<span class="core">⚓</span><span class="label">Destination</span>';
-          el.onclick=e=>{e.stopPropagation();focusShipmentStage(s,'delivery',destination);};
+          el.onclick=e=>{e.stopPropagation();focusShipmentStage(s,'delivery',destination);showAtlasRoutePopup(s,'destination',destination);};
           shipmentMarkers.push(new ml.Marker({element:el,anchor:'center'}).setLngLat([Number(destination.lng),Number(destination.lat)]).addTo(map));
         }
       });
