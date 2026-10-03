@@ -89,6 +89,20 @@
       #mapDrawer .atlasSearch button{border:0;border-radius:10px;background:#d71920;color:#fff;padding:8px 11px;font-size:9px;font-weight:900;cursor:pointer}
       #mapDrawer .atlasChips{pointer-events:auto;display:flex;gap:7px;flex-wrap:wrap}
       #mapDrawer .atlasOpsSummary{pointer-events:auto;display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 2px}
+      #mapDrawer .atlasShipmentList{pointer-events:auto;display:grid;gap:6px;margin:8px 0 10px;max-height:230px;overflow:auto;padding-right:2px}
+      #mapDrawer .atlasShipmentList::-webkit-scrollbar{width:4px}
+      #mapDrawer .atlasShipmentList::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:99px}
+      #mapDrawer .atlasShipmentCard{width:100%;display:grid;grid-template-columns:34px 1fr auto;gap:9px;align-items:center;padding:8px;border:1px solid rgba(255,255,255,.11);border-radius:12px;background:rgba(5,9,14,.68);color:#e8edf0;text-align:left;cursor:pointer;backdrop-filter:blur(14px)}
+      #mapDrawer .atlasShipmentCard:hover,#mapDrawer .atlasShipmentCard.selected{border-color:rgba(224,92,76,.65);background:rgba(215,25,32,.11)}
+      #mapDrawer .atlasShipmentCardIcon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(215,25,32,.15);border:1px solid rgba(215,25,32,.28);font-size:15px}
+      #mapDrawer .atlasShipmentCardMain{min-width:0}
+      #mapDrawer .atlasShipmentCardMain b{display:block;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      #mapDrawer .atlasShipmentCardMain small{display:block;color:#8f9ca6;font-size:7px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      #mapDrawer .atlasShipmentCardMeta{display:grid;justify-items:end;gap:3px}
+      #mapDrawer .atlasShipmentBadge{font-size:6px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;padding:4px 6px;border-radius:999px;background:rgba(255,255,255,.07);color:#cbd5dc}
+      #mapDrawer .atlasShipmentPct{font-size:7px;color:#d7b55e;font-weight:900}
+      #mapDrawer .atlasShipmentListEmpty{padding:12px;border:1px dashed rgba(255,255,255,.12);border-radius:12px;color:#7f8c96;font-size:8px;text-align:center}
+
       #mapDrawer .atlasOpsPill{border:1px solid rgba(255,255,255,.13);background:rgba(5,9,14,.68);color:#dce4ea;border-radius:999px;padding:6px 9px;font-size:7px;font-weight:900;cursor:pointer;backdrop-filter:blur(14px)}
       #mapDrawer .atlasOpsPill strong{font-size:9px;margin-right:3px;color:#fff}
       #mapDrawer .atlasOpsPill.active{border-color:#e05c4c;background:rgba(215,25,32,.16);color:#fff}
@@ -217,6 +231,7 @@
           <div class="atlasLive"><i></i> LIVE TRADE ATLAS <span id="atlasRoleScope" class="atlasRoleScope">Loading workspace…</span></div>
           <div class="atlasCount" id="vtgAtlasCount">Loading locations…</div>
           <div class="atlasOpsSummary" id="atlasOpsSummary" aria-label="Shipment operational summary"></div>
+          <div class="atlasShipmentList" id="atlasShipmentList" aria-label="Shipment operations"></div>
           <div class="atlasWeather"><b id="atlasWeatherTitle">Trade conditions</b><small id="atlasWeatherText">Monitoring global trade corridors and shipment activity</small></div>
           <div class="atlasInfo" id="vtgAtlasInfo"></div>
           <div class="atlasLegend"><span class="legendDot port"></span> Seaport <span style="margin-left:7px" class="legendDot air"></span> Airport <span style="margin-left:8px">Click any location for details</span></div>
@@ -444,6 +459,48 @@
         delivered:active.filter(s=>s.status==='delivered'||s.delivery?.status==='confirmed').length
       };
     }
+    function filteredAtlasShipments(){
+      const active=shipments.filter(s=>s.status!=='cancelled');
+      if(shipmentStatusFilter==='all') return active;
+      if(shipmentStatusFilter==='customs') return active.filter(s=>{
+        const x=s.customs?.status;
+        return x&&x!=='not_started'&&!['cleared','released'].includes(x);
+      });
+      if(shipmentStatusFilter==='attention') return active.filter(s=>s.status==='attention'||s.status==='disputed');
+      if(shipmentStatusFilter==='delivered') return active.filter(s=>s.status==='delivered'||s.delivery?.status==='confirmed');
+      if(shipmentStatusFilter==='in_transit') return active.filter(s=>s.status==='in_transit'||s.status==='shipped');
+      return active.filter(s=>s.status===shipmentStatusFilter);
+    }
+
+    function renderShipmentList(){
+      const box=qs(doc,'#atlasShipmentList');
+      if(!box)return;
+      const rows=filteredAtlasShipments().slice().sort((a,b)=>(Number(b.percentComplete||0)-Number(a.percentComplete||0))).slice(0,8);
+      if(!rows.length){
+        box.innerHTML='<div class="atlasShipmentListEmpty">No shipments match the current operational filter.</div>';
+        return;
+      }
+      box.innerHTML=rows.map(s=>{
+        const status=shipmentLabel(s.status);
+        const point=s.journey?.current||s.routePoints?.[0];
+        const loc=s.liveTracking?.nextPort||s.journey?.next?.name||s.destinationPort||'Route position unavailable';
+        return '<button type="button" class="atlasShipmentCard '+(String(selectedShipmentId)===String(s.id)?'selected':'')+'" data-atlas-shipment-id="'+esc(s.id)+'">'+
+          '<span class="atlasShipmentCardIcon">'+(s.status==='delivered'?'✓':s.status==='arrived'?'⚓':(s.status==='attention'||s.status==='disputed')?'!':'🚢')+'</span>'+
+          '<span class="atlasShipmentCardMain"><b>'+esc(s.reference||('Shipment '+String(s.id).slice(0,8)))+'</b><small>'+esc((s.originPort||'Origin')+' → '+(s.destinationPort||'Destination'))+' • '+esc(loc)+'</small></span>'+
+          '<span class="atlasShipmentCardMeta"><span class="atlasShipmentBadge">'+esc(status)+'</span><span class="atlasShipmentPct">'+esc(String(s.percentComplete??0))+'%</span></span>'+
+        '</button>';
+      }).join('');
+      qsa(box,'[data-atlas-shipment-id]').forEach(btn=>btn.onclick=()=>{
+        const s=shipments.find(x=>String(x.id)===String(btn.dataset.atlasShipmentId));
+        if(!s)return;
+        shipmentRoutesVisible=true;
+        qs(doc,'#atlasShipmentsToggle')?.classList.add('active');
+        selectShipment(s);
+        renderShipmentList();
+        renderShipmentRoutes();
+      });
+    }
+
     function renderOperationalSummary(){
       const box=qs(doc,'#atlasOpsSummary');
       if(!box)return;
@@ -462,6 +519,7 @@
         const statusBtn=qs(doc,'[data-shipment-status="'+(key==='all'?'all':key)+'"]');
         if(statusBtn)statusBtn.classList.add('active');
         renderOperationalSummary();
+        renderShipmentList();
         renderShipmentRoutes();
         renderMarkers();
       });
@@ -542,7 +600,7 @@
       clearMarkers();
       const v=visible();
       v.forEach(x=>markers.push(markerFor(x)));
-      const activeShipments=shipments.filter(s=>s.status!=='cancelled' && (shipmentStatusFilter==='all'||s.status===shipmentStatusFilter));
+      const activeShipments=filteredAtlasShipments();
       qs(doc,'#vtgAtlasCount').textContent=v.length+' locations • '+(v.filter(x=>x.type==='seaport').length)+' seaports • '+(v.filter(x=>x.type==='airport').length)+' airports • '+activeShipments.length+' shipments';
       renderOperationalPortMarkers();
     }
