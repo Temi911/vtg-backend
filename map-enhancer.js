@@ -208,6 +208,11 @@
       #mapDrawer .atlasStep.active .atlasStepDot{background:#e05c4c;border-color:#ffb5b8;box-shadow:0 0 0 4px rgba(224,92,76,.14),0 0 16px rgba(224,92,76,.35)}
       #mapDrawer .atlasStep b{display:block;color:#eef3f5;font-size:9px}
       #mapDrawer .atlasStep small{display:block;color:#8997a1;font-size:7px;margin-top:3px;line-height:1.45}
+      #mapDrawer .atlasJourneyStrip{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:6px;align-items:center;margin:0 0 13px;padding:10px;border:1px solid rgba(255,255,255,.10);border-radius:12px;background:rgba(255,255,255,.035)}
+      #mapDrawer .atlasJourneyStrip>div{min-width:0}
+      #mapDrawer .atlasJourneyStrip small{display:block;color:#788791;font-size:7px;font-weight:900;letter-spacing:.08em;margin-bottom:3px}
+      #mapDrawer .atlasJourneyStrip b{display:block;color:#eef3f6;font-size:8px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      #mapDrawer .atlasJourneyStrip>span{color:#d71920;font-size:13px;font-weight:900}
       #mapDrawer .atlasActions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:15px}
       #mapDrawer .atlasAction{padding:10px;border-radius:11px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:#dfe7eb;font-size:8px;font-weight:900;cursor:pointer}
       #mapDrawer .atlasAction.primary{background:#d71920;border-color:#d71920;color:#fff}
@@ -605,6 +610,13 @@ function atlasTimelinePoint(t,s){
           <button class="atlasInfoClose" id="atlasInfoClose">×</button>
         </div>
         <div class="atlasInfoBody">
+          <div class="atlasJourneyStrip">
+            <div><small>CURRENT</small><b>${esc(s.journey?.current?.name || (s.liveTracking?.available ? "Vessel in transit" : origin))}</b></div>
+            <span>→</span>
+            <div><small>NEXT</small><b>${esc(s.journey?.next?.name || s.liveTracking?.nextPort || "Next operational point")}</b></div>
+            <span>→</span>
+            <div><small>DESTINATION</small><b>${esc(destination)}</b></div>
+          </div>
           ${s.liveTracking?.available ? `<div class="atlasLiveBox"><b>LIVE VESSEL POSITION</b><span>${esc(String(s.liveTracking.latitude ?? "—"))}, ${esc(String(s.liveTracking.longitude ?? "—"))}</span><small>${s.liveTracking.speedKnots != null ? esc(String(s.liveTracking.speedKnots))+" kn" : "Speed unavailable"}${s.liveTracking.nextPort ? " • Next: "+esc(s.liveTracking.nextPort) : ""}${s.liveTracking.eta ? " • ETA: "+esc(new Date(s.liveTracking.eta).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})) : ""}</small></div>` : ""}
           <div class="atlasStats">
             <div class="atlasStat"><small>Progress</small><b>${esc(String(s.percentComplete ?? 0))}%</b></div>
