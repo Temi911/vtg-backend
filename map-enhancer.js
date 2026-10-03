@@ -90,7 +90,10 @@
       #mapDrawer .atlasChips{pointer-events:auto;display:flex;gap:7px;flex-wrap:wrap}
       #mapDrawer .atlasChip.shipments{border-color:rgba(224,92,76,.45);color:#ffd5cf}
       #mapDrawer .atlasChip.shipments.active{background:rgba(224,92,76,.18);border-color:#e05c4c;color:#fff}
-            #mapDrawer .atlasShipmentMarker{position:relative;width:34px;height:34px;border:1px solid rgba(255,255,255,.24);border-radius:50%;background:rgba(215,25,32,.88);box-shadow:0 0 0 5px rgba(215,25,32,.10),0 8px 25px rgba(0,0,0,.45);display:grid;place-items:center;color:#fff;cursor:pointer;padding:0}
+            #mapDrawer .atlasShipmentMarker[data-status="delivered"]{background:rgba(49,156,92,.9);box-shadow:0 0 0 5px rgba(49,156,92,.12),0 8px 25px rgba(0,0,0,.45)}
+      #mapDrawer .atlasShipmentMarker[data-status="arrived"]{background:rgba(240,175,55,.92)}
+      #mapDrawer .atlasShipmentMarker[data-status="attention"]{background:rgba(215,25,32,.98)}
+      #mapDrawer .atlasShipmentMarker{position:relative;width:34px;height:34px;border:1px solid rgba(255,255,255,.24);border-radius:50%;background:rgba(215,25,32,.88);box-shadow:0 0 0 5px rgba(215,25,32,.10),0 8px 25px rgba(0,0,0,.45);display:grid;place-items:center;color:#fff;cursor:pointer;padding:0}
       #mapDrawer .atlasShipmentIcon{position:relative;z-index:2;font-size:16px;line-height:1}
       #mapDrawer .atlasShipmentPulse{position:absolute;inset:-5px;border:1px solid rgba(224,92,76,.55);border-radius:50%;animation:vtgAtlasPulse 2s ease-out infinite}
       @keyframes vtgAtlasPulse{0%{transform:scale(.72);opacity:.9}75%{transform:scale(1.35);opacity:0}100%{transform:scale(1.35);opacity:0}}
@@ -261,7 +264,8 @@
     function renderShipmentRoutes() {
       clearShipmentLayer();
       if (!shipmentRoutesVisible || !shipments.length) return;
-      const features=shipments.filter(s=>(s.routePoints||[]).length>=2).map(s=>({
+      const visibleShipments=shipments.filter(s=>s.status!=='cancelled');
+      const features=visibleShipments.filter(s=>(s.routePoints||[]).length>=2).map(s=>({
         type:'Feature',
         properties:{shipmentId:s.id,reference:s.reference||'Shipment'},
         geometry:{type:'LineString',coordinates:s.routePoints.map(p=>[Number(p.lng),Number(p.lat)])}
@@ -271,14 +275,17 @@
         map.addLayer({id:'vtg-shipment-route-glow',type:'line',source:'vtg-shipment-routes',paint:{'line-color':'#e05c4c','line-width':7,'line-opacity':.16,'line-blur':4}});
         map.addLayer({id:'vtg-shipment-route',type:'line',source:'vtg-shipment-routes',paint:{'line-color':'#e05c4c','line-width':2.6,'line-opacity':.9,'line-dasharray':[2,1.3]}});
       }
-      shipments.forEach(s=>{
+      visibleShipments.forEach(s=>{
         const p=shipmentPoint(s);
         if(!p) return;
         const el=doc.createElement('button');
         el.className='atlasShipmentMarker';
+        el.dataset.status=state;
         el.type='button';
         el.title=(s.reference||'Shipment')+' • '+shipmentLabel(s.status);
-        el.innerHTML='<span class="atlasShipmentPulse"></span><span class="atlasShipmentIcon">🚢</span>';
+        const state=s.status||'pending';
+        const icon=state==='delivered'?'✓':state==='arrived'?'⚓':state==='attention'?'!':'🚢';
+        el.innerHTML='<span class="atlasShipmentPulse"></span><span class="atlasShipmentIcon">'+icon+'</span>';
         el.onclick=e=>{e.stopPropagation();selectShipment(s);};
         shipmentMarkers.push(new ml.Marker({element:el,anchor:'center'}).setLngLat([Number(p.lng),Number(p.lat)]).addTo(map));
       });
