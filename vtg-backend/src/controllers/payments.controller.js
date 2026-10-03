@@ -200,4 +200,4 @@ const compliance = asyncHandler(async (req, res) => {
   res.json({ compliance: rows });
 });
 
-module.exports = { initiate, listMine, updateStatus, forexRates, convert, compliance };
+module.exports = { initiate, listMine, getReconciliation, updateStatus, forexRates, convert, compliance };
