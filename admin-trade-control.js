@@ -3,11 +3,23 @@
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const fmt=n=>n==null?'—':Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
   const badge=s=>'<span class="atc-badge">'+esc(String(s||'').replace(/_/g,' '))+'</span>'; const financeFlag=p=>p.finance_exception&&p.finance_exception!=='normal'?'<span class="atc-badge">'+esc(p.finance_exception.replace(/_/g,' '))+'</span>':'';
+  async function loadProviderReadiness(){
+    const box=document.getElementById('atc-provider-readiness');
+    if(!box)return;
+    try{
+      const r=await fetch('/api/admin/payment-providers',{headers:{Authorization:'Bearer '+token}});
+      const j=await r.json();
+      if(!r.ok)throw Error(j.error?.message||j.message||'Unable to load payment provider readiness');
+      const label={mock:'Mock / simulation', 'live-configured':'Live adapter registered', 'live-unavailable':'Live adapter unavailable'};
+      box.innerHTML='<div class="atc-provider-mode"><b>Payment mode:</b> '+esc(String(j.mode||'mock').toUpperCase())+'</div>'+((j.providers||[]).map(p=>'<div class="atc-provider-row"><div><b>'+esc(p.label)+'</b><small>'+esc(p.method.toUpperCase())+'</small></div><span class="atc-badge">'+esc(label[p.mode]||p.mode)+'</span></div>').join(''))+'<p class="atc-provider-note">Readiness reflects registered provider adapters only. A live status does not by itself prove that external funds can move or that a transaction has settled.</p>';
+    }catch(e){box.innerHTML='<div class="atc-empty">'+esc(e.message)+'</div>'}
+  }
   async function load(){
     if(!token) throw Error('Please sign in as an administrator.');
     const r=await fetch('/api/admin/trade/overview',{headers:{Authorization:'Bearer '+token}});
     const j=await r.json();if(!r.ok)throw Error(j.error?.message||j.message||'Unable to load trade control');
     render(j);
+    loadProviderReadiness();
   }
   function render(d){
     const k=document.getElementById('atc-kpis');
