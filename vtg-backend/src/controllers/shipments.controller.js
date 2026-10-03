@@ -90,13 +90,35 @@ const listForAtlas = asyncHandler(async (req, res) => {
             sc.cleared_at AS customs_cleared_at, sc.released_at AS customs_released_at,
             sd.status AS delivery_status, sd.recipient_name AS delivery_recipient_name,
             sd.notes AS delivery_notes, sd.proof_document_id AS delivery_proof_document_id,
-            sd.confirmed_at AS delivery_confirmed_at
+            sd.confirmed_at AS delivery_confirmed_at,
+            ir.reference AS inspection_reference, ir.status AS inspection_status,
+            ir.product_name AS inspection_product_name, ir.category AS inspection_category,
+            ir.quantity AS inspection_quantity, ir.service_level AS inspection_service_level,
+            ir.requested_checks AS inspection_requested_checks, ir.add_video AS inspection_add_video,
+            ir.urgent AS inspection_urgent, ir.inspection_summary,
+            ir.assigned_agent_id AS inspection_agent_id, ir.completed_at AS inspection_completed_at,
+            ir.payment_status AS inspection_payment_status, ir.paid_at AS inspection_paid_at,
+            ir.agent_payout_usd AS inspection_agent_payout_usd,
+            ap.status AS agent_payout_status, ie.evidence_count AS inspection_evidence_count
      FROM shipments s
      JOIN orders o ON o.id = s.order_id
      JOIN users bu ON bu.id = o.buyer_id
      JOIN users su ON su.id = o.supplier_id
      LEFT JOIN shipment_customs sc ON sc.shipment_id = s.id
      LEFT JOIN shipment_delivery sd ON sd.shipment_id = s.id
+     LEFT JOIN LATERAL (
+       SELECT ir.*
+       FROM inspection_requests ir
+       WHERE ir.order_id = o.id
+       ORDER BY ir.created_at DESC
+       LIMIT 1
+     ) ir ON true
+     LEFT JOIN agent_payouts ap ON ap.inspection_id = ir.id
+     LEFT JOIN LATERAL (
+       SELECT COUNT(*)::int AS evidence_count
+       FROM inspection_evidence x
+       WHERE x.inspection_id = ir.id
+     ) ie ON true
      ${access}
      ORDER BY s.created_at DESC
      LIMIT 100`,
@@ -197,6 +219,25 @@ const listForAtlas = asyncHandler(async (req, res) => {
         confirmedAt: s.delivery_confirmed_at || null,
         proofAttached: Boolean(s.delivery_proof_document_id)
       },
+      inspection: s.inspection_reference ? {
+        reference: s.inspection_reference,
+        status: s.inspection_status || null,
+        productName: s.inspection_product_name || null,
+        category: s.inspection_category || null,
+        quantity: s.inspection_quantity ?? null,
+        serviceLevel: s.inspection_service_level || null,
+        requestedChecks: s.inspection_requested_checks || null,
+        addVideo: Boolean(s.inspection_add_video),
+        urgent: Boolean(s.inspection_urgent),
+        summary: s.inspection_summary || null,
+        assignedAgent: Boolean(s.inspection_agent_id),
+        completedAt: s.inspection_completed_at || null,
+        paymentStatus: s.inspection_payment_status || null,
+        paidAt: s.inspection_paid_at || null,
+        evidenceCount: Number(s.inspection_evidence_count || 0),
+        payoutStatus: s.agent_payout_status || null,
+        agentPayoutUsd: ['admin','agent'].includes(req.user.role) ? (s.inspection_agent_payout_usd ?? null) : null
+      } : null,
       buyerName: req.user.role === 'admin' || req.user.role === 'buyer' ? s.buyer_name : null,
       supplierName: req.user.role === 'admin' || req.user.role === 'supplier' ? s.supplier_name : null,
       milestones: rawEvents.map(e => {
