@@ -466,7 +466,7 @@
       el.className='atlasLiveVesselPosition '+(freshness.state==='stale'?'stale':'');
       el.title=(s.reference||'Shipment')+' • '+(freshness.label);
       el.innerHTML='<span class="atlasLiveVesselCore"></span><span class="atlasLiveVesselRing"></span><span class="atlasLiveVesselLabel">'+(freshness.state==='stale'?'STALE':'LIVE')+'</span>';
-      el.onclick=e=>{e.stopPropagation();selectShipment(s);};
+      el.onclick=e=>{e.stopPropagation();selectShipment(s);showAtlasRoutePopup(s,'current',shipmentPoint(s));};
       const marker=new ml.Marker({element:el,anchor:'center'}).setLngLat([lng,lat]).addTo(map);
       shipmentMarkers.push(marker);
     }
