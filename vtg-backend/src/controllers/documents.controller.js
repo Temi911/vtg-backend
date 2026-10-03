@@ -6,7 +6,7 @@ const { asyncHandler } = require('../utils/asyncHandler');
 const audit = require('../services/audit.service');
 
 const uploadMetaSchema = z.object({
-  docType: z.enum(['bill_of_lading', 'commercial_invoice', 'packing_list', 'certificate_of_origin', 'id_document', 'business_cert', 'bank_statement', 'other']),
+  docType: z.enum(['bill_of_lading', 'commercial_invoice', 'packing_list', 'certificate_of_origin', 'customs_declaration', 'duty_assessment', 'customs_release', 'proof_of_delivery', 'id_document', 'business_cert', 'bank_statement', 'other']),
   orderId: z.string().uuid().optional(),
   lcId: z.string().uuid().optional(),
 }).refine((data) => data.orderId || data.lcId, {
