@@ -60,25 +60,28 @@ function journeySummary(rawEvents, origin, destination) {
   };
 }
 
-function buildAtlasTimeline({ rawEvents, finance, customs, inspection, delivery }) {
+function buildAtlasTimeline({ rawEvents, finance, customs, inspection, delivery, origin, destination }) {
   const items = [];
-  const add = (stage, label, status, detail, time) => {
-    items.push({ stage, label, status: status || 'pending', detail: detail || '', time: time || null });
+  const add = (stage, label, status, detail, time, coordinates = null) => {
+    items.push({ stage, label, status: status || 'pending', detail: detail || '', time: time || null, coordinates });
   };
-  if (finance.lcReference) add('finance', 'Letter of Credit', finance.lcStatus, finance.lcReference, null);
-  if (finance.latestPaymentStatus) add('finance', 'Latest payment', finance.latestPaymentStatus, 'Payment recorded in VTG finance', finance.latestPaymentCreatedAt);
-  for (const e of rawEvents) add('logistics', e.location || 'Shipment milestone', e.status, e.detail, e.event_time);
+  if (finance.lcReference) add('finance', 'Letter of Credit', finance.lcStatus, finance.lcReference, null, origin ? { lat: origin.lat, lng: origin.lng, name: origin.name } : null);
+  if (finance.latestPaymentStatus) add('finance', 'Latest payment', finance.latestPaymentStatus, 'Payment recorded in VTG finance', finance.latestPaymentCreatedAt, origin ? { lat: origin.lat, lng: origin.lng, name: origin.name } : null);
+  for (const e of rawEvents) {
+    const loc = resolveAtlasLocation(e.location);
+    add('logistics', e.location || 'Shipment milestone', e.status, e.detail, e.event_time, loc ? { lat: loc.lat, lng: loc.lng, name: loc.name } : null);
+  }
   if (customs.status && customs.status !== 'not_started') {
-    add('customs', 'Customs submitted', customs.submittedAt ? 'done' : customs.status, 'Declaration submitted', customs.submittedAt);
-    add('customs', 'Customs assessment', customs.assessedAt ? 'done' : 'pending', 'Assessment recorded', customs.assessedAt);
-    add('customs', 'Customs cleared', customs.clearedAt ? 'done' : (customs.status === 'cleared' || customs.status === 'released' ? 'done' : 'pending'), 'Clearance decision', customs.clearedAt);
-    add('customs', 'Customs released', customs.releasedAt ? 'done' : (customs.status === 'released' ? 'done' : 'pending'), 'Cargo release', customs.releasedAt);
+    add('customs', 'Customs submitted', customs.submittedAt ? 'done' : customs.status, 'Declaration submitted', customs.submittedAt, destination ? { lat: destination.lat, lng: destination.lng, name: destination.name } : null);
+    add('customs', 'Customs assessment', customs.assessedAt ? 'done' : 'pending', 'Assessment recorded', customs.assessedAt, destination ? { lat: destination.lat, lng: destination.lng, name: destination.name } : null);
+    add('customs', 'Customs cleared', customs.clearedAt ? 'done' : (customs.status === 'cleared' || customs.status === 'released' ? 'done' : 'pending'), 'Clearance decision', customs.clearedAt, destination ? { lat: destination.lat, lng: destination.lng, name: destination.name } : null);
+    add('customs', 'Customs released', customs.releasedAt ? 'done' : (customs.status === 'released' ? 'done' : 'pending'), 'Cargo release', customs.releasedAt, destination ? { lat: destination.lat, lng: destination.lng, name: destination.name } : null);
   }
   if (inspection.reference) {
-    add('inspection', 'Inspection / verification', inspection.status, inspection.evidenceCount ? String(inspection.evidenceCount) + ' evidence file(s)' : 'Verification request', inspection.completedAt);
-    if (inspection.paymentStatus) add('inspection', 'Inspection payment', inspection.paymentStatus, 'Inspection service payment', null);
+    add('inspection', 'Inspection / verification', inspection.status, inspection.evidenceCount ? String(inspection.evidenceCount) + ' evidence file(s)' : 'Verification request', inspection.completedAt, origin ? { lat: origin.lat, lng: origin.lng, name: origin.name } : null);
+    if (inspection.paymentStatus) add('inspection', 'Inspection payment', inspection.paymentStatus, 'Inspection service payment', null, origin ? { lat: origin.lat, lng: origin.lng, name: origin.name } : null);
   }
-  if (delivery.status && delivery.status !== 'pending') add('delivery', 'Final delivery', delivery.status, delivery.proofAttached ? 'Proof attached' : 'Delivery status recorded', delivery.confirmedAt);
+  if (delivery.status && delivery.status !== 'pending') add('delivery', 'Final delivery', delivery.status, delivery.proofAttached ? 'Proof attached' : 'Delivery status recorded', delivery.confirmedAt, destination ? { lat: destination.lat, lng: destination.lng, name: destination.name } : null);
   const rank = { finance: 1, logistics: 2, customs: 3, inspection: 4, delivery: 5 };
   return items.map((x, i) => ({ ...x, id: x.stage + '-' + i, rank: rank[x.stage] || 9 }))
     .sort((a,b) => {
