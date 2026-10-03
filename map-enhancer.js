@@ -607,7 +607,7 @@ function atlasTimelinePoint(t,s){
             ${vessel.name ? 'Vessel: '+esc(vessel.name)+(vessel.imo?' • IMO '+esc(vessel.imo):'')+'<br>' : ''}
             ${esc(s.originPort||'Origin not recorded')} → ${esc(s.destinationPort||'Destination not recorded')}
           </div>
-          <div class="atlasStageFocus"><b>Shipment movement</b><span>'+esc(String(s.status||'in_transit').replace(/_/g,' '))+'</span><small>'+esc(s.journey?.next?.name ? 'Next '+s.journey.next.name : 'Route intelligence')+'</small></div>
+          <div class="atlasStageFocus"><b>Shipment movement</b><span>${esc(String(s.status||'in_transit').replace(/_/g,' '))}</span><small>${esc(s.journey?.next?.name ? 'Next '+s.journey.next.name : 'Route intelligence')}</small></div>
           <div class="atlasSectionTitle">Unified trade timeline</div>
           ${s.timeline?.length ? '<div class="atlasUnifiedTimeline">'+s.timeline.map((t,i)=>'<button type="button" class="atlasUnifiedStep '+esc(t.status||'pending')+'" data-atlas-unified-index="'+i+'"><span class="atlasUnifiedDot"></span><div><b>'+esc(t.label)+'</b><small>'+esc(t.detail||'')+(t.time?' • '+esc(new Date(t.time).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):'')+'</small></div><em>'+esc(String(t.stage||'').replace(/_/g,' '))+'</em></button>').join('')+'</div>' : '<div class="atlasDescription">No combined finance, logistics, customs, inspection or delivery milestones have been recorded yet.</div>'}
                     <div class="atlasSectionTitle">Operational timeline</div>
