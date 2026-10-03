@@ -64,14 +64,5 @@ async function getLiveVesselPosition(identifier) {
   return value;
 }
 
-/*
- * Keep the provider behind a short server-side cache. Atlas can refresh regularly
- * without hammering the external AIS provider or creating duplicate requests.
- */
-/*
-  if (PROVIDER === 'none') return unavailable('No live tracking provider is configured.');
-  return unavailable(`Unsupported VTG_TRACKING_PROVIDER: ${PROVIDER}`);
-}
-*/
 
 module.exports = { getLiveVesselPosition };
