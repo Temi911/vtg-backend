@@ -131,6 +131,13 @@
       #mapDrawer .atlasPortIcon{position:relative;z-index:2;font-size:14px}
       #mapDrawer .atlasPortHalo{position:absolute;inset:-4px;border:1px solid currentColor;border-radius:14px;opacity:.22;animation:vtgPortPulse 2.8s ease-out infinite}
       @keyframes vtgPortPulse{0%{transform:scale(.8);opacity:.4}80%{transform:scale(1.35);opacity:0}100%{opacity:0}}
+      #mapDrawer .atlasShipmentMarker.live{width:42px;height:42px;border-color:rgba(91,220,188,.72);background:rgba(5,32,29,.94);box-shadow:0 0 0 6px rgba(73,201,139,.13),0 0 30px rgba(73,201,139,.28),0 10px 28px rgba(0,0,0,.5);z-index:4}
+      #mapDrawer .atlasShipmentMarker.live .atlasShipmentIcon{font-size:17px}
+      #mapDrawer .atlasShipmentMarker.live:after{content:"LIVE";position:absolute;left:50%;top:-15px;transform:translateX(-50%);padding:3px 5px;border-radius:999px;background:#49c98b;color:#04120d;font:900 6px Manrope,system-ui;letter-spacing:.08em}
+      #mapDrawer .atlasShipmentMarker.live.stale{border-color:rgba(240,198,107,.7);background:rgba(42,32,8,.94);box-shadow:0 0 0 6px rgba(240,198,107,.1),0 0 26px rgba(240,198,107,.2),0 10px 28px rgba(0,0,0,.5)}
+      #mapDrawer .atlasShipmentMarker.live.stale:after{content:"STALE";background:#f0c66b;color:#171006}
+      #mapDrawer .atlasLiveFreshness{display:inline-flex;align-items:center;gap:5px;margin-left:5px;padding:3px 6px;border-radius:999px;font-size:7px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;background:rgba(73,201,139,.12);color:#65dfaa;border:1px solid rgba(73,201,139,.28)}
+      #mapDrawer .atlasLiveFreshness.stale{background:rgba(240,198,107,.1);color:#f0c66b;border-color:rgba(240,198,107,.25)}
       #mapDrawer .atlasShipmentMarker{position:relative;width:34px;height:34px;border:1px solid rgba(255,255,255,.24);border-radius:50%;background:rgba(215,25,32,.88);box-shadow:0 0 0 5px rgba(215,25,32,.10),0 8px 25px rgba(0,0,0,.45);display:grid;place-items:center;color:#fff;cursor:pointer;padding:0}
       #mapDrawer .atlasShipmentIcon{position:relative;z-index:2;font-size:16px;line-height:1}
       #mapDrawer .atlasShipmentPulse{position:absolute;inset:-5px;border:1px solid rgba(224,92,76,.55);border-radius:50%;animation:vtgAtlasPulse 2s ease-out infinite}
@@ -303,8 +310,19 @@
       if (map.getSource('vtg-shipment-routes')) map.removeSource('vtg-shipment-routes');
     }
 
+    function liveTrackingState(live) {
+      if (!live?.available || !live?.timestamp) return {state:'unavailable',ageMinutes:null,label:'Unavailable'};
+      const ms=Date.now()-new Date(live.timestamp).getTime();
+      const ageMinutes=Number.isFinite(ms) ? Math.max(0,Math.round(ms/60000)) : null;
+      if(ageMinutes==null) return {state:'unavailable',ageMinutes:null,label:'Unavailable'};
+      if(ageMinutes<=30) return {state:'live',ageMinutes,label:ageMinutes===0?'Live now':String(ageMinutes)+'m ago'};
+      return {state:'stale',ageMinutes,label:ageMinutes<1440?String(ageMinutes)+'m ago':String(Math.round(ageMinutes/1440))+'d ago'};
+    }
+
     function shipmentPoint(s) {
-      const p=s.journey?.current || (Array.isArray(s.routePoints)&&s.routePoints.length ? s.routePoints[s.routePoints.length-1] : null);
+      const live=s.liveTracking;
+      const livePoint=live?.available && Number.isFinite(Number(live.latitude)) && Number.isFinite(Number(live.longitude)) ? {lng:Number(live.longitude),lat:Number(live.latitude)} : null;
+      const p=livePoint || s.journey?.current || (Array.isArray(s.routePoints)&&s.routePoints.length ? s.routePoints[s.routePoints.length-1] : null);
       return p && Number.isFinite(Number(p.lng)) && Number.isFinite(Number(p.lat)) ? p : null;
     }
 
@@ -331,12 +349,15 @@
         const p=shipmentPoint(s);
         if(!p) return;
         const el=doc.createElement('button');
-        el.className='atlasShipmentMarker';
-        el.dataset.status=state;
-        el.type='button';
-        el.title=(s.reference||'Shipment')+' • '+shipmentLabel(s.status);
         const state=s.status||'pending';
-        const icon=state==='delivered'?'✓':state==='arrived'?'⚓':state==='attention'?'!':'🚢';
+        const liveState=liveTrackingState(s.liveTracking);
+        const isLivePosition=Boolean(s.liveTracking?.available && Number.isFinite(Number(s.liveTracking.latitude)) && Number.isFinite(Number(s.liveTracking.longitude)));
+        el.className='atlasShipmentMarker'+(isLivePosition?' live':'')+(isLivePosition&&liveState.state==='stale'?' stale':'');
+        el.dataset.status=state;
+        el.dataset.liveState=liveState.state;
+        el.type='button';
+        el.title=(s.reference||'Shipment')+' • '+(isLivePosition ? 'Vessel '+liveState.label : shipmentLabel(s.status));
+        const icon=state==='delivered'?'✓':state==='arrived'?'⚓':state==='attention'?'!':isLivePosition?'◉':'🚢';
         el.innerHTML='<span class="atlasShipmentPulse"></span><span class="atlasShipmentIcon">'+icon+'</span>';
         el.onclick=e=>{e.stopPropagation();selectShipment(s);};
         shipmentMarkers.push(new ml.Marker({element:el,anchor:'center'}).setLngLat([Number(p.lng),Number(p.lat)]).addTo(map));
@@ -608,8 +629,10 @@ function atlasTimelinePoint(t,s){
           const live = selected.liveTracking?.available ? selected.liveTracking : null;
           const liveBox = panel.querySelector('.atlasLiveBox');
           if (liveBox && live) {
-            liveBox.innerHTML = '<b>LIVE VESSEL POSITION</b><span>'+esc(String(live.latitude ?? '—'))+', '+esc(String(live.longitude ?? '—'))+'</span><small>'+
+            const freshness=liveTrackingState(live);
+            liveBox.innerHTML = '<b>LIVE VESSEL POSITION <span class="atlasLiveFreshness '+(freshness.state==='stale'?'stale':'')+'">'+esc(freshness.label)+'</span></b><span>'+esc(String(live.latitude ?? '—'))+', '+esc(String(live.longitude ?? '—'))+'</span><small>'+
               (live.speedKnots != null ? esc(String(live.speedKnots))+' kn' : 'Speed unavailable')+
+              (live.course != null ? ' • Course '+esc(String(live.course))+'°' : '')+
               (live.nextPort ? ' • Next: '+esc(live.nextPort) : '')+
               (live.eta ? ' • ETA: '+esc(new Date(live.eta).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})) : '')+
               '</small>';
