@@ -71,6 +71,8 @@ const listForAtlas = asyncHandler(async (req, res) => {
     access = 'WHERE o.supplier_id = $1';
   } else if (req.user.role === 'bank') {
     access = 'WHERE o.bank_id = $1';
+  } else if (req.user.role === 'agent') {
+    access = 'WHERE o.id IN (SELECT ir.order_id FROM inspection_requests ir WHERE ir.assigned_agent_id = $1 AND ir.order_id IS NOT NULL)';
   } else {
     throw new AppError('Unsupported role', 403, 'FORBIDDEN');
   }
