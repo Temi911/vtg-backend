@@ -3,6 +3,12 @@ const axios = require('axios');
 const PROVIDER = String(process.env.VTG_TRACKING_PROVIDER || 'none').toLowerCase();
 const API_KEY = process.env.VTG_TRACKING_API_KEY || '';
 const BASE_URL = process.env.VTG_TRACKING_BASE_URL || 'https://api.datalastic.com/api/v0';
+const CACHE_TTL_MS = Math.max(15000, Number(process.env.VTG_TRACKING_CACHE_TTL_MS || 45000));
+const cache = new Map();
+
+function cacheKey(identifier) {
+  return String(identifier?.imo || identifier?.mmsi || identifier?.vesselName || '').trim().toLowerCase();
+}
 
 function unavailable(reason) {
   return { available: false, provider: PROVIDER, reason };
@@ -45,9 +51,27 @@ async function fetchDatalastic(identifier) {
 }
 
 async function getLiveVesselPosition(identifier) {
-  if (PROVIDER === 'datalastic') return fetchDatalastic(identifier);
+  const key = cacheKey(identifier);
+  if (key) {
+    const hit = cache.get(key);
+    if (hit && Date.now() - hit.timestamp < CACHE_TTL_MS) return hit.value;
+  }
+  let value;
+  if (PROVIDER === 'datalastic') value = await fetchDatalastic(identifier);
+  else if (PROVIDER === 'none') value = unavailable('No live tracking provider is configured.');
+  else value = unavailable(`Unsupported VTG_TRACKING_PROVIDER: ${PROVIDER}`);
+  if (key) cache.set(key, { timestamp: Date.now(), value });
+  return value;
+}
+
+/*
+ * Keep the provider behind a short server-side cache. Atlas can refresh regularly
+ * without hammering the external AIS provider or creating duplicate requests.
+ */
+/*
   if (PROVIDER === 'none') return unavailable('No live tracking provider is configured.');
   return unavailable(`Unsupported VTG_TRACKING_PROVIDER: ${PROVIDER}`);
 }
+*/
 
 module.exports = { getLiveVesselPosition };
