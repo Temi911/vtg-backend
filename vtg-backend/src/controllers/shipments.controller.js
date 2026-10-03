@@ -299,33 +299,36 @@ const listForAtlas = asyncHandler(async (req, res) => {
         payoutStatus: s.agent_payout_status || null,
         agentPayoutUsd: ['admin','agent'].includes(req.user.role) ? (s.inspection_agent_payout_usd ?? null) : null
       } : null,
-      finance: {
-        orderTotalUsd: s.total_amount_usd ?? null,
-        orderCurrency: s.currency || null,
-        incoterm: s.incoterm || null,
-        lc: s.lc_reference ? {
-          reference: s.lc_reference,
-          status: s.lc_status || null,
-          amountUsd: s.lc_amount_usd ?? null,
-          issuingBankName: s.lc_issuing_bank_name || null,
-          swiftMt700Ref: s.lc_swift_mt700_ref || null,
-          swiftMt103Ref: s.lc_swift_mt103_ref || null,
-          expiryDate: s.lc_expiry_date || null
-        } : null,
-        latestPayment: s.latest_payment_id ? {
-          id: s.latest_payment_id,
-          method: s.latest_payment_method || null,
-          amount: s.latest_payment_amount ?? null,
-          currency: s.latest_payment_currency || null,
-          status: s.latest_payment_status || null,
-          providerRef: s.latest_payment_provider_ref || null,
-          createdAt: s.latest_payment_created_at || null
-        } : null,
-        paymentCount: Number(s.payment_count || 0),
-        activePaymentCount: Number(s.active_payment_count || 0),
-        completedPaymentCount: Number(s.completed_payment_count || 0),
-        completedPaymentAmount: s.completed_payment_amount ?? 0
-      },
+      finance: (() => {
+        const privilegedFinance = req.user.role === 'admin' || req.user.role === 'bank';
+        return {
+          orderTotalUsd: s.total_amount_usd ?? null,
+          orderCurrency: s.currency || null,
+          incoterm: s.incoterm || null,
+          lc: s.lc_reference ? {
+            reference: privilegedFinance ? s.lc_reference : null,
+            status: s.lc_status || null,
+            amountUsd: s.lc_amount_usd ?? null,
+            issuingBankName: privilegedFinance ? (s.lc_issuing_bank_name || null) : null,
+            swiftMt700Ref: privilegedFinance ? (s.lc_swift_mt700_ref || null) : null,
+            swiftMt103Ref: privilegedFinance ? (s.lc_swift_mt103_ref || null) : null,
+            expiryDate: s.lc_expiry_date || null
+          } : null,
+          latestPayment: s.latest_payment_id ? {
+            id: privilegedFinance ? s.latest_payment_id : null,
+            method: s.latest_payment_method || null,
+            amount: s.latest_payment_amount ?? null,
+            currency: s.latest_payment_currency || null,
+            status: s.latest_payment_status || null,
+            providerRef: privilegedFinance ? (s.latest_payment_provider_ref || null) : null,
+            createdAt: s.latest_payment_created_at || null
+          } : null,
+          paymentCount: Number(s.payment_count || 0),
+          activePaymentCount: Number(s.active_payment_count || 0),
+          completedPaymentCount: Number(s.completed_payment_count || 0),
+          completedPaymentAmount: s.completed_payment_amount ?? 0
+        };
+      })(),
       timeline: buildAtlasTimeline({
         rawEvents,
         finance: {
