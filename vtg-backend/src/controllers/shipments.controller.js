@@ -79,6 +79,7 @@ const listForAtlas = asyncHandler(async (req, res) => {
 
   const shipmentsRes = await query(
     `SELECT s.*, o.reference, o.status AS order_status, o.buyer_id, o.supplier_id,
+            o.total_amount_usd, o.currency, o.incoterm,
             bu.full_name AS buyer_name, su.full_name AS supplier_name,
             sc.status AS customs_status, sc.authority AS customs_authority,
             sc.declaration_ref AS customs_declaration_ref,
@@ -99,7 +100,14 @@ const listForAtlas = asyncHandler(async (req, res) => {
             ir.assigned_agent_id AS inspection_agent_id, ir.completed_at AS inspection_completed_at,
             ir.payment_status AS inspection_payment_status, ir.paid_at AS inspection_paid_at,
             ir.agent_payout_usd AS inspection_agent_payout_usd,
-            ap.status AS agent_payout_status, ie.evidence_count AS inspection_evidence_count
+            ap.status AS agent_payout_status, ie.evidence_count AS inspection_evidence_count,
+            lc.reference AS lc_reference, lc.status AS lc_status, lc.amount_usd AS lc_amount_usd,
+            lc.issuing_bank_name AS lc_issuing_bank_name, lc.swift_mt700_ref AS lc_swift_mt700_ref,
+            lc.swift_mt103_ref AS lc_swift_mt103_ref, lc.expiry_date AS lc_expiry_date,
+            pr.id AS latest_payment_id, pr.method AS latest_payment_method, pr.amount AS latest_payment_amount,
+            pr.currency AS latest_payment_currency, pr.status AS latest_payment_status,
+            pr.provider_ref AS latest_payment_provider_ref, pr.created_at AS latest_payment_created_at,
+            ps.payment_count, ps.active_payment_count, ps.completed_payment_count, ps.completed_payment_amount
      FROM shipments s
      JOIN orders o ON o.id = s.order_id
      JOIN users bu ON bu.id = o.buyer_id
@@ -114,6 +122,28 @@ const listForAtlas = asyncHandler(async (req, res) => {
        LIMIT 1
      ) ir ON true
      LEFT JOIN agent_payouts ap ON ap.inspection_id = ir.id
+     LEFT JOIN LATERAL (
+       SELECT l.*
+       FROM letters_of_credit l
+       WHERE l.order_id = o.id
+       ORDER BY l.created_at DESC
+       LIMIT 1
+     ) lc ON true
+     LEFT JOIN LATERAL (
+       SELECT p.*
+       FROM payment_requests p
+       WHERE p.order_id = o.id
+       ORDER BY p.created_at DESC
+       LIMIT 1
+     ) pr ON true
+     LEFT JOIN LATERAL (
+       SELECT COUNT(*)::int AS payment_count,
+              COUNT(*) FILTER (WHERE p.status IN ('pending','processing'))::int AS active_payment_count,
+              COUNT(*) FILTER (WHERE p.status='completed')::int AS completed_payment_count,
+              COALESCE(SUM(p.amount) FILTER (WHERE p.status='completed'),0) AS completed_payment_amount
+       FROM payment_requests p
+       WHERE p.order_id = o.id
+     ) ps ON true
      LEFT JOIN LATERAL (
        SELECT COUNT(*)::int AS evidence_count
        FROM inspection_evidence x
@@ -238,6 +268,33 @@ const listForAtlas = asyncHandler(async (req, res) => {
         payoutStatus: s.agent_payout_status || null,
         agentPayoutUsd: ['admin','agent'].includes(req.user.role) ? (s.inspection_agent_payout_usd ?? null) : null
       } : null,
+      finance: {
+        orderTotalUsd: s.total_amount_usd ?? null,
+        orderCurrency: s.currency || null,
+        incoterm: s.incoterm || null,
+        lc: s.lc_reference ? {
+          reference: s.lc_reference,
+          status: s.lc_status || null,
+          amountUsd: s.lc_amount_usd ?? null,
+          issuingBankName: s.lc_issuing_bank_name || null,
+          swiftMt700Ref: s.lc_swift_mt700_ref || null,
+          swiftMt103Ref: s.lc_swift_mt103_ref || null,
+          expiryDate: s.lc_expiry_date || null
+        } : null,
+        latestPayment: s.latest_payment_id ? {
+          id: s.latest_payment_id,
+          method: s.latest_payment_method || null,
+          amount: s.latest_payment_amount ?? null,
+          currency: s.latest_payment_currency || null,
+          status: s.latest_payment_status || null,
+          providerRef: s.latest_payment_provider_ref || null,
+          createdAt: s.latest_payment_created_at || null
+        } : null,
+        paymentCount: Number(s.payment_count || 0),
+        activePaymentCount: Number(s.active_payment_count || 0),
+        completedPaymentCount: Number(s.completed_payment_count || 0),
+        completedPaymentAmount: s.completed_payment_amount ?? 0
+      },
       buyerName: req.user.role === 'admin' || req.user.role === 'buyer' ? s.buyer_name : null,
       supplierName: req.user.role === 'admin' || req.user.role === 'supplier' ? s.supplier_name : null,
       milestones: rawEvents.map(e => {
