@@ -19,6 +19,25 @@ const initiate = asyncHandler(async (req, res) => {
   const provider = PaymentProviders[data.method];
   if (!provider) throw new AppError('Unsupported payment method', 400);
 
+  if (data.orderId) {
+    const { rows: orderRows } = await query(
+      'SELECT id, buyer_id, supplier_id, status, total_amount_usd, currency FROM orders WHERE id = $1',
+      [data.orderId]
+    );
+    const order = orderRows[0];
+    if (!order) throw new AppError('Order not found', 404, 'ORDER_NOT_FOUND');
+    if (order.buyer_id !== req.user.id) throw new AppError('Only the buyer for this order can initiate its payment', 403, 'FORBIDDEN');
+    if (['cancelled', 'delivered'].includes(order.status)) {
+      throw new AppError('Payments cannot be initiated for a cancelled or completed order', 409, 'ORDER_NOT_PAYABLE');
+    }
+    if (data.currency !== order.currency) {
+      throw new AppError('Payment currency must match the order currency (' + order.currency + ')', 422, 'CURRENCY_MISMATCH');
+    }
+    if (data.currency === 'USD' && data.amount > Number(order.total_amount_usd)) {
+      throw new AppError('Payment amount cannot exceed the order total', 422, 'AMOUNT_EXCEEDS_ORDER');
+    }
+  }
+
   const result = await provider.initiate({
     amount: data.amount,
     currency: data.currency,
