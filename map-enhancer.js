@@ -327,7 +327,34 @@
           const response = await fetch('/api/shipments/' + encodeURIComponent(s.id) + '/live-tracking', { headers: { Authorization: 'Bearer ' + token, Accept: 'application/json' }, cache: 'no-store' });
           const data = await response.json().catch(() => ({}));
           if (!response.ok) throw new Error(data.message || 'Live tracking unavailable');
-          out.innerHTML = data.available && data.vessel ? '<b>Live position available.</b> Provider: ' + escHtml(data.provider || 'connected provider') : '<b>Live tracking not connected.</b> ' + escHtml(data.reason || 'No live vessel/carrier position is available.');
+          if (!(data.available && data.vessel)) {
+            out.innerHTML = '<b>Live tracking not connected.</b> ' + escHtml(data.reason || 'No live vessel/carrier position is available.');
+            return;
+          }
+          const v = data.vessel;
+          const eta = v.eta ? new Date(v.eta).toLocaleString() : 'Not supplied';
+          const updated = v.lastUpdated ? new Date(v.lastUpdated).toLocaleString() : 'Not supplied';
+          out.innerHTML =
+            '<b>Live vessel position</b><br>' +
+            escHtml(v.name || 'Unnamed vessel') + ' • ' + escHtml(data.provider || 'connected provider') +
+            '<br><small>Position: ' + escHtml(Number(v.lat).toFixed(5)) + ', ' + escHtml(Number(v.lng).toFixed(5)) +
+            (v.speedKnots != null ? ' • Speed: ' + escHtml(v.speedKnots) + ' kn' : '') +
+            (v.course != null ? ' • Course: ' + escHtml(v.course) + '°' : '') + '</small>' +
+            '<br><small>Destination: ' + escHtml(v.destination || data.nextMilestone || 'Not supplied') +
+            ' • ETA: ' + escHtml(eta) + '</small>' +
+            '<br><small>Last provider update: ' + escHtml(updated) + '</small>';
+
+          if (window.__vtgLiveVesselMarker) window.__vtgLiveVesselMarker.remove();
+          window.__vtgLiveVesselMarker = new ml.Marker({ color: '#c44b4b' })
+            .setLngLat([Number(v.lng), Number(v.lat)])
+            .setPopup(new ml.Popup({ offset: 12 }).setHTML(
+              '<b>' + escHtml(v.name || 'VTG vessel') + '</b><br><small>Live position • ' +
+              escHtml(data.provider || 'provider') + '<br>Destination: ' +
+              escHtml(v.destination || data.nextMilestone || 'Not supplied') + '</small>'
+            )).addTo(map);
+          window.__vtgLiveVesselMarker.togglePopup();
+          map.flyTo({ center: [Number(v.lng), Number(v.lat)], zoom: Math.max(map.getZoom(), 4.5), duration: 1000 });
+          status('Live vessel position updated • ' + (v.name || 'Unnamed vessel') + ' • ' + (v.lastUpdated ? new Date(v.lastUpdated).toLocaleString() : 'provider timestamp unavailable'));
         } catch (err) { out.textContent = err.message || 'Live tracking unavailable.'; }
       };
       panel.querySelector('[data-play-shipment]').onclick = () => togglePlayback(s);
