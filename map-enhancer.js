@@ -88,6 +88,7 @@
       #mapDrawer .atlasSearch input::placeholder{color:#8c9aa5}
       #mapDrawer .atlasSearch button{border:0;border-radius:10px;background:#d71920;color:#fff;padding:8px 11px;font-size:9px;font-weight:900;cursor:pointer}
       #mapDrawer .atlasChips{pointer-events:auto;display:flex;gap:7px;flex-wrap:wrap}
+      #mapDrawer .atlasRoleScope{margin-left:7px;padding:3px 7px;border:1px solid rgba(255,255,255,.12);border-radius:999px;color:#cbd5dc;font-size:7px;letter-spacing:.04em}
       #mapDrawer .atlasFilterLabel{width:100%;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:#7f8c96;margin-top:3px}
       #mapDrawer .atlasChip.shipmentStatus{padding:6px 9px;font-size:7px}
 
@@ -203,7 +204,7 @@
               <button class="atlasChip shipmentStatus" data-shipment-status="delivered">Delivered</button>
             </div>
           </div>
-          <div class="atlasLive"><i></i> LIVE TRADE ATLAS</div>
+          <div class="atlasLive"><i></i> LIVE TRADE ATLAS <span id="atlasRoleScope" class="atlasRoleScope">Loading workspace…</span></div>
           <div class="atlasCount" id="vtgAtlasCount">Loading locations…</div>
           <div class="atlasWeather"><b id="atlasWeatherTitle">Trade conditions</b><small id="atlasWeatherText">Monitoring global trade corridors and shipment activity</small></div>
           <div class="atlasInfo" id="vtgAtlasInfo"></div>
@@ -409,12 +410,28 @@
       qs(doc,'#atlasOpenOrder').onclick=()=>{ window.location.href='/trade-os.html?order='+encodeURIComponent(s.orderId); };
     }
 
+    function atlasRoleScope(){
+      const path=String(location.pathname||'').toLowerCase();
+      let role='';
+      try{role=localStorage.getItem('vtg-last-role')||''}catch(_){}
+      if(path.includes('admin-os')) role='admin';
+      else if(path.includes('agent-dashboard')) role='agent';
+      const labels={buyer:'Buyer • My shipments',supplier:'Supplier • Outbound shipments',bank:'Bank • Financed shipments',agent:'Agent • Assigned shipments',admin:'Admin • All shipments'};
+      const el=qs(doc,'#atlasRoleScope');
+      if(el) el.textContent=labels[role]||'Workspace • Authorized shipments';
+    }
+
     async function loadShipments() {
+      atlasRoleScope();
       if (atlasRefreshInFlight) return;
       atlasRefreshInFlight = true;
       try {
         const r=await fetch('/api/shipments/atlas',{headers:{Accept:'application/json'}});
-        if(!r.ok) return;
+        if(!r.ok){
+          const el=qs(doc,'#atlasRoleScope');
+          if(el) el.textContent=r.status===403?'No Atlas access for this workspace':'Shipment feed unavailable';
+          return;
+        }
         const d=await r.json();
         shipments=Array.isArray(d.shipments)?d.shipments:[];
         renderShipmentRoutes();
