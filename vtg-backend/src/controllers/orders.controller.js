@@ -154,6 +154,20 @@ const updateStatus = asyncHandler(async (req, res) => {
   if (buyerStatuses.has(status) && !isBuyer && req.user.role !== 'admin') {
     throw new AppError('Only the buyer can confirm or dispute this order', 403, 'FORBIDDEN');
   }
+  if (status === 'delivered') {
+    const customsRes = await query(
+      `SELECT sc.status
+         FROM shipments s
+         JOIN shipment_customs sc ON sc.shipment_id = s.id
+        WHERE s.order_id = $1
+        ORDER BY sc.created_at DESC
+        LIMIT 1`,
+      [order.id]
+    );
+    if (customsRes.rows[0] && customsRes.rows[0].status !== 'released') {
+      throw new AppError('Customs must be released before this shipment can be marked delivered', 409, 'CUSTOMS_NOT_RELEASED');
+    }
+  }
   if (financeStatuses.has(status) && !isBank && req.user.role !== 'admin') {
     throw new AppError('Only the assigned bank can record the LC milestone', 403, 'FORBIDDEN');
   }
