@@ -260,11 +260,12 @@
           time: s.customs.clearedAt ? new Date(s.customs.clearedAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'}) : ''
         });
       }
+      const delivery=s.delivery||{};
       rows.push({
         label:'Final delivery',
-        detail:s.status==='delivered'?'Delivery completed':'Awaiting clearance / delivery confirmation',
-        status:s.status==='delivered'?'done':'pending',
-        time:''
+        detail:delivery.status==='confirmed'?'Delivery confirmed'+(delivery.proofAttached?' • Proof attached':''):(delivery.status==='disputed'?'Delivery disputed':'Awaiting delivery confirmation'),
+        status:delivery.status==='confirmed'||s.status==='delivered'?'done':delivery.status==='disputed'?'active':'pending',
+        time:delivery.confirmedAt?new Date(delivery.confirmedAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'}):''
       });
       return rows;
     }
@@ -306,6 +307,8 @@
           <div class="atlasDescription">${s.buyerName?'Buyer: '+esc(s.buyerName)+'<br>':''}${s.supplierName?'Supplier: '+esc(s.supplierName):'Supplier details restricted by access role.'}</div>
           <div class="atlasSectionTitle">Customs & clearance</div>
           <div class="atlasDescription">${esc(String(customs.status||'not_started').replace(/_/g,' '))}${customs.authority?' • '+esc(customs.authority):''}${customs.declarationRef?' • Declaration '+esc(customs.declarationRef):''}</div>
+          <div class="atlasSectionTitle">Final delivery</div>
+          <div class="atlasDescription">${esc(String(s.delivery?.status||'pending').replace(/_/g,' '))}${s.delivery?.recipientName?' • Recipient: '+esc(s.delivery.recipientName):''}${s.delivery?.proofAttached?' • Proof of delivery attached':''}${s.delivery?.confirmedAt?' • '+esc(new Date(s.delivery.confirmedAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):''}</div>
           <div class="atlasActions"><button class="atlasAction primary" id="atlasOpenShipment">Open shipment</button><button class="atlasAction" id="atlasOpenOrder">Open order</button></div>
         </div>`;
       qs(doc,'#atlasInfoClose').onclick=()=>panel.classList.remove('open');
