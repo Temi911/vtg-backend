@@ -672,11 +672,11 @@ function atlasTimelinePoint(t,s){
         if(hero&&b){hero.src=b;hero.onload=()=>{hero.style.display='block';if(placeholder)placeholder.style.display='none';};hero.onerror=()=>{hero.removeAttribute('src');hero.style.display='none';if(placeholder)placeholder.style.display='grid';};}
         if(mediaStatus) mediaStatus.textContent=count?count+' real trade images loaded from public geographic/media sources.':'No public trade image matched this shipment yet; live shipment data remains available.';
       }).catch(()=>{if(mediaStatus)mediaStatus.textContent='Trade imagery is temporarily unavailable; live shipment data remains available.';});
-      qsa(panel,'[data-atlas-unified-index]').forEach(btn=>btn.onclick=()=>{
+      qsa(panel,'[data-atlas-unified-index]').forEach(btn=>btn.onclick=async()=>{
         const idx=Number(btn.dataset.atlasUnifiedIndex);
         const t=Array.isArray(s.timeline)?s.timeline[idx]:null;
         const p=atlasTimelinePoint(t,s);
-        if(p&&Number.isFinite(Number(p.lng))&&Number.isFinite(Number(p.lat))) map.flyTo({center:[Number(p.lng),Number(p.lat)],zoom:6.6,duration:900});
+        await focusShipmentStage(s,t?.stage||'logistics',p);
       });
       qsa(panel,'[data-atlas-event-index]').forEach(btn=>btn.onclick=()=>{
         const idx=Number(btn.dataset.atlasEventIndex);
