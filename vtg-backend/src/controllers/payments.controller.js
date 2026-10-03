@@ -77,8 +77,10 @@ const updateStatus = asyncHandler(async (req, res) => {
   );
   const current = currentRows[0];
   if (!current) throw new AppError('Payment request not found', 404, 'PAYMENT_NOT_FOUND');
-  if (req.user.role !== 'admin' && current.bank_id !== req.user.id) {
-    throw new AppError('Only the assigned bank or an administrator can update this payment', 403, 'FORBIDDEN');
+  if (req.user.role !== 'admin') {
+    if (req.user.role !== 'bank' || current.bank_id !== req.user.id) {
+      throw new AppError('Only the assigned bank or an administrator can update this payment', 403, 'FORBIDDEN');
+    }
   }
   const allowed = {
     pending: ['processing','failed'],
