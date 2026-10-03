@@ -171,7 +171,14 @@ const getReconciliation = asyncHandler(async (req, res) => {
 
 const listMine = asyncHandler(async (req, res) => {
   const { rows } = await query(
-    `SELECT p.*, o.reference AS order_reference, o.status AS order_status
+    `SELECT p.*, o.reference AS order_reference, o.status AS order_status,
+            CASE
+              WHEN p.status IN ('pending','processing') AND p.created_at < now() - interval '48 hours' THEN 'overdue'
+              WHEN p.status = 'failed' THEN 'failed'
+              WHEN p.status = 'refunded' THEN 'refunded'
+              WHEN p.status = 'processing' THEN 'attention'
+              ELSE 'normal'
+            END AS finance_exception
        FROM payment_requests p
        LEFT JOIN orders o ON o.id = p.order_id
       WHERE p.initiated_by = $1
