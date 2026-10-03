@@ -16,7 +16,7 @@
     if (window.VTGInitMap) return window.VTGInitMap();
     if (document.querySelector('script[data-vtg-map-enhancer]')) return;
     const s = document.createElement('script');
-    s.src = '/map-enhancer.js?v=atlas11';
+    s.src = '/map-enhancer.js?v=atlas12';
     s.dataset.vtgMapEnhancer = '1';
     s.onload = () => window.VTGInitMap && window.VTGInitMap();
     document.head.appendChild(s);
