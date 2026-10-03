@@ -1,8 +1,8 @@
 const router = require('express').Router();
 const ctrl = require('../controllers/payments.controller');
-const { requireAuth } = require('../middleware/auth');
+const { requireAuth, requireRole } = require('../middleware/auth');
 
-router.post('/', requireAuth, ctrl.initiate);
+router.post('/', requireAuth, requireRole('buyer'), ctrl.initiate);
 router.get('/', requireAuth, ctrl.listMine);
 router.get('/forex-rates', ctrl.forexRates);
 router.post('/forex/convert', ctrl.convert);
