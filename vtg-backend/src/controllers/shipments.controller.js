@@ -77,12 +77,8 @@ const listForAtlas = asyncHandler(async (req, res) => {
 
     const origin = resolveAtlasLocation(s.origin_port);
     if (origin) points.push({
-      type: 'origin',
-      name: origin.name,
-      city: origin.city,
-      country: origin.country,
-      lat: origin.lat,
-      lng: origin.lng
+      type: 'origin', name: origin.name, city: origin.city, country: origin.country,
+      lat: origin.lat, lng: origin.lng
     });
 
     for (const e of rawEvents) {
@@ -92,15 +88,9 @@ const listForAtlas = asyncHandler(async (req, res) => {
       if (previous && previous.lat === loc.lat && previous.lng === loc.lng) continue;
       points.push({
         type: e.status === 'active' ? 'active' : 'milestone',
-        name: loc.name,
-        city: loc.city,
-        country: loc.country,
-        lat: loc.lat,
-        lng: loc.lng,
-        eventId: e.id,
-        status: e.status,
-        detail: e.detail,
-        eventTime: e.event_time
+        name: loc.name, city: loc.city, country: loc.country,
+        lat: loc.lat, lng: loc.lng, eventId: e.id, status: e.status,
+        detail: e.detail, eventTime: e.event_time
       });
     }
 
@@ -109,35 +99,21 @@ const listForAtlas = asyncHandler(async (req, res) => {
       const previous = points[points.length - 1];
       if (!previous || previous.lat !== destination.lat || previous.lng !== destination.lng) {
         points.push({
-          type: 'destination',
-          name: destination.name,
-          city: destination.city,
-          country: destination.country,
-          lat: destination.lat,
-          lng: destination.lng
+          type: 'destination', name: destination.name, city: destination.city,
+          country: destination.country, lat: destination.lat, lng: destination.lng
         });
       }
     }
 
     return {
-      id: s.id,
-      orderId: s.order_id,
-      reference: s.reference,
-      containerNo: s.container_no,
-      carrier: s.carrier,
-      originPort: s.origin_port,
-      destinationPort: s.destination_port,
-      percentComplete: s.percent_complete,
-      status: mapShipmentStatus(s.order_status, s.percent_complete),
+      id: s.id, orderId: s.order_id, reference: s.reference, containerNo: s.container_no,
+      carrier: s.carrier, originPort: s.origin_port, destinationPort: s.destination_port,
+      percentComplete: s.percent_complete, status: mapShipmentStatus(s.order_status, s.percent_complete),
       buyerName: req.user.role === 'admin' || req.user.role === 'buyer' ? s.buyer_name : null,
       supplierName: req.user.role === 'admin' || req.user.role === 'supplier' ? s.supplier_name : null,
       milestones: rawEvents.map(e => ({
-        id: e.id,
-        location: e.location,
-        detail: e.detail,
-        status: e.status,
-        eventTime: e.event_time,
-        sortOrder: e.sort_order,
+        id: e.id, location: e.location, detail: e.detail, status: e.status,
+        eventTime: e.event_time, sortOrder: e.sort_order,
         coordinates: resolveAtlasLocation(e.location) ? {
           lat: resolveAtlasLocation(e.location).lat,
           lng: resolveAtlasLocation(e.location).lng,
@@ -154,10 +130,8 @@ const listForAtlas = asyncHandler(async (req, res) => {
 const getLiveTracking = asyncHandler(async (req, res) => {
   const shipmentRes = await query(
     `SELECT s.*, o.buyer_id, o.supplier_id
-     FROM shipments s
-     JOIN orders o ON o.id = s.order_id
-     WHERE s.id = $1
-     LIMIT 1`,
+     FROM shipments s JOIN orders o ON o.id = s.order_id
+     WHERE s.id = $1 LIMIT 1`,
     [req.params.shipmentId]
   );
   const shipment = shipmentRes.rows[0];
@@ -174,30 +148,21 @@ const getLiveTracking = asyncHandler(async (req, res) => {
   if (!allowed) throw new AppError('Forbidden', 403, 'FORBIDDEN');
 
   const tracking = await getLiveVesselPosition({
-    vesselName: shipment.vessel_name,
-    imo: shipment.vessel_imo,
-    mmsi: shipment.vessel_mmsi
+    vesselName: shipment.vessel_name, imo: shipment.vessel_imo, mmsi: shipment.vessel_mmsi
   });
 
   res.json({
-    ok: true,
-    shipmentId: shipment.id,
-    provider: tracking.provider,
-    available: tracking.available,
-    reason: tracking.reason || null,
-    vessel: tracking.vessel || null,
-    nextMilestone: shipment.destination_port || null
+    ok: true, shipmentId: shipment.id, provider: tracking.provider,
+    available: tracking.available, reason: tracking.reason || null,
+    vessel: tracking.vessel || null, nextMilestone: shipment.destination_port || null
   });
 });
 
 const audit = require('../services/audit.service');
 
 const createSchema = z.object({
-  orderId: z.string().uuid(),
-  containerNo: z.string().optional(),
-  carrier: z.string().optional(),
-  originPort: z.string().optional(),
-  destinationPort: z.string().optional(),
+  orderId: z.string().uuid(), containerNo: z.string().optional(), carrier: z.string().optional(),
+  originPort: z.string().optional(), destinationPort: z.string().optional(),
 });
 
 const create = asyncHandler(async (req, res) => {
@@ -230,11 +195,8 @@ const getForOrder = asyncHandler(async (req, res) => {
   );
   const order = accessRes.rows[0];
   if (!order) throw new AppError('Order not found', 404);
-  const allowed =
-    req.user.role === 'admin' ||
-    req.user.id === order.buyer_id ||
-    req.user.id === order.supplier_id ||
-    req.user.id === order.bank_id;
+  const allowed = req.user.role === 'admin' || req.user.id === order.buyer_id ||
+    req.user.id === order.supplier_id || req.user.id === order.bank_id;
   if (!allowed) throw new AppError('Forbidden', 403, 'FORBIDDEN');
 
   const shipmentRes = await query('SELECT * FROM shipments WHERE order_id = $1 ORDER BY created_at DESC LIMIT 1', [req.params.orderId]);
@@ -283,14 +245,39 @@ const addEvent = asyncHandler(async (req, res) => {
   if(!allowed) throw new AppError('You are not assigned to this shipment',403,'FORBIDDEN');
   if(['delivered','cancelled'].includes(shipment.order_status)) throw new AppError('Shipment cannot be updated after the order is closed',409,'ORDER_CLOSED');
 
+  const existingRes = await query(
+    'SELECT status, sort_order, event_time FROM tracking_events WHERE shipment_id=$1 ORDER BY sort_order DESC, event_time DESC',
+    [req.params.shipmentId]
+  );
+  const existing = existingRes.rows;
+  const currentActive = existing.find(e => e.status === 'active');
+  const highestSort = existing.length ? Number(existing[0].sort_order || 0) : -1;
+  const highestTime = existing.length ? new Date(existing[0].event_time).getTime() : 0;
+
+  if (data.status === 'active' && currentActive) {
+    throw new AppError('This shipment already has an active milestone. Complete it before setting another milestone active.',409,'ACTIVE_MILESTONE_EXISTS');
+  }
+  if (data.sortOrder !== undefined && data.sortOrder <= highestSort) {
+    throw new AppError('Milestone order must move forward from the latest recorded milestone.',409,'INVALID_MILESTONE_ORDER');
+  }
+  if (data.sortOrder === undefined) data.sortOrder = highestSort + 1;
+  if (data.status === 'pending' && existing.length && data.sortOrder <= highestSort) {
+    throw new AppError('Pending milestones cannot be inserted behind an existing milestone.',409,'INVALID_MILESTONE_ORDER');
+  }
+
   const result = await withTransaction(async (client) => {
     const evRes = await client.query(
       `INSERT INTO tracking_events (shipment_id, location, detail, status, sort_order)
-       VALUES ($1,$2,$3,$4,COALESCE($5,0)) RETURNING *`,
+       VALUES ($1,$2,$3,$4,$5) RETURNING *`,
       [req.params.shipmentId, data.location, data.detail || null, data.status, data.sortOrder]
     );
     if (data.percentComplete !== undefined) {
-      await client.query('UPDATE shipments SET percent_complete = $1 WHERE id = $2', [data.percentComplete, req.params.shipmentId]);
+      const nextPercent = Number(data.percentComplete);
+      const currentPercent = Number(shipment.percent_complete || 0);
+      if (nextPercent < currentPercent) {
+        throw new AppError('Shipment completion cannot move backwards.',409,'PERCENT_COMPLETE_REGRESSION');
+      }
+      await client.query('UPDATE shipments SET percent_complete = $1 WHERE id = $2', [nextPercent, req.params.shipmentId]);
     }
     return evRes.rows[0];
   });
