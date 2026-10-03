@@ -91,6 +91,7 @@ const initiate = asyncHandler(async (req, res) => {
     ]
   );
 
+  await query('INSERT INTO payment_status_history (payment_id, from_status, to_status, actor_id, note) VALUES ($1,$2,$3,$4,$5)', [rows[0].id, null, result.status, req.user.id, 'Payment request created']);
   await audit.log(req.user.id, 'Payment Initiated', `${data.method.toUpperCase()} — ${data.amount} ${data.currency} (${result.providerRef})`, req.ip);
   res.status(201).json({ paymentRequest: rows[0] });
 });
@@ -134,6 +135,7 @@ const updateStatus = asyncHandler(async (req, res) => {
     'UPDATE payment_requests SET status=$1, updated_at=now() WHERE id=$2 RETURNING *',
     [data.status, req.params.id]
   );
+  await query('INSERT INTO payment_status_history (payment_id, from_status, to_status, actor_id, note) VALUES ($1,$2,$3,$4,$5)', [req.params.id, current.status, data.status, req.user.id, 'Payment status transition']);
   await audit.log(req.user.id, 'Payment Status Updated', `${current.order_reference || 'Unlinked payment'} — ${current.provider_ref} → ${data.status}`, req.ip);
   res.json({ paymentRequest: rows[0] });
 });
@@ -151,11 +153,15 @@ const getReconciliation = asyncHandler(async (req, res) => {
     allowed = bankRows[0]?.bank_id === req.user.id;
   }
   if (!allowed) throw new AppError('Forbidden',403,'FORBIDDEN');
-  const { rows: audit } = await query(
-    'SELECT al.id,al.action,al.detail,al.created_at,u.full_name AS actor_name,u.role AS actor_role FROM audit_log al LEFT JOIN users u ON u.id=al.actor_id WHERE al.detail ILIKE $1 OR al.detail ILIKE $2 ORDER BY al.created_at DESC LIMIT 50',
-    ['%'+(payment.provider_ref || payment.id)+'%','%'+(payment.order_reference || payment.order_id)+'%']
+  const { rows: history } = await query(
+    'SELECT h.id,h.from_status,h.to_status,h.note,h.created_at,u.full_name AS actor_name,u.role AS actor_role FROM payment_status_history h LEFT JOIN users u ON u.id=h.actor_id WHERE h.payment_id=$1 ORDER BY h.created_at ASC',
+    [payment.id]
   );
-  res.json({payment,audit});
+  const { rows: audit } = await query(
+    'SELECT al.id,al.action,al.detail,al.created_at,u.full_name AS actor_name,u.role AS actor_role FROM audit_log al LEFT JOIN users u ON u.id=al.actor_id WHERE al.detail ILIKE $1 ORDER BY al.created_at DESC LIMIT 50',
+    ['%'+(payment.provider_ref || payment.id)+'%']
+  );
+  res.json({payment,history,audit});
 });
 
 const listMine = asyncHandler(async (req, res) => {
