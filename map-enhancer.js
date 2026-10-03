@@ -422,6 +422,15 @@
             <div class="atlasFact"><small>Cleared</small><b>${customs.clearedAt?esc(new Date(customs.clearedAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):'Pending'}</b></div>
             <div class="atlasFact"><small>Released</small><b>${customs.releasedAt?esc(new Date(customs.releasedAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):'Pending'}</b></div>
           </div>
+          ${s.inspection ? '<div class="atlasSectionTitle">Inspection / verification</div><div class="atlasDescription">'+
+            '<b>'+esc(s.inspection.reference||'Inspection request')+'</b> • '+esc(s.inspection.productName||'Product verification')+' • '+esc(String(s.inspection.quantity??'—'))+
+            (s.inspection.serviceLevel?' • '+esc(s.inspection.serviceLevel):'')+
+            (s.inspection.urgent?' • URGENT':'')+'<br>Status: '+esc(String(s.inspection.status||'requested').replace(/_/g,' '))+
+            ' • Payment: '+esc(String(s.inspection.paymentStatus||'unpaid'))+
+            (s.inspection.assignedAgent?' • Agent assigned':' • Awaiting agent')+
+            (s.inspection.evidenceCount?' • '+esc(String(s.inspection.evidenceCount))+' evidence file'+(s.inspection.evidenceCount===1?'':'s'):'')+
+            (s.inspection.completedAt?' • Completed '+esc(new Date(s.inspection.completedAt).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})):'')+
+            '</div><div class="atlasFactGrid"><div class="atlasFact"><small>Checks</small><b>'+esc(s.inspection.requestedChecks||'Standard verification')}</b></div><div class="atlasFact"><small>Report</small><b>'+esc(s.inspection.summary?'Available':'Pending')}</b></div>'+(s.inspection.payoutStatus?'<div class="atlasFact"><small>Agent payout</small><b>'+esc(s.inspection.payoutStatus)+'</b></div>':'')+'</div>' : ''}
           <div class="atlasSectionTitle">Delivery & proof</div>
           <div class="atlasDescription">${esc(delivery.status||'Awaiting confirmation')}${delivery.recipientName?' • Recipient: '+esc(delivery.recipientName):''}${delivery.notes?' • '+esc(delivery.notes):''}</div>
           <div class="atlasFactGrid">
