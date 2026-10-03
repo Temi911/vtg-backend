@@ -31,7 +31,6 @@ const listForAtlas = asyncHandler(async (req, res) => {
   const params = [req.user.id];
   let access = '';
   if (req.user.role === 'admin') {
-    access = '';
     params.length = 0;
   } else if (req.user.role === 'buyer') {
     access = 'WHERE o.buyer_id = $1';
@@ -74,12 +73,8 @@ const listForAtlas = asyncHandler(async (req, res) => {
   const shipments = shipmentsRes.rows.map(s => {
     const rawEvents = eventsByShipment.get(s.id) || [];
     const points = [];
-
     const origin = resolveAtlasLocation(s.origin_port);
-    if (origin) points.push({
-      type: 'origin', name: origin.name, city: origin.city, country: origin.country,
-      lat: origin.lat, lng: origin.lng
-    });
+    if (origin) points.push({ type: 'origin', name: origin.name, city: origin.city, country: origin.country, lat: origin.lat, lng: origin.lng });
 
     for (const e of rawEvents) {
       const loc = resolveAtlasLocation(e.location);
@@ -98,10 +93,7 @@ const listForAtlas = asyncHandler(async (req, res) => {
     if (destination) {
       const previous = points[points.length - 1];
       if (!previous || previous.lat !== destination.lat || previous.lng !== destination.lng) {
-        points.push({
-          type: 'destination', name: destination.name, city: destination.city,
-          country: destination.country, lat: destination.lat, lng: destination.lng
-        });
+        points.push({ type: 'destination', name: destination.name, city: destination.city, country: destination.country, lat: destination.lat, lng: destination.lng });
       }
     }
 
@@ -111,15 +103,14 @@ const listForAtlas = asyncHandler(async (req, res) => {
       percentComplete: s.percent_complete, status: mapShipmentStatus(s.order_status, s.percent_complete),
       buyerName: req.user.role === 'admin' || req.user.role === 'buyer' ? s.buyer_name : null,
       supplierName: req.user.role === 'admin' || req.user.role === 'supplier' ? s.supplier_name : null,
-      milestones: rawEvents.map(e => ({
-        id: e.id, location: e.location, detail: e.detail, status: e.status,
-        eventTime: e.event_time, sortOrder: e.sort_order,
-        coordinates: resolveAtlasLocation(e.location) ? {
-          lat: resolveAtlasLocation(e.location).lat,
-          lng: resolveAtlasLocation(e.location).lng,
-          name: resolveAtlasLocation(e.location).name
-        } : null
-      })),
+      milestones: rawEvents.map(e => {
+        const loc = resolveAtlasLocation(e.location);
+        return {
+          id: e.id, location: e.location, detail: e.detail, status: e.status,
+          eventTime: e.event_time, sortOrder: e.sort_order,
+          coordinates: loc ? { lat: loc.lat, lng: loc.lng, name: loc.name } : null
+        };
+      }),
       routePoints: points
     };
   }).filter(s => s.routePoints.length >= 2);
@@ -129,7 +120,7 @@ const listForAtlas = asyncHandler(async (req, res) => {
 
 const getLiveTracking = asyncHandler(async (req, res) => {
   const shipmentRes = await query(
-    `SELECT s.*, o.buyer_id, o.supplier_id
+    `SELECT s.*, o.buyer_id, o.supplier_id, o.bank_id
      FROM shipments s JOIN orders o ON o.id = s.order_id
      WHERE s.id = $1 LIMIT 1`,
     [req.params.shipmentId]
@@ -141,10 +132,7 @@ const getLiveTracking = asyncHandler(async (req, res) => {
     req.user.role === 'admin' ||
     (req.user.role === 'buyer' && shipment.buyer_id === req.user.id) ||
     (req.user.role === 'supplier' && shipment.supplier_id === req.user.id) ||
-    (req.user.role === 'bank' && await (async () => {
-      const r = await query('SELECT bank_id FROM orders WHERE id = $1', [shipment.order_id]);
-      return r.rows[0]?.bank_id === req.user.id;
-    })());
+    (req.user.role === 'bank' && shipment.bank_id === req.user.id);
   if (!allowed) throw new AppError('Forbidden', 403, 'FORBIDDEN');
 
   const tracking = await getLiveVesselPosition({
@@ -177,7 +165,7 @@ const create = asyncHandler(async (req, res) => {
     throw new AppError('A shipment can only be created after the order is confirmed', 409, 'INVALID_SHIPMENT_ORDER_STATUS');
   }
   const existing = await query('SELECT id FROM shipments WHERE order_id = $1 LIMIT 1', [data.orderId]);
-  if(existing.rows[0]) throw new AppError('A shipment is already linked to this order', 409, 'SHIPMENT_EXISTS');
+  if (existing.rows[0]) throw new AppError('A shipment is already linked to this order', 409, 'SHIPMENT_EXISTS');
 
   const { rows } = await query(
     `INSERT INTO shipments (order_id, container_no, carrier, origin_port, destination_port)
@@ -205,18 +193,20 @@ const getForOrder = asyncHandler(async (req, res) => {
   const events = await query('SELECT * FROM tracking_events WHERE shipment_id = $1 ORDER BY sort_order ASC, event_time ASC', [shipment.id]);
   const routePoints = [];
   const origin = resolveAtlasLocation(shipment.origin_port);
-  if(origin) routePoints.push({type:'origin',name:origin.name,city:origin.city,country:origin.country,lat:origin.lat,lng:origin.lng});
-  for(const e of events.rows){
-    const loc=resolveAtlasLocation(e.location);
-    if(!loc) continue;
-    const prev=routePoints[routePoints.length-1];
-    if(prev&&prev.lat===loc.lat&&prev.lng===loc.lng) continue;
+  if (origin) routePoints.push({type:'origin',name:origin.name,city:origin.city,country:origin.country,lat:origin.lat,lng:origin.lng});
+  for (const e of events.rows) {
+    const loc = resolveAtlasLocation(e.location);
+    if (!loc) continue;
+    const prev = routePoints[routePoints.length-1];
+    if (prev && prev.lat === loc.lat && prev.lng === loc.lng) continue;
     routePoints.push({type:e.status==='active'?'active':'milestone',name:loc.name,city:loc.city,country:loc.country,lat:loc.lat,lng:loc.lng,status:e.status,detail:e.detail,eventTime:e.event_time});
   }
-  const destination=resolveAtlasLocation(shipment.destination_port);
-  if(destination){
-    const prev=routePoints[routePoints.length-1];
-    if(!prev||prev.lat!==destination.lat||prev.lng!==destination.lng) routePoints.push({type:'destination',name:destination.name,city:destination.city,country:destination.country,lat:destination.lat,lng:destination.lng});
+  const destination = resolveAtlasLocation(shipment.destination_port);
+  if (destination) {
+    const prev = routePoints[routePoints.length-1];
+    if (!prev || prev.lat !== destination.lat || prev.lng !== destination.lng) {
+      routePoints.push({type:'destination',name:destination.name,city:destination.city,country:destination.country,lat:destination.lat,lng:destination.lng});
+    }
   }
   res.json({ shipment, events: events.rows, routePoints });
 });
@@ -231,56 +221,69 @@ const addEventSchema = z.object({
 
 const addEvent = asyncHandler(async (req, res) => {
   const data = addEventSchema.parse(req.body);
-  const shipmentRes = await query(
-    `SELECT s.*, o.status AS order_status, o.supplier_id, o.buyer_id, o.bank_id
-       FROM shipments s JOIN orders o ON o.id = s.order_id
-      WHERE s.id = $1 LIMIT 1`,
-    [req.params.shipmentId]
-  );
-  const shipment = shipmentRes.rows[0];
-  if(!shipment) throw new AppError('Shipment not found',404);
-  const allowed = req.user.role === 'admin' ||
-    (req.user.role === 'supplier' && shipment.supplier_id === req.user.id) ||
-    (req.user.role === 'bank' && shipment.bank_id === req.user.id);
-  if(!allowed) throw new AppError('You are not assigned to this shipment',403,'FORBIDDEN');
-  if(['delivered','cancelled'].includes(shipment.order_status)) throw new AppError('Shipment cannot be updated after the order is closed',409,'ORDER_CLOSED');
-
-  const existingRes = await query(
-    'SELECT status, sort_order, event_time FROM tracking_events WHERE shipment_id=$1 ORDER BY sort_order DESC, event_time DESC',
-    [req.params.shipmentId]
-  );
-  const existing = existingRes.rows;
-  const currentActive = existing.find(e => e.status === 'active');
-  const highestSort = existing.length ? Number(existing[0].sort_order || 0) : -1;
-  const highestTime = existing.length ? new Date(existing[0].event_time).getTime() : 0;
-
-  if (data.status === 'active' && currentActive) {
-    throw new AppError('This shipment already has an active milestone. Complete it before setting another milestone active.',409,'ACTIVE_MILESTONE_EXISTS');
-  }
-  if (data.sortOrder !== undefined && data.sortOrder <= highestSort) {
-    throw new AppError('Milestone order must move forward from the latest recorded milestone.',409,'INVALID_MILESTONE_ORDER');
-  }
-  if (data.sortOrder === undefined) data.sortOrder = highestSort + 1;
-  if (data.status === 'pending' && existing.length && data.sortOrder <= highestSort) {
-    throw new AppError('Pending milestones cannot be inserted behind an existing milestone.',409,'INVALID_MILESTONE_ORDER');
-  }
-
   const result = await withTransaction(async (client) => {
+    const shipmentRes = await client.query(
+      `SELECT s.*, o.status AS order_status, o.supplier_id, o.buyer_id, o.bank_id
+         FROM shipments s JOIN orders o ON o.id = s.order_id
+        WHERE s.id = $1 FOR UPDATE`,
+      [req.params.shipmentId]
+    );
+    const shipment = shipmentRes.rows[0];
+    if (!shipment) throw new AppError('Shipment not found', 404);
+
+    const allowed = req.user.role === 'admin' ||
+      (req.user.role === 'supplier' && shipment.supplier_id === req.user.id) ||
+      (req.user.role === 'bank' && shipment.bank_id === req.user.id);
+    if (!allowed) throw new AppError('You are not assigned to this shipment', 403, 'FORBIDDEN');
+    if (['delivered','cancelled'].includes(shipment.order_status)) {
+      throw new AppError('Shipment cannot be updated after the order is closed', 409, 'ORDER_CLOSED');
+    }
+
+    const existingRes = await client.query(
+      'SELECT status, sort_order FROM tracking_events WHERE shipment_id=$1 ORDER BY sort_order DESC, event_time DESC',
+      [req.params.shipmentId]
+    );
+    const existing = existingRes.rows;
+    const currentActive = existing.find(e => e.status === 'active');
+    const highestSort = existing.length ? Number(existing[0].sort_order || 0) : -1;
+
+    if (data.status === 'active' && currentActive) {
+      throw new AppError('This shipment already has an active milestone. Complete it before setting another milestone active.',409,'ACTIVE_MILESTONE_EXISTS');
+    }
+    if (data.sortOrder !== undefined && data.sortOrder <= highestSort) {
+      throw new AppError('Milestone order must move forward from the latest recorded milestone.',409,'INVALID_MILESTONE_ORDER');
+    }
+    if (data.sortOrder === undefined) data.sortOrder = highestSort + 1;
+
+    if (data.percentComplete !== undefined && data.percentComplete < Number(shipment.percent_complete || 0)) {
+      throw new AppError('Shipment completion cannot move backwards.',409,'PERCENT_COMPLETE_REGRESSION');
+    }
+
+    // A newly recorded milestone becomes the current operational point.
+    // When it is marked done, close any previous active point as well.
+    if (currentActive && data.status === 'done') {
+      await client.query(
+        'UPDATE tracking_events SET status = $1 WHERE shipment_id = $2 AND status = $3',
+        ['done', req.params.shipmentId, 'active']
+      );
+    }
+
     const evRes = await client.query(
       `INSERT INTO tracking_events (shipment_id, location, detail, status, sort_order)
        VALUES ($1,$2,$3,$4,$5) RETURNING *`,
       [req.params.shipmentId, data.location, data.detail || null, data.status, data.sortOrder]
     );
+
     if (data.percentComplete !== undefined) {
-      const nextPercent = Number(data.percentComplete);
-      const currentPercent = Number(shipment.percent_complete || 0);
-      if (nextPercent < currentPercent) {
-        throw new AppError('Shipment completion cannot move backwards.',409,'PERCENT_COMPLETE_REGRESSION');
-      }
-      await client.query('UPDATE shipments SET percent_complete = $1 WHERE id = $2', [nextPercent, req.params.shipmentId]);
+      await client.query(
+        'UPDATE shipments SET percent_complete = $1 WHERE id = $2',
+        [data.percentComplete, req.params.shipmentId]
+      );
     }
+
     return evRes.rows[0];
   });
+
   await audit.log(req.user.id, 'Tracking Updated', `${data.location} — ${data.status}`, req.ip);
   res.status(201).json({ event: result });
 });
