@@ -36,6 +36,20 @@ const initiate = asyncHandler(async (req, res) => {
     if (data.currency === 'USD' && data.amount > Number(order.total_amount_usd)) {
       throw new AppError('Payment amount cannot exceed the order total', 422, 'AMOUNT_EXCEEDS_ORDER');
     }
+    const { rows: activePayments } = await query(
+      `SELECT id, method, amount, currency, status, provider_ref
+       FROM payment_requests
+       WHERE order_id = $1 AND status IN ('pending','processing')`,
+      [data.orderId]
+    );
+    const activeTotal = activePayments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+    const orderTotal = Number(order.total_amount_usd);
+    if (activePayments.some(p => p.method === data.method && p.currency === data.currency)) {
+      throw new AppError('An active payment request already exists for this order and payment method', 409, 'DUPLICATE_ACTIVE_PAYMENT');
+    }
+    if (data.currency === 'USD' && activeTotal + data.amount > orderTotal) {
+      throw new AppError('Active payment requests plus this payment cannot exceed the order total', 422, 'PAYMENT_TOTAL_EXCEEDS_ORDER');
+    }
     const { rows: duplicateRows } = await query(
       `SELECT id, provider_ref, status FROM payment_requests
        WHERE order_id = $1 AND initiated_by = $2 AND method = $3
