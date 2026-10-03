@@ -430,7 +430,7 @@
             (s.inspection.assignedAgent?' • Agent assigned':' • Awaiting agent')+
             (s.inspection.evidenceCount?' • '+esc(String(s.inspection.evidenceCount))+' evidence file'+(s.inspection.evidenceCount===1?'':'s'):'')+
             (s.inspection.completedAt?' • Completed '+esc(new Date(s.inspection.completedAt).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})):'')+
-            '</div><div class="atlasFactGrid"><div class="atlasFact"><small>Checks</small><b>'+esc(s.inspection.requestedChecks||'Standard verification')}</b></div><div class="atlasFact"><small>Report</small><b>'+esc(s.inspection.summary?'Available':'Pending')}</b></div>'+(s.inspection.payoutStatus?'<div class="atlasFact"><small>Agent payout</small><b>'+esc(s.inspection.payoutStatus)+'</b></div>':'')+'</div>' : ''}
+            '</div><div class="atlasFactGrid"><div class="atlasFact"><small>Checks</small><b>'+esc(s.inspection.requestedChecks||'Standard verification')+'</b></div><div class="atlasFact"><small>Report</small><b>'+esc(s.inspection.summary?'Available':'Pending')+'</b></div>'+(s.inspection.payoutStatus?'<div class="atlasFact"><small>Agent payout</small><b>'+esc(s.inspection.payoutStatus)+'</b></div>':'')+'</div>' : ''}
           <div class="atlasSectionTitle">Delivery & proof</div>
           <div class="atlasDescription">${esc(delivery.status||'Awaiting confirmation')}${delivery.recipientName?' • Recipient: '+esc(delivery.recipientName):''}${delivery.notes?' • '+esc(delivery.notes):''}</div>
           <div class="atlasFactGrid">
