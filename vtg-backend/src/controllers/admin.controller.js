@@ -1,6 +1,7 @@
 const { query } = require('../config/db');
 const { AppError } = require('../utils/AppError');
 const { asyncHandler } = require('../utils/asyncHandler');
+const { getProviderStatus } = require('../services/paymentProviders');
 
 const dashboard = asyncHandler(async (req,res)=>{
   if(req.user.role!=='admin') throw new AppError('Admin access required',403,'FORBIDDEN');
@@ -15,10 +16,16 @@ const dashboard = asyncHandler(async (req,res)=>{
   res.json({users:users.rows,verification:verification.rows[0],orders:orders.rows,lcs:lcs.rows,payments:payments.rows,shipments:shipments.rows});
 });
 
+const paymentProviders = asyncHandler(async (req,res)=>{
+  if(req.user.role!=='admin') throw new AppError('Admin access required',403,'FORBIDDEN');
+  const providers=getProviderStatus();
+  res.json({mode:String(process.env.PAYMENTS_MODE||'mock').toLowerCase(),providers});
+});
+
 const users = asyncHandler(async (req,res)=>{
   if(req.user.role!=='admin') throw new AppError('Admin access required',403,'FORBIDDEN');
   const {rows}=await query("SELECT id,full_name,email,role,business_verification_status,created_at FROM users ORDER BY created_at DESC LIMIT 100");
   res.json({users:rows});
 });
 
-module.exports={dashboard,users};
+module.exports={dashboard,users,paymentProviders};
