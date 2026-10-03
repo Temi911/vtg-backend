@@ -279,25 +279,7 @@ const listForAtlas = asyncHandler(async (req, res) => {
       },
       inspection: s.inspection_reference ? {
         reference: s.inspection_reference,
-        status: s.inspect      timeline: buildAtlasTimeline({
-        rawEvents,
-        finance: {
-          lcReference: s.lc_reference, lcStatus: s.lc_status, lcExpiryDate: s.lc_expiry_date,
-          latestPaymentStatus: s.latest_payment_status, latestPaymentCreatedAt: s.latest_payment_created_at
-        },
-        customs: {
-          status: s.customs_status, submittedAt: s.customs_submitted_at, assessedAt: s.customs_assessed_at,
-          clearedAt: s.customs_cleared_at, releasedAt: s.customs_released_at
-        },
-        inspection: {
-          reference: s.inspection_reference, status: s.inspection_status, completedAt: s.inspection_completed_at,
-          paymentStatus: s.inspection_payment_status, evidenceCount: s.inspection_evidence_count
-        },
-        delivery: {
-          status: s.delivery_status, confirmedAt: s.delivery_confirmed_at, proofAttached: Boolean(s.delivery_proof_document_id)
-        }
-      }),
-ion_status || null,
+        status: s.inspection_status || null,
         productName: s.inspection_product_name || null,
         category: s.inspection_category || null,
         quantity: s.inspection_quantity ?? null,
@@ -341,6 +323,24 @@ ion_status || null,
         completedPaymentCount: Number(s.completed_payment_count || 0),
         completedPaymentAmount: s.completed_payment_amount ?? 0
       },
+      timeline: buildAtlasTimeline({
+        rawEvents,
+        finance: {
+          lcReference: s.lc_reference, lcStatus: s.lc_status, lcExpiryDate: s.lc_expiry_date,
+          latestPaymentStatus: s.latest_payment_status, latestPaymentCreatedAt: s.latest_payment_created_at
+        },
+        customs: {
+          status: s.customs_status, submittedAt: s.customs_submitted_at, assessedAt: s.customs_assessed_at,
+          clearedAt: s.customs_cleared_at, releasedAt: s.customs_released_at
+        },
+        inspection: {
+          reference: s.inspection_reference, status: s.inspection_status, completedAt: s.inspection_completed_at,
+          paymentStatus: s.inspection_payment_status, evidenceCount: s.inspection_evidence_count
+        },
+        delivery: {
+          status: s.delivery_status, confirmedAt: s.delivery_confirmed_at, proofAttached: Boolean(s.delivery_proof_document_id)
+        }
+      }),
       buyerName: req.user.role === 'admin' || req.user.role === 'buyer' ? s.buyer_name : null,
       supplierName: req.user.role === 'admin' || req.user.role === 'supplier' ? s.supplier_name : null,
       milestones: rawEvents.map(e => {
