@@ -64,35 +64,35 @@
       #mapDrawer .mapWash{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 48% 48%,transparent 0,rgba(2,5,9,.08) 42%,rgba(2,5,9,.72) 100%);z-index:2}
       #mapDrawer .atlasTop{position:absolute;left:24px;right:82px;top:18px;z-index:20;display:flex;align-items:center;gap:14px;pointer-events:none}
       #mapDrawer .atlasBrand{pointer-events:auto;display:flex;align-items:center;gap:11px;padding:9px 13px;border:1px solid rgba(244,210,129,.22);border-radius:16px;background:rgba(5,9,14,.66);backdrop-filter:blur(18px);box-shadow:0 12px 40px rgba(0,0,0,.28)}
-      #mapDrawer .atlasBrandMark{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#f5d38b,#9c6c25);color:#090b0f;font-weight:900}
+      #mapDrawer .atlasBrandMark{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:#d71920;color:#fff;font-weight:900}
       #mapDrawer .atlasBrand strong{font-size:12px;letter-spacing:.12em;text-transform:uppercase}
       #mapDrawer .atlasBrand small{display:block;color:#aeb8c1;font-size:8px;margin-top:2px}
       #mapDrawer .atlasSearch{pointer-events:auto;flex:1;max-width:540px;height:48px;display:flex;align-items:center;gap:8px;padding:0 14px;border:1px solid rgba(255,255,255,.15);border-radius:15px;background:rgba(5,9,14,.66);backdrop-filter:blur(18px);box-shadow:0 12px 40px rgba(0,0,0,.28)}
       #mapDrawer .atlasSearch input{flex:1;border:0;outline:0;background:transparent;color:#fff;font:600 11px Manrope,system-ui}
       #mapDrawer .atlasSearch input::placeholder{color:#8c9aa5}
-      #mapDrawer .atlasSearch button{border:0;border-radius:10px;background:#d5a74f;color:#0a0d11;padding:8px 11px;font-size:9px;font-weight:900;cursor:pointer}
+      #mapDrawer .atlasSearch button{border:0;border-radius:10px;background:#d71920;color:#fff;padding:8px 11px;font-size:9px;font-weight:900;cursor:pointer}
       #mapDrawer .atlasChips{pointer-events:auto;display:flex;gap:7px;flex-wrap:wrap}
       #mapDrawer .atlasChip.shipments{border-color:rgba(224,92,76,.45);color:#ffd5cf}
       #mapDrawer .atlasChip.shipments.active{background:rgba(224,92,76,.18);border-color:#e05c4c;color:#fff}
       #mapDrawer .atlasChip{border:1px solid rgba(255,255,255,.15);background:rgba(5,9,14,.62);color:#dce4ea;border-radius:999px;padding:8px 11px;font-size:8px;font-weight:800;backdrop-filter:blur(14px);cursor:pointer}
-      #mapDrawer .atlasChip.active{background:rgba(213,167,79,.18);border-color:rgba(213,167,79,.65);color:#f5d38b}
+      #mapDrawer .atlasChip.active{background:rgba(215,25,32,.18);border-color:rgba(215,25,32,.72);color:#ffb5b8}
       #mapDrawer .atlasLegend{position:absolute;left:24px;bottom:22px;z-index:15;display:flex;gap:8px;align-items:center;padding:9px 12px;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(5,9,14,.68);backdrop-filter:blur(18px);font-size:8px;color:#aeb8c1}
       #mapDrawer .legendDot{width:8px;height:8px;border-radius:50%;display:inline-block;box-shadow:0 0 12px currentColor}
       #mapDrawer .legendDot.port{background:#f0c66b;color:#f0c66b}
       #mapDrawer .legendDot.air{background:#66d7df;color:#66d7df}
       #mapDrawer .atlasControls{position:absolute;right:22px;bottom:22px;z-index:15;display:grid;gap:7px}
       #mapDrawer .atlasControl{width:42px;height:42px;border:1px solid rgba(255,255,255,.14);border-radius:13px;background:rgba(5,9,14,.7);backdrop-filter:blur(16px);color:#e8edf0;font-weight:900;cursor:pointer}
-      #mapDrawer .atlasControl:hover{border-color:#d5a74f;color:#f5d38b}
+      #mapDrawer .atlasControl:hover{border-color:#d71920;color:#ffb5b8}
       #mapDrawer .atlasMode{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:15;display:flex;padding:4px;border:1px solid rgba(255,255,255,.13);border-radius:14px;background:rgba(5,9,14,.72);backdrop-filter:blur(18px)}
       #mapDrawer .atlasMode button{border:0;background:transparent;color:#8f9da7;padding:8px 11px;border-radius:10px;font-size:8px;font-weight:900;cursor:pointer}
-      #mapDrawer .atlasMode button.active{background:rgba(213,167,79,.17);color:#f5d38b}
+      #mapDrawer .atlasMode button.active{background:rgba(215,25,32,.17);color:#ffb5b8}
       #mapDrawer .atlasInfo{position:absolute;right:24px;top:82px;z-index:30;width:min(410px,calc(100vw - 48px));max-height:calc(100vh - 124px);overflow:auto;border:1px solid rgba(244,210,129,.25);border-radius:24px;background:rgba(7,11,17,.86);backdrop-filter:blur(24px);box-shadow:0 25px 80px rgba(0,0,0,.48);transform:translateX(110%);opacity:0;transition:.38s cubic-bezier(.2,.8,.2,1)}
       #mapDrawer .atlasInfo.open{transform:translateX(0);opacity:1}
       #mapDrawer .atlasHero{height:190px;position:relative;overflow:hidden;border-radius:23px 23px 0 0;background:linear-gradient(135deg,#111c26,#05080c)}
       #mapDrawer .atlasHero img{width:100%;height:100%;object-fit:cover;display:block;opacity:.78}
       #mapDrawer .atlasHero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.02),rgba(4,7,11,.92))}
       #mapDrawer .atlasHeroText{position:absolute;left:18px;right:18px;bottom:16px;z-index:2}
-      #mapDrawer .atlasType{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(245,211,139,.38);background:rgba(5,9,14,.58);color:#f5d38b;border-radius:999px;padding:5px 8px;font-size:7px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+      #mapDrawer .atlasType{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(215,25,32,.5);background:rgba(5,9,14,.58);color:#ffb5b8;border-radius:999px;padding:5px 8px;font-size:7px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
       #mapDrawer .atlasHero h2{margin:7px 0 2px;font-size:25px;line-height:1.05;color:#fff;letter-spacing:-.03em}
       #mapDrawer .atlasHero p{margin:0;color:#bdc8cf;font-size:9px}
       #mapDrawer .atlasInfoBody{padding:16px 18px 20px}
@@ -101,20 +101,26 @@
       #mapDrawer .atlasStat{padding:10px;border:1px solid rgba(255,255,255,.09);border-radius:13px;background:rgba(255,255,255,.035)}
       #mapDrawer .atlasStat small{display:block;color:#7f8e99;font-size:7px;text-transform:uppercase;letter-spacing:.08em}
       #mapDrawer .atlasStat b{display:block;margin-top:4px;color:#eef3f5;font-size:10px}
-      #mapDrawer .atlasSectionTitle{font-size:8px;text-transform:uppercase;letter-spacing:.13em;color:#d5a74f;font-weight:900;margin:14px 0 7px}
+      #mapDrawer .atlasSectionTitle{font-size:8px;text-transform:uppercase;letter-spacing:.13em;color:#e05c63;font-weight:900;margin:14px 0 7px}
       #mapDrawer .atlasDescription{font-size:10px;line-height:1.6;color:#b7c3ca}
       #mapDrawer .atlasActions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:15px}
       #mapDrawer .atlasAction{padding:10px;border-radius:11px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:#dfe7eb;font-size:8px;font-weight:900;cursor:pointer}
-      #mapDrawer .atlasAction.primary{background:#d5a74f;border-color:#d5a74f;color:#0a0d11}
+      #mapDrawer .atlasAction.primary{background:#d71920;border-color:#d71920;color:#fff}
       #mapDrawer .atlasImageCredit{margin-top:9px;color:#71808a;font-size:7px}
       #mapDrawer .atlasMarker{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(255,255,255,.55);box-shadow:0 0 0 5px rgba(255,255,255,.04),0 0 24px currentColor;cursor:pointer;transform:translate(-50%,-50%);font-size:13px}
-      #mapDrawer .atlasMarker.port{background:rgba(213,167,79,.94);color:#ffe4a5}
+      #mapDrawer .atlasMarker.port{background:rgba(215,25,32,.94);color:#fff}
       #mapDrawer .atlasMarker.air{background:rgba(46,180,193,.92);color:#b8fbff}
       #mapDrawer .atlasMarker.selected{box-shadow:0 0 0 7px rgba(245,211,139,.15),0 0 34px currentColor;transform:translate(-50%,-50%) scale(1.18)}
       #mapDrawer .atlasMarker .pulse{position:absolute;inset:-7px;border:1px solid currentColor;border-radius:50%;opacity:.4;animation:vtgPulse 2.2s infinite}
       @keyframes vtgPulse{0%{transform:scale(.7);opacity:.6}75%,100%{transform:scale(1.5);opacity:0}}
       #mapDrawer .atlasCount{position:absolute;right:24px;top:82px;z-index:10;padding:7px 10px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(5,9,14,.65);color:#aeb8c1;font-size:7px;backdrop-filter:blur(15px)}
       #mapDrawer .atlasLoading{padding:35px;text-align:center;color:#9eabb4;font-size:9px}
+      #mapDrawer .atlasLive{position:absolute;left:24px;top:86px;z-index:16;display:flex;gap:7px;align-items:center;padding:8px 11px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(5,9,14,.68);backdrop-filter:blur(18px);color:#b9c5ce;font-size:7px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+      #mapDrawer .atlasLive i{width:7px;height:7px;border-radius:50%;background:#e05c4c;box-shadow:0 0 12px #e05c4c;animation:vtgLive 1.6s infinite}
+      #mapDrawer .atlasWeather{position:absolute;right:24px;bottom:22px;z-index:16;width:155px;padding:11px 12px;border:1px solid rgba(255,255,255,.12);border-radius:15px;background:rgba(5,9,14,.68);backdrop-filter:blur(18px);color:#dce4ea;font-size:8px;box-shadow:0 12px 40px rgba(0,0,0,.22)}
+      #mapDrawer .atlasWeather b{display:block;font-size:10px;color:#fff;margin-bottom:3px}
+      #mapDrawer .atlasWeather small{color:#8f9da7}
+      @keyframes vtgLive{50%{opacity:.35;transform:scale(.75)}}
       #mapDrawer .atlasEmpty{padding:24px;color:#9eabb4;font-size:9px}
       @media(max-width:1000px){#mapDrawer .atlasChips{display:none}#mapDrawer .atlasTop{left:14px;right:70px}#mapDrawer .atlasInfo{right:14px;top:auto;bottom:14px;max-height:64vh;width:min(430px,calc(100vw - 28px))}#mapDrawer .atlasLegend{left:14px;bottom:78px}#mapDrawer .atlasMode{bottom:14px}}
       @media(max-width:620px){#mapDrawer .atlasBrand{display:none}#mapDrawer .atlasSearch{max-width:none}#mapDrawer .atlasSearch button{padding:8px}#mapDrawer .atlasInfo{max-height:68vh}.atlasHero{height:150px!important}#mapDrawer .atlasStats{grid-template-columns:1fr 1fr}#mapDrawer .atlasMode button{padding:8px 7px}}
@@ -139,7 +145,9 @@
               <button class="atlasChip" data-region="Korea">South Korea</button>
             </div>
           </div>
+          <div class="atlasLive"><i></i> LIVE TRADE ATLAS</div>
           <div class="atlasCount" id="vtgAtlasCount">Loading locations…</div>
+          <div class="atlasWeather"><b id="atlasWeatherTitle">Trade conditions</b><small id="atlasWeatherText">Monitoring global trade corridors and shipment activity</small></div>
           <div class="atlasInfo" id="vtgAtlasInfo"></div>
           <div class="atlasLegend"><span class="legendDot port"></span> Seaport <span style="margin-left:7px" class="legendDot air"></span> Airport <span style="margin-left:8px">Click any location for details</span></div>
           <div class="atlasMode">
@@ -183,6 +191,16 @@
     let shipments = [];
     let shipmentRoutesVisible = false;
     let filterType='all', filterRegion='all', mapMode=themeIsDark(doc)?'dark':'night';
+
+    function addCorridorLayer() {
+      if (map.getSource('vtg-atlas-corridors')) return;
+      map.addSource('vtg-atlas-corridors',{type:'geojson',data:{type:'FeatureCollection',features:[
+        {type:'Feature',properties:{name:'Africa–China'},geometry:{type:'LineString',coordinates:[[3.38,6.45],[18,7],[35,12],[51,22],[103.85,1.29],[113.26,23.13]]}},
+        {type:'Feature',properties:{name:'Africa–South Korea'},geometry:{type:'LineString',coordinates:[[3.38,6.45],[28,8],[57,20],[90,30],[126.98,37.46]]}}
+      ]}});
+      map.addLayer({id:'vtg-atlas-corridor-glow',type:'line',source:'vtg-atlas-corridors',paint:{'line-color':'#d71920','line-width':5,'line-opacity':.12,'line-blur':2}});
+      map.addLayer({id:'vtg-atlas-corridors',type:'line',source:'vtg-atlas-corridors',paint:{'line-color':'#e05c63','line-width':1.5,'line-opacity':.42,'line-dasharray':[3,2]}});
+    }
 
     function clearShipmentLayer() {
       if (map.getLayer('vtg-shipment-route')) map.removeLayer('vtg-shipment-route');
@@ -337,7 +355,7 @@
       qsa(doc,'[data-mapmode]').forEach(b=>b.classList.toggle('active',b.dataset.mapmode===mode));
       const target=mode==='day'?DAY_STYLE:(mode==='dark'?NIGHT_STYLE:mode==='satellite'?BLUE_MARBLE:NIGHT_STYLE);
       map.setStyle(target);
-      map.once('styledata',()=>{applyRasterMood();renderShipmentRoutes();});
+      map.once('styledata',()=>{addCorridorLayer();applyRasterMood();renderShipmentRoutes();});
     }
     qsa(doc,'[data-mapmode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mapmode));
 
@@ -346,7 +364,14 @@
 
     loadLocations();
     loadShipments();
-    map.on('load',()=>{applyRasterMood();renderShipmentRoutes();});
+    const wt=qs(doc,'#atlasWeatherText');
+    const wh=qs(doc,'#atlasWeatherTitle');
+    if (wt && wh) {
+      const hour=new Date().getUTCHours();
+      wh.textContent=hour>=6&&hour<18?'Global trade network':'Trade network • night view';
+      wt.textContent='Africa ↔ China ↔ South Korea • shipments, ports and corridors';
+    }
+    map.on('load',()=>{addCorridorLayer();applyRasterMood();renderShipmentRoutes();});
   }
 
   window.VTGInitMap = () => {
