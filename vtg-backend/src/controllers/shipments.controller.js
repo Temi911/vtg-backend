@@ -342,7 +342,9 @@ const listForAtlas = asyncHandler(async (req, res) => {
         },
         delivery: {
           status: s.delivery_status, confirmedAt: s.delivery_confirmed_at, proofAttached: Boolean(s.delivery_proof_document_id)
-        }
+        },
+        origin,
+        destination
       }),
       buyerName: req.user.role === 'admin' || req.user.role === 'buyer' ? s.buyer_name : null,
       supplierName: req.user.role === 'admin' || req.user.role === 'supplier' ? s.supplier_name : null,
