@@ -72,6 +72,8 @@
       #mapDrawer .atlasSearch input::placeholder{color:#8c9aa5}
       #mapDrawer .atlasSearch button{border:0;border-radius:10px;background:#d5a74f;color:#0a0d11;padding:8px 11px;font-size:9px;font-weight:900;cursor:pointer}
       #mapDrawer .atlasChips{pointer-events:auto;display:flex;gap:7px;flex-wrap:wrap}
+      #mapDrawer .atlasChip.shipments{border-color:rgba(224,92,76,.45);color:#ffd5cf}
+      #mapDrawer .atlasChip.shipments.active{background:rgba(224,92,76,.18);border-color:#e05c4c;color:#fff}
       #mapDrawer .atlasChip{border:1px solid rgba(255,255,255,.15);background:rgba(5,9,14,.62);color:#dce4ea;border-radius:999px;padding:8px 11px;font-size:8px;font-weight:800;backdrop-filter:blur(14px);cursor:pointer}
       #mapDrawer .atlasChip.active{background:rgba(213,167,79,.18);border-color:rgba(213,167,79,.65);color:#f5d38b}
       #mapDrawer .atlasLegend{position:absolute;left:24px;bottom:22px;z-index:15;display:flex;gap:8px;align-items:center;padding:9px 12px;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(5,9,14,.68);backdrop-filter:blur(18px);font-size:8px;color:#aeb8c1}
@@ -131,7 +133,7 @@
             <div class="atlasChips">
               <button class="atlasChip active" data-filter="all">All</button>
               <button class="atlasChip" data-filter="seaport">Seaports</button>
-              <button class="atlasChip" data-filter="airport">Airports</button>
+              <button class="atlasChip" data-filter="airport">Airports</button><button class="atlasChip shipments" id="atlasShipmentsToggle">Shipments</button>
               <button class="atlasChip" data-region="Africa">Africa</button>
               <button class="atlasChip" data-region="China">China</button>
               <button class="atlasChip" data-region="Korea">South Korea</button>
@@ -178,7 +180,39 @@
     map.addControl(new ml.NavigationControl({showCompass:false,showZoom:false}), 'bottom-right');
     const locations = [];
     const markers = [];
+    let shipments = [];
+    let shipmentRoutesVisible = false;
     let filterType='all', filterRegion='all', mapMode=themeIsDark(doc)?'dark':'night';
+
+    function clearShipmentLayer() {
+      if (map.getLayer('vtg-shipment-route')) map.removeLayer('vtg-shipment-route');
+      if (map.getLayer('vtg-shipment-route-glow')) map.removeLayer('vtg-shipment-route-glow');
+      if (map.getSource('vtg-shipment-routes')) map.removeSource('vtg-shipment-routes');
+    }
+
+    function renderShipmentRoutes() {
+      clearShipmentLayer();
+      if (!shipmentRoutesVisible || !shipments.length) return;
+      const features=shipments.filter(s=>(s.routePoints||[]).length>=2).map(s=>({
+        type:'Feature',
+        properties:{shipmentId:s.id,reference:s.reference||'Shipment'},
+        geometry:{type:'LineString',coordinates:s.routePoints.map(p=>[Number(p.lng),Number(p.lat)])}
+      }));
+      if(!features.length) return;
+      map.addSource('vtg-shipment-routes',{type:'geojson',data:{type:'FeatureCollection',features}});
+      map.addLayer({id:'vtg-shipment-route-glow',type:'line',source:'vtg-shipment-routes',paint:{'line-color':'#e05c4c','line-width':6,'line-opacity':.18,'line-blur':3}});
+      map.addLayer({id:'vtg-shipment-route',type:'line',source:'vtg-shipment-routes',paint:{'line-color':'#e05c4c','line-width':2.4,'line-opacity':.9,'line-dasharray':[2,1.3]}});
+    }
+
+    async function loadShipments() {
+      try {
+        const r=await fetch('/api/shipments/atlas',{headers:{Accept:'application/json'}});
+        if(!r.ok) return;
+        const d=await r.json();
+        shipments=Array.isArray(d.shipments)?d.shipments:[];
+        renderShipmentRoutes();
+      } catch (_) {}
+    }
 
     const applyRasterMood = () => {
       if (map.getLayer('earth')) {
@@ -286,6 +320,11 @@
       if(b.dataset.filter==='all') filterRegion='all';
       renderMarkers();
     });
+    qs(doc,'#atlasShipmentsToggle').onclick=()=>{
+      shipmentRoutesVisible=!shipmentRoutesVisible;
+      qs(doc,'#atlasShipmentsToggle').classList.toggle('active',shipmentRoutesVisible);
+      renderShipmentRoutes();
+    };
     qs(doc,'#vtgAtlasFind').onclick=()=>renderMarkers();
     qs(doc,'#vtgAtlasSearch').onkeydown=e=>{if(e.key==='Enter')renderMarkers()};
     qs(doc,'#atlasPlus').onclick=()=>map.zoomIn();
@@ -298,7 +337,7 @@
       qsa(doc,'[data-mapmode]').forEach(b=>b.classList.toggle('active',b.dataset.mapmode===mode));
       const target=mode==='day'?DAY_STYLE:(mode==='dark'?NIGHT_STYLE:mode==='satellite'?BLUE_MARBLE:NIGHT_STYLE);
       map.setStyle(target);
-      map.once('styledata',()=>applyRasterMood());
+      map.once('styledata',()=>{applyRasterMood();renderShipmentRoutes();});
     }
     qsa(doc,'[data-mapmode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mapmode));
 
@@ -306,7 +345,8 @@
     observer.observe(doc.documentElement,{attributes:true,attributeFilter:['data-theme','class']});
 
     loadLocations();
-    map.on('load',applyRasterMood);
+    loadShipments();
+    map.on('load',()=>{applyRasterMood();renderShipmentRoutes();});
   }
 
   window.VTGInitMap = () => {
