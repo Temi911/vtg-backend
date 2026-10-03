@@ -88,6 +88,9 @@
       #mapDrawer .atlasSearch input::placeholder{color:#8c9aa5}
       #mapDrawer .atlasSearch button{border:0;border-radius:10px;background:#d71920;color:#fff;padding:8px 11px;font-size:9px;font-weight:900;cursor:pointer}
       #mapDrawer .atlasChips{pointer-events:auto;display:flex;gap:7px;flex-wrap:wrap}
+      #mapDrawer .atlasFilterLabel{width:100%;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:#7f8c96;margin-top:3px}
+      #mapDrawer .atlasChip.shipmentStatus{padding:6px 9px;font-size:7px}
+
       #mapDrawer .atlasChip.shipments{border-color:rgba(224,92,76,.45);color:#ffd5cf}
       #mapDrawer .atlasChip.shipments.active{background:rgba(224,92,76,.18);border-color:#e05c4c;color:#fff}
             #mapDrawer .atlasShipmentMarker[data-status="delivered"]{background:rgba(49,156,92,.9);box-shadow:0 0 0 5px rgba(49,156,92,.12),0 8px 25px rgba(0,0,0,.45)}
@@ -192,6 +195,12 @@
               <button class="atlasChip" data-region="Africa">Africa</button>
               <button class="atlasChip" data-region="China">China</button>
               <button class="atlasChip" data-region="Korea">South Korea</button>
+              <span class="atlasFilterLabel">Shipment status</span>
+              <button class="atlasChip shipmentStatus active" data-shipment-status="all">All</button>
+              <button class="atlasChip shipmentStatus" data-shipment-status="in_transit">In transit</button>
+              <button class="atlasChip shipmentStatus" data-shipment-status="arrived">At port</button>
+              <button class="atlasChip shipmentStatus" data-shipment-status="attention">Attention</button>
+              <button class="atlasChip shipmentStatus" data-shipment-status="delivered">Delivered</button>
             </div>
           </div>
           <div class="atlasLive"><i></i> LIVE TRADE ATLAS</div>
@@ -242,7 +251,7 @@
     let shipmentRoutesVisible = false;
     let atlasRefreshInFlight = false;
     let selectedShipmentId = null;
-    let filterType='all', filterRegion='all', mapMode=themeIsDark(doc)?'dark':'night';
+    let filterType='all', filterRegion='all', shipmentStatusFilter='all', mapMode=themeIsDark(doc)?'dark':'night';
 
     function addCorridorLayer() {
       if (map.getSource('vtg-atlas-corridors')) return;
@@ -269,7 +278,7 @@
     function renderShipmentRoutes() {
       clearShipmentLayer();
       if (!shipmentRoutesVisible || !shipments.length) return;
-      const visibleShipments=shipments.filter(s=>s.status!=='cancelled');
+      const visibleShipments=shipments.filter(s=>s.status!=='cancelled' && (shipmentStatusFilter==='all'||s.status===shipmentStatusFilter));
       const features=visibleShipments.filter(s=>(s.routePoints||[]).length>=2).map(s=>({
         type:'Feature',
         properties:{shipmentId:s.id,reference:s.reference||'Shipment'},
@@ -458,7 +467,8 @@
       clearMarkers();
       const v=visible();
       v.forEach(x=>markers.push(markerFor(x)));
-      qs(doc,'#vtgAtlasCount').textContent=v.length+' locations • '+(v.filter(x=>x.type==='seaport').length)+' seaports • '+(v.filter(x=>x.type==='airport').length)+' airports';
+      const activeShipments=shipments.filter(s=>s.status!=='cancelled' && (shipmentStatusFilter==='all'||s.status===shipmentStatusFilter));
+      qs(doc,'#vtgAtlasCount').textContent=v.length+' locations • '+(v.filter(x=>x.type==='seaport').length)+' seaports • '+(v.filter(x=>x.type==='airport').length)+' airports • '+activeShipments.length+' shipments';
       renderOperationalPortMarkers();
     }
 
@@ -558,7 +568,18 @@
     }
 
     qsa(doc,'.atlasChip').forEach(b=>b.onclick=()=>{
-      qsa(doc,'.atlasChip').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+      if(b.dataset.shipmentStatus){
+        qsa(doc,'.atlasChip[data-shipment-status]').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        shipmentStatusFilter=b.dataset.shipmentStatus;
+        shipmentRoutesVisible=true;
+        qs(doc,'#atlasShipmentsToggle').classList.add('active');
+        renderShipmentRoutes();
+        renderMarkers();
+        return;
+      }
+      qsa(doc,'.atlasChip').forEach(x=>{if(!x.dataset.shipmentStatus)x.classList.remove('active')});
+      b.classList.add('active');
       if(b.dataset.filter) filterType=b.dataset.filter;
       if(b.dataset.region) {filterRegion=b.dataset.region; filterType='all';}
       if(b.dataset.filter==='all') filterRegion='all';
@@ -569,8 +590,27 @@
       qs(doc,'#atlasShipmentsToggle').classList.toggle('active',shipmentRoutesVisible);
       renderShipmentRoutes();
     };
-    qs(doc,'#vtgAtlasFind').onclick=()=>renderMarkers();
-    qs(doc,'#vtgAtlasSearch').onkeydown=e=>{if(e.key==='Enter')renderMarkers()};
+    qs(doc,'#vtgAtlasFind').onclick=()=>atlasSearch();
+    qs(doc,'#vtgAtlasSearch').onkeydown=e=>{if(e.key==='Enter')atlasSearch()};
+
+    function atlasSearch(){
+      const q=(qs(doc,'#vtgAtlasSearch')?.value||'').trim().toLowerCase();
+      if(!q){renderMarkers();return;}
+      const shipment=shipments.find(s=>[
+        s.id,s.reference,s.carrier,s.vessel?.name,s.vessel?.imo,s.vessel?.mmsi,
+        s.originPort,s.destinationPort,s.buyerName,s.supplierName,s.status
+      ].filter(Boolean).join(' ').toLowerCase().includes(q));
+      if(shipment){
+        shipmentRoutesVisible=true;
+        qs(doc,'#atlasShipmentsToggle').classList.add('active');
+        selectShipment(shipment);
+        renderShipmentRoutes();
+        return;
+      }
+      renderMarkers();
+      const location=locations.find(x=>`${x.name} ${x.city} ${x.country} ${x.code}`.toLowerCase().includes(q));
+      if(location) selectLocation(location);
+    }
     qs(doc,'#atlasPlus').onclick=()=>map.zoomIn();
     qs(doc,'#atlasMinus').onclick=()=>map.zoomOut();
     qs(doc,'#atlasReset').onclick=()=>map.flyTo({center:[50,13],zoom:1.75,duration:900});
