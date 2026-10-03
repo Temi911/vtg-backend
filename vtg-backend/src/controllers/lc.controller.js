@@ -25,6 +25,13 @@ const request = asyncHandler(async (req, res) => {
   const order = orderRes.rows[0];
   if (!order) throw new AppError('Order not found', 404);
   if (order.buyer_id !== req.user.id) throw new AppError('Not your order', 403, 'FORBIDDEN');
+  if (['cancelled', 'delivered'].includes(order.status)) throw new AppError('An LC cannot be requested for a cancelled or completed order', 409, 'ORDER_NOT_ELIGIBLE');
+  if (Number(data.amountUsd) > Number(order.total_amount_usd)) throw new AppError('LC amount cannot exceed the order total', 422, 'AMOUNT_EXCEEDS_ORDER');
+  const { rows: activeLcs } = await query(
+    "SELECT id FROM letters_of_credit WHERE order_id = $1 AND status IN ('requested','issued','docs_presented') LIMIT 1",
+    [order.id]
+  );
+  if (activeLcs[0]) throw new AppError('An active Letter of Credit already exists for this order', 409, 'ACTIVE_LC_EXISTS');
 
   const reference = lcReference();
   const { rows } = await query(
