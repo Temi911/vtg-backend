@@ -85,12 +85,16 @@ const listForAtlas = asyncHandler(async (req, res) => {
             sc.taxes_amount_usd AS customs_taxes_amount_usd,
             sc.other_charges_usd AS customs_other_charges_usd,
             sc.submitted_at AS customs_submitted_at, sc.assessed_at AS customs_assessed_at,
-            sc.cleared_at AS customs_cleared_at, sc.released_at AS customs_released_at
+            sc.cleared_at AS customs_cleared_at, sc.released_at AS customs_released_at,
+            sd.status AS delivery_status, sd.recipient_name AS delivery_recipient_name,
+            sd.notes AS delivery_notes, sd.proof_document_id AS delivery_proof_document_id,
+            sd.confirmed_at AS delivery_confirmed_at
      FROM shipments s
      JOIN orders o ON o.id = s.order_id
      JOIN users bu ON bu.id = o.buyer_id
      JOIN users su ON su.id = o.supplier_id
      LEFT JOIN shipment_customs sc ON sc.shipment_id = s.id
+     LEFT JOIN shipment_delivery sd ON sd.shipment_id = s.id
      ${access}
      ORDER BY s.created_at DESC
      LIMIT 100`,
@@ -182,6 +186,14 @@ const listForAtlas = asyncHandler(async (req, res) => {
         assessedAt: s.customs_assessed_at || null,
         clearedAt: s.customs_cleared_at || null,
         releasedAt: s.customs_released_at || null
+      },
+      delivery: {
+        status: s.delivery_status || 'pending',
+        recipientName: s.delivery_recipient_name || null,
+        notes: s.delivery_notes || null,
+        proofDocumentId: s.delivery_proof_document_id || null,
+        confirmedAt: s.delivery_confirmed_at || null,
+        proofAttached: Boolean(s.delivery_proof_document_id)
       },
       buyerName: req.user.role === 'admin' || req.user.role === 'buyer' ? s.buyer_name : null,
       supplierName: req.user.role === 'admin' || req.user.role === 'supplier' ? s.supplier_name : null,
@@ -521,4 +533,4 @@ const updateCustoms = asyncHandler(async (req, res) => {
   res.json({ customs: rows[0] });
 });
 
-module.exports = { create, getForOrder, addEvent, listForAtlas, getLiveTracking, updateVessel, getCustoms, createCustoms, updateCustoms };
+module.exports = { create, getForOrder, addEvent, listForAtlas, getLiveTracking, updateVessel, getCustoms, createCustoms, updateCustoms, getDelivery, updateDelivery };
