@@ -804,10 +804,18 @@ function atlasTimelinePoint(t,s){
       const liveCount=shipments.filter(s=>s.liveTracking?.available).length;
       const staleCount=shipments.filter(s=>s.liveTracking?.available&&liveTrackingState(s.liveTracking).state==='stale').length;
       const meta=qs(doc,'#atlasOpsLiveMeta');
-      if(meta) meta.textContent=liveCount+' live vessel'+(liveCount===1?'':'s')+(staleCount?' • '+staleCount+' stale':'');
+      if(meta){
+        const freshness=liveCount?(' • '+liveCount+' live vessel'+(liveCount===1?'':'s')+(staleCount?' • '+staleCount+' stale':'')):' • No live vessel positions available';
+        meta.textContent=freshness.replace(/^ • /,'');
+      }
       qsa(box,'[data-op-status]').forEach(btn=>btn.onclick=()=>{
         const key=btn.dataset.opStatus;
         shipmentStatusFilter=key==='customs'?'customs':key;
+        if(key==='all'){
+          qsa(doc,'[data-shipment-status]').forEach(x=>x.classList.remove('active'));
+          const allStatus=qs(doc,'[data-shipment-status="all"]');
+          if(allStatus)allStatus.classList.add('active');
+        }
         shipmentRoutesVisible=true;
         qs(doc,'#atlasShipmentsToggle')?.classList.add('active');
         qsa(doc,'[data-shipment-status]').forEach(x=>x.classList.remove('active'));
