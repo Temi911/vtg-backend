@@ -363,4 +363,106 @@ const addEvent = asyncHandler(async (req, res) => {
   res.status(201).json({ event: result });
 });
 
-module.exports = { create, getForOrder, addEvent, listForAtlas, getLiveTracking, updateVessel };
+
+const customsStatuses = ['not_started','documents_required','under_assessment','payment_due','inspection','cleared','released','on_hold'];
+const customsSchema = z.object({
+  authority: z.string().trim().max(160).optional(),
+  brokerName: z.string().trim().max(160).optional(),
+  declarationRef: z.string().trim().max(120).optional(),
+  assessmentAmountUsd: z.number().min(0).optional(),
+  dutiesAmountUsd: z.number().min(0).optional(),
+  taxesAmountUsd: z.number().min(0).optional(),
+  otherChargesUsd: z.number().min(0).optional(),
+  notes: z.string().trim().max(2000).optional(),
+});
+const customsStatusSchema = z.object({ status: z.enum(customsStatuses) });
+
+async function getShipmentForCustoms(shipmentId) {
+  const { rows } = await query(
+    `SELECT s.id, s.order_id, s.destination_port, o.status AS order_status,
+            o.buyer_id, o.supplier_id, o.bank_id
+       FROM shipments s JOIN orders o ON o.id = s.order_id
+      WHERE s.id = $1 LIMIT 1`, [shipmentId]
+  );
+  if (!rows[0]) throw new AppError('Shipment not found', 404);
+  return rows[0];
+}
+
+function canOperateCustoms(shipment, user) {
+  return user.role === 'admin' || shipment.supplier_id === user.id || shipment.bank_id === user.id;
+}
+function canViewCustoms(shipment, user) {
+  return user.role === 'admin' || [shipment.buyer_id, shipment.supplier_id, shipment.bank_id].includes(user.id);
+}
+
+const getCustoms = asyncHandler(async (req, res) => {
+  const shipment = await getShipmentForCustoms(req.params.shipmentId);
+  if (!canViewCustoms(shipment, req.user)) throw new AppError('Forbidden', 403, 'FORBIDDEN');
+  const { rows } = await query('SELECT * FROM shipment_customs WHERE shipment_id = $1 LIMIT 1', [shipment.id]);
+  res.json({ customs: rows[0] || null });
+});
+
+const createCustoms = asyncHandler(async (req, res) => {
+  const data = customsSchema.parse(req.body);
+  const shipment = await getShipmentForCustoms(req.params.shipmentId);
+  if (!canOperateCustoms(shipment, req.user)) throw new AppError('You are not assigned to this shipment', 403, 'FORBIDDEN');
+  if (['delivered','cancelled'].includes(shipment.order_status)) throw new AppError('Shipment is closed', 409, 'ORDER_CLOSED');
+
+  const { rows: existing } = await query('SELECT id FROM shipment_customs WHERE shipment_id = $1 LIMIT 1', [shipment.id]);
+  if (existing[0]) throw new AppError('Customs clearance already exists for this shipment', 409, 'CUSTOMS_EXISTS');
+
+  const { rows } = await query(
+    `INSERT INTO shipment_customs
+      (shipment_id, authority, broker_name, declaration_ref, assessment_amount_usd, duties_amount_usd, taxes_amount_usd, other_charges_usd, notes)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
+    [shipment.id, data.authority || null, data.brokerName || null, data.declarationRef || null,
+      data.assessmentAmountUsd ?? null, data.dutiesAmountUsd ?? null, data.taxesAmountUsd ?? null,
+      data.otherChargesUsd ?? null, data.notes || null]
+  );
+  await audit.log(req.user.id, 'Customs Clearance Created', `Customs workflow created for shipment ${shipment.id}`, req.ip);
+  res.status(201).json({ customs: rows[0] });
+});
+
+const updateCustoms = asyncHandler(async (req, res) => {
+  const shipment = await getShipmentForCustoms(req.params.shipmentId);
+  if (!canOperateCustoms(shipment, req.user)) throw new AppError('You are not assigned to this shipment', 403, 'FORBIDDEN');
+  if (['delivered','cancelled'].includes(shipment.order_status)) throw new AppError('Shipment is closed', 409, 'ORDER_CLOSED');
+
+  const data = customsSchema.parse(req.body || {});
+  const statusData = customsStatusSchema.parse({ status: req.body.status });
+  const currentRes = await query('SELECT * FROM shipment_customs WHERE shipment_id = $1 LIMIT 1', [shipment.id]);
+  const current = currentRes.rows[0];
+  if (!current) throw new AppError('Create the customs clearance record first', 404, 'CUSTOMS_NOT_FOUND');
+
+  const order = ['not_started','documents_required','under_assessment','payment_due','inspection','cleared','released','on_hold'];
+  const currentIndex = order.indexOf(current.status);
+  const nextIndex = order.indexOf(statusData.status);
+  if (current.status !== 'on_hold' && statusData.status !== 'on_hold' && nextIndex < currentIndex) {
+    throw new AppError('Customs status cannot move backwards', 409, 'INVALID_CUSTOMS_TRANSITION');
+  }
+
+  const { rows } = await query(
+    `UPDATE shipment_customs SET
+       status=$1, authority=COALESCE($2,authority), broker_name=COALESCE($3,broker_name),
+       declaration_ref=COALESCE($4,declaration_ref), assessment_amount_usd=COALESCE($5,assessment_amount_usd),
+       duties_amount_usd=COALESCE($6,duties_amount_usd), taxes_amount_usd=COALESCE($7,taxes_amount_usd),
+       other_charges_usd=COALESCE($8,other_charges_usd), notes=COALESCE($9,notes),
+       submitted_at=CASE WHEN $1 IN ('documents_required','under_assessment') AND submitted_at IS NULL THEN NOW() ELSE submitted_at END,
+       assessed_at=CASE WHEN $1 IN ('payment_due','inspection','cleared','released') AND assessed_at IS NULL THEN NOW() ELSE assessed_at END,
+       cleared_at=CASE WHEN $1 IN ('cleared','released') THEN COALESCE(cleared_at,NOW()) ELSE cleared_at END,
+       released_at=CASE WHEN $1='released' THEN COALESCE(released_at,NOW()) ELSE released_at END,
+       updated_at=NOW()
+     WHERE shipment_id=$10 RETURNING *`,
+    [statusData.status, data.authority || null, data.brokerName || null, data.declarationRef || null,
+      data.assessmentAmountUsd ?? null, data.dutiesAmountUsd ?? null, data.taxesAmountUsd ?? null,
+      data.otherChargesUsd ?? null, data.notes || null, shipment.id]
+  );
+
+  if (['cleared','released'].includes(statusData.status) && !['customs','delivered'].includes(shipment.order_status)) {
+    await query('UPDATE orders SET status=$1, updated_at=NOW() WHERE id=$2', ['customs', shipment.order_id]);
+  }
+  await audit.log(req.user.id, 'Customs Status Updated', `Shipment ${shipment.id} customs -> ${statusData.status}`, req.ip);
+  res.json({ customs: rows[0] });
+});
+
+module.exports = { create, getForOrder, addEvent, listForAtlas, getLiveTracking, updateVessel, getCustoms, createCustoms, updateCustoms };
