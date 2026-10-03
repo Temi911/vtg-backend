@@ -845,6 +845,12 @@ function atlasTimelinePoint(t,s){
         const d=await r.json();
         shipments=Array.isArray(d.shipments)?d.shipments:[];
         renderOperationalSummary();
+        const meta=qs(doc,'#atlasOpsLiveMeta');
+        if(meta){
+          const now=new Date();
+          meta.textContent=meta.textContent.replace(/^.*?(?=\d+ live vessel)/,'') || (shipments.filter(s=>s.liveTracking?.available).length+' live vessels');
+          meta.textContent += ' • updated '+now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        }
         renderShipmentRoutes();
         const selected = selectedShipmentId && shipments.find(s=>String(s.id)===String(selectedShipmentId));
         if (selected && qs(doc,'#vtgAtlasInfo')?.classList.contains('open')) {
@@ -874,7 +880,10 @@ function atlasTimelinePoint(t,s){
               '</small>';
           }
         }
-      } catch (_) {} finally {
+      } catch (_) {
+        const meta=qs(doc,'#atlasOpsLiveMeta');
+        if(meta) meta.textContent='Shipment feed temporarily unavailable • retrying automatically';
+      } finally {
         atlasRefreshInFlight = false;
       }
     }
