@@ -318,8 +318,25 @@
       map.addLayer({id:'vtg-atlas-corridors',type:'line',source:'vtg-atlas-corridors',paint:{'line-color':'#e05c63','line-width':1.5,'line-opacity':.42,'line-dasharray':[3,2]}});
     }
 
+    function clearSelectedShipmentPath() {
+      if (map.getLayer('vtg-selected-shipment-route')) map.removeLayer('vtg-selected-shipment-route');
+      if (map.getLayer('vtg-selected-shipment-glow')) map.removeLayer('vtg-selected-shipment-glow');
+      if (map.getSource('vtg-selected-shipment-route')) map.removeSource('vtg-selected-shipment-route');
+    }
+
+    function renderSelectedShipmentPath(s) {
+      clearSelectedShipmentPath();
+      const route=(s?.routePoints||[]).filter(validPoint);
+      if(route.length<2) return;
+      const coordinates=route.map(p=>[Number(p.lng),Number(p.lat)]);
+      map.addSource('vtg-selected-shipment-route',{type:'geojson',data:{type:'Feature',properties:{shipmentId:s.id},geometry:{type:'LineString',coordinates}}});
+      map.addLayer({id:'vtg-selected-shipment-glow',type:'line',source:'vtg-selected-shipment-route',paint:{'line-color':'#ffffff','line-width':10,'line-opacity':.08,'line-blur':5}});
+      map.addLayer({id:'vtg-selected-shipment-route',type:'line',source:'vtg-selected-shipment-route',paint:{'line-color':'#ffffff','line-width':4.2,'line-opacity':.72,'line-dasharray':[1,1]}});
+    }
+
     function clearShipmentLayer() {
       shipmentMarkers.splice(0).forEach(m=>m.remove());
+      clearSelectedShipmentPath();
       if (map.getLayer('vtg-shipment-route')) map.removeLayer('vtg-shipment-route');
       if (map.getLayer('vtg-shipment-route-glow')) map.removeLayer('vtg-shipment-route-glow');
       if (map.getLayer('vtg-shipment-completed')) map.removeLayer('vtg-shipment-completed');
@@ -525,6 +542,7 @@ function atlasTimelinePoint(t,s){
 
     async function selectShipment(s) {
       selectedShipmentId = s?.id || null;
+      renderSelectedShipmentPath(s);
       const panel=qs(doc,'#vtgAtlasInfo');
       panel.classList.add('open');
       panel.innerHTML='<div class="atlasHero"><div class="atlasLoading">Loading shipment intelligence…</div><button class="atlasInfoClose" id="atlasInfoClose">×</button></div><div class="atlasInfoBody"><div class="atlasLoading">Loading shipment details…</div></div>';
@@ -630,7 +648,7 @@ function atlasTimelinePoint(t,s){
         const p=event?.coordinates;
         if(p&&Number.isFinite(Number(p.lng))&&Number.isFinite(Number(p.lat))) map.flyTo({center:[Number(p.lng),Number(p.lat)],zoom:7,duration:900});
       });
-      qs(doc,'#atlasInfoClose').onclick=()=>panel.classList.remove('open');
+      qs(doc,'#atlasInfoClose').onclick=()=>{panel.classList.remove('open');clearSelectedShipmentPath();};
       qs(doc,'#atlasOpenShipment').onclick=()=>{ window.location.href='/trade-os.html?shipment='+encodeURIComponent(s.id); };
       qs(doc,'#atlasOpenOrder').onclick=()=>{ window.location.href='/trade-os.html?order='+encodeURIComponent(s.orderId); };
     }
