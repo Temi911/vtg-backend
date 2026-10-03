@@ -409,7 +409,7 @@
           const el=doc.createElement('button');
           el.type='button'; el.className='atlasNextOperationalMarker'; el.title='Next operational point • '+(next.name||'Next point');
           el.innerHTML='<span class="label">NEXT</span><span class="core">◆</span>';
-          el.onclick=e=>{e.stopPropagation();selectShipment(s);};
+          el.onclick=e=>{e.stopPropagation();focusShipmentStage(s,'logistics',next);};
           shipmentMarkers.push(new ml.Marker({element:el,anchor:'center'}).setLngLat([Number(next.lng),Number(next.lat)]).addTo(map));
         }
         if(validPoint(destination)){
@@ -418,7 +418,7 @@
           const el=doc.createElement('button');
           el.type='button'; el.className='atlasDestinationMarker'; el.title='Destination • '+(s.destinationPort||'Destination');
           el.innerHTML='<span class="core">⚓</span><span class="label">Destination</span>';
-          el.onclick=e=>{e.stopPropagation();selectShipment(s);};
+          el.onclick=e=>{e.stopPropagation();focusShipmentStage(s,'delivery',destination);};
           shipmentMarkers.push(new ml.Marker({element:el,anchor:'center'}).setLngLat([Number(destination.lng),Number(destination.lat)]).addTo(map));
         }
       });
@@ -538,6 +538,26 @@ function atlasTimelinePoint(t,s){
       if(stage==='inspection') return origin||current||next||destination;
       if(stage==='finance') return origin||current||next||destination;
       return current||next||destination||origin;
+    }
+
+    async function focusShipmentStage(s, stage, point){
+      if(!s) return;
+      await selectShipment(s);
+      const p=point || atlasTimelinePoint({stage},s);
+      if(p&&Number.isFinite(Number(p.lng))&&Number.isFinite(Number(p.lat))){
+        map.flyTo({center:[Number(p.lng),Number(p.lat)],zoom:7,duration:900});
+      }
+      const panel=qs(doc,'#vtgAtlasInfo');
+      const target=Array.from(panel.querySelectorAll('[data-atlas-unified-index]')).find(btn=>{
+        const idx=Number(btn.dataset.atlasUnifiedIndex);
+        const item=Array.isArray(s.timeline)?s.timeline[idx]:null;
+        return String(item?.stage||'').toLowerCase()===String(stage||'').toLowerCase();
+      });
+      if(target){
+        target.scrollIntoView({behavior:'smooth',block:'center'});
+        target.classList.add('active');
+        window.setTimeout(()=>target.classList.remove('active'),1400);
+      }
     }
 
     async function selectShipment(s) {
@@ -989,13 +1009,18 @@ function atlasTimelinePoint(t,s){
       wh.textContent=hour>=6&&hour<18?'Global trade network':'Trade network • night view';
       wt.textContent='Africa ↔ China ↔ South Korea • shipments, ports and corridors';
     }
-    map.on('click','vtg-shipment-route',(e)=>{
+    const shipmentFromFeature=e=>{
       const id=e.features?.[0]?.properties?.shipmentId;
-      const shipment=shipments.find(s=>String(s.id)===String(id));
-      if(shipment) selectShipment(shipment);
+      return shipments.find(s=>String(s.id)===String(id));
+    };
+    ['vtg-shipment-route','vtg-selected-shipment-route','vtg-shipment-current','vtg-shipment-remaining','vtg-shipment-completed'].forEach(layer=>{
+      map.on('click',layer,(e)=>{
+        const shipment=shipmentFromFeature(e);
+        if(shipment) focusShipmentStage(shipment,'logistics');
+      });
+      map.on('mouseenter',layer,()=>{map.getCanvas().style.cursor='pointer';});
+      map.on('mouseleave',layer,()=>{map.getCanvas().style.cursor='';});
     });
-    map.on('mouseenter','vtg-shipment-route',()=>{map.getCanvas().style.cursor='pointer';});
-    map.on('mouseleave','vtg-shipment-route',()=>{map.getCanvas().style.cursor='';});
     map.on('load',()=>{addCorridorLayer();applyRasterMood();renderShipmentRoutes();});
   }
 
