@@ -131,6 +131,14 @@
       #mapDrawer .atlasPortIcon{position:relative;z-index:2;font-size:14px}
       #mapDrawer .atlasPortHalo{position:absolute;inset:-4px;border:1px solid currentColor;border-radius:14px;opacity:.22;animation:vtgPortPulse 2.8s ease-out infinite}
       @keyframes vtgPortPulse{0%{transform:scale(.8);opacity:.4}80%{transform:scale(1.35);opacity:0}100%{opacity:0}}
+      #mapDrawer .atlasLiveVesselPosition{position:relative;width:34px;height:34px;border:1px solid rgba(74,226,171,.65);border-radius:50%;background:rgba(4,25,22,.92);box-shadow:0 0 0 5px rgba(73,201,139,.1),0 0 24px rgba(73,201,139,.32);cursor:pointer;padding:0;z-index:8}
+      #mapDrawer .atlasLiveVesselCore{position:absolute;left:50%;top:50%;width:8px;height:8px;transform:translate(-50%,-50%);border-radius:50%;background:#64e4ac;box-shadow:0 0 12px #49c98b}
+      #mapDrawer .atlasLiveVesselRing{position:absolute;inset:4px;border:1px solid rgba(100,228,172,.6);border-radius:50%;animation:vtgAtlasLivePulse 1.8s ease-out infinite}
+      #mapDrawer .atlasLiveVesselLabel{position:absolute;left:50%;top:-14px;transform:translateX(-50%);font:900 6px Manrope,system-ui;color:#65dfaa;letter-spacing:.08em}
+      #mapDrawer .atlasLiveVesselPosition.stale{border-color:rgba(240,198,107,.65);box-shadow:0 0 0 5px rgba(240,198,107,.08),0 0 22px rgba(240,198,107,.2)}
+      #mapDrawer .atlasLiveVesselPosition.stale .atlasLiveVesselCore{background:#f0c66b;box-shadow:0 0 12px #f0c66b}
+      #mapDrawer .atlasLiveVesselPosition.stale .atlasLiveVesselLabel{color:#f0c66b}
+      @keyframes vtgAtlasLivePulse{0%{transform:scale(.45);opacity:.9}70%{transform:scale(1.35);opacity:0}100%{transform:scale(1.35);opacity:0}}
       #mapDrawer .atlasShipmentMarker.live{width:42px;height:42px;border-color:rgba(91,220,188,.72);background:rgba(5,32,29,.94);box-shadow:0 0 0 6px rgba(73,201,139,.13),0 0 30px rgba(73,201,139,.28),0 10px 28px rgba(0,0,0,.5);z-index:4}
       #mapDrawer .atlasShipmentMarker.live .atlasShipmentIcon{font-size:17px}
       #mapDrawer .atlasShipmentMarker.live:after{content:"LIVE";position:absolute;left:50%;top:-15px;transform:translateX(-50%);padding:3px 5px;border-radius:999px;background:#49c98b;color:#04120d;font:900 6px Manrope,system-ui;letter-spacing:.08em}
@@ -326,6 +334,21 @@
       return p && Number.isFinite(Number(p.lng)) && Number.isFinite(Number(p.lat)) ? p : null;
     }
 
+    function addLiveVesselPositionMarker(s) {
+      if (!s?.liveTracking?.available) return;
+      const lat=Number(s.liveTracking.latitude), lng=Number(s.liveTracking.longitude);
+      if(!Number.isFinite(lat)||!Number.isFinite(lng)) return;
+      const freshness=liveTrackingState(s.liveTracking);
+      const el=doc.createElement('button');
+      el.type='button';
+      el.className='atlasLiveVesselPosition '+(freshness.state==='stale'?'stale':'');
+      el.title=(s.reference||'Shipment')+' • '+(freshness.label);
+      el.innerHTML='<span class="atlasLiveVesselCore"></span><span class="atlasLiveVesselRing"></span><span class="atlasLiveVesselLabel">'+(freshness.state==='stale'?'STALE':'LIVE')+'</span>';
+      el.onclick=e=>{e.stopPropagation();selectShipment(s);};
+      const marker=new ml.Marker({element:el,anchor:'center'}).setLngLat([lng,lat]).addTo(map);
+      shipmentMarkers.push(marker);
+    }
+
     function renderShipmentRoutes() {
       clearShipmentLayer();
       if (!shipmentRoutesVisible || !shipments.length) return;
@@ -361,6 +384,7 @@
         el.innerHTML='<span class="atlasShipmentPulse"></span><span class="atlasShipmentIcon">'+icon+'</span>';
         el.onclick=e=>{e.stopPropagation();selectShipment(s);};
         shipmentMarkers.push(new ml.Marker({element:el,anchor:'center'}).setLngLat([Number(p.lng),Number(p.lat)]).addTo(map));
+        addLiveVesselPositionMarker(s);
       });
     }
 
