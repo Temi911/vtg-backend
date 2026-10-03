@@ -1,13 +1,16 @@
 (() => {
-  const LIB = 'https://unpkg.com/maplibre-gl@5.13.0/dist/maplibre-gl.js';
-  const STYLE = 'https://tiles.openfreemap.org/styles/liberty';
-  const DARK_STYLE = 'https://tiles.openfreemap.org/styles/dark';
-  // NASA GIBS Blue Marble true-color imagery — free, no API key, matches
-  // the realistic Earth-from-space look. Used as the default globe view.
-  const BLUE_MARBLE_STYLE = {
+  /*
+   * VTG Trade Atlas — premium rebuild
+   * Replaces the previous Atlas presentation while keeping its launcher/API contract.
+   * Location data comes from /api/atlas/locations.
+   */
+  const MAPLIBRE = 'https://unpkg.com/maplibre-gl@5.13.0/dist/maplibre-gl.js';
+  const DAY_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
+  const NIGHT_STYLE = 'https://tiles.openfreemap.org/styles/dark';
+  const BLUE_MARBLE = {
     version: 8,
     sources: {
-      'blue-marble': {
+      earth: {
         type: 'raster',
         tiles: ['https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_NextGeneration/default/500m/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg'],
         tileSize: 256,
@@ -15,671 +18,302 @@
         attribution: 'Imagery © NASA EOSDIS GIBS / Blue Marble'
       }
     },
-    layers: [{ id: 'blue-marble', type: 'raster', source: 'blue-marble' }]
+    layers: [{ id: 'earth', type: 'raster', source: 'earth',
+      paint: { 'raster-brightness-min': 0.02, 'raster-brightness-max': 0.58, 'raster-saturation': -0.08 } }]
   };
 
-  // Curated set of major, well-known seaports and airports — Africa (a
-  // representative major hub for most trading nations), China and South
-  // Korea. This is not a claim of exhaustive coverage of every port/airport
-  // in every country — it's the genuinely major, verifiable hubs.
-  const PORTS = [
-    { name: 'Lagos (Apapa / Tin Can)', country: 'Nigeria', lat: 6.4474, lon: 3.3903 },
-    { name: 'Port Harcourt', country: 'Nigeria', lat: 4.7719, lon: 7.0134 },
-    { name: 'Durban', country: 'South Africa', lat: -29.8622, lon: 31.0247 },
-    { name: 'Cape Town', country: 'South Africa', lat: -33.9075, lon: 18.4356 },
-    { name: 'Mombasa', country: 'Kenya', lat: -4.0619, lon: 39.6636 },
-    { name: 'Dar es Salaam', country: 'Tanzania', lat: -6.8235, lon: 39.2916 },
-    { name: 'Tema', country: 'Ghana', lat: 5.6362, lon: -0.0088 },
-    { name: 'Abidjan', country: "Côte d'Ivoire", lat: 5.2836, lon: -4.0219 },
-    { name: 'Dakar', country: 'Senegal', lat: 14.6708, lon: -17.4324 },
-    { name: 'Alexandria', country: 'Egypt', lat: 31.2001, lon: 29.9187 },
-    { name: 'Casablanca', country: 'Morocco', lat: 33.6022, lon: -7.6187 },
-    { name: 'Tangier Med', country: 'Morocco', lat: 35.8836, lon: -5.5013 },
-    { name: 'Algiers', country: 'Algeria', lat: 36.7631, lon: 3.0658 },
-    { name: 'Tunis (La Goulette)', country: 'Tunisia', lat: 36.8189, lon: 10.3053 },
-    { name: 'Djibouti', country: 'Djibouti', lat: 11.5952, lon: 43.1456 },
-    { name: 'Maputo', country: 'Mozambique', lat: -25.9689, lon: 32.5814 },
-    { name: 'Luanda', country: 'Angola', lat: -8.8137, lon: 13.2302 },
-    { name: 'Douala', country: 'Cameroon', lat: 4.0483, lon: 9.7043 },
-    { name: 'Lomé', country: 'Togo', lat: 6.1214, lon: 1.2769 },
-    { name: 'Cotonou', country: 'Benin', lat: 6.3573, lon: 2.4331 },
-    { name: 'Libreville (Owendo)', country: 'Gabon', lat: 0.2969, lon: 9.4934 },
-    { name: 'Walvis Bay', country: 'Namibia', lat: -22.9576, lon: 14.5053 },
-    { name: 'Shanghai (Yangshan)', country: 'China', lat: 30.6244, lon: 122.0672 },
-    { name: 'Shenzhen (Yantian)', country: 'China', lat: 22.5721, lon: 114.2696 },
-    { name: 'Ningbo-Zhoushan', country: 'China', lat: 29.8683, lon: 121.9235 },
-    { name: 'Guangzhou (Nansha)', country: 'China', lat: 22.7568, lon: 113.5983 },
-    { name: 'Qingdao', country: 'China', lat: 36.0671, lon: 120.3826 },
-    { name: 'Tianjin', country: 'China', lat: 38.9847, lon: 117.7196 },
-    { name: 'Xiamen', country: 'China', lat: 24.4531, lon: 118.0894 },
-    { name: 'Busan', country: 'South Korea', lat: 35.1028, lon: 129.0403 },
-    { name: 'Incheon (Port)', country: 'South Korea', lat: 37.4563, lon: 126.6292 },
-    { name: 'Gwangyang', country: 'South Korea', lat: 34.9067, lon: 127.7594 }
-  ];
+  const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const qs = (doc, s) => doc.querySelector(s);
+  const qsa = (doc, s) => Array.from(doc.querySelectorAll(s));
 
-  const AIRPORTS = [
-    { name: 'Murtala Muhammed Intl (LOS)', country: 'Nigeria', lat: 6.5774, lon: 3.3212 },
-    { name: 'Nnamdi Azikiwe Intl (ABV)', country: 'Nigeria', lat: 9.0068, lon: 7.2632 },
-    { name: 'O.R. Tambo Intl (JNB)', country: 'South Africa', lat: -26.1392, lon: 28.246 },
-    { name: 'Cape Town Intl (CPT)', country: 'South Africa', lat: -33.9715, lon: 18.6021 },
-    { name: 'Jomo Kenyatta Intl (NBO)', country: 'Kenya', lat: -1.3192, lon: 36.9278 },
-    { name: 'Bole Intl (ADD)', country: 'Ethiopia', lat: 8.9779, lon: 38.7993 },
-    { name: 'Cairo Intl (CAI)', country: 'Egypt', lat: 30.1219, lon: 31.4056 },
-    { name: 'Mohammed V Intl (CMN)', country: 'Morocco', lat: 33.3675, lon: -7.59 },
-    { name: 'Houari Boumediene (ALG)', country: 'Algeria', lat: 36.691, lon: 3.2154 },
-    { name: 'Kotoka Intl (ACC)', country: 'Ghana', lat: 5.6052, lon: -0.1668 },
-    { name: 'Félix-Houphouët-Boigny (ABJ)', country: "Côte d'Ivoire", lat: 5.2614, lon: -3.9263 },
-    { name: 'Blaise Diagne Intl (DSS)', country: 'Senegal', lat: 14.6702, lon: -17.0733 },
-    { name: 'Julius Nyerere Intl (DAR)', country: 'Tanzania', lat: -6.8781, lon: 39.2026 },
-    { name: 'O.R. Tambo alt. Lusaka KKIA (LUN)', country: 'Zambia', lat: -15.3308, lon: 28.4526 },
-    { name: 'Kigali Intl (KGL)', country: 'Rwanda', lat: -1.9686, lon: 30.1395 },
-    { name: 'Kamuzu Intl (LLW)', country: 'Malawi', lat: -13.7894, lon: 33.7811 },
-    { name: 'Robert Mugabe/Harare (HRE)', country: 'Zimbabwe', lat: -17.9318, lon: 31.0928 },
-    { name: 'Maputo Intl (MPM)', country: 'Mozambique', lat: -25.9208, lon: 32.5726 },
-    { name: 'Quatro de Fevereiro (LAD)', country: 'Angola', lat: -8.8584, lon: 13.2312 },
-    { name: 'Douala Intl (DLA)', country: 'Cameroon', lat: 4.0061, lon: 9.7195 },
-    { name: 'Beijing Capital (PEK)', country: 'China', lat: 40.0801, lon: 116.5846 },
-    { name: 'Beijing Daxing (PKX)', country: 'China', lat: 39.5098, lon: 116.4105 },
-    { name: 'Shanghai Pudong (PVG)', country: 'China', lat: 31.1443, lon: 121.8083 },
-    { name: 'Guangzhou Baiyun (CAN)', country: 'China', lat: 23.3924, lon: 113.2988 },
-    { name: 'Shenzhen Bao\'an (SZX)', country: 'China', lat: 22.6393, lon: 113.8107 },
-    { name: 'Chengdu Tianfu (TFU)', country: 'China', lat: 30.3125, lon: 104.4417 },
-    { name: 'Incheon Intl (ICN)', country: 'South Korea', lat: 37.4602, lon: 126.4407 },
-    { name: 'Gimpo Intl (GMP)', country: 'South Korea', lat: 37.5583, lon: 126.7906 },
-    { name: 'Busan Gimhae (PUS)', country: 'South Korea', lat: 35.1795, lon: 128.9382 },
-    { name: 'Jeju Intl (CJU)', country: 'South Korea', lat: 33.5113, lon: 126.4930 }
-  ];
+  function themeIsDark(doc) {
+    return doc.documentElement.getAttribute('data-theme') === 'dark' ||
+      doc.body?.classList.contains('dark') ||
+      window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+  }
+
+  function imageSearchUrl(name, city, country) {
+    const q = encodeURIComponent((name + ' ' + city + ' ' + country).trim());
+    return 'https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=' +
+      q + '&gsrnamespace=6&gsrlimit=6&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=1000&format=json&origin=*';
+  }
+
+  async function getLocationImage(location) {
+    try {
+      const r = await fetch(imageSearchUrl(location.name, location.city, location.country), { headers: { Accept: 'application/json' } });
+      const d = await r.json();
+      const pages = Object.values(d?.query?.pages || {});
+      const usable = pages.find(p => p.imageinfo?.[0]?.thumburl) || pages.find(p => p.imageinfo?.[0]?.url);
+      return usable?.imageinfo?.[0]?.thumburl || usable?.imageinfo?.[0]?.url || '';
+    } catch (_) { return ''; }
+  }
 
   function run(doc) {
-    if (!doc || doc.getElementById('vtgAdvancedMapStyle')) return;
-    const head = doc.head;
-    const css = doc.createElement('style'); css.id = 'vtgAdvancedMapStyle'; css.textContent = `
-    #mapDrawer .drawerPanel{width:min(1180px,99vw)!important;padding:18px!important;background:#f4f7f8}
-    #mapDrawer .vtgMapShell{position:relative;background:#fff;border:1px solid #dbe5e9;border-radius:18px;overflow:hidden;box-shadow:0 18px 55px rgba(7,31,48,.14)}
-    #mapDrawer .vtgMapTop{display:grid;grid-template-columns:minmax(280px,1fr) auto auto auto;gap:8px;padding:12px;background:rgba(255,255,255,.96);border-bottom:1px solid #dbe5e9;position:relative;z-index:5}
-    #mapDrawer .vtgMapTop input{height:42px;border:1px solid #ccdce2;border-radius:11px;padding:0 13px;outline:0;font-size:12px;background:#fff}
-    #mapDrawer .vtgMapTop input:focus{border-color:#0e969f;box-shadow:0 0 0 3px rgba(14,150,159,.12)}
-    #mapDrawer .vtgMapBtn{height:42px;border:1px solid #d3e0e5;background:#fff;color:#123b57;border-radius:11px;padding:0 12px;display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700}
-    #mapDrawer .vtgMapBtn.primary{background:#123b57;color:#fff;border-color:#123b57}
-    #mapDrawer .vtgMapBtn:hover{border-color:#0e969f;color:#0e969f}
-    #mapDrawer .vtgMapBtn.primary:hover{color:#fff;background:#0e6f7a}
-    #mapDrawer .vtgMapViewport{height:min(74vh,720px);min-height:520px;position:relative}
-    #mapDrawer #vtgAdvancedMap{position:absolute;inset:0}
-    #mapDrawer .vtgMapSide{position:absolute;top:14px;left:14px;z-index:4;width:235px;background:rgba(255,255,255,.95);border:1px solid #dbe5e9;border-radius:14px;box-shadow:0 10px 35px rgba(7,31,48,.15);overflow:hidden}
-    #mapDrawer .vtgMapSide h4{margin:0;padding:12px 13px;border-bottom:1px solid #e3ebee;font-size:11px;color:#123b57}
-    #mapDrawer .vtgLayer{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;font-size:10px;color:#526d7e;border-bottom:1px solid #edf2f4}
-    #mapDrawer .vtgLayer button{border:0;background:#eaf4f6;color:#123b57;border-radius:8px;padding:5px 7px;font-size:8px;font-weight:800}
-    #mapDrawer .vtgMapTools{position:absolute;right:14px;top:14px;z-index:4;display:grid;gap:7px}
-    #mapDrawer .vtgTool{width:42px;height:42px;border:1px solid #d5e1e5;background:rgba(255,255,255,.96);border-radius:11px;color:#123b57;display:grid;place-items:center;box-shadow:0 8px 24px rgba(7,31,48,.12);font-size:16px;font-weight:800}
-    #mapDrawer .vtgTool:hover{color:#0e969f;border-color:#0e969f}
-    #mapDrawer .vtgMapStatus{position:absolute;left:14px;bottom:14px;z-index:4;background:rgba(7,31,48,.9);color:#fff;border-radius:10px;padding:8px 10px;font-size:8px;max-width:340px}
-    #mapDrawer .vtgShipmentPanel{position:absolute;right:66px;top:14px;z-index:5;width:min(360px,calc(100% - 280px));max-height:calc(100% - 28px);overflow:auto;background:rgba(255,255,255,.97);border:1px solid #dbe5e9;border-radius:15px;box-shadow:0 14px 40px rgba(7,31,48,.18);display:none}
-    #mapDrawer .vtgShipmentPanel.open{display:block}
-    #mapDrawer .vtgShipmentHead{padding:12px 14px;border-bottom:1px solid #e3ebee;display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-    #mapDrawer .vtgShipmentHead h4{margin:0;color:#123b57;font-size:12px}
-    #mapDrawer .vtgShipmentMeta{padding:10px 14px;background:#f5f9fa;display:grid;grid-template-columns:1fr 1fr;gap:7px}
-    #mapDrawer .vtgShipmentMeta div{font-size:9px;color:#607586}.vtgShipmentMeta b{display:block;color:#123b57;font-size:10px;margin-top:2px}
-    #mapDrawer .vtgShipmentPath{padding:12px 14px}.vtgPathRow{display:grid;grid-template-columns:18px 1fr;gap:8px;position:relative;padding-bottom:12px}
-    #mapDrawer .vtgPathRow:before{content:"";position:absolute;left:8px;top:17px;bottom:-2px;width:2px;background:#dbe5e9}
-    #mapDrawer .vtgPathRow:last-child:before{display:none}
-    #mapDrawer .vtgPathDot{width:16px;height:16px;border-radius:50%;background:#cbd9de;border:3px solid #fff;box-shadow:0 0 0 1px #cbd9de;z-index:1}
-    #mapDrawer .vtgPathRow.current .vtgPathDot{background:#d6a23a;box-shadow:0 0 0 2px #d6a23a}
-    #mapDrawer .vtgPathRow.done .vtgPathDot{background:#16865d;box-shadow:0 0 0 1px #16865d}
-    #mapDrawer .vtgPathRow.next .vtgPathDot{background:#0e969f;box-shadow:0 0 0 2px #0e969f}
-    #mapDrawer .vtgPathTitle{font-size:10px;font-weight:800;color:#123b57}.vtgPathDetail{font-size:8px;color:#6a7e8b;margin-top:2px;line-height:1.4}
-    #mapDrawer .vtgShipmentActions{display:flex;gap:6px;padding:0 14px 12px}
-    #mapDrawer .vtgShipmentActions button{border:1px solid #d3e0e5;background:#fff;color:#123b57;border-radius:8px;padding:7px 9px;font-size:9px;font-weight:800}
-    #mapDrawer .vtgShipmentActions button.primary{background:#123b57;color:#fff;border-color:#123b57}
-    #mapDrawer .vtgShipmentSelect{margin:10px 14px 0;width:calc(100% - 28px);border:1px solid #d5e1e5;border-radius:8px;padding:7px;font-size:9px;color:#123b57}
-    #mapDrawer .vtgMapBottom{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 12px;background:#fff;border-top:1px solid #dbe5e9;color:#607586;font-size:8px}
-    #mapDrawer .vtgMapModes{display:flex;gap:5px;flex-wrap:wrap}
-    #mapDrawer .vtgMode{border:1px solid #dbe5e9;background:#fff;border-radius:8px;padding:6px 9px;font-size:8px;font-weight:800;color:#123b57}
-    #mapDrawer .vtgMode.active{background:#eaf4f6;border-color:#0e969f;color:#087e86}
-    @media(max-width:700px){#mapDrawer .vtgMapTop{grid-template-columns:1fr 1fr}.vtgMapTop input{grid-column:1/-1}#mapDrawer .vtgMapSide{width:190px}.vtgShipmentPanel{left:14px!important;right:14px!important;top:auto!important;bottom:14px;width:auto!important;max-height:58%!important}.vtgMapViewport{min-height:460px!important;height:70vh!important}}
-    `; head.appendChild(css);
+    if (!doc || doc.getElementById('vtgAtlasPremiumStyle')) return;
+    const drawer = doc.getElementById('mapDrawer');
+    if (!drawer) return;
 
-    const old = doc.getElementById('mapDrawer'); if (!old) return;
-    old.innerHTML = `<div class="drawerPanel">
-      <div class="drawerTop">
-        <div><div class="eyebrow">Current world atlas</div><h2>Advanced Trade Atlas</h2><p style="font-size:11px;color:var(--muted);margin:4px 0 0">Find verified companies, suppliers, banks, ports, cities and trade hubs.</p></div>
-        <button class="close" id="vtgMapClose">&times;</button>
-      </div>
-      <div class="vtgMapShell" style="margin-top:14px">
-        <div class="vtgMapTop">
-          <input id="vtgMapSearch" placeholder="Search a city, port, country or company address" />
-          <button class="vtgMapBtn primary" id="vtgFind">Find</button>
-          <button class="vtgMapBtn" id="vtgLocate">My location</button>
-          <button class="vtgMapBtn" id="vtgTheme">Dark mode</button><button class="vtgMapBtn" id="vtgReset">World</button>
-        </div>
-        <div class="vtgMapViewport">
-          <div id="vtgAdvancedMap"></div>
-          <div class="vtgShipmentPanel" id="vtgShipmentPanel"></div>
-          <div class="vtgMapSide">
-            <h4>VTG intelligence</h4><div class="vtgLayer">View for <select id="vtgRole" style="font-size:9px;border:1px solid #d5e1e5;border-radius:6px;padding:4px"><option value="buyer">Buyer</option><option value="supplier">Supplier</option><option value="bank">Bank / Finance</option><option value="admin">Admin</option></select></div>
-            <div class="vtgLayer">Standard atlas <button data-mode="standard">ACTIVE</button></div><div class="vtgLayer">Dark atlas <button data-mode="dark">VIEW</button></div>
-            <div class="vtgLayer">Satellite-style view <button data-mode="satellite">VIEW</button></div>
-            <div class="vtgLayer">Trade hubs <button data-layer="hubs">SHOW</button></div>
-            <div class="vtgLayer">Ports &amp; logistics <button data-layer="ports">SHOW</button></div><div class="vtgLayer">Trade routes <button data-layer="routes">SHOW</button></div><div class="vtgLayer">My VTG shipments <button data-layer="shipments">LOAD</button></div>
-            <div class="vtgLayer">Business locations <button data-layer="business">SHOW</button></div>
-          </div>
-          <div class="vtgMapTools">
-            <button class="vtgTool" id="vtgZoomIn">+</button>
-            <button class="vtgTool" id="vtgZoomOut">&minus;</button>
-            <button class="vtgTool" id="vtgCompass">N</button>
-            <button class="vtgTool" id="vtgFullscreen">&#9633;</button>
-          </div>
-          <div class="vtgMapStatus" id="vtgMapStatus">World view &bull; drag to explore &bull; scroll to zoom &bull; click the globe to inspect regions.</div>
-        </div>
-        <div class="vtgMapBottom">
-          <div class="vtgMapModes">
-            <button class="vtgMode active" data-proj="globe">3D Globe</button>
-            <button class="vtgMode" data-proj="mercator">2D Map</button>
-            <button class="vtgMode" id="vtgTraffic">Traffic / routes</button>
-            <button class="vtgMode" id="vtgMeasure">Measure</button>
-          </div>
-          <div>OpenStreetMap / OpenFreeMap data &bull; location search via Nominatim</div>
-        </div>
-      </div>
-    </div>`;
+    const style = doc.createElement('style');
+    style.id = 'vtgAtlasPremiumStyle';
+    style.textContent = `
+      #mapDrawer{background:#05080c!important}
+      #mapDrawer .drawerPanel{position:relative!important;width:100vw!important;max-width:none!important;height:100vh!important;max-height:none!important;padding:0!important;border-radius:0!important;background:#05080c!important;color:#f7f0df!important;overflow:hidden!important}
+      #mapDrawer .atlasX{position:absolute;right:22px;top:18px;z-index:40;width:44px;height:44px;border:1px solid rgba(244,210,129,.32);border-radius:14px;background:rgba(7,10,15,.72);backdrop-filter:blur(18px);color:#f5d38b;font-size:24px;cursor:pointer;box-shadow:0 10px 35px rgba(0,0,0,.3)}
+      #mapDrawer .atlasCanvas{position:absolute;inset:0}
+      #mapDrawer #vtgPremiumMap{position:absolute;inset:0}
+      #mapDrawer .mapWash{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 48% 48%,transparent 0,rgba(2,5,9,.08) 42%,rgba(2,5,9,.72) 100%);z-index:2}
+      #mapDrawer .atlasTop{position:absolute;left:24px;right:82px;top:18px;z-index:20;display:flex;align-items:center;gap:14px;pointer-events:none}
+      #mapDrawer .atlasBrand{pointer-events:auto;display:flex;align-items:center;gap:11px;padding:9px 13px;border:1px solid rgba(244,210,129,.22);border-radius:16px;background:rgba(5,9,14,.66);backdrop-filter:blur(18px);box-shadow:0 12px 40px rgba(0,0,0,.28)}
+      #mapDrawer .atlasBrandMark{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,#f5d38b,#9c6c25);color:#090b0f;font-weight:900}
+      #mapDrawer .atlasBrand strong{font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+      #mapDrawer .atlasBrand small{display:block;color:#aeb8c1;font-size:8px;margin-top:2px}
+      #mapDrawer .atlasSearch{pointer-events:auto;flex:1;max-width:540px;height:48px;display:flex;align-items:center;gap:8px;padding:0 14px;border:1px solid rgba(255,255,255,.15);border-radius:15px;background:rgba(5,9,14,.66);backdrop-filter:blur(18px);box-shadow:0 12px 40px rgba(0,0,0,.28)}
+      #mapDrawer .atlasSearch input{flex:1;border:0;outline:0;background:transparent;color:#fff;font:600 11px Manrope,system-ui}
+      #mapDrawer .atlasSearch input::placeholder{color:#8c9aa5}
+      #mapDrawer .atlasSearch button{border:0;border-radius:10px;background:#d5a74f;color:#0a0d11;padding:8px 11px;font-size:9px;font-weight:900;cursor:pointer}
+      #mapDrawer .atlasChips{pointer-events:auto;display:flex;gap:7px;flex-wrap:wrap}
+      #mapDrawer .atlasChip{border:1px solid rgba(255,255,255,.15);background:rgba(5,9,14,.62);color:#dce4ea;border-radius:999px;padding:8px 11px;font-size:8px;font-weight:800;backdrop-filter:blur(14px);cursor:pointer}
+      #mapDrawer .atlasChip.active{background:rgba(213,167,79,.18);border-color:rgba(213,167,79,.65);color:#f5d38b}
+      #mapDrawer .atlasLegend{position:absolute;left:24px;bottom:22px;z-index:15;display:flex;gap:8px;align-items:center;padding:9px 12px;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(5,9,14,.68);backdrop-filter:blur(18px);font-size:8px;color:#aeb8c1}
+      #mapDrawer .legendDot{width:8px;height:8px;border-radius:50%;display:inline-block;box-shadow:0 0 12px currentColor}
+      #mapDrawer .legendDot.port{background:#f0c66b;color:#f0c66b}
+      #mapDrawer .legendDot.air{background:#66d7df;color:#66d7df}
+      #mapDrawer .atlasControls{position:absolute;right:22px;bottom:22px;z-index:15;display:grid;gap:7px}
+      #mapDrawer .atlasControl{width:42px;height:42px;border:1px solid rgba(255,255,255,.14);border-radius:13px;background:rgba(5,9,14,.7);backdrop-filter:blur(16px);color:#e8edf0;font-weight:900;cursor:pointer}
+      #mapDrawer .atlasControl:hover{border-color:#d5a74f;color:#f5d38b}
+      #mapDrawer .atlasMode{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:15;display:flex;padding:4px;border:1px solid rgba(255,255,255,.13);border-radius:14px;background:rgba(5,9,14,.72);backdrop-filter:blur(18px)}
+      #mapDrawer .atlasMode button{border:0;background:transparent;color:#8f9da7;padding:8px 11px;border-radius:10px;font-size:8px;font-weight:900;cursor:pointer}
+      #mapDrawer .atlasMode button.active{background:rgba(213,167,79,.17);color:#f5d38b}
+      #mapDrawer .atlasInfo{position:absolute;right:24px;top:82px;z-index:30;width:min(410px,calc(100vw - 48px));max-height:calc(100vh - 124px);overflow:auto;border:1px solid rgba(244,210,129,.25);border-radius:24px;background:rgba(7,11,17,.86);backdrop-filter:blur(24px);box-shadow:0 25px 80px rgba(0,0,0,.48);transform:translateX(110%);opacity:0;transition:.38s cubic-bezier(.2,.8,.2,1)}
+      #mapDrawer .atlasInfo.open{transform:translateX(0);opacity:1}
+      #mapDrawer .atlasHero{height:190px;position:relative;overflow:hidden;border-radius:23px 23px 0 0;background:linear-gradient(135deg,#111c26,#05080c)}
+      #mapDrawer .atlasHero img{width:100%;height:100%;object-fit:cover;display:block;opacity:.78}
+      #mapDrawer .atlasHero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.02),rgba(4,7,11,.92))}
+      #mapDrawer .atlasHeroText{position:absolute;left:18px;right:18px;bottom:16px;z-index:2}
+      #mapDrawer .atlasType{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(245,211,139,.38);background:rgba(5,9,14,.58);color:#f5d38b;border-radius:999px;padding:5px 8px;font-size:7px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+      #mapDrawer .atlasHero h2{margin:7px 0 2px;font-size:25px;line-height:1.05;color:#fff;letter-spacing:-.03em}
+      #mapDrawer .atlasHero p{margin:0;color:#bdc8cf;font-size:9px}
+      #mapDrawer .atlasInfoBody{padding:16px 18px 20px}
+      #mapDrawer .atlasInfoClose{position:absolute;right:12px;top:12px;z-index:5;width:34px;height:34px;border:1px solid rgba(255,255,255,.18);border-radius:11px;background:rgba(0,0,0,.45);color:#fff;cursor:pointer}
+      #mapDrawer .atlasStats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:13px}
+      #mapDrawer .atlasStat{padding:10px;border:1px solid rgba(255,255,255,.09);border-radius:13px;background:rgba(255,255,255,.035)}
+      #mapDrawer .atlasStat small{display:block;color:#7f8e99;font-size:7px;text-transform:uppercase;letter-spacing:.08em}
+      #mapDrawer .atlasStat b{display:block;margin-top:4px;color:#eef3f5;font-size:10px}
+      #mapDrawer .atlasSectionTitle{font-size:8px;text-transform:uppercase;letter-spacing:.13em;color:#d5a74f;font-weight:900;margin:14px 0 7px}
+      #mapDrawer .atlasDescription{font-size:10px;line-height:1.6;color:#b7c3ca}
+      #mapDrawer .atlasActions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:15px}
+      #mapDrawer .atlasAction{padding:10px;border-radius:11px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:#dfe7eb;font-size:8px;font-weight:900;cursor:pointer}
+      #mapDrawer .atlasAction.primary{background:#d5a74f;border-color:#d5a74f;color:#0a0d11}
+      #mapDrawer .atlasImageCredit{margin-top:9px;color:#71808a;font-size:7px}
+      #mapDrawer .atlasMarker{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(255,255,255,.55);box-shadow:0 0 0 5px rgba(255,255,255,.04),0 0 24px currentColor;cursor:pointer;transform:translate(-50%,-50%);font-size:13px}
+      #mapDrawer .atlasMarker.port{background:rgba(213,167,79,.94);color:#ffe4a5}
+      #mapDrawer .atlasMarker.air{background:rgba(46,180,193,.92);color:#b8fbff}
+      #mapDrawer .atlasMarker.selected{box-shadow:0 0 0 7px rgba(245,211,139,.15),0 0 34px currentColor;transform:translate(-50%,-50%) scale(1.18)}
+      #mapDrawer .atlasMarker .pulse{position:absolute;inset:-7px;border:1px solid currentColor;border-radius:50%;opacity:.4;animation:vtgPulse 2.2s infinite}
+      @keyframes vtgPulse{0%{transform:scale(.7);opacity:.6}75%,100%{transform:scale(1.5);opacity:0}}
+      #mapDrawer .atlasCount{position:absolute;right:24px;top:82px;z-index:10;padding:7px 10px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(5,9,14,.65);color:#aeb8c1;font-size:7px;backdrop-filter:blur(15px)}
+      #mapDrawer .atlasLoading{padding:35px;text-align:center;color:#9eabb4;font-size:9px}
+      #mapDrawer .atlasEmpty{padding:24px;color:#9eabb4;font-size:9px}
+      @media(max-width:1000px){#mapDrawer .atlasChips{display:none}#mapDrawer .atlasTop{left:14px;right:70px}#mapDrawer .atlasInfo{right:14px;top:auto;bottom:14px;max-height:64vh;width:min(430px,calc(100vw - 28px))}#mapDrawer .atlasLegend{left:14px;bottom:78px}#mapDrawer .atlasMode{bottom:14px}}
+      @media(max-width:620px){#mapDrawer .atlasBrand{display:none}#mapDrawer .atlasSearch{max-width:none}#mapDrawer .atlasSearch button{padding:8px}#mapDrawer .atlasInfo{max-height:68vh}.atlasHero{height:150px!important}#mapDrawer .atlasStats{grid-template-columns:1fr 1fr}#mapDrawer .atlasMode button{padding:8px 7px}}
+    `;
+    doc.head.appendChild(style);
 
-    const close = doc.getElementById('vtgMapClose'); close.onclick = () => { old.classList.remove('open'); doc.body.style.overflow = '' };
-    if (!doc.querySelector('script[data-vtg-maplibre]')) {
-      const s = doc.createElement('script'); s.src = LIB; s.dataset.vtgMaplibre = '1'; head.appendChild(s); s.onload = () => init(doc);
+    drawer.innerHTML = `
+      <div class="drawerPanel">
+        <button class="atlasX" id="vtgAtlasClose" aria-label="Close Trade Atlas">×</button>
+        <div class="atlasCanvas">
+          <div id="vtgPremiumMap"></div>
+          <div class="mapWash"></div>
+          <div class="atlasTop">
+            <div class="atlasBrand"><div class="atlasBrandMark">V</div><div><strong>VTG Trade Atlas</strong><small>Global trade intelligence • Africa · China · South Korea</small></div></div>
+            <div class="atlasSearch"><span style="color:#d5a74f">⌕</span><input id="vtgAtlasSearch" placeholder="Search a port, airport, city or country"><button id="vtgAtlasFind">SEARCH</button></div>
+            <div class="atlasChips">
+              <button class="atlasChip active" data-filter="all">All</button>
+              <button class="atlasChip" data-filter="seaport">Seaports</button>
+              <button class="atlasChip" data-filter="airport">Airports</button>
+              <button class="atlasChip" data-region="Africa">Africa</button>
+              <button class="atlasChip" data-region="China">China</button>
+              <button class="atlasChip" data-region="Korea">South Korea</button>
+            </div>
+          </div>
+          <div class="atlasCount" id="vtgAtlasCount">Loading locations…</div>
+          <div class="atlasInfo" id="vtgAtlasInfo"></div>
+          <div class="atlasLegend"><span class="legendDot port"></span> Seaport <span style="margin-left:7px" class="legendDot air"></span> Airport <span style="margin-left:8px">Click any location for details</span></div>
+          <div class="atlasMode">
+            <button class="active" data-mapmode="night">Night</button>
+            <button data-mapmode="day">Day</button>
+            <button data-mapmode="dark">Dark</button>
+            <button data-mapmode="satellite">Earth</button>
+          </div>
+          <div class="atlasControls">
+            <button class="atlasControl" id="atlasPlus">+</button>
+            <button class="atlasControl" id="atlasMinus">−</button>
+            <button class="atlasControl" id="atlasReset">◎</button>
+            <button class="atlasControl" id="atlasCompass">N</button>
+          </div>
+        </div>
+      </div>`;
+
+    qs(doc, '#vtgAtlasClose').onclick = () => { drawer.classList.remove('open'); doc.body.style.overflow=''; };
+    if (!doc.querySelector('script[data-vtg-atlas-maplibre]')) {
+      const s = doc.createElement('script');
+      s.src = MAPLIBRE; s.dataset.vtgAtlasMaplibre='1'; doc.head.appendChild(s);
+      s.onload = () => init(doc);
     } else init(doc);
   }
 
-  function init(doc) {
-    const ml = window.maplibregl; if (!ml) return setTimeout(() => init(doc), 100);
-    const map = new ml.Map({ container: doc.getElementById('vtgAdvancedMap'), style: BLUE_MARBLE_STYLE, center: [8.6753, 9.082], zoom: 1.15, projection: { type: 'globe' }, attributionControl: false });
-    let currentStyle = 'satellite';
-    map.addControl(new ml.NavigationControl({ showCompass: true, showZoom: true }), 'bottom-right');
-    map.addControl(new ml.ScaleControl({ maxWidth: 140, unit: 'metric' }), 'bottom-left');
-    map.addControl(new ml.FullscreenControl(), 'bottom-right');
-    let marker = null, measure = false, points = [];
-    const status = t => { doc.getElementById('vtgMapStatus').textContent = t };
-    const roleCopy = {
-      buyer: 'Buyer view • supplier origin, cargo movement, destination port, ETA, documentation milestones and landed-cost planning.',
-      supplier: 'Supplier view • buyer markets, destination ports, shipment progress, delivery milestones and verified business locations.',
-      bank: 'Bank / finance view • transaction parties, cargo movement, document milestones, finance checkpoints and verification signals.',
-      admin: 'Admin view • full trade network, ports, hubs, business locations, routes and operational alerts.'
-    };
-    const roleSelect = doc.getElementById('vtgRole');
-    roleSelect.onchange = () => status(roleCopy[roleSelect.value] || roleCopy.admin);
-
-    const search = async () => {
-      const q = doc.getElementById('vtgMapSearch').value.trim(); if (!q) return;
-      status('Searching for ' + q + '…');
-      try {
-        const r = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q=' + encodeURIComponent(q), { headers: { Accept: 'application/json' } });
-        const d = await r.json();
-        if (!d.length) { status('No location found. Try a city, port, country or company address.'); return }
-        const x = d[0], lon = +x.lon, lat = +x.lat;
-        const fly = () => map.flyTo({ center: [lon, lat], zoom: 13, duration: 1400 });
-        if (currentStyle === 'satellite') { currentStyle = 'standard'; map.setStyle(STYLE); map.once('styledata', fly) } else fly();
-        if (marker) marker.remove();
-        marker = new ml.Marker({ color: '#0e969f' }).setLngLat([lon, lat]).setPopup(new ml.Popup({ offset: 12 }).setHTML('<b>' + x.display_name + '</b><br><small>Location found by VTG Atlas</small>')).addTo(map);
-        marker.togglePopup(); status('Found: ' + x.display_name);
-      } catch (e) { status('Search service unavailable. Please try again.') }
-    };
-    doc.getElementById('vtgFind').onclick = search;
-    doc.getElementById('vtgMapSearch').onkeydown = e => { if (e.key === 'Enter') search() };
-    doc.getElementById('vtgLocate').onclick = () => {
-      const g = window.navigator.geolocation; if (!g) { status('Geolocation is not supported by this browser.'); return }
-      status('Finding your location…');
-      g.getCurrentPosition(p => {
-        map.flyTo({ center: [p.coords.longitude, p.coords.latitude], zoom: 14, duration: 1400 });
-        if (marker) marker.remove();
-        marker = new ml.Marker({ color: '#d6a23a' }).setLngLat([p.coords.longitude, p.coords.latitude]).setPopup(new ml.Popup().setHTML('Your current location')).addTo(map);
-        marker.togglePopup(); status('Your current location');
-      }, () => status('Location permission was not granted.'));
-    };
-    doc.getElementById('vtgReset').onclick = () => { map.flyTo({ center: [8.6753, 9.082], zoom: 1.15, duration: 1000 }); status('World view restored.') };
-    doc.getElementById('vtgZoomIn').onclick = () => map.zoomIn();
-    doc.getElementById('vtgZoomOut').onclick = () => map.zoomOut();
-    doc.getElementById('vtgCompass').onclick = () => map.resetNorthPitch();
-    doc.getElementById('vtgFullscreen').onclick = () => doc.getElementById('vtgAdvancedMap').requestFullscreen?.();
-    doc.querySelectorAll('[data-proj]').forEach(b => b.onclick = () => {
-      const p = b.dataset.proj; map.setProjection({ type: p });
-      doc.querySelectorAll('[data-proj]').forEach(x => x.classList.toggle('active', x === b));
-      status(p === 'globe' ? '3D globe mode • explore the world' : '2D atlas mode • explore streets and trade regions');
+  async function init(doc) {
+    const ml = window.maplibregl;
+    if (!ml) return setTimeout(() => init(doc), 120);
+    const map = new ml.Map({
+      container: doc.getElementById('vtgPremiumMap'),
+      style: themeIsDark(doc) ? NIGHT_STYLE : BLUE_MARBLE,
+      center: [50, 13],
+      zoom: 1.75,
+      projection: { type: 'globe' },
+      attributionControl: false,
+      pitch: 12
     });
-    const themeBtn = doc.getElementById('vtgTheme');
-    themeBtn.onclick = () => {
-      const target = currentStyle === 'dark' ? 'standard' : 'dark';
-      currentStyle = target;
-      map.setStyle(target === 'dark' ? DARK_STYLE : STYLE);
-      themeBtn.textContent = target === 'dark' ? 'Light mode' : 'Dark mode';
-      doc.querySelectorAll('[data-mode]').forEach(x => x.textContent = x.dataset.mode === target ? 'ACTIVE' : 'VIEW');
-      status(target === 'dark' ? 'Dark atlas enabled — operational low-glare view.' : 'Light atlas enabled — standard daytime trade view.');
-    };
-    doc.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => {
-      const mode = b.dataset.mode;
-      if (mode === currentStyle) return;
-      currentStyle = mode;
-      map.setStyle(mode === 'satellite' ? BLUE_MARBLE_STYLE : (mode === 'dark' ? DARK_STYLE : STYLE));
-      map.once('styledata', () => { if (routesVisible && !map.getSource('vtg-trade-routes')) addTradeRoutes(); if (shipmentsVisible) addShipments(); });
-      doc.querySelectorAll('[data-mode]').forEach(x => x.textContent = x.dataset.mode === 'satellite' ? (x.dataset.mode === currentStyle ? 'ACTIVE' : 'VIEW') : (x.dataset.mode === currentStyle ? 'ACTIVE' : 'VIEW'));
-      themeBtn.textContent = mode === 'dark' ? 'Light mode' : 'Dark mode';
-      status(mode === 'satellite'
-        ? 'Real satellite Earth imagery (NASA Blue Marble). Zoom is limited to a country/region level — switch to Standard atlas for exact street addresses.'
-        : 'Standard street atlas — full zoom to exact addresses, ports and business locations.');
-    });
-    const TRADE_ROUTES = [
-      { id:'ng-cn', name:'Nigeria ↔ China', mode:'Sea freight corridor', coords:[[3.3903,6.4474],[10,7],[30,4],[55,8],[75,18],[100,22],[114.2696,22.5721]] },
-      { id:'za-cn', name:'Southern Africa ↔ China', mode:'Sea freight corridor', coords:[[31.0247,-29.8622],[35,-24],[45,-15],[60,-5],[75,8],[95,18],[121.9235,29.8683]] },
-      { id:'ng-kr', name:'West Africa ↔ South Korea', mode:'Sea freight corridor', coords:[[3.3903,6.4474],[20,5],[40,4],[65,8],[90,18],[110,28],[129.0403,35.1028]] }
-    ];
-    let routesVisible = false;
-    let shipmentsVisible = false;
-    let shipmentData = [];
-    const clearRoutes = () => {
-      if (map.getLayer('vtg-trade-routes')) map.removeLayer('vtg-trade-routes');
-      if (map.getLayer('vtg-trade-routes-halo')) map.removeLayer('vtg-trade-routes-halo');
-      if (map.getSource('vtg-trade-routes')) map.removeSource('vtg-trade-routes');
-    };
-    const addTradeRoutes = () => {
-      if (map.getSource('vtg-trade-routes')) return;
-      map.addSource('vtg-trade-routes', {
-        type:'geojson',
-        data:{type:'FeatureCollection',features:TRADE_ROUTES.map(r=>({type:'Feature',properties:{name:r.name,mode:r.mode},geometry:{type:'LineString',coordinates:r.coords}}))}
-      });
-      map.addLayer({id:'vtg-trade-routes-halo',type:'line',source:'vtg-trade-routes',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#ffffff','line-width':7,'line-opacity':0.35}});
-      map.addLayer({id:'vtg-trade-routes',type:'line',source:'vtg-trade-routes',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#0e969f','line-width':3,'line-opacity':0.9,'line-dasharray':[2,2]}});
-      map.on('click','vtg-trade-routes',e=>{
-        const p=e.features?.[0]?.properties||{};
-        new ml.Popup({offset:10}).setLngLat(e.lngLat).setHTML('<b>'+p.name+'</b><br><small>'+p.mode+'<br>VTG planning corridor — not live vessel tracking.</small>').addTo(map);
-      });
-      map.on('mouseenter','vtg-trade-routes',()=>{map.getCanvas().style.cursor='pointer'});
-      map.on('mouseleave','vtg-trade-routes',()=>{map.getCanvas().style.cursor=''});
-    };
-    const escHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    map.addControl(new ml.NavigationControl({showCompass:false,showZoom:false}), 'bottom-right');
+    const locations = [];
+    const markers = [];
+    let filterType='all', filterRegion='all', mapMode=themeIsDark(doc)?'dark':'night';
 
-    const ensureShipmentPanel = () => doc.getElementById('vtgShipmentPanel');
-    const playbackPoints = s => (s?.routePoints || []).filter(p => Number.isFinite(Number(p.lat)) && Number.isFinite(Number(p.lng)));
+    const applyRasterMood = () => {
+      if (map.getLayer('earth')) {
+        map.setPaintProperty('earth','raster-brightness-max', mapMode==='satellite'?1:mapMode==='day'?1:0.58);
+        map.setPaintProperty('earth','raster-saturation', mapMode==='satellite'?0:mapMode==='day'?-0.02:-0.2);
+      }
+    };
 
-    const renderShipmentPanel = (s, opts = {}) => {
-      const panel = ensureShipmentPanel();
-      if (!panel || !s) return;
-      const points = playbackPoints(s);
-      const currentIndex = Math.min(opts.index ?? Math.max(points.length - 2, 0), Math.max(points.length - 1, 0));
-      const current = points[currentIndex] || points[0];
-      const next = points[currentIndex + 1] || (s.destinationPort ? { name: s.destinationPort, type: 'destination' } : null);
-      const journey = s.journey || {};
-      const journeyCurrent = journey.current || current;
-      const journeyNext = journey.next || next;
-      const journeyDestination = journey.destination || (s.destinationPort ? { name: s.destinationPort, type: 'destination' } : null);
-      const journeyCard = (label, point, cls) => '<div class="vtgJourneyCard ' + cls + '"><small>' + label + '</small><b>' + escHtml(point?.name || 'Not recorded') + '</b><span>' + escHtml([point?.city, point?.country].filter(Boolean).join(', ') || point?.type || '') + '</span></div>';
+    function clearMarkers() { markers.splice(0).forEach(m => m.remove()); }
+
+    function visible() {
+      const q = (qs(doc,'#vtgAtlasSearch')?.value || '').trim().toLowerCase();
+      return locations.filter(x =>
+        (filterType==='all'||x.type===filterType) &&
+        (filterRegion==='all'||x.region===filterRegion) &&
+        (!q || `${x.name} ${x.city} ${x.country} ${x.code}`.toLowerCase().includes(q))
+      );
+    }
+
+    function markerFor(x) {
+      const el=doc.createElement('button');
+      el.className='atlasMarker '+(x.type==='airport'?'air':'port');
+      el.title=x.name;
+      el.innerHTML=(x.type==='airport'?'✈':'⚓')+'<span class="pulse"></span>';
+      el.onclick=e=>{e.stopPropagation(); selectLocation(x)};
+      return new ml.Marker({element:el,anchor:'center'}).setLngLat([x.lng,x.lat]).addTo(map);
+    }
+
+    function renderMarkers() {
+      clearMarkers();
+      const v=visible();
+      v.forEach(x=>markers.push(markerFor(x)));
+      qs(doc,'#vtgAtlasCount').textContent=v.length+' locations • '+(v.filter(x=>x.type==='seaport').length)+' seaports • '+(v.filter(x=>x.type==='airport').length)+' airports';
+    }
+
+    async function selectLocation(x) {
+      markers.forEach(m=>m.getElement().classList.remove('selected'));
+      const found=markers.find(m=>Math.abs(m.getLngLat().lng-x.lng)<.0001&&Math.abs(m.getLngLat().lat-x.lat)<.0001);
+      found?.getElement().classList.add('selected');
+      map.flyTo({center:[x.lng,x.lat],zoom:7.2,duration:1200});
+      const panel=qs(doc,'#vtgAtlasInfo');
       panel.classList.add('open');
-      panel.innerHTML = '<div class="vtgShipmentHead"><div><div style="font-size:8px;color:#0e969f;font-weight:800">SHIPMENT STATUS</div><h4>' + escHtml(s.reference || 'VTG shipment') + '</h4></div><button data-shipment-close style="border:0;background:transparent;font-size:16px;color:#607586">×</button></div>' +
-        '<select class="vtgShipmentSelect" data-shipment-select>' + shipmentData.map(x => '<option value="' + escHtml(x.id) + '"' + (x.id === s.id ? ' selected' : '') + '>' + escHtml(x.reference || x.id) + ' — ' + escHtml(x.status || 'pending') + '</option>').join('') + '</select>' +
-        '<div class="vtgShipmentMeta"><div>Status<b>' + escHtml(s.status || 'pending') + '</b></div><div>Progress<b>' + escHtml(Number(s.percentComplete || 0)) + '%</b></div><div>Latest recorded<b>' + escHtml(journeyCurrent?.name || 'Not recorded') + '</b></div><div>Next milestone<b>' + escHtml(journeyNext?.name || 'Destination') + '</b></div></div>' +
-        '<div class="vtgJourneyStrip">' + journeyCard('ORIGIN', points[0], 'origin') + journeyCard('CURRENT', journeyCurrent, 'current') + journeyCard('NEXT', journeyNext, 'next') + journeyCard('DESTINATION', journeyDestination, 'destination') + '</div>' +
-        '<div class="vtgJourneyNote"><b>Recorded milestones:</b> ' + escHtml(journey.recordedCount ?? s.milestones?.length ?? 0) + ' &nbsp; • &nbsp; <b>Live vessel data:</b> Not connected</div>' +
-        '<div class="vtgShipmentPath">' + points.map((p,i) => '<div class="vtgPathRow ' + (i < currentIndex ? 'done ' : '') + (i === currentIndex ? 'current ' : '') + (i === currentIndex + 1 ? 'next ' : '') + '"><div class="vtgPathDot"></div><div><div class="vtgPathTitle">' + escHtml(p.name || 'Shipment point') + '</div><div class="vtgPathDetail">' + escHtml(p.type || 'milestone') + (p.status ? ' • ' + escHtml(p.status) : '') + (p.eventTime ? ' • ' + escHtml(new Date(p.eventTime).toLocaleString()) : '') + (p.detail ? ' • ' + escHtml(p.detail) : '') + '</div></div></div>').join('') + '</div>' +
-        '<div class="vtgShipmentActions"><button class="primary" data-live-shipment>Live tracking</button><button class="primary" data-play-shipment>' + (playbackTimer ? 'Pause playback' : 'Play playback') + '</button><button data-reset-shipment>Latest</button><button data-fit-shipment>Fit route</button></div><div class="vtgLiveResult" data-live-result></div>';
-      panel.querySelector('[data-shipment-close]').onclick = () => { panel.classList.remove('open'); selectedShipmentId = null; stopPlayback(); clearPlaybackMap(); };
-      panel.querySelector('[data-shipment-select]').onchange = e => selectShipment(e.target.value);
-      panel.querySelector('[data-live-shipment]').onclick = async () => {
-        const out = panel.querySelector('[data-live-result]');
-        out.textContent = 'Checking connected vessel/carrier tracking…';
-        try {
-          const token = window.localStorage.getItem('vtg_access_token') || '';
-          const response = await fetch('/api/shipments/' + encodeURIComponent(s.id) + '/live-tracking', { headers: { Authorization: 'Bearer ' + token, Accept: 'application/json' }, cache: 'no-store' });
-          const data = await response.json().catch(() => ({}));
-          if (!response.ok) throw new Error(data.message || 'Live tracking unavailable');
-          if (!(data.available && data.vessel)) {
-            out.innerHTML = '<b>Live tracking not connected.</b> ' + escHtml(data.reason || 'No live vessel/carrier position is available.');
-            return;
-          }
-          const v = data.vessel;
-          const eta = v.eta ? new Date(v.eta).toLocaleString() : 'Not supplied';
-          const updated = v.lastUpdated ? new Date(v.lastUpdated).toLocaleString() : 'Not supplied';
-          out.innerHTML =
-            '<b>Live vessel position</b><br>' +
-            escHtml(v.name || 'Unnamed vessel') + ' • ' + escHtml(data.provider || 'connected provider') +
-            '<br><small>Position: ' + escHtml(Number(v.lat).toFixed(5)) + ', ' + escHtml(Number(v.lng).toFixed(5)) +
-            (v.speedKnots != null ? ' • Speed: ' + escHtml(v.speedKnots) + ' kn' : '') +
-            (v.course != null ? ' • Course: ' + escHtml(v.course) + '°' : '') + '</small>' +
-            '<br><small>Destination: ' + escHtml(v.destination || data.nextMilestone || 'Not supplied') +
-            ' • ETA: ' + escHtml(eta) + '</small>' +
-            '<br><small>Last provider update: ' + escHtml(updated) + '</small>';
+      panel.innerHTML='<div class="atlasHero"><div class="atlasLoading">Loading location imagery…</div><button class="atlasInfoClose" id="atlasInfoClose">×</button></div><div class="atlasInfoBody"><div class="atlasLoading">Loading location intelligence…</div></div>';
+      qs(doc,'#atlasInfoClose').onclick=()=>panel.classList.remove('open');
 
-          if (window.__vtgLiveVesselMarker) window.__vtgLiveVesselMarker.remove();
-          window.__vtgLiveVesselMarker = new ml.Marker({ color: '#c44b4b' })
-            .setLngLat([Number(v.lng), Number(v.lat)])
-            .setPopup(new ml.Popup({ offset: 12 }).setHTML(
-              '<b>' + escHtml(v.name || 'VTG vessel') + '</b><br><small>Live position • ' +
-              escHtml(data.provider || 'provider') + '<br>Destination: ' +
-              escHtml(v.destination || data.nextMilestone || 'Not supplied') + '</small>'
-            )).addTo(map);
-          window.__vtgLiveVesselMarker.togglePopup();
-          map.flyTo({ center: [Number(v.lng), Number(v.lat)], zoom: Math.max(map.getZoom(), 4.5), duration: 1000 });
-          status('Live vessel position updated • ' + (v.name || 'Unnamed vessel') + ' • ' + (v.lastUpdated ? new Date(v.lastUpdated).toLocaleString() : 'provider timestamp unavailable'));
-        } catch (err) { out.textContent = err.message || 'Live tracking unavailable.'; }
-      };
-      panel.querySelector('[data-play-shipment]').onclick = () => togglePlayback(s);
-      panel.querySelector('[data-reset-shipment]').onclick = () => { stopPlayback(); playbackIndex = Math.max(points.length - 2, 0); renderShipmentPanel(s, { index: playbackIndex }); updatePlaybackMap(s, playbackIndex); };
-      panel.querySelector('[data-fit-shipment]').onclick = () => fitShipment(s);
-    };
-    const addJourneyStyles = () => {
-      if (doc.getElementById('vtg-journey-styles')) return;
-      const style = doc.createElement('style'); style.id = 'vtg-journey-styles';
-      style.textContent = '.vtgJourneyStrip{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}.vtgJourneyCard{border:1px solid #dbe5e9;border-radius:9px;padding:8px;background:#fff}.vtgJourneyCard small{display:block;font-size:7px;font-weight:800;letter-spacing:.08em;color:#607586}.vtgJourneyCard b{display:block;font-size:9px;margin-top:3px}.vtgJourneyCard span{display:block;font-size:7px;color:#718391;margin-top:2px}.vtgJourneyNote{font-size:8px;color:#607586;background:#f5f8f9;border-radius:8px;padding:8px;margin-bottom:9px}.vtgLiveResult{font-size:8px;line-height:1.45;margin-top:8px;padding:8px;border-radius:8px;background:#f5f8f9}.vtgShipmentActions{display:flex;gap:6px;flex-wrap:wrap}@media(max-width:600px){.vtgJourneyStrip{grid-template-columns:1fr 1fr}}';
-      doc.head.appendChild(style);
-    };
-    addJourneyStyles();
+      const image=await getLocationImage(x);
+      const description=x.type==='seaport'
+        ? `${x.name} is a strategic maritime gateway serving ${x.city}, ${x.country}. VTG Atlas identifies it as a seaport for trade-route discovery, shipment planning and port-to-port logistics.`
+        : `${x.name} is an international air gateway serving ${x.city}, ${x.country}. VTG Atlas identifies it as an airport for air-cargo planning, trade connectivity and time-sensitive movement.`;
+      const regionLabel=x.region==='Korea'?'South Korea':x.region;
+      panel.innerHTML=`
+        <div class="atlasHero">
+          ${image?'<img src="'+esc(image)+'" alt="'+esc(x.name)+'">':'<div style="height:100%;display:grid;place-items:center;color:#d5a74f;font-size:44px">'+(x.type==='airport'?'✈':'⚓')+'</div>'}
+          <div class="atlasHeroText"><span class="atlasType">${x.type==='airport'?'✈ Airport':'⚓ Seaport'} • ${esc(regionLabel)}</span><h2>${esc(x.name)}</h2><p>${esc(x.city)}, ${esc(x.country)} • ${esc(x.code)}</p></div>
+          <button class="atlasInfoClose" id="atlasInfoClose">×</button>
+        </div>
+        <div class="atlasInfoBody">
+          <div class="atlasStats">
+            <div class="atlasStat"><small>Country</small><b>${esc(x.country)}</b></div>
+            <div class="atlasStat"><small>City</small><b>${esc(x.city)}</b></div>
+            <div class="atlasStat"><small>Code</small><b>${esc(x.code)}</b></div>
+          </div>
+          <div class="atlasSectionTitle">Location intelligence</div>
+          <div class="atlasDescription">${esc(description)}</div>
+          <div class="atlasSectionTitle">Coordinates</div>
+          <div class="atlasDescription">${Number(x.lat).toFixed(4)}° ${Number(x.lat)>=0?'N':'S'} • ${Math.abs(Number(x.lng)).toFixed(4)}° ${Number(x.lng)>=0?'E':'W'}</div>
+          <div class="atlasSectionTitle">VTG trade context</div>
+          <div class="atlasDescription">${x.region==='Africa'?'African trade gateway connecting regional markets with global suppliers and buyers.':x.region==='China'?'Chinese production and export gateway with direct relevance to Africa–Asia trade corridors.':'South Korean trade gateway supporting advanced manufacturing, maritime and air-cargo connectivity.'}</div>
+          <div class="atlasActions"><button class="atlasAction primary" id="atlasRoute">Explore routes</button><button class="atlasAction" id="atlasZoom">Zoom location</button></div>
+          <div class="atlasImageCredit">${image?'Location image supplied through Wikimedia Commons search.':'No suitable public location image was returned; VTG location data remains available.'}</div>
+        </div>`;
+      qs(doc,'#atlasInfoClose').onclick=()=>panel.classList.remove('open');
+      qs(doc,'#atlasZoom').onclick=()=>map.flyTo({center:[x.lng,x.lat],zoom:11,duration:1000});
+      qs(doc,'#atlasRoute').onclick=()=>showRoutes(x);
+    }
 
-    const clearPlaybackMap = () => {
-      ['vtg-shipment-playback','vtg-shipment-active-point'].forEach(id => {
-        if (map.getLayer(id)) map.removeLayer(id);
-      });
-      ['vtg-shipment-playback','vtg-shipment-active-point'].forEach(id => {
-        if (map.getSource(id)) map.removeSource(id);
-      });
-    };
-
-    const updatePlaybackMap = (s, index) => {
-      const points = playbackPoints(s);
-      if (points.length < 2) return;
-      const safeIndex = Math.max(0, Math.min(index, points.length - 1));
-      clearPlaybackMap();
-      const coords = points.slice(0, safeIndex + 1).map(p => [Number(p.lng), Number(p.lat)]);
-      map.addSource('vtg-shipment-playback', { type:'geojson', data:{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:coords}} });
-      map.addLayer({id:'vtg-shipment-playback',type:'line',source:'vtg-shipment-playback',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#d6a23a','line-width':8,'line-opacity':0.95}});
-      const p = points[safeIndex];
-      map.addSource('vtg-shipment-active-point',{type:'geojson',data:{type:'Feature',properties:{name:p.name,type:p.type},geometry:{type:'Point',coordinates:[Number(p.lng),Number(p.lat)]}}});
-      map.addLayer({id:'vtg-shipment-active-point',type:'circle',source:'vtg-shipment-active-point',paint:{'circle-radius':10,'circle-color':'#d6a23a','circle-stroke-color':'#fff','circle-stroke-width':3}});
-      if (safeIndex === points.length - 1) status('Shipment playback reached the destination.');
-      else status('Shipment playback • latest recorded point: ' + (p.name || 'Unknown'));
-    };
-
-    const fitShipment = s => {
-      const points = playbackPoints(s);
-      if (points.length < 2) return;
-      const bounds = points.reduce((b,p) => b.extend([Number(p.lng),Number(p.lat)]), new ml.LngLatBounds([Number(points[0].lng),Number(points[0].lat)],[Number(points[0].lng),Number(points[0].lat)]));
-      map.fitBounds(bounds,{padding:{top:70,bottom:70,left:280,right:420},duration:900});
-    };
-
-    const stopPlayback = () => {
-      if (playbackTimer) clearInterval(playbackTimer);
-      playbackTimer = null;
-    };
-
-    const togglePlayback = s => {
-      const points = playbackPoints(s);
-      if (points.length < 2) return;
-      if (playbackTimer) { stopPlayback(); renderShipmentPanel(s,{index:playbackIndex}); return; }
-      playbackIndex = 0;
-      updatePlaybackMap(s, playbackIndex);
-      renderShipmentPanel(s,{index:playbackIndex});
-      playbackTimer = setInterval(() => {
-        playbackIndex += 1;
-        if (playbackIndex >= points.length) { playbackIndex = points.length - 1; stopPlayback(); }
-        updatePlaybackMap(s, playbackIndex);
-        renderShipmentPanel(s,{index:playbackIndex});
-      }, 1200);
-    };
-
-    const selectShipment = id => {
-      stopPlayback();
-      const s = shipmentData.find(x => String(x.id) === String(id));
-      if (!s) return;
-      selectedShipmentId = s.id;
-      playbackIndex = Math.max(playbackPoints(s).length - 2, 0);
-      renderShipmentPanel(s,{index:playbackIndex});
-      updatePlaybackMap(s, playbackIndex);
-      fitShipment(s);
-      shipmentData.forEach(x => {
-        if (map.getSource('vtg-shipment-routes')) {
-          try { map.setFeatureState({source:'vtg-shipment-routes',id:String(x.id)},{selected:String(x.id)===String(s.id)}); } catch {}
-        }
-      });
-      status('Selected shipment ' + (s.reference || s.id) + ' • latest recorded point highlighted.');
-    };
-
-    const clearShipments = (resetData = true) => {
-      ['vtg-shipment-routes','vtg-shipment-route-halo','vtg-shipment-milestones','vtg-shipment-active'].forEach(id => {
-        if (map.getLayer(id)) map.removeLayer(id);
-      });
-      ['vtg-shipment-routes','vtg-shipment-milestones'].forEach(id => {
-        if (map.getSource(id)) map.removeSource(id);
-      });
-      if (resetData) shipmentData = [];
-      selectedShipmentId = null;
-      stopPlayback();
-      const panel = ensureShipmentPanel();
-      if (panel) { panel.classList.remove('open'); panel.innerHTML = ''; }
-      clearPlaybackMap();
-    };
-
-    const addShipments = async () => {
-      const token = window.localStorage.getItem('vtg_access_token') || '';
-      if (!token) {
-        status('Sign in to VTG to load your shipment records. The atlas does not expose private shipment data publicly.');
-        return;
-      }
-      status('Loading your VTG shipment records…');
+    async function showRoutes(x) {
+      const panel=qs(doc,'#vtgAtlasInfo');
+      const body=panel.querySelector('.atlasInfoBody');
+      if(!body) return;
+      body.insertAdjacentHTML('beforeend','<div class="atlasSectionTitle">Connected VTG corridors</div><div id="atlasRoutesText" class="atlasDescription">Loading trade corridors…</div>');
       try {
-        const response = await fetch('/api/shipments/atlas', {
-          headers: { Authorization: 'Bearer ' + token, Accept: 'application/json' },
-          cache: 'no-store'
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data?.message || 'Shipment data unavailable');
-        shipmentData = data.shipments || [];
-        if (!shipmentData.length) {
-          status('No mapped VTG shipments are available for this account yet. Create a shipment and add tracking events to see it on the atlas.');
-          return;
-        }
+        const r=await fetch('/api/atlas/corridors');
+        const d=await r.json();
+        const rows=(d.data||[]).filter(c=>(c.from+' '+c.to+' '+c.name).toLowerCase().includes(x.city.toLowerCase()) || (c.from+' '+c.to+' '+c.name).toLowerCase().includes(x.name.toLowerCase()));
+        qs(doc,'#atlasRoutesText').innerHTML=rows.length?rows.slice(0,6).map(c=>'<div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08)"><b style="color:#eef3f5">'+esc(c.name)+'</b><br><small>'+esc(c.mode)+' • '+esc(c.from)+' → '+esc(c.to)+'</small></div>').join(''):'No named VTG corridor is currently registered for this location.';
+      } catch (_) { qs(doc,'#atlasRoutesText').textContent='Route intelligence is temporarily unavailable.'; }
+    }
 
-        const routeFeatures = shipmentData.map(s => ({
-          type: 'Feature',
-          id: String(s.id),
-          properties: {
-            id: s.id,
-            reference: s.reference,
-            carrier: s.carrier || 'Carrier not recorded',
-            container: s.containerNo || 'Container not recorded',
-            status: s.status || 'pending',
-            percent: Number(s.percentComplete || 0),
-            origin: s.originPort || 'Origin not recorded',
-            destination: s.destinationPort || 'Destination not recorded',
-            milestoneCount: s.milestones?.length || 0
-          },
-          geometry: {
-            type: 'LineString',
-            coordinates: s.routePoints.map(p => [Number(p.lng), Number(p.lat)])
-          }
-        })).filter(f => f.geometry.coordinates.length >= 2);
-
-        const milestoneFeatures = [];
-        shipmentData.forEach(s => {
-          (s.routePoints || []).forEach(p => {
-            milestoneFeatures.push({
-              type: 'Feature',
-              properties: {
-                shipmentId: s.id,
-                reference: s.reference,
-                type: p.type || 'milestone',
-                name: p.name,
-                country: p.country || '',
-                detail: p.detail || '',
-                status: p.status || '',
-                eventTime: p.eventTime || ''
-              },
-              geometry: { type: 'Point', coordinates: [Number(p.lng), Number(p.lat)] }
-            });
-          });
-        });
-
-        clearShipments(false);
-        map.addSource('vtg-shipment-routes', {
-          type: 'geojson',
-          data: { type: 'FeatureCollection', features: routeFeatures }
-        });
-        map.addLayer({
-          id: 'vtg-shipment-route-halo',
-          type: 'line',
-          source: 'vtg-shipment-routes',
-          layout: { 'line-cap': 'round', 'line-join': 'round' },
-          paint: {
-            'line-color': '#ffffff',
-            'line-width': 9,
-            'line-opacity': 0.42
-          }
-        });
-        map.addLayer({
-          id: 'vtg-shipment-routes',
-          type: 'line',
-          source: 'vtg-shipment-routes',
-          layout: { 'line-cap': 'round', 'line-join': 'round' },
-          paint: {
-            'line-color': [
-              'match', ['get', 'status'],
-              'delivered', '#16865d',
-              'arrived', '#d39a27',
-              'attention', '#c44b4b',
-              'in_transit', '#0e969f',
-              'shipped', '#4b7bec',
-              '#7b8794'
-            ],
-            'line-width': ['case', ['boolean', ['feature-state', 'selected'], false], 8, 5],
-            'line-opacity': 0.95
-          }
-        });
-        map.addSource('vtg-shipment-milestones', {
-          type: 'geojson',
-          data: { type: 'FeatureCollection', features: milestoneFeatures }
-        });
-        map.addLayer({
-          id: 'vtg-shipment-milestones',
-          type: 'circle',
-          source: 'vtg-shipment-milestones',
-          paint: {
-            'circle-radius': ['match', ['get', 'type'], 'active', 8, 'destination', 7, 5],
-            'circle-color': ['match', ['get', 'type'], 'active', '#d6a23a', 'destination', '#16865d', '#0e969f'],
-            'circle-stroke-color': '#ffffff',
-            'circle-stroke-width': 2
-          }
-        });
-
-        map.on('click', 'vtg-shipment-routes', e => {
-          const clickedId = e.features?.[0]?.properties?.id;
-          if (clickedId) selectShipment(clickedId);
-          
-          const p = e.features?.[0]?.properties || {};
-          const html = '<b>' + escHtml(p.reference) + '</b>' +
-            '<br><small>Status: ' + escHtml(p.status) + ' • ' + escHtml(p.percent) + '% complete</small>' +
-            '<br><small>Carrier: ' + escHtml(p.carrier) + '</small>' +
-            '<br><small>Container: ' + escHtml(p.container) + '</small>' +
-            '<br><small>Route: ' + escHtml(p.origin) + ' → ' + escHtml(p.destination) + '</small>' +
-            '<br><small>Recorded milestones: ' + escHtml(p.milestoneCount) + '</small>';
-          new ml.Popup({ offset: 10 }).setLngLat(e.lngLat).setHTML(html).addTo(map);
-        });
-        map.on('click', 'vtg-shipment-milestones', e => {
-          const p = e.features?.[0]?.properties || {};
-          const time = p.eventTime ? new Date(p.eventTime).toLocaleString() : 'Time not recorded';
-          const html = '<b>' + escHtml(p.reference) + '</b>' +
-            '<br><strong>' + escHtml(p.name) + '</strong>' +
-            '<br><small>' + escHtml(p.type) + (p.status ? ' • ' + escHtml(p.status) : '') + '</small>' +
-            (p.detail ? '<br><small>' + escHtml(p.detail) + '</small>' : '') +
-            '<br><small>' + escHtml(time) + '</small>';
-          new ml.Popup({ offset: 10 }).setLngLat(e.lngLat).setHTML(html).addTo(map);
-        });
-        ['vtg-shipment-routes','vtg-shipment-milestones'].forEach(layer => {
-          map.on('mouseenter', layer, () => { map.getCanvas().style.cursor = 'pointer'; });
-          map.on('mouseleave', layer, () => { map.getCanvas().style.cursor = ''; });
-        });
-
-        shipmentsVisible = true;
-        selectShipment(shipmentData[0].id);
-        const b = doc.querySelector('[data-layer="shipments"]');
-        if (b) { b.textContent = 'ON'; b.style.background = '#dff4f5'; }
-        const role = roleSelect.value;
-        status(`VTG shipments loaded • ${shipmentData.length} mapped record${shipmentData.length === 1 ? '' : 's'} • ${role} view`);
-      } catch (error) {
-        status('Could not load VTG shipments. ' + (error?.message || 'Please try again.'));
+    async function loadLocations() {
+      try {
+        const r=await fetch('/api/atlas/locations');
+        const d=await r.json();
+        locations.push(...(d.data||[]));
+        renderMarkers();
+      } catch (_) {
+        qs(doc,'#vtgAtlasCount').textContent='Location database unavailable';
       }
-    };
+    }
 
-    const showShipments = async on => {
-      if (!on) {
-        clearShipments();
-        shipmentsVisible = false;
-        const b = doc.querySelector('[data-layer="shipments"]');
-        if (b) { b.textContent = 'LOAD'; b.style.background = ''; }
-        status('VTG shipment layer hidden.');
-        return;
-      }
-      await addShipments();
-    };
-
-    const showRoutes = on => {
-      routesVisible=on;
-      if (on) addTradeRoutes(); else clearRoutes();
-      const b=doc.querySelector('[data-layer="routes"]');
-      if (b) { b.textContent=on?'ON':'SHOW'; b.style.background=on?'#dff4f5':''; }
-      status(on ? 'VTG trade routes shown • Nigeria–China, Southern Africa–China and West Africa–South Korea planning corridors.' : 'Trade route layer hidden.');
-    };
-    
-    let portMarkers = [], hubMarkers = [];
-    const clearMarkers = arr => { arr.forEach(m => m.remove()); arr.length = 0 };
-    const addMarker = (loc, color, kind) => {
-      const m = new ml.Marker({ color }).setLngLat([loc.lon, loc.lat])
-        .setPopup(new ml.Popup({ offset: 12 }).setHTML(`<b>${loc.name}</b><br><small>${loc.country} — major ${kind}</small>`))
-        .addTo(map);
-      return m;
-    };
-    doc.querySelectorAll('[data-layer]').forEach(b => b.onclick = () => {
-      const k = b.dataset.layer;
-      const isOn = b.textContent.trim() === 'ON';
-      if (k === 'routes') { showRoutes(!routesVisible); return }
-      if (k === 'shipments') { showShipments(!shipmentsVisible); return }
-      if (k === 'ports') {
-        if (isOn) { clearMarkers(portMarkers); b.textContent = 'SHOW'; b.style.background = ''; status('Ports & logistics layer hidden.'); return }
-        portMarkers = PORTS.map(p => addMarker(p, '#0e969f', 'seaport'));
-        b.textContent = 'ON'; b.style.background = '#dff4f5';
-        status(`Ports & logistics layer: ${PORTS.length} major seaports shown across Africa, China and South Korea. Click a marker for details.`);
-      } else if (k === 'hubs') {
-        if (isOn) { clearMarkers(hubMarkers); b.textContent = 'SHOW'; b.style.background = ''; status('Trade hubs (airports) layer hidden.'); return }
-        hubMarkers = AIRPORTS.map(a => addMarker(a, '#d6a23a', 'airport'));
-        b.textContent = 'ON'; b.style.background = '#dff4f5';
-        status(`Trade hubs layer: ${AIRPORTS.length} major airports shown across Africa, China and South Korea. Click a marker for details.`);
-      } else {
-        status('Business location layer requires suppliers to add their verified location — shown automatically once suppliers register.');
-        b.textContent = isOn ? 'SHOW' : 'ON'; b.style.background = isOn ? '' : '#dff4f5';
-      }
+    qsa(doc,'.atlasChip').forEach(b=>b.onclick=()=>{
+      qsa(doc,'.atlasChip').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+      if(b.dataset.filter) filterType=b.dataset.filter;
+      if(b.dataset.region) {filterRegion=b.dataset.region; filterType='all';}
+      if(b.dataset.filter==='all') filterRegion='all';
+      renderMarkers();
     });
-    doc.getElementById('vtgTraffic').onclick = () => status('Trade route intelligence selected. VTG can overlay verified origin → destination routes and shipment milestones when those records are available. Live vessel/road traffic requires a real data provider; the atlas never invents movement data.');
-    doc.getElementById('vtgMeasure').onclick = () => {
-      measure = !measure;
-      status(measure ? 'Measure mode: click two points on the map (or two port/airport markers) to see distance and estimated transit time.' : 'Measure mode closed.');
-      if (measure) {
-        const handler = e => {
-          points.push([e.lngLat.lng, e.lngLat.lat]);
-          if (points.length === 2) {
-            const R = 6371, rad = x => x * Math.PI / 180;
-            const a = rad(points[0][1]), b = rad(points[1][1]), c = rad(points[1][0] - points[0][0]), d = rad(points[1][1] - points[0][1]);
-            const h = Math.sin(d / 2) ** 2 + Math.cos(a) * Math.cos(b) * Math.sin(c / 2) ** 2;
-            const km = 2 * R * Math.asin(Math.sqrt(h));
-            // Typical average speeds — sea freight (~24 knots incl. port time) and
-            // commercial/cargo air freight (~800 km/h incl. handling). These are
-            // planning estimates, not a live carrier schedule.
-            const seaHours = km / 44.4, airHours = (km / 800) + 6;
-            const fmtTime = h => h < 24 ? `${Math.round(h)} hrs` : `${(h / 24).toFixed(1)} days`;
-            status(`Distance: ${km.toFixed(0)} km • Estimated sea freight: ${fmtTime(seaHours)} • Estimated air freight: ${fmtTime(airHours)} (planning estimates, not a live schedule)`);
-            points = []; measure = false;
-          }
-        };
-        map.once('click', handler);
-      }
-    };
-    map.on('load', () => { map.resize(); if (routesVisible) addTradeRoutes(); status('World atlas ready • search, zoom, rotate, fullscreen and explore.'); });
-    window.addEventListener('resize', () => map.resize());
+    qs(doc,'#vtgAtlasFind').onclick=()=>renderMarkers();
+    qs(doc,'#vtgAtlasSearch').onkeydown=e=>{if(e.key==='Enter')renderMarkers()};
+    qs(doc,'#atlasPlus').onclick=()=>map.zoomIn();
+    qs(doc,'#atlasMinus').onclick=()=>map.zoomOut();
+    qs(doc,'#atlasReset').onclick=()=>map.flyTo({center:[50,13],zoom:1.75,duration:900});
+    qs(doc,'#atlasCompass').onclick=()=>map.resetNorthPitch();
+
+    function setMode(mode) {
+      mapMode=mode;
+      qsa(doc,'[data-mapmode]').forEach(b=>b.classList.toggle('active',b.dataset.mapmode===mode));
+      const target=mode==='day'?DAY_STYLE:(mode==='dark'?NIGHT_STYLE:mode==='satellite'?BLUE_MARBLE:NIGHT_STYLE);
+      map.setStyle(target);
+      map.once('styledata',()=>applyRasterMood());
+    }
+    qsa(doc,'[data-mapmode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mapmode));
+
+    const observer=new MutationObserver(()=>{if(themeIsDark(doc)&&mapMode==='day')setMode('dark');});
+    observer.observe(doc.documentElement,{attributes:true,attributeFilter:['data-theme','class']});
+
+    loadLocations();
+    map.on('load',applyRasterMood);
   }
 
-  // Exposed so frontend-v3.html can lazy-load this script and initialize the
-  // map only when the map drawer is actually opened, instead of eagerly on
-  // every page load.
-  window.VTGInitMap = () => run(document);
+  window.VTGInitMap = () => {
+    const doc=document;
+    if (doc.getElementById('vtgPremiumMap')) return;
+    run(doc);
+  };
+  if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>window.VTGInitMap(),{once:true});
+  else window.VTGInitMap();
 })();
