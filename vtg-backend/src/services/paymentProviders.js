@@ -26,6 +26,22 @@
 
 const { v4: uuidv4 } = require('uuid');
 
+const PAYMENT_MODE = String(process.env.PAYMENTS_MODE || 'mock').toLowerCase();
+const LIVE_ENABLED = PAYMENT_MODE === 'live';
+
+function result(mode, provider, data) {
+  return { ...data, raw: { ...(data.raw || {}), provider, providerMode: mode } };
+}
+
+function mockResult(provider, data) {
+  return result('mock', provider, data);
+}
+
+function assertLiveProviderConfigured(method) {
+  if (!LIVE_ENABLED) return;
+  throw new Error(`Live payment mode is enabled but no licensed ${method.toUpperCase()} provider adapter is configured`);
+}
+
 function mockRef(prefix) {
   return `${prefix}-${Date.now()}-${uuidv4().slice(0, 8).toUpperCase()}`;
 }
@@ -33,7 +49,8 @@ function mockRef(prefix) {
 const LcProvider = {
   method: 'lc',
   async initiate({ amount, currency, counterpartyName }) {
-    return {
+    assertLiveProviderConfigured('lc');
+    return mockResult('lc', {
       status: 'processing',
       providerRef: mockRef('MT700'),
       raw: {
@@ -42,14 +59,15 @@ const LcProvider = {
         currency,
         counterpartyName,
       },
-    };
+    });
   },
 };
 
 const TtProvider = {
   method: 'tt',
   async initiate({ amount, currency, counterpartyName }) {
-    return {
+    assertLiveProviderConfigured('tt');
+    return mockResult('tt', {
       status: 'processing',
       providerRef: mockRef('WIRE'),
       raw: {
@@ -58,14 +76,15 @@ const TtProvider = {
         currency,
         counterpartyName,
       },
-    };
+    });
   },
 };
 
 const EscrowProvider = {
   method: 'escrow',
   async initiate({ amount, currency, counterpartyName }) {
-    return {
+    assertLiveProviderConfigured('escrow');
+    return mockResult('escrow', {
       status: 'pending',
       providerRef: mockRef('ESCROW'),
       raw: {
@@ -74,14 +93,15 @@ const EscrowProvider = {
         currency,
         counterpartyName,
       },
-    };
+    });
   },
 };
 
 const CryptoProvider = {
   method: 'crypto',
   async initiate({ amount, currency, counterpartyName }) {
-    return {
+    assertLiveProviderConfigured('crypto');
+    return mockResult('crypto', {
       status: 'pending',
       providerRef: mockRef('CRYPTO'),
       raw: {
@@ -90,14 +110,15 @@ const CryptoProvider = {
         currency,
         counterpartyName,
       },
-    };
+    });
   },
 };
 
 const ForexProvider = {
   method: 'forex',
   async initiate({ amount, currency, counterpartyName }) {
-    return {
+    assertLiveProviderConfigured('forex');
+    return mockResult('forex', {
       status: 'pending',
       providerRef: mockRef('FX'),
       raw: {
@@ -106,14 +127,15 @@ const ForexProvider = {
         currency,
         counterpartyName,
       },
-    };
+    });
   },
 };
 
 const DpProvider = {
   method: 'dp',
   async initiate({ amount, currency, counterpartyName }) {
-    return {
+    assertLiveProviderConfigured('dp');
+    return mockResult('dp', {
       status: 'pending',
       providerRef: mockRef('DP'),
       raw: {
@@ -122,7 +144,7 @@ const DpProvider = {
         currency,
         counterpartyName,
       },
-    };
+    });
   },
 };
 
