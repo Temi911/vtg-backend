@@ -360,7 +360,7 @@
       map.addSource('vtg-shipment-playback', { type:'geojson', data:{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:coords}} });
       map.addLayer({id:'vtg-shipment-playback',type:'line',source:'vtg-shipment-playback',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#d6a23a','line-width':8,'line-opacity':0.95}});
       const p = points[safeIndex];
-      map.addSource('vtg-shipment-active-point',{type:'geojson',data:{type:'Feature',properties:{name:p.name,type:p.type},geometry:{type:'Point',coordinates:[Number(p.lng),Number(p.lat)]}});
+      map.addSource('vtg-shipment-active-point',{type:'geojson',data:{type:'Feature',properties:{name:p.name,type:p.type},geometry:{type:'Point',coordinates:[Number(p.lng),Number(p.lat)]}}});
       map.addLayer({id:'vtg-shipment-active-point',type:'circle',source:'vtg-shipment-active-point',paint:{'circle-radius':10,'circle-color':'#d6a23a','circle-stroke-color':'#fff','circle-stroke-width':3}});
       if (safeIndex === points.length - 1) status('Shipment playback reached the destination.');
       else status('Shipment playback • latest recorded point: ' + (p.name || 'Unknown'));
