@@ -88,9 +88,9 @@
       #mapDrawer .atlasSearch input::placeholder{color:#8c9aa5}
       #mapDrawer .atlasSearch button{border:0;border-radius:10px;background:#d71920;color:#fff;padding:8px 11px;font-size:9px;font-weight:900;cursor:pointer}
       #mapDrawer .atlasChips{pointer-events:auto;display:flex;gap:7px;flex-wrap:wrap}
-      #mapDrawer .atlasOpsLiveMeta{pointer-events:auto;margin:3px 0 6px;color:#74838d;font-size:7px;font-weight:800;letter-spacing:.03em}
-      #mapDrawer .atlasOpsSummary{pointer-events:auto;display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 2px}
-      #mapDrawer .atlasShipmentList{pointer-events:auto;display:grid;gap:6px;margin:8px 0 10px;max-height:230px;overflow:auto;padding-right:2px}
+      #mapDrawer .atlasOpsSummary{position:absolute;left:24px;top:142px;z-index:17;pointer-events:auto;display:flex;gap:6px;flex-wrap:wrap;max-width:390px}
+      #mapDrawer .atlasOpsLiveMeta{position:absolute;left:24px;top:188px;z-index:17;pointer-events:auto;margin:0;color:#9aa7b0;font-size:7px;font-weight:800;letter-spacing:.03em}
+      #mapDrawer .atlasShipmentList{position:absolute;left:24px;top:207px;z-index:17;width:min(370px,calc(100vw - 48px));pointer-events:auto;display:grid;gap:6px;margin:0;max-height:230px;overflow:auto;padding-right:2px}
       #mapDrawer .atlasShipmentList::-webkit-scrollbar{width:4px}
       #mapDrawer .atlasShipmentList::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:99px}
       #mapDrawer .atlasShipmentCard{width:100%;display:grid;grid-template-columns:34px 1fr auto;gap:9px;align-items:center;padding:8px;border:1px solid rgba(255,255,255,.11);border-radius:12px;background:rgba(5,9,14,.68);color:#e8edf0;text-align:left;cursor:pointer;backdrop-filter:blur(14px)}
@@ -253,8 +253,8 @@
       #mapDrawer .atlasMediaCard b{display:block;color:#fff;font-size:8px}
       #mapDrawer .atlasMediaCard small{display:block;color:#c2cbd0;font-size:7px;margin-top:2px}
       #mapDrawer .atlasMediaStatus{color:#7f8e99;font-size:7px;margin-top:7px}
-      @media(max-width:1000px){#mapDrawer .atlasChips{display:none}#mapDrawer .atlasTop{left:14px;right:70px}#mapDrawer .atlasInfo{right:14px;top:auto;bottom:14px;max-height:64vh;width:min(430px,calc(100vw - 28px))}#mapDrawer .atlasLegend{left:14px;bottom:78px}#mapDrawer .atlasMode{bottom:14px}}
-      @media(max-width:620px){#mapDrawer .atlasBrand{display:none}#mapDrawer .atlasSearch{max-width:none}#mapDrawer .atlasSearch button{padding:8px}#mapDrawer .atlasInfo{max-height:68vh}.atlasHero{height:150px!important}#mapDrawer .atlasStats{grid-template-columns:1fr 1fr}#mapDrawer .atlasMode button{padding:8px 7px}}
+      @media(max-width:1000px){#mapDrawer .atlasTop{left:14px;right:70px;flex-wrap:wrap;align-items:flex-start}#mapDrawer .atlasSearch{flex:1 1 420px}#mapDrawer .atlasChips{display:flex;flex:1 1 100%;width:100%;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding-bottom:2px;scrollbar-width:none}#mapDrawer .atlasChips::-webkit-scrollbar{display:none}#mapDrawer .atlasOpsSummary{left:14px;top:145px;max-width:calc(100vw - 28px)}#mapDrawer .atlasOpsLiveMeta{left:14px;top:191px}#mapDrawer .atlasShipmentList{left:14px;top:210px;width:min(390px,calc(100vw - 28px));max-height:170px}#mapDrawer .atlasInfo{right:14px;top:auto;bottom:14px;max-height:58vh;width:min(430px,calc(100vw - 28px))}#mapDrawer .atlasLegend{left:14px;bottom:78px;max-width:calc(100vw - 28px);overflow:auto;white-space:nowrap}#mapDrawer .atlasWeather{display:none}#mapDrawer .atlasMode{bottom:14px}}
+      @media(max-width:620px){#mapDrawer .atlasBrand{display:none}#mapDrawer .atlasTop{right:58px}#mapDrawer .atlasSearch{max-width:none;flex-basis:100%}#mapDrawer .atlasSearch button{padding:8px}#mapDrawer .atlasOpsSummary{top:133px;max-width:calc(100vw - 28px)}#mapDrawer .atlasOpsLiveMeta{top:177px}#mapDrawer .atlasShipmentList{top:196px;max-height:132px}#mapDrawer .atlasInfo{max-height:62vh}.atlasHero{height:150px!important}#mapDrawer .atlasStats{grid-template-columns:1fr 1fr}#mapDrawer .atlasMode{left:14px;right:14px;transform:none;justify-content:center}#mapDrawer .atlasMode button{padding:8px 7px}}
     `;
     doc.head.appendChild(style);
 
@@ -811,11 +811,6 @@ function atlasTimelinePoint(t,s){
       qsa(box,'[data-op-status]').forEach(btn=>btn.onclick=()=>{
         const key=btn.dataset.opStatus;
         shipmentStatusFilter=key==='customs'?'customs':key;
-        if(key==='all'){
-          qsa(doc,'[data-shipment-status]').forEach(x=>x.classList.remove('active'));
-          const allStatus=qs(doc,'[data-shipment-status="all"]');
-          if(allStatus)allStatus.classList.add('active');
-        }
         shipmentRoutesVisible=true;
         qs(doc,'#atlasShipmentsToggle')?.classList.add('active');
         qsa(doc,'[data-shipment-status]').forEach(x=>x.classList.remove('active'));
