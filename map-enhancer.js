@@ -1078,7 +1078,21 @@ function atlasTimelinePoint(t,s){
     }
     qs(doc,'#atlasPlus').onclick=()=>map.zoomIn();
     qs(doc,'#atlasMinus').onclick=()=>map.zoomOut();
-    qs(doc,'#atlasReset').onclick=()=>map.flyTo({center:[50,13],zoom:1.75,duration:900});
+    qs(doc,'#atlasReset').onclick=()=>{
+      filterType='all';
+      filterRegion='all';
+      shipmentStatusFilter='all';
+      shipmentRoutesVisible=false;
+      qsa(doc,'.atlasChip').forEach(x=>x.classList.remove('active'));
+      qs(doc,'[data-filter="all"]')?.classList.add('active');
+      qs(doc,'[data-shipment-status="all"]')?.classList.add('active');
+      qs(doc,'#atlasShipmentsToggle')?.classList.remove('active');
+      const search=qs(doc,'#vtgAtlasSearch'); if(search) search.value='';
+      renderMarkers();
+      renderShipmentRoutes();
+      qs(doc,'#vtgAtlasInfo')?.classList.remove('open');
+      map.flyTo({center:[50,13],zoom:1.75,duration:900});
+    };
     qs(doc,'#atlasCompass').onclick=()=>map.resetNorthPitch();
 
     function setMode(mode) {
