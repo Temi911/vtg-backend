@@ -36,6 +36,23 @@ const initiate = asyncHandler(async (req, res) => {
     if (data.currency === 'USD' && data.amount > Number(order.total_amount_usd)) {
       throw new AppError('Payment amount cannot exceed the order total', 422, 'AMOUNT_EXCEEDS_ORDER');
     }
+    const { rows: duplicateRows } = await query(
+      `SELECT id, provider_ref, status FROM payment_requests
+       WHERE order_id = $1 AND initiated_by = $2 AND method = $3
+         AND currency = $4 AND amount = $5 AND status IN ('pending','processing','completed')
+       ORDER BY created_at DESC LIMIT 1`,
+      [data.orderId, req.user.id, data.method, data.currency, data.amount]
+    );
+    if (duplicateRows[0]) {
+      const existing = duplicateRows[0];
+      throw new AppError(
+        existing.status === 'completed'
+          ? 'An identical payment has already been completed for this order'
+          : 'An identical payment request is already active for this order',
+        409,
+        'DUPLICATE_PAYMENT'
+      );
+    }
   }
 
   const result = await provider.initiate({
