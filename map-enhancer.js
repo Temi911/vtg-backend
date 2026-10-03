@@ -127,6 +127,13 @@
       #mapDrawer .atlasShipmentMarker[data-status="arrived"]{background:rgba(240,175,55,.92)}
       #mapDrawer .atlasShipmentMarker[data-status="attention"]{background:rgba(215,25,32,.98)}
       #mapDrawer .atlasOperationalPortMarker{position:relative;width:31px;height:31px;border:1px solid rgba(240,198,107,.5);border-radius:11px;background:rgba(20,18,12,.9);color:#f0c66b;display:grid;place-items:center;padding:0;cursor:pointer;box-shadow:0 0 0 4px rgba(240,198,107,.08),0 7px 22px rgba(0,0,0,.4)}
+      #mapDrawer .atlasNextOperationalMarker{position:relative;width:38px;height:38px;border:1px solid rgba(240,198,107,.82);border-radius:50%;background:rgba(34,27,9,.94);color:#f6cf72;display:grid;place-items:center;padding:0;cursor:pointer;box-shadow:0 0 0 0 rgba(240,198,107,.35),0 0 24px rgba(240,198,107,.28);animation:vtgAtlasNextPulse 2.2s ease-out infinite}
+      #mapDrawer .atlasNextOperationalMarker .core{font-size:15px;line-height:1}
+      #mapDrawer .atlasNextOperationalMarker .label{position:absolute;left:50%;top:-15px;transform:translateX(-50%);white-space:nowrap;padding:3px 6px;border-radius:999px;background:#f0c66b;color:#171006;font:900 6px Manrope,system-ui;letter-spacing:.08em}
+      #mapDrawer .atlasDestinationMarker{position:relative;width:30px;height:30px;border:1px solid rgba(255,255,255,.65);border-radius:9px;background:rgba(7,11,17,.94);color:#fff;display:grid;place-items:center;padding:0;cursor:pointer;box-shadow:0 0 0 4px rgba(255,255,255,.07),0 8px 22px rgba(0,0,0,.4)}
+      #mapDrawer .atlasDestinationMarker .core{font-size:13px}
+      #mapDrawer .atlasDestinationMarker .label{position:absolute;left:50%;top:31px;transform:translateX(-50%);white-space:nowrap;color:#d9e0e5;font:800 6px Manrope,system-ui;letter-spacing:.06em;text-transform:uppercase}
+      @keyframes vtgAtlasNextPulse{0%{box-shadow:0 0 0 0 rgba(240,198,107,.35),0 0 24px rgba(240,198,107,.28)}70%{box-shadow:0 0 0 13px rgba(240,198,107,0),0 0 30px rgba(240,198,107,.08)}100%{box-shadow:0 0 0 13px rgba(240,198,107,0),0 0 24px rgba(240,198,107,.02)}}
       #mapDrawer .atlasOperationalPortMarker.customs{border-color:rgba(215,25,32,.72);color:#ff8f95;box-shadow:0 0 0 4px rgba(215,25,32,.1),0 7px 22px rgba(0,0,0,.4)}
       #mapDrawer .atlasPortIcon{position:relative;z-index:2;font-size:14px}
       #mapDrawer .atlasPortHalo{position:absolute;inset:-4px;border:1px solid currentColor;border-radius:14px;opacity:.22;animation:vtgPortPulse 2.8s ease-out infinite}
@@ -315,7 +322,89 @@
       shipmentMarkers.splice(0).forEach(m=>m.remove());
       if (map.getLayer('vtg-shipment-route')) map.removeLayer('vtg-shipment-route');
       if (map.getLayer('vtg-shipment-route-glow')) map.removeLayer('vtg-shipment-route-glow');
+      if (map.getLayer('vtg-shipment-completed')) map.removeLayer('vtg-shipment-completed');
+      if (map.getLayer('vtg-shipment-current-glow')) map.removeLayer('vtg-shipment-current-glow');
+      if (map.getLayer('vtg-shipment-current')) map.removeLayer('vtg-shipment-current');
+      if (map.getLayer('vtg-shipment-remaining')) map.removeLayer('vtg-shipment-remaining');
       if (map.getSource('vtg-shipment-routes')) map.removeSource('vtg-shipment-routes');
+      if (map.getSource('vtg-shipment-progress')) map.removeSource('vtg-shipment-progress');
+    }
+
+    function validPoint(p) {
+      return p && Number.isFinite(Number(p.lng)) && Number.isFinite(Number(p.lat));
+    }
+
+    function nearestRouteIndex(points, target) {
+      if(!Array.isArray(points)||!points.length||!validPoint(target)) return -1;
+      let best=-1, bestDist=Infinity;
+      points.forEach((p,i)=>{
+        if(!validPoint(p)) return;
+        const d=Math.pow(Number(p.lng)-Number(target.lng),2)+Math.pow(Number(p.lat)-Number(target.lat),2);
+        if(d<bestDist){bestDist=d;best=i;}
+      });
+      return best;
+    }
+
+    function pushProgressFeature(features, shipmentId, stage, points) {
+      const coords=(points||[]).filter(validPoint).map(p=>[Number(p.lng),Number(p.lat)]);
+      if(coords.length<2) return;
+      features.push({type:'Feature',properties:{shipmentId,stage},geometry:{type:'LineString',coordinates:coords}});
+    }
+
+    function renderShipmentProgress(visibleShipments) {
+      const completed=[], current=[], remaining=[];
+      visibleShipments.forEach(s=>{
+        const route=(s.routePoints||[]).filter(validPoint);
+        if(route.length<2) return;
+        const live=shipmentPoint(s);
+        const next=s.journey?.next;
+        const destination=route[route.length-1];
+        const currentPoint=validPoint(live)?live:route[Math.max(0,nearestRouteIndex(route, s.journey?.current)||0)];
+        const nextPoint=validPoint(next)?next:route[Math.min(route.length-1,Math.max(1,nearestRouteIndex(route,next)))];
+        if(!validPoint(currentPoint)) return;
+
+        const nextIdx=nearestRouteIndex(route,nextPoint);
+        const currentIdx=nearestRouteIndex(route,currentPoint);
+        const endCurrent=nextIdx>=0&&nextIdx>currentIdx?nextIdx:Math.min(route.length-1,currentIdx+1);
+
+        pushProgressFeature(completed,s.id,'completed',[route[0],...route.slice(1,Math.max(1,currentIdx+1)),currentPoint]);
+        pushProgressFeature(current,s.id,'current',[currentPoint,nextPoint||destination]);
+        if(validPoint(nextPoint)&&nextIdx>=0&&nextIdx<route.length-1){
+          pushProgressFeature(remaining,s.id,'remaining',[nextPoint,...route.slice(nextIdx+1)]);
+        } else if(validPoint(destination)&&destination!==currentPoint){
+          pushProgressFeature(remaining,s.id,'remaining',[currentPoint,destination]);
+        }
+      });
+      const features=[...completed,...current,...remaining];
+      if(!features.length) return;
+      map.addSource('vtg-shipment-progress',{type:'geojson',data:{type:'FeatureCollection',features}});
+      map.addLayer({id:'vtg-shipment-remaining',type:'line',source:'vtg-shipment-progress',filter:['==',['get','stage'],'remaining'],paint:{'line-color':'#9aa6b0','line-width':1.6,'line-opacity':.28,'line-dasharray':[1.5,2.5]}});
+      map.addLayer({id:'vtg-shipment-completed',type:'line',source:'vtg-shipment-progress',filter:['==',['get','stage'],'completed'],paint:{'line-color':'#b7c0c7','line-width':2,'line-opacity':.32,'line-dasharray':[1,2]}});
+      map.addLayer({id:'vtg-shipment-current-glow',type:'line',source:'vtg-shipment-progress',filter:['==',['get','stage'],'current'],paint:{'line-color':'#f0c66b','line-width':8,'line-opacity':.16,'line-blur':4}});
+      map.addLayer({id:'vtg-shipment-current',type:'line',source:'vtg-shipment-progress',filter:['==',['get','stage'],'current'],paint:{'line-color':'#f0c66b','line-width':3.4,'line-opacity':.98,'line-dasharray':[1,1]}});
+    }
+
+    function addProgressPointMarkers(visibleShipments) {
+      visibleShipments.forEach(s=>{
+        const next=s.journey?.next;
+        const destination=(s.routePoints||[]).filter(validPoint).at(-1);
+        if(validPoint(next)){
+          const el=doc.createElement('button');
+          el.type='button'; el.className='atlasNextOperationalMarker'; el.title='Next operational point • '+(next.name||'Next point');
+          el.innerHTML='<span class="label">NEXT</span><span class="core">◆</span>';
+          el.onclick=e=>{e.stopPropagation();selectShipment(s);};
+          shipmentMarkers.push(new ml.Marker({element:el,anchor:'center'}).setLngLat([Number(next.lng),Number(next.lat)]).addTo(map));
+        }
+        if(validPoint(destination)){
+          const same=validPoint(next)&&Math.abs(Number(next.lng)-Number(destination.lng))<.0001&&Math.abs(Number(next.lat)-Number(destination.lat))<.0001;
+          if(same) return;
+          const el=doc.createElement('button');
+          el.type='button'; el.className='atlasDestinationMarker'; el.title='Destination • '+(s.destinationPort||'Destination');
+          el.innerHTML='<span class="core">⚓</span><span class="label">Destination</span>';
+          el.onclick=e=>{e.stopPropagation();selectShipment(s);};
+          shipmentMarkers.push(new ml.Marker({element:el,anchor:'center'}).setLngLat([Number(destination.lng),Number(destination.lat)]).addTo(map));
+        }
+      });
     }
 
     function liveTrackingState(live) {
@@ -368,6 +457,7 @@
         map.addLayer({id:'vtg-shipment-route-glow',type:'line',source:'vtg-shipment-routes',paint:{'line-color':'#e05c4c','line-width':7,'line-opacity':.16,'line-blur':4}});
         map.addLayer({id:'vtg-shipment-route',type:'line',source:'vtg-shipment-routes',paint:{'line-color':'#e05c4c','line-width':2.6,'line-opacity':.9,'line-dasharray':[2,1.3]}});
       }
+      renderShipmentProgress(visibleShipments);
       visibleShipments.forEach(s=>{
         const p=shipmentPoint(s);
         if(!p) return;
@@ -386,6 +476,7 @@
         shipmentMarkers.push(new ml.Marker({element:el,anchor:'center'}).setLngLat([Number(p.lng),Number(p.lat)]).addTo(map));
         addLiveVesselPositionMarker(s);
       });
+      addProgressPointMarkers(visibleShipments);
     }
 
     function shipmentLabel(status) {
