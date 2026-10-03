@@ -201,8 +201,8 @@ const verifyAndPay = asyncHandler(async (req, res) => {
   });
 
   const { lc, swiftRef } = result;
-  await audit.log(req.user.id, 'LC Verified & Paid', `${lc.reference} — SWIFT ${swiftRef} (mock network, real wallet credit)`, req.ip);
-  await notify(lc.supplier_id, 'Payment Released', `$${lc.amount_usd} released for ${lc.reference} via SWIFT ${swiftRef}. Funds credited to your wallet.`);
+  await audit.log(req.user.id, 'LC Verified & Paid', `${lc.reference} — SWIFT ${swiftRef} (mock network; internal VTG ledger credit only)`, req.ip);
+  await notify(lc.supplier_id, 'Payment Released', `${lc.amount_usd} recorded as released for ${lc.reference} via SWIFT ${swiftRef}. The VTG wallet entry is an internal ledger record; no external funds movement is implied.`);
   await notify(lc.buyer_id, 'LC Payment Complete', `Payment for ${lc.reference} has been released to your supplier.`);
   res.json({ letterOfCredit: lc });
 });
