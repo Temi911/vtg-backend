@@ -138,6 +138,26 @@ const updateStatus = asyncHandler(async (req, res) => {
   res.json({ paymentRequest: rows[0] });
 });
 
+const getReconciliation = asyncHandler(async (req, res) => {
+  const { rows } = await query(
+    'SELECT p.id,p.order_id,p.initiated_by,p.method,p.amount,p.currency,p.status,p.provider_ref,p.created_at,p.updated_at,o.reference AS order_reference,o.status AS order_status,l.reference AS lc_reference,l.status AS lc_status,l.amount_usd AS lc_amount_usd FROM payment_requests p LEFT JOIN orders o ON o.id=p.order_id LEFT JOIN letters_of_credit l ON l.order_id=p.order_id WHERE p.id=$1 ORDER BY l.created_at DESC NULLS LAST LIMIT 1',
+    [req.params.id]
+  );
+  const payment = rows[0];
+  if (!payment) throw new AppError('Payment request not found',404,'PAYMENT_NOT_FOUND');
+  let allowed = req.user.role === 'admin' || req.user.id === payment.initiated_by;
+  if (!allowed && payment.order_id) {
+    const { rows: bankRows } = await query('SELECT bank_id FROM orders WHERE id=$1',[payment.order_id]);
+    allowed = bankRows[0]?.bank_id === req.user.id;
+  }
+  if (!allowed) throw new AppError('Forbidden',403,'FORBIDDEN');
+  const { rows: audit } = await query(
+    'SELECT al.id,al.action,al.detail,al.created_at,u.full_name AS actor_name,u.role AS actor_role FROM audit_log al LEFT JOIN users u ON u.id=al.actor_id WHERE al.detail ILIKE $1 OR al.detail ILIKE $2 ORDER BY al.created_at DESC LIMIT 50',
+    ['%'+(payment.provider_ref || payment.id)+'%','%'+(payment.order_reference || payment.order_id)+'%']
+  );
+  res.json({payment,audit});
+});
+
 const listMine = asyncHandler(async (req, res) => {
   const { rows } = await query(
     `SELECT p.*, o.reference AS order_reference, o.status AS order_status
