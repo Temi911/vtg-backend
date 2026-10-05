@@ -23,6 +23,7 @@ const publicAiLimiter = rateLimit({
 });
 
 router.post('/chat', requireAuth, aiLimiter, ctrl.chat);
+router.post('/trade-intelligence', requireAuth, aiLimiter, ctrl.tradeIntelligence);
 router.post('/public-chat', publicAiLimiter, ctrl.publicChat);
 
 module.exports = router;
