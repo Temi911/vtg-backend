@@ -640,11 +640,11 @@ function atlasTimelinePoint(t,s){
             <div><small>DESTINATION</small><b>${esc(destination)}</b></div>
           </div>
           <div class="atlasStageNav" aria-label="Trade stages">
-            <button type="button" data-atlas-stage="finance">Finance</button>
-            <button type="button" data-atlas-stage="logistics">Logistics</button>
-            <button type="button" data-atlas-stage="customs">Customs</button>
-            <button type="button" data-atlas-stage="inspection">Inspection</button>
-            <button type="button" data-atlas-stage="delivery">Delivery</button>
+            <button type="button" data-atlas-stage="finance" data-atlas-stage-state="done">✓ Finance</button>
+            <button type="button" data-atlas-stage="logistics" data-atlas-stage-state="done">✓ Logistics</button>
+            <button type="button" data-atlas-stage="customs" data-atlas-stage-state="${String(s.customs?.status||'').toLowerCase()==='released'?'done':'active'}">Customs</button>
+            <button type="button" data-atlas-stage="inspection" data-atlas-stage-state="pending">Inspection</button>
+            <button type="button" data-atlas-stage="delivery" data-atlas-stage-state="${s.delivery?.status==='confirmed'||s.status==='delivered'?'done':s.customs?.status==='released'?'active':'pending'}">Delivery</button>
           </div>
           <div class="atlasLiveBox ${s.liveTracking?.available ? (liveTrackingState(s.liveTracking).state==='stale'?'stale':'') : 'unavailable'}"><b>VESSEL TRACKING <span class="atlasLiveFreshness">${esc(s.liveTracking?.available ? liveTrackingState(s.liveTracking).label : 'Unavailable')}</span></b><span>${s.liveTracking?.available ? esc(String(s.liveTracking.latitude ?? "—"))+', '+esc(String(s.liveTracking.longitude ?? "—")) : 'Live vessel position unavailable'}</span><small>${s.liveTracking?.available ? ((s.liveTracking.speedKnots != null ? esc(String(s.liveTracking.speedKnots))+" kn" : "Speed unavailable")+(s.liveTracking.course != null ? " • Course "+esc(String(s.liveTracking.course))+"°" : "")+(s.liveTracking.nextPort ? " • Next: "+esc(s.liveTracking.nextPort) : "")+(s.liveTracking.eta ? " • ETA: "+esc(new Date(s.liveTracking.eta).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})) : "")) : 'The shipment map will continue using its latest operational position.'}</small></div>
           <div class="atlasStats">
