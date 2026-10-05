@@ -33,6 +33,87 @@ const chat = asyncHandler(async (req, res) => {
   res.json({ reply: result.reply, toolsUsed: result.toolsUsed });
 });
 
+
+const tradeIntelligence = asyncHandler(async (req, res) => {
+  const { message, history, country, role } = chatSchema.parse(req.body);
+  const userRes = await query(
+    `SELECT id, role, country, full_name, business_name, preferred_currency
+     FROM users WHERE id = $1`,
+    [req.user.id]
+  );
+  const user = userRes.rows[0] || {};
+  const account = {
+    role: user.role || req.user.role,
+    country: user.country || country || 'Nigeria',
+    name: user.full_name || null,
+    businessName: user.business_name || null,
+    currency: user.preferred_currency || null,
+  };
+
+  const shipmentRes = await query(
+    `SELECT s.id, s.reference, s.status, s.percent_complete, s.origin_port, s.destination_port,
+            s.carrier, s.vessel_name, s.container_no, s.order_id,
+            o.reference AS order_reference, o.status AS order_status, o.total_amount_usd,
+            o.currency, o.incoterm
+     FROM shipments s
+     JOIN orders o ON o.id = s.order_id
+     WHERE (o.buyer_id = $1 OR o.supplier_id = $1 OR o.bank_id = $1)
+     ORDER BY s.created_at DESC LIMIT 10`,
+    [req.user.id]
+  );
+
+  const context = {
+    account,
+    activeTradeCount: shipmentRes.rows.length,
+    trades: shipmentRes.rows.map(s => ({
+      reference: s.reference,
+      orderReference: s.order_reference,
+      status: s.status,
+      progress: s.percent_complete,
+      origin: s.origin_port,
+      destination: s.destination_port,
+      carrier: s.carrier,
+      vessel: s.vessel_name,
+      container: s.container_no,
+      orderStatus: s.order_status,
+      valueUsd: s.total_amount_usd,
+      currency: s.currency,
+      incoterm: s.incoterm,
+    })),
+  };
+
+  if (!liveAi.enabled()) {
+    return res.status(503).json({
+      error: 'VTG Trade Intelligence is not connected to its live AI provider yet.',
+      code: 'AI_PROVIDER_UNAVAILABLE',
+    });
+  }
+
+  try {
+    const result = await liveAi.tradeIntelligence({
+      question: message,
+      history,
+      country: country || account.country,
+      role: role || account.role,
+      context,
+    });
+    await audit.log(req.user.id, 'VTG Trade Intelligence Query', message.slice(0, 140), req.ip);
+    return res.json({
+      reply: result.reply,
+      toolsUsed: result.toolsUsed || [],
+      provider: result.provider || 'gemini',
+      citations: result.citations || [],
+      interactionId: result.interactionId || null,
+    });
+  } catch (err) {
+    console.error('[ai] trade intelligence failed:', err.message);
+    return res.status(503).json({
+      error: 'VTG Trade Intelligence is temporarily unavailable. Please try again shortly.',
+      code: 'AI_PROVIDER_UNAVAILABLE',
+    });
+  }
+});
+
 const publicChat = asyncHandler(async (req, res) => {
   const { message, history, country, role } = chatSchema.parse(req.body);
   let lastError = null;
@@ -83,4 +164,4 @@ const publicChat = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { chat, publicChat };
+module.exports = { chat, publicChat, tradeIntelligence };
