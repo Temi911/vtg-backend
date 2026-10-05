@@ -704,7 +704,7 @@ function atlasTimelinePoint(t,s){
           </div><div class="atlasMediaStatus" id="atlasMediaStatus">Loading real trade imagery…</div></div>
           <div class="atlasSectionTitle">Final delivery</div>
           <div class="atlasDescription">${esc(String(s.delivery?.status||'pending').replace(/_/g,' '))}${s.delivery?.recipientName?' • Recipient: '+esc(s.delivery.recipientName):''}${s.delivery?.proofAttached?' • Proof of delivery attached':''}${s.delivery?.confirmedAt?' • '+esc(new Date(s.delivery.confirmedAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):''}</div>
-          <div class="atlasActions"><button class="atlasAction primary" id="atlasOpenShipment">Open shipment</button><button class="atlasAction" id="atlasOpenOrder">Open order</button></div>
+          <div class="atlasActions"><button class="atlasAction primary" id="atlasDeliveryUpdate">Update delivery</button><button class="atlasAction" id="atlasOpenShipment">Open shipment</button><button class="atlasAction" id="atlasOpenOrder">Open order</button></div>
           <div class="atlasActions"><button class="atlasAction primary" id="atlasRecordMilestone">Record milestone</button><button class="atlasAction" id="atlasRefreshShipment">Refresh shipment</button></div>
         </div>`;
       const mediaStatus=qs(doc,'#atlasMediaStatus');
