@@ -702,6 +702,7 @@ function atlasTimelinePoint(t,s){
           <div class="atlasSectionTitle">Final delivery</div>
           <div class="atlasDescription">${esc(String(s.delivery?.status||'pending').replace(/_/g,' '))}${s.delivery?.recipientName?' • Recipient: '+esc(s.delivery.recipientName):''}${s.delivery?.proofAttached?' • Proof of delivery attached':''}${s.delivery?.confirmedAt?' • '+esc(new Date(s.delivery.confirmedAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):''}</div>
           <div class="atlasActions"><button class="atlasAction primary" id="atlasOpenShipment">Open shipment</button><button class="atlasAction" id="atlasOpenOrder">Open order</button></div>
+          <div class="atlasActions"><button class="atlasAction primary" id="atlasRecordMilestone">Record milestone</button><button class="atlasAction" id="atlasRefreshShipment">Refresh shipment</button></div>
         </div>`;
       const mediaStatus=qs(doc,'#atlasMediaStatus');
       Promise.all([
@@ -737,6 +738,26 @@ function atlasTimelinePoint(t,s){
       qs(doc,'#atlasInfoClose').onclick=()=>{panel.classList.remove('open');clearSelectedShipmentPath();};
       qs(doc,'#atlasOpenShipment').onclick=()=>{ window.location.href='/trade-os.html?shipment='+encodeURIComponent(s.id); };
       qs(doc,'#atlasOpenOrder').onclick=()=>{ window.location.href='/trade-os.html?order='+encodeURIComponent(s.orderId); };
+      qs(doc,'#atlasRefreshShipment').onclick=async()=>{ await loadShipments(); const fresh=shipments.find(x=>String(x.id)===String(s.id)); if(fresh) openShipmentInfo(fresh); };
+      qs(doc,'#atlasRecordMilestone').onclick=async()=>{
+        const location=window.prompt('Milestone location / operational point:', s.liveTracking?.nextPort || s.destinationPort || '');
+        if(location===null)return;
+        const detail=window.prompt('Milestone detail (optional):','');
+        if(detail===null)return;
+        const status=window.prompt('Milestone status: active, done, or pending','active');
+        if(!['active','done','pending'].includes(String(status||'').toLowerCase())){window.alert('Use active, done, or pending.');return;}
+        const pctRaw=window.prompt('Shipment completion percentage (0–100):',String(s.percentComplete??0));
+        const pct=Number(pctRaw);
+        if(!Number.isInteger(pct)||pct<0||pct>100){window.alert('Completion percentage must be a whole number from 0 to 100.');return;}
+        try{
+          const resp=await fetch('/api/shipments/'+encodeURIComponent(s.id)+'/events',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({location,detail,status:String(status).toLowerCase(),percentComplete:pct})});
+          const data=await resp.json().catch(()=>({}));
+          if(!resp.ok)throw new Error(data.message||data.error||'Unable to record milestone');
+          await loadShipments();
+          const fresh=shipments.find(x=>String(x.id)===String(s.id));
+          if(fresh) openShipmentInfo(fresh);
+        }catch(err){window.alert(err.message||'Unable to record milestone.');}
+      };
     }
 
     function operationalCounts(){
