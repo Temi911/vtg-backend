@@ -744,13 +744,15 @@ function atlasTimelinePoint(t,s){
         if(location===null)return;
         const detail=window.prompt('Milestone detail (optional):','');
         if(detail===null)return;
+        const stage=window.prompt('Milestone stage: finance, logistics, customs, inspection, or delivery','logistics');
+        if(!['finance','logistics','customs','inspection','delivery'].includes(String(stage||'').toLowerCase())){window.alert('Use finance, logistics, customs, inspection, or delivery.');return;}
         const status=window.prompt('Milestone status: active, done, or pending','active');
         if(!['active','done','pending'].includes(String(status||'').toLowerCase())){window.alert('Use active, done, or pending.');return;}
         const pctRaw=window.prompt('Shipment completion percentage (0–100):',String(s.percentComplete??0));
         const pct=Number(pctRaw);
         if(!Number.isInteger(pct)||pct<0||pct>100){window.alert('Completion percentage must be a whole number from 0 to 100.');return;}
         try{
-          const resp=await fetch('/api/shipments/'+encodeURIComponent(s.id)+'/events',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({location,detail,status:String(status).toLowerCase(),percentComplete:pct})});
+          const resp=await fetch('/api/shipments/'+encodeURIComponent(s.id)+'/events',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({location,detail,stage:String(stage).toLowerCase(),status:String(status).toLowerCase(),percentComplete:pct})});
           const data=await resp.json().catch(()=>({}));
           if(!resp.ok)throw new Error(data.message||data.error||'Unable to record milestone');
           await loadShipments();
