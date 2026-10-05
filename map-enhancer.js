@@ -80,7 +80,7 @@
       #mapDrawer .mapWash{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 48% 48%,transparent 0,rgba(2,5,9,.08) 42%,rgba(2,5,9,.72) 100%);z-index:2}
       #mapDrawer .atlasTop{position:absolute;left:24px;right:82px;top:18px;z-index:20;display:flex;align-items:center;gap:14px;pointer-events:none}
       #mapDrawer .atlasBrand{pointer-events:auto;display:flex;align-items:center;gap:11px;padding:9px 13px;border:1px solid rgba(244,210,129,.22);border-radius:16px;background:rgba(5,9,14,.66);backdrop-filter:blur(18px);box-shadow:0 12px 40px rgba(0,0,0,.28)}
-      #mapDrawer .atlasBrandMark{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:#d71920;color:#fff;font-weight:900}
+      #mapDrawer .atlasBrandMark{width:46px;height:32px;border-radius:8px;display:block;object-fit:contain;object-position:center;background:transparent}
       #mapDrawer .atlasBrand strong{font-size:12px;letter-spacing:.12em;text-transform:uppercase}
       #mapDrawer .atlasBrand small{display:block;color:#aeb8c1;font-size:8px;margin-top:2px}
       #mapDrawer .atlasSearch{pointer-events:auto;flex:1;max-width:540px;height:48px;display:flex;align-items:center;gap:8px;padding:0 14px;border:1px solid rgba(255,255,255,.15);border-radius:15px;background:rgba(5,9,14,.66);backdrop-filter:blur(18px);box-shadow:0 12px 40px rgba(0,0,0,.28)}
@@ -270,7 +270,7 @@
           <div id="vtgPremiumMap"></div>
           <div class="mapWash"></div>
           <div class="atlasTop">
-            <div class="atlasBrand"><div class="atlasBrandMark">V</div><div><strong>VTG Trade Atlas</strong><small>Global trade intelligence • Africa · China · South Korea</small></div></div>
+            <div class="atlasBrand"><img class="atlasBrandMark" src="/assets/vtg-logo.svg" alt="Vintage Trade Global"><div><strong>VTG Trade Atlas</strong><small>Global trade intelligence • Africa · China · South Korea</small></div></div>
             <div class="atlasSearch"><span style="color:#d5a74f">⌕</span><input id="vtgAtlasSearch" placeholder="Search a port, airport, city or country"><button id="vtgAtlasFind">SEARCH</button></div>
             <div class="atlasChips">
               <button class="atlasChip active" data-filter="all">All</button>
