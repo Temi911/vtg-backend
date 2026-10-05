@@ -78,13 +78,14 @@ button,input,select{font:inherit}.shell{display:grid;grid-template-columns:250px
 <section id="intelligence" class="tab hidden">
   <div class="grid two">
     <div class="card"><h2>VTG Trade Intelligence</h2><div class="sub">Country-aware trade planning</div>
-      <div class="search"><input id="productInput" value="Solar panels"><button class="btn primary" onclick="runIntel()">Analyze</button></div>
+      <div class="search"><input id="productInput" value="Solar panels" placeholder="Product, shipment or trade question"><button class="btn primary" onclick="runIntel()">Run VTG AI</button></div>
       <div class="grid three" style="margin-top:15px">
         <div class="item"><small>Origin</small><strong>🇨🇳 China</strong></div><div class="item"><small>Destination</small><strong id="buyerDestination">🇳🇬 Nigeria</strong></div><div class="item"><small>Quantity</small><strong>500 units</strong></div>
       </div>
       <div id="intelResult" style="margin-top:15px">
-        <div class="notice">Prototype result: VTG should combine official tariff/regulatory data with freight and supplier data before presenting a landed-cost estimate.</div>
+        <div class="notice">Ask VTG AI for a current trade brief. The intelligence engine can use your role, country and active shipment context, and can ground time-sensitive claims with web sources.</div>
       </div>
+      <div id="intelSources" style="margin-top:10px"></div>
     </div>
     <div class="card"><h2>Landed Cost Framework</h2><div class="sub">A transparent estimate, not a customs quote</div><table class="table"><tr><th>Component</th><th>Estimate</th></tr><tr><td>Product value</td><td>$50,000</td></tr><tr><td>Freight</td><td>$4,200</td></tr><tr><td>Insurance</td><td>$600</td></tr><tr><td>Duties/taxes</td><td>Check official tariff</td></tr><tr><td>Local delivery</td><td>$1,100</td></tr><tr><td><strong>Estimated landed cost</strong></td><td><strong>Pending regulatory data</strong></td></tr></table></div>
   </div>
@@ -259,7 +260,25 @@ const titles={overview:'Trade Command Centre',intelligence:'Trade Intelligence',
 function showTab(id){document.querySelectorAll('.tab').forEach(x=>x.classList.add('hidden'));const el=document.getElementById(id);if(el)el.classList.remove('hidden');document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));document.getElementById('pageTitle').textContent=titles[id]||'VTG Trade OS';}
 document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
 document.addEventListener('DOMContentLoaded',initAtlasHandoff);
-function runIntel(){const p=document.getElementById('productInput').value.trim()||'product';document.getElementById('intelResult').innerHTML='<div class="notice"><strong>'+p.replace(/[<>]/g,'')+'</strong>: VTG would now query approved country, tariff, regulatory, freight and supplier sources, then produce a traceable trade brief and landed-cost range.</div>';}
+async function runIntel(){
+ const input=document.getElementById('productInput'), result=document.getElementById('intelResult'), sources=document.getElementById('intelSources');
+ const question=input?.value.trim()||'Give me a current trade intelligence brief for my active transactions.';
+ const token=localStorage.getItem('vtg_access_token');
+ if(!token){result.innerHTML='<div class="notice">Please sign in to use Trade Intelligence with your VTG trade context.</div>';return;}
+ result.innerHTML='<div class="notice">VTG AI is researching this trade question…</div>'; sources.innerHTML='';
+ try{
+   const me=await fetch('/api/auth/me',{headers:{Authorization:'Bearer '+token,Accept:'application/json'}});
+   const auth=me.ok?await me.json():{};
+   const u=auth.user||{};
+   const r=await fetch('/api/ai/trade-intelligence',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json',Authorization:'Bearer '+token},body:JSON.stringify({message:question,history:[],country:u.country||'Nigeria',role:u.role||'buyer'})});
+   const d=await r.json().catch(()=>({}));
+   if(!r.ok)throw new Error(d.error||d.message||'Trade Intelligence is unavailable');
+   result.innerHTML='<div class="notice"><strong>VTG AI Trade Brief</strong><div style="margin-top:8px;white-space:pre-wrap">'+String(d.reply||'No intelligence was returned.').replace(/[&<>]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[ch]))+'</div></div>';
+   if(Array.isArray(d.citations)&&d.citations.length){
+     sources.innerHTML='<div class="sub" style="margin-bottom:6px">Sources used</div><div class="list">'+d.citations.map(s=>'<div class="item"><strong>'+String(s.title||'Source').replace(/[&<>]/g,'')+'</strong><small>'+String(s.url||'').replace(/[&<>]/g,'')+'</small></div>').join('')+'</div>';
+   }
+ }catch(e){result.innerHTML='<div class="notice">'+String(e.message||'VTG Trade Intelligence is temporarily unavailable.').replace(/[&<>]/g,'')+'</div>';}
+}
 </script>
 <script src="/vtg-trade-workflow.js" defer></script>\n<script src="/buyer-trade-os.js" defer></script>
 <script src="/buyer-trade-room.js" defer></script>\n<script src="/vtg-finance-centre.js" defer></script>
