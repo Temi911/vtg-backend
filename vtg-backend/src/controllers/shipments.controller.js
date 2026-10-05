@@ -69,7 +69,7 @@ function buildAtlasTimeline({ rawEvents, finance, customs, inspection, delivery,
   if (finance.latestPaymentStatus) add('finance', 'Latest payment', finance.latestPaymentStatus, 'Payment recorded in VTG finance', finance.latestPaymentCreatedAt, origin ? { lat: origin.lat, lng: origin.lng, name: origin.name } : null);
   for (const e of rawEvents) {
     const loc = resolveAtlasLocation(e.location);
-    add('logistics', e.location || 'Shipment milestone', e.status, e.detail, e.event_time, loc ? { lat: loc.lat, lng: loc.lng, name: loc.name } : null);
+    add(e.stage || 'logistics', e.location || 'Shipment milestone', e.status, e.detail, e.event_time, loc ? { lat: loc.lat, lng: loc.lng, name: loc.name } : null);
   }
   if (customs.status && customs.status !== 'not_started') {
     add('customs', 'Customs submitted', customs.submittedAt ? 'done' : customs.status, 'Declaration submitted', customs.submittedAt, destination ? { lat: destination.lat, lng: destination.lng, name: destination.name } : null);
@@ -354,7 +354,7 @@ const listForAtlas = asyncHandler(async (req, res) => {
       milestones: rawEvents.map(e => {
         const loc = resolveAtlasLocation(e.location);
         return {
-          id: e.id, location: e.location, detail: e.detail, status: e.status,
+          id: e.id, location: e.location, detail: e.detail, status: e.status, stage: e.stage || 'logistics',
           eventTime: e.event_time, sortOrder: e.sort_order,
           coordinates: loc ? { lat: loc.lat, lng: loc.lng, name: loc.name } : null
         };
@@ -517,6 +517,7 @@ const addEventSchema = z.object({
   location: z.string().min(1),
   detail: z.string().optional(),
   status: z.enum(['done', 'active', 'pending']).default('pending'),
+  stage: z.enum(['finance','logistics','customs','inspection','delivery']).default('logistics'),
   sortOrder: z.number().int().optional(),
   percentComplete: z.number().int().min(0).max(100).optional(),
 });
@@ -571,9 +572,9 @@ const addEvent = asyncHandler(async (req, res) => {
     }
 
     const evRes = await client.query(
-      `INSERT INTO tracking_events (shipment_id, location, detail, status, sort_order)
-       VALUES ($1,$2,$3,$4,$5) RETURNING *`,
-      [req.params.shipmentId, data.location, data.detail || null, data.status, data.sortOrder]
+      `INSERT INTO tracking_events (shipment_id, location, detail, status, stage, sort_order)
+       VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
+      [req.params.shipmentId, data.location, data.detail || null, data.status, data.stage, data.sortOrder]
     );
 
     if (data.percentComplete !== undefined) {
