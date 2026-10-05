@@ -65,6 +65,10 @@ const updateDelivery = asyncHandler(async (req, res) => {
     const existing = existingRes.rows[0];
     if (existing?.status === 'confirmed' && !privileged) throw new AppError('Confirmed delivery cannot be changed', 409, 'DELIVERY_CONFIRMED');
 
+    if (data.status === 'confirmed' && !data.proofDocumentId && !existing?.proof_document_id) {
+      throw new AppError('A proof-of-delivery document is required before delivery can be confirmed', 400, 'PROOF_OF_DELIVERY_REQUIRED');
+    }
+
     if (data.proofDocumentId) {
       const docRes = await client.query('SELECT id, order_id, doc_type FROM documents WHERE id = $1 LIMIT 1', [data.proofDocumentId]);
       const doc = docRes.rows[0];
@@ -93,21 +97,24 @@ const updateDelivery = asyncHandler(async (req, res) => {
       [shipment.id, data.status, data.recipientName || null, data.notes || null, data.proofDocumentId || null, confirmedAt]
     );
 
+    const statusChanged = !existing || existing.status !== data.status;
     const eventStatus = data.status === 'confirmed' ? 'done' : data.status === 'disputed' ? 'active' : 'pending';
     const eventPercent = data.status === 'confirmed' ? 100 : Math.max(Number(shipment.percent_complete || 0), 95);
     const eventDetail = data.status === 'confirmed' ? 'Final delivery confirmed' : data.status === 'disputed' ? 'Final delivery disputed' : 'Final delivery pending confirmation';
 
-    const latestEventRes = await client.query(
-      'SELECT COALESCE(MAX(sort_order), -1) AS max_sort FROM tracking_events WHERE shipment_id = $1',
-      [shipment.id]
-    );
-    const sortOrder = Number(latestEventRes.rows[0].max_sort) + 1;
+    if (statusChanged) {
+      const latestEventRes = await client.query(
+        'SELECT COALESCE(MAX(sort_order), -1) AS max_sort FROM tracking_events WHERE shipment_id = $1',
+        [shipment.id]
+      );
+      const sortOrder = Number(latestEventRes.rows[0].max_sort) + 1;
 
-    await client.query(
-      \`INSERT INTO tracking_events (shipment_id, location, detail, status, stage, sort_order)
-       VALUES ($1,$2,$3,$4,'delivery',$5)\`,
-      [shipment.id, 'Final delivery', eventDetail, eventStatus, sortOrder]
-    );
+      await client.query(
+        `INSERT INTO tracking_events (shipment_id, location, detail, status, stage, sort_order)
+         VALUES ($1,$2,$3,$4,'delivery',$5)`,
+        [shipment.id, 'Final delivery', eventDetail, eventStatus, sortOrder]
+      );
+    }
 
     await client.query(
       'UPDATE shipments SET percent_complete = GREATEST(percent_complete, $1), updated_at = NOW() WHERE id = $2',
