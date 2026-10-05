@@ -274,7 +274,7 @@ async function runIntel(){
    const d=await r.json().catch(()=>({}));
    if(!r.ok)throw new Error(d.error||d.message||'Trade Intelligence is unavailable');
    result.innerHTML='<div class="notice"><strong>VTG AI Trade Brief</strong><div style="margin-top:8px;white-space:pre-wrap">'+String(d.reply||'No intelligence was returned.').replace(/[&<>]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[ch]))+'</div></div>';
-   if(Array.isArray(d.citations)&&d.citations.length){
+   window.VTG_INTEL_HISTORY=[...(prior||[]),{role:'user',content:question},{role:'assistant',content:String(d.reply||'')}].slice(-8);\n   if(Array.isArray(d.citations)&&d.citations.length){
      sources.innerHTML='<div class="sub" style="margin-bottom:6px">Sources used</div><div class="list">'+d.citations.map(s=>'<div class="item"><strong>'+String(s.title||'Source').replace(/[&<>]/g,'')+'</strong><small>'+String(s.url||'').replace(/[&<>]/g,'')+'</small></div>').join('')+'</div>';
    }
  }catch(e){result.innerHTML='<div class="notice">'+String(e.message||'VTG Trade Intelligence is temporarily unavailable.').replace(/[&<>]/g,'')+'</div>';}
