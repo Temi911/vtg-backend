@@ -693,4 +693,4 @@ const updateCustoms = asyncHandler(async (req, res) => {
   res.json({ customs: rows[0] });
 });
 
-module.exports = { create, getForOrder, addEvent, listForAtlas, getLiveTracking, updateVessel, getCustoms, createCustoms, updateCustoms, getDelivery, updateDelivery };
+module.exports = { create, getForOrder, addEvent, listForAtlas, getLiveTracking, updateVessel, getCustoms, createCustoms, updateCustoms };
