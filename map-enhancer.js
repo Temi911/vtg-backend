@@ -740,6 +740,26 @@ function atlasTimelinePoint(t,s){
       });
       qs(doc,'#atlasInfoClose').onclick=()=>{panel.classList.remove('open');clearSelectedShipmentPath();};
       qs(doc,'#atlasOpenShipment').onclick=()=>{ window.location.href='/trade-os.html?shipment='+encodeURIComponent(s.id); };
+      qs(doc,'#atlasDeliveryUpdate').onclick=async()=>{
+        const current=String(s.delivery?.status||'pending');
+        const status=window.prompt('Delivery status: pending, confirmed, or disputed',current);
+        if(status===null)return;
+        const normalized=String(status).trim().toLowerCase();
+        if(!['pending','confirmed','disputed'].includes(normalized)){window.alert('Use pending, confirmed, or disputed.');return;}
+        const recipientName=window.prompt('Recipient name (optional):',s.delivery?.recipientName||'');
+        if(recipientName===null)return;
+        const notes=window.prompt('Delivery notes (optional):',s.delivery?.notes||'');
+        if(notes===null)return;
+        try{
+          const resp=await fetch('/api/shipments/'+encodeURIComponent(s.id)+'/delivery',{method:'PATCH',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({status:normalized,recipientName:recipientName.trim()||undefined,notes:notes.trim()||undefined})});
+          const data=await resp.json().catch(()=>({}));
+          if(!resp.ok)throw new Error(data.message||data.error||'Unable to update delivery');
+          await loadShipments();
+          const fresh=shipments.find(x=>String(x.id)===String(s.id));
+          if(fresh) openShipmentInfo(fresh);
+        }catch(err){window.alert(err.message||'Unable to update delivery.');}
+      };
+
       qs(doc,'#atlasOpenOrder').onclick=()=>{ window.location.href='/trade-os.html?order='+encodeURIComponent(s.orderId); };
       qs(doc,'#atlasNextAction').onclick=()=>{
         const customsStatus=String(s.customs?.status||'not_started');
