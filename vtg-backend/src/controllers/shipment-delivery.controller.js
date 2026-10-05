@@ -13,10 +13,10 @@ const deliverySchema = z.object({
 
 async function getShipment(shipmentId) {
   const { rows } = await query(
-    \`SELECT s.id, s.order_id, s.percent_complete,
+    `SELECT s.id, s.order_id, s.percent_complete,
             o.status AS order_status, o.buyer_id, o.supplier_id, o.bank_id
        FROM shipments s JOIN orders o ON o.id = s.order_id
-      WHERE s.id = $1 LIMIT 1\`,
+      WHERE s.id = $1 LIMIT 1`,
     [shipmentId]
   );
   if (!rows[0]) throw new AppError('Shipment not found', 404);
@@ -38,9 +38,9 @@ const updateDelivery = asyncHandler(async (req, res) => {
   const data = deliverySchema.parse(req.body || {});
   const result = await withTransaction(async (client) => {
     const shipmentRes = await client.query(
-      \`SELECT s.*, o.status AS order_status, o.buyer_id, o.supplier_id, o.bank_id
+      `SELECT s.*, o.status AS order_status, o.buyer_id, o.supplier_id, o.bank_id
          FROM shipments s JOIN orders o ON o.id = s.order_id
-        WHERE s.id = $1 FOR UPDATE\`,
+        WHERE s.id = $1 FOR UPDATE`,
       [req.params.shipmentId]
     );
     const shipment = shipmentRes.rows[0];
@@ -89,7 +89,7 @@ const updateDelivery = asyncHandler(async (req, res) => {
       : (data.status === 'pending' ? null : existing?.confirmed_at || null);
 
     const deliveryRes = await client.query(
-      \`INSERT INTO shipment_delivery
+      `INSERT INTO shipment_delivery
          (shipment_id, status, recipient_name, notes, proof_document_id, confirmed_at, updated_at)
        VALUES ($1,$2,$3,$4,$5,$6,NOW())
        ON CONFLICT (shipment_id) DO UPDATE SET
@@ -99,7 +99,7 @@ const updateDelivery = asyncHandler(async (req, res) => {
          proof_document_id = COALESCE(EXCLUDED.proof_document_id, shipment_delivery.proof_document_id),
          confirmed_at = EXCLUDED.confirmed_at,
          updated_at = NOW()
-       RETURNING *\`,
+       RETURNING *`,
       [shipment.id, data.status, data.recipientName || null, data.notes || null, data.proofDocumentId || null, confirmedAt]
     );
 
@@ -128,17 +128,17 @@ const updateDelivery = asyncHandler(async (req, res) => {
     );
 
     if (data.status === 'confirmed') {
-      await client.query(\`UPDATE orders SET status = 'delivered', updated_at = NOW()
-        WHERE id = $1 AND status NOT IN ('cancelled', 'delivered')\`, [shipment.order_id]);
+      await client.query(`UPDATE orders SET status = 'delivered', updated_at = NOW()
+        WHERE id = $1 AND status NOT IN ('cancelled', 'delivered')`, [shipment.order_id]);
     } else if (data.status === 'disputed') {
-      await client.query(\`UPDATE orders SET status = 'disputed', updated_at = NOW()
-        WHERE id = $1 AND status NOT IN ('cancelled', 'delivered')\`, [shipment.order_id]);
+      await client.query(`UPDATE orders SET status = 'disputed', updated_at = NOW()
+        WHERE id = $1 AND status NOT IN ('cancelled', 'delivered')`, [shipment.order_id]);
     }
 
     return deliveryRes.rows[0];
   });
 
-  await audit.log(req.user.id, 'Delivery Updated', \`Shipment \${req.params.shipmentId} delivery -> \${result.status}\`, req.ip);
+  await audit.log(req.user.id, 'Delivery Updated', `Shipment \${req.params.shipmentId} delivery -> \${result.status}`, req.ip);
   res.json({ delivery: result });
 });
 
