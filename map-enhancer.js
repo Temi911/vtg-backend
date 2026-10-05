@@ -219,7 +219,7 @@
       #mapDrawer .atlasStageNav{display:flex;gap:5px;overflow-x:auto;margin:0 0 12px;padding-bottom:2px;scrollbar-width:none}
       #mapDrawer .atlasStageNav::-webkit-scrollbar{display:none}
       #mapDrawer .atlasStageNav button{flex:0 0 auto;padding:6px 8px;border:1px solid rgba(255,255,255,.10);border-radius:9px;background:rgba(255,255,255,.035);color:#9eabb3;font-size:7px;font-weight:900;cursor:pointer}
-      #mapDrawer .atlasStageNav button:hover{border-color:#d71920;color:#fff;background:rgba(215,25,32,.12)}
+      #mapDrawer .atlasStageNav button:hover{border-color:#d71920;color:#fff;background:rgba(215,25,32,.12)}\n      #mapDrawer .atlasStageNav button.atlasStage-done{color:#9fe3b1;border-color:rgba(75,190,110,.32);background:rgba(75,190,110,.08)}\n      #mapDrawer .atlasStageNav button.atlasStage-active{color:#fff;border-color:rgba(215,25,32,.65);background:rgba(215,25,32,.16)}\n      #mapDrawer .atlasStageNav button.atlasStage-pending{color:#71808a}
       #mapDrawer .atlasJourneyStrip{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:6px;align-items:center;margin:0 0 13px;padding:10px;border:1px solid rgba(255,255,255,.10);border-radius:12px;background:rgba(255,255,255,.035)}
       #mapDrawer .atlasJourneyStrip>div{min-width:0}
       #mapDrawer .atlasJourneyStrip small{display:block;color:#788791;font-size:7px;font-weight:900;letter-spacing:.08em;margin-bottom:3px}
@@ -588,6 +588,20 @@ function atlasTimelinePoint(t,s){
       return current||next||destination||origin;
     }
 
+    function atlasStageProgress(s){
+      const stages=['finance','logistics','customs','inspection','delivery'];
+      const rank={finance:0,logistics:1,customs:2,inspection:3,delivery:4};
+      const timeline=Array.isArray(s&&s.timeline)?s.timeline:[];
+      const seen=timeline.map(t=>({stage:String(t&&t.stage||'logistics').toLowerCase(),status:String(t&&t.status||'pending').toLowerCase()})).filter(t=>rank[t.stage]!=null);
+      let current=seen.length?Math.max(...seen.map(t=>rank[t.stage])):0;
+      const customs=String(s&&s.customs&&s.customs.status||'').toLowerCase();
+      const delivery=String(s&&s.delivery&&s.delivery.status||'').toLowerCase();
+      if(customs==='released'||customs==='cleared') current=Math.max(current,3);
+      if(delivery==='confirmed'||String(s&&s.status||'').toLowerCase()==='delivered') current=4;
+      const latest=seen.length?seen[seen.length-1]:null;
+      return Object.fromEntries(stages.map((stage,i)=>{ let state=i<current?'done':i===current?'active':'pending'; const event=seen.filter(t=>t.stage===stage).at(-1); if(event&&['done','completed','confirmed'].includes(event.status)) state='done'; if(latest&&latest.stage===stage&&['active','in_progress','pending'].includes(latest.status)) state='active'; if(i<current) state='done'; return [stage,state]; }));
+    }
+
     async function focusShipmentStage(s, stage, point){
       if(!s) return;
       await selectShipment(s);
@@ -639,13 +653,7 @@ function atlasTimelinePoint(t,s){
             <span>→</span>
             <div><small>DESTINATION</small><b>${esc(destination)}</b></div>
           </div>
-          <div class="atlasStageNav" aria-label="Trade stages">
-            <button type="button" data-atlas-stage="finance" data-atlas-stage-state="done">✓ Finance</button>
-            <button type="button" data-atlas-stage="logistics" data-atlas-stage-state="done">✓ Logistics</button>
-            <button type="button" data-atlas-stage="customs" data-atlas-stage-state="${String(s.customs?.status||'').toLowerCase()==='released'?'done':'active'}">Customs</button>
-            <button type="button" data-atlas-stage="inspection" data-atlas-stage-state="pending">Inspection</button>
-            <button type="button" data-atlas-stage="delivery" data-atlas-stage-state="${s.delivery?.status==='confirmed'||s.status==='delivered'?'done':s.customs?.status==='released'?'active':'pending'}">Delivery</button>
-          </div>
+          <div class="atlasStageNav" aria-label="Trade stages">${["finance","logistics","customs","inspection","delivery"].map(stage=>{const state=atlasStageProgress(s)[stage];return `<button type="button" class="atlasStage-${state}" data-atlas-stage="${stage}" data-atlas-stage-state="${state}">${state==="done"?"✓ ":state==="active"?"● ":"○ "}${stage[0].toUpperCase()+stage.slice(1)}</button>`;}).join("")}</div>
           <div class="atlasLiveBox ${s.liveTracking?.available ? (liveTrackingState(s.liveTracking).state==='stale'?'stale':'') : 'unavailable'}"><b>VESSEL TRACKING <span class="atlasLiveFreshness">${esc(s.liveTracking?.available ? liveTrackingState(s.liveTracking).label : 'Unavailable')}</span></b><span>${s.liveTracking?.available ? esc(String(s.liveTracking.latitude ?? "—"))+', '+esc(String(s.liveTracking.longitude ?? "—")) : 'Live vessel position unavailable'}</span><small>${s.liveTracking?.available ? ((s.liveTracking.speedKnots != null ? esc(String(s.liveTracking.speedKnots))+" kn" : "Speed unavailable")+(s.liveTracking.course != null ? " • Course "+esc(String(s.liveTracking.course))+"°" : "")+(s.liveTracking.nextPort ? " • Next: "+esc(s.liveTracking.nextPort) : "")+(s.liveTracking.eta ? " • ETA: "+esc(new Date(s.liveTracking.eta).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})) : "")) : 'The shipment map will continue using its latest operational position.'}</small></div>
           <div class="atlasStats">
             <div class="atlasStat"><small>Progress</small><b>${esc(String(s.percentComplete ?? 0))}%</b></div>
