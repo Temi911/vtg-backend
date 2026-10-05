@@ -746,12 +746,18 @@ function atlasTimelinePoint(t,s){
         if(status===null)return;
         const normalized=String(status).trim().toLowerCase();
         if(!['pending','confirmed','disputed'].includes(normalized)){window.alert('Use pending, confirmed, or disputed.');return;}
+        const proofFile=document.createElement('input'); proofFile.type='file'; proofFile.accept='.pdf,.jpg,.jpeg,.png,.webp'; proofFile.style.display='none'; document.body.appendChild(proofFile);
+        const attachProof=window.confirm('Attach a proof-of-delivery document?'); let proofDocumentId;
+        if(attachProof){ proofFile.click(); await new Promise(resolve=>{proofFile.onchange=resolve;}); const file=proofFile.files[0]; if(!file){proofFile.remove();return;}
+          const fd=new FormData(); fd.append('file',file); fd.append('docType','proof_of_delivery'); fd.append('orderId',s.orderId);
+          const upload=await fetch('/api/documents',{method:'POST',headers:{Accept:'application/json'},body:fd}); const ud=await upload.json().catch(()=>({})); if(!upload.ok)throw new Error(ud.message||ud.error||'Proof document upload failed'); proofDocumentId=ud.document?.id;
+        } proofFile.remove();
         const recipientName=window.prompt('Recipient name (optional):',s.delivery?.recipientName||'');
         if(recipientName===null)return;
         const notes=window.prompt('Delivery notes (optional):',s.delivery?.notes||'');
         if(notes===null)return;
         try{
-          const resp=await fetch('/api/shipments/'+encodeURIComponent(s.id)+'/delivery',{method:'PATCH',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({status:normalized,recipientName:recipientName.trim()||undefined,notes:notes.trim()||undefined})});
+          const resp=await fetch('/api/shipments/'+encodeURIComponent(s.id)+'/delivery',{method:'PATCH',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({status:normalized,recipientName:recipientName.trim()||undefined,notes:notes.trim()||undefined,proofDocumentId})});
           const data=await resp.json().catch(()=>({}));
           if(!resp.ok)throw new Error(data.message||data.error||'Unable to update delivery');
           await loadShipments();
