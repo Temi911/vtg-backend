@@ -34,7 +34,7 @@ const chat = asyncHandler(async (req, res) => {
 });
 
 
-const tradeIntelligence = asyncHandler(async (req, res) => {
+const status = asyncHandler(async (req, res) => {\n  const provider = liveAi.providerStatus();\n  res.json({ status: provider.enabled ? 'ready' : 'unavailable', provider: provider.provider, liveSearch: provider.liveSearch, message: provider.enabled ? 'VTG live trade intelligence is ready.' : 'VTG live trade intelligence is awaiting provider configuration.' });\n});\n\nconst tradeIntelligence = asyncHandler(async (req, res) => {
   const { message, history, country, role } = chatSchema.parse(req.body);
   const userRes = await query(
     `SELECT id, role, country, full_name, business_name, preferred_currency
@@ -164,4 +164,4 @@ const publicChat = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { chat, publicChat, tradeIntelligence };
+module.exports = { chat, publicChat, tradeIntelligence, status };
