@@ -213,13 +213,38 @@ function initAtlasHandoff(){
   const host=document.createElement('section');host.className='atlasHandoff';
   const deliveryStatus=String(s.delivery?.status||'pending');
   const canFinalize=window.VTG_CURRENT_USER?.role==='buyer' && String(s.customs?.status||'')==='released' && deliveryStatus!=='confirmed';
-  host.innerHTML='<div class="atlasHandoffHead"><div><div class="atlasHandoffEyebrow">Atlas handoff</div><h3>'+escTrade(s.reference||'Shipment')+'</h3><p>'+escTrade(s.originPort||s.origin_port||'Origin')+' → '+escTrade(s.destinationPort||s.destination_port||'Destination')+' • '+escTrade(String(s.status||'pending').replace(/_/g,' '))+'</p></div><button class="btn" type="button" id="atlasHandoffClose">Dismiss</button></div><div class="atlasHandoffMeta"><span>Stage: '+escTrade(stage)+'</span><span>Progress: '+escTrade(String(s.percentComplete??0))+'%</span>'+(s.vessel?.name?'<span>Vessel: '+escTrade(s.vessel.name)+'</span>':'')+(s.customs?.status?'<span>Customs: '+escTrade(String(s.customs.status).replace(/_/g,' '))+'</span>':'')+'<span>Delivery: '+escTrade(deliveryStatus.replace(/_/g,' '))+'</span></div><div class="atlasHandoffActions"><button class="btn primary" type="button" id="atlasHandoffOpenStage">Open '+escTrade(stageLabel(stage))+'</button><button class="btn" type="button" id="atlasHandoffOpenNetwork">Open Atlas</button>'+(canFinalize?'<button class="btn" type="button" id="atlasHandoffConfirmDelivery">Confirm delivery</button><button class="btn" type="button" id="atlasHandoffDisputeDelivery">Dispute delivery</button>':'')+'</div>';
+  host.innerHTML='<div class="atlasHandoffHead"><div><div class="atlasHandoffEyebrow">Atlas handoff</div><h3>'+escTrade(s.reference||'Shipment')+'</h3><p>'+escTrade(s.originPort||s.origin_port||'Origin')+' → '+escTrade(s.destinationPort||s.destination_port||'Destination')+' • '+escTrade(String(s.status||'pending').replace(/_/g,' '))+'</p></div><button class="btn" type="button" id="atlasHandoffClose">Dismiss</button></div><div class="atlasHandoffMeta"><span>Stage: '+escTrade(stage)+'</span><span>Progress: '+escTrade(String(s.percentComplete??0))+'%</span>'+(s.vessel?.name?'<span>Vessel: '+escTrade(s.vessel.name)+'</span>':'')+(s.customs?.status?'<span>Customs: '+escTrade(String(s.customs.status).replace(/_/g,' '))+'</span>':'')+'<span>Delivery: '+escTrade(deliveryStatus.replace(/_/g,' '))+'</span></div><div class="atlasHandoffActions"><button class="btn primary" type="button" id="atlasHandoffOpenStage">Open '+escTrade(stageLabel(stage))+'</button><button class="btn" type="button" id="atlasHandoffOpenNetwork">Open Atlas</button>'+(canFinalize?'<button class="btn" type="button" id="atlasHandoffAttachPod">Attach proof of delivery</button><button class="btn" type="button" id="atlasHandoffConfirmDelivery">Confirm delivery</button><button class="btn" type="button" id="atlasHandoffDisputeDelivery">Dispute delivery</button>':'')+'</div>';
   const main=document.querySelector('.main'),top=main?.querySelector('.top');if(!main||!top)return;top.insertAdjacentElement('afterend',host);
   document.getElementById('atlasHandoffClose').onclick=()=>host.remove();document.getElementById('atlasHandoffOpenStage').onclick=()=>showTab(tab);document.getElementById('atlasHandoffOpenNetwork').onclick=()=>showTab('network');
+  async function chooseAndUploadPod(){
+    const input=document.createElement('input');
+    input.type='file'; input.accept='.pdf,.jpg,.jpeg,.png,.webp'; input.style.display='none';
+    document.body.appendChild(input);
+    const chosen=await new Promise(resolve=>{input.onchange=()=>resolve(input.files?.[0]||null);input.click();});
+    if(!chosen){input.remove();return null;}
+    const form=new FormData();
+    form.append('file',chosen);
+    form.append('docType','proof_of_delivery');
+    form.append('orderId',s.orderId);
+    const token=localStorage.getItem('vtg_access_token');
+    const r=await fetch('/api/documents',{method:'POST',headers:{'Accept':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:form});
+    const d=await r.json().catch(()=>({})); input.remove();
+    if(!r.ok)throw new Error(d.message||d.error||'Unable to upload proof of delivery');
+    s.delivery=s.delivery||{}; s.delivery.proofDocumentId=d.document?.id||null; s.delivery.proofAttached=Boolean(s.delivery.proofDocumentId);
+    host.querySelector('.atlasHandoffMeta').insertAdjacentHTML('beforeend','<span>Proof of delivery attached</span>');
+    return s.delivery.proofDocumentId;
+  }
+  document.getElementById('atlasHandoffAttachPod')?.addEventListener('click',()=>chooseAndUploadPod().catch(e=>alert(e.message)));
   async function updateHandoffDelivery(status){
+    if(status==='confirmed'&&!s.delivery?.proofDocumentId){
+      const proof=await chooseAndUploadPod();
+      if(!proof){alert('Attach proof of delivery before confirming delivery.');return;}
+    }
     const recipientName=window.prompt('Recipient name (optional):',s.delivery?.recipientName||''); if(recipientName===null)return;
     const notes=window.prompt(status==='confirmed'?'Delivery notes (optional):':'Reason / delivery notes (optional):',s.delivery?.notes||''); if(notes===null)return;
-    const r=await fetch('/api/shipments/'+encodeURIComponent(s.id)+'/delivery',{method:'PATCH',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({status,recipientName:recipientName.trim()||undefined,notes:notes.trim()||undefined})});
+    const body={status,recipientName:recipientName.trim()||undefined,notes:notes.trim()||undefined};
+    if(s.delivery?.proofDocumentId)body.proofDocumentId=s.delivery.proofDocumentId;
+    const r=await fetch('/api/shipments/'+encodeURIComponent(s.id)+'/delivery',{method:'PATCH',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(body)});
     const d=await r.json().catch(()=>({})); if(!r.ok)throw new Error(d.message||d.error||'Unable to update delivery');
     host.querySelector('.atlasHandoffMeta').insertAdjacentHTML('beforeend','<span>Delivery updated: '+escTrade(status)+'</span>');
     if(status==='confirmed') showTab('trade-room');
