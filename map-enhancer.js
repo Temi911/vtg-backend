@@ -619,17 +619,19 @@ function atlasTimelinePoint(t,s){
       const vessel=s.vessel||{};
       const customs=s.customs||{};
       const rows=shipmentMilestoneRows(s);
-      const status=shipmentLabel(s.status);
+      const deliveryComplete=s.delivery?.status==='confirmed'||s.status==='delivered';
+      const status=deliveryComplete?'Completed • Delivery confirmed':shipmentLabel(s.status);
       const origin=s.originPort||s.origin_port||'Origin port';
       const destination=s.destinationPort||s.destination_port||'Destination port';
       const vesselName=vessel.name||s.carrier||'Container vessel';
       panel.innerHTML=`
         <div class="atlasHero">
           <img id="atlasShipmentHeroImage" src="https://images.unsplash.com/photo-1606185540834-d6e7483ee1a4?q=85&w=1400&auto=format&fit=crop" alt="Real container ship used for VTG shipment context" style="width:100%;height:100%;object-fit:cover;display:block;opacity:.82"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(4,7,11,.94))"></div>
-          <div class="atlasHeroText"><span class="atlasType">🚢 Shipment • ${esc(status)}</span><h2>${esc(s.reference||'Shipment')}</h2><p>${esc(s.originPort||'Origin')} → ${esc(s.destinationPort||'Destination')}</p></div>
+          <div class="atlasHeroText"><span class="atlasType">${deliveryComplete?'✓ Completed shipment':'🚢 Shipment'} • ${esc(status)}</span><h2>${esc(s.reference||'Shipment')}</h2><p>${esc(s.originPort||'Origin')} → ${esc(s.destinationPort||'Destination')}</p></div>
           <button class="atlasInfoClose" id="atlasInfoClose">×</button>
         </div>
         <div class="atlasInfoBody">
+          <div class="atlasCompletionBanner" style="${deliveryComplete?'':'display:none;'}"><b>✓ TRADE JOURNEY COMPLETED</b><span>Final destination reached • Proof of Delivery attached</span></div>
           <div class="atlasJourneyStrip">
             <div><small>CURRENT</small><b>${esc(s.journey?.current?.name || (s.liveTracking?.available ? "Vessel in transit" : origin))}</b></div>
             <span>→</span>
