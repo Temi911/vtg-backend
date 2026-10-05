@@ -59,6 +59,12 @@ const updateDelivery = asyncHandler(async (req, res) => {
       if (customsRes.rows[0]?.status !== 'released') {
         throw new AppError('Customs must be released before delivery can be confirmed', 409, 'CUSTOMS_NOT_RELEASED');
       }
+      if (!['arrived', 'customs'].includes(shipment.order_status)) {
+        throw new AppError('Order must be at the arrived/customs stage before delivery can be confirmed', 409, 'INVALID_ORDER_TRANSITION');
+      }
+    }
+    if (data.status === 'disputed' && !['confirmed', 'lc_issued', 'shipped', 'in_transit', 'arrived', 'customs', 'disputed'].includes(shipment.order_status)) {
+      throw new AppError('Delivery can only be disputed after the order has entered execution', 409, 'INVALID_ORDER_TRANSITION');
     }
 
     const existingRes = await client.query('SELECT * FROM shipment_delivery WHERE shipment_id = $1 LIMIT 1', [shipment.id]);
