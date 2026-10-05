@@ -1,4 +1,4 @@
-const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/interactions';
 
 function enabled() {
@@ -55,7 +55,7 @@ async function publicChat({ message, history = [], country, role }) {
     model: GEMINI_MODEL,
     input: buildInput(message, Array.isArray(history) ? history : []),
     system_instruction: buildInstructions(country, role),
-    tools: [{ type: 'google_search', search_types: ['web_search'] }],
+    tools: [{ type: 'google_search' }],
     generation_config: { max_output_tokens: 2400 },
   };
 
