@@ -750,7 +750,7 @@ function atlasTimelinePoint(t,s){
         const attachProof=window.confirm('Attach a proof-of-delivery document?'); let proofDocumentId;
         if(attachProof){ proofFile.click(); await new Promise(resolve=>{proofFile.onchange=resolve;}); const file=proofFile.files[0]; if(!file){proofFile.remove();return;}
           const fd=new FormData(); fd.append('file',file); fd.append('docType','proof_of_delivery'); fd.append('orderId',s.orderId);
-          const upload=await fetch('/api/documents',{method:'POST',headers:{Accept:'application/json'},body:fd}); const ud=await upload.json().catch(()=>({})); if(!upload.ok)throw new Error(ud.message||ud.error||'Proof document upload failed'); proofDocumentId=ud.document?.id;
+          const token=localStorage.getItem('vtg_access_token'); const upload=await fetch('/api/documents',{method:'POST',headers:{Accept:'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:fd}); const ud=await upload.json().catch(()=>({})); if(!upload.ok)throw new Error(ud.message||ud.error||'Proof document upload failed'); proofDocumentId=ud.document?.id;
         } proofFile.remove();
         const recipientName=window.prompt('Recipient name (optional):',s.delivery?.recipientName||'');
         if(recipientName===null)return;
