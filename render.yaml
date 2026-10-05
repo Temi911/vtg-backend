@@ -6,7 +6,7 @@ services:
     region: frankfurt
     rootDir: vtg-backend
     buildCommand: npm ci
-    startCommand: npm run db:migrate && npm start
+    startCommand: npm start
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -40,6 +40,10 @@ services:
         sync: false
       - key: SMTP_FROM
         sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.8-flash
       - key: ANTHROPIC_API_KEY
         sync: false
       - key: ANTHROPIC_MODEL
