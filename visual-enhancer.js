@@ -33,6 +33,11 @@
         clearTimeout(timer); const d=await r.json(); if(!r.ok) throw new Error();
         const reply=d.reply||d.message||'I could not generate a response right now.';
         add('assistant',reply); history.push({role:'assistant',content:reply});
+        if(Array.isArray(d.citations)&&d.citations.length){
+          const src=document.createElement('div'); src.className='msg assistant';
+          src.innerHTML='<small>Sources: '+d.citations.map(s=>'<a href="'+String(s.url||'#').replace(/"/g,'&quot;')+'" target="_blank" rel="noopener noreferrer">'+String(s.title||'Source').replace(/[&<>]/g,'')+'</a>').join(' • ')+'</small>';
+          msgs.appendChild(src); msgs.scrollTop=msgs.scrollHeight;
+        }
       } catch(err) { add('assistant','I’m temporarily unable to connect to the VTG AI service. Please try again shortly.'); }
     };
   }
