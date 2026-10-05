@@ -127,6 +127,11 @@
             #mapDrawer .atlasShipmentMarker[data-status="delivered"]{background:rgba(49,156,92,.9);box-shadow:0 0 0 5px rgba(49,156,92,.12),0 8px 25px rgba(0,0,0,.45)}
       #mapDrawer .atlasShipmentMarker[data-status="arrived"]{background:rgba(240,175,55,.92)}
       #mapDrawer .atlasShipmentMarker[data-status="attention"]{background:rgba(215,25,32,.98)}
+      #mapDrawer .atlasMarkerLabel{position:absolute;left:50%;top:32px;transform:translateX(-50%);white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis;padding:3px 6px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:rgba(7,11,17,.82);color:#e5ebef;font:800 6px Manrope,system-ui;letter-spacing:.04em;backdrop-filter:blur(8px);pointer-events:none}
+      #mapDrawer .atlasPortLabel{position:absolute;left:34px;top:50%;transform:translateY(-50%);white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis;padding:4px 7px;border:1px solid rgba(240,198,107,.22);border-radius:999px;background:rgba(7,11,17,.86);color:#f1d38a;font:800 6px Manrope,system-ui;letter-spacing:.04em;backdrop-filter:blur(8px);pointer-events:none}
+      #mapDrawer .atlasPortPhoto{margin:8px 0 12px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.1);background:#10161d;min-height:150px}
+      #mapDrawer .atlasPortPhoto img{width:100%;height:180px;display:block;object-fit:cover}
+      #mapDrawer .atlasPortPhotoEmpty{min-height:150px;display:grid;place-items:center;padding:18px;color:#8d9aa4;font-size:9px;text-align:center}
       #mapDrawer .atlasOperationalPortMarker{position:relative;width:31px;height:31px;border:1px solid rgba(240,198,107,.5);border-radius:11px;background:rgba(20,18,12,.9);color:#f0c66b;display:grid;place-items:center;padding:0;cursor:pointer;box-shadow:0 0 0 4px rgba(240,198,107,.08),0 7px 22px rgba(0,0,0,.4)}
       #mapDrawer .atlasRoutePopup{min-width:170px;max-width:240px;padding:10px 12px;border:1px solid rgba(255,255,255,.16);border-radius:12px;background:rgba(13,17,23,.94);box-shadow:0 12px 30px rgba(0,0,0,.35);color:#eef3f6;backdrop-filter:blur(10px);font-family:Manrope,sans-serif;pointer-events:none}
       #mapDrawer .atlasRoutePopup strong{display:block;font-size:9px;letter-spacing:.12em;color:#f0c66b;margin-bottom:4px}
@@ -302,11 +307,9 @@
             <span style="margin-left:7px" class="legendDot next"></span> Next
             <span style="margin-left:7px" class="legendDot destination"></span> Destination
           </div>
-          <div class="atlasMode">
+          <div class="atlasMode" aria-label="Atlas map view">
             <button class="active" data-mapmode="night">Night</button>
             <button data-mapmode="day">Day</button>
-            <button data-mapmode="dark">Dark</button>
-            <button data-mapmode="satellite">Earth</button>
           </div>
           <div class="atlasControls">
             <button class="atlasControl" id="atlasPlus">+</button>
@@ -330,7 +333,7 @@
     if (!ml) return setTimeout(() => init(doc), 120);
     const map = new ml.Map({
       container: doc.getElementById('vtgPremiumMap'),
-      style: themeIsDark(doc) ? NIGHT_STYLE : BLUE_MARBLE,
+      style: NIGHT_STYLE,
       center: [50, 13],
       zoom: 1.75,
       projection: { type: 'globe' },
@@ -345,7 +348,7 @@
     let shipmentRoutesVisible = false;
     let atlasRefreshInFlight = false;
     let selectedShipmentId = null;
-    let filterType='all', filterRegion='all', shipmentStatusFilter='all', mapMode=themeIsDark(doc)?'dark':'night';
+    let filterType='all', filterRegion='all', shipmentStatusFilter='all', mapMode='night';
 
     function addCorridorLayer() {
       if (map.getSource('vtg-atlas-corridors')) return;
@@ -1013,8 +1016,8 @@ function atlasTimelinePoint(t,s){
     function markerFor(x) {
       const el=doc.createElement('button');
       el.className='atlasMarker '+(x.type==='airport'?'air':'port');
-      el.title=x.name;
-      el.innerHTML=(x.type==='airport'?'✈':'⚓')+'<span class="pulse"></span>';
+      el.title=x.name+' • '+x.city+', '+x.country+' • '+(x.code||'');
+      el.innerHTML='<span class="atlasMarkerIcon">'+(x.type==='airport'?'✈':'⚓')+'</span><span class="pulse"></span><span class="atlasMarkerLabel">'+esc(x.name)+(x.code?' · '+esc(x.code):'')+'</span>';
       el.onclick=e=>{e.stopPropagation(); selectLocation(x)};
       return new ml.Marker({element:el,anchor:'center'}).setLngLat([x.lng,x.lat]).addTo(map);
     }
@@ -1057,12 +1060,11 @@ function atlasTimelinePoint(t,s){
         const active=customs.some(v=>!['cleared','released','not_started'].includes(v));
         const el=doc.createElement('button');
         el.type='button'; el.className='atlasOperationalPortMarker '+(active?'customs':'');
-        el.title=x.name+' • '+(filteredRelated.length?filteredRelated.length+' matching shipment'+(filteredRelated.length===1?'':'s'):'Trade gateway');
-        el.innerHTML='<span class="atlasPortHalo"></span><span class="atlasPortIcon">⚓</span>';
+        el.title=x.name+' • '+x.city+', '+x.country+' • '+(x.code||'')+(filteredRelated.length?' • '+filteredRelated.length+' related shipment'+(filteredRelated.length===1?'':'s'):'');
+        el.innerHTML='<span class="atlasPortHalo"></span><span class="atlasPortIcon">⚓</span><span class="atlasPortLabel">'+esc(x.name)+(x.code?' · '+esc(x.code):'')+'</span>';
         el.onclick=e=>{
           e.stopPropagation();
-          if(filteredRelated.length===1) selectShipment(filteredRelated[0]);
-          else selectLocation(x);
+          selectLocation(x);
         };
         new ml.Marker({element:el,anchor:'center'}).setLngLat([Number(x.lng),Number(x.lat)]).addTo(map);
       });
@@ -1101,12 +1103,26 @@ function atlasTimelinePoint(t,s){
           <div class="atlasDescription">${Number(x.lat).toFixed(4)}° ${Number(x.lat)>=0?'N':'S'} • ${Math.abs(Number(x.lng)).toFixed(4)}° ${Number(x.lng)>=0?'E':'W'}</div>
           <div class="atlasSectionTitle">VTG trade context</div>
           <div class="atlasDescription">${x.region==='Africa'?'African trade gateway connecting regional markets with global suppliers and buyers.':x.region==='China'?'Chinese production and export gateway with direct relevance to Africa–Asia trade corridors.':'South Korean trade gateway supporting advanced manufacturing, maritime and air-cargo connectivity.'}</div>
+          <div class="atlasSectionTitle">Port activity</div>
+          <div class="atlasDescription" id="atlasPortActivity">Loading related trade activity…</div>
+          <div class="atlasSectionTitle">Port image</div>
+          <div class="atlasPortPhoto">${image?'<img src="'+esc(image)+'" alt="'+esc(x.name)+' port">':'<div class="atlasPortPhotoEmpty">No suitable public port image was returned.</div>'}</div>
           <div class="atlasActions"><button class="atlasAction primary" id="atlasRoute">Explore routes</button><button class="atlasAction" id="atlasZoom">Zoom location</button></div>
           <div class="atlasImageCredit">${image?'Location image supplied through Wikimedia Commons search.':'No suitable public location image was returned; VTG location data remains available.'}</div>
         </div>`;
       qs(doc,'#atlasInfoClose').onclick=()=>panel.classList.remove('open');
       qs(doc,'#atlasZoom').onclick=()=>map.flyTo({center:[x.lng,x.lat],zoom:11,duration:1000});
       qs(doc,'#atlasRoute').onclick=()=>showRoutes(x);
+      const relatedAll=shipments.filter(s=>{
+        const names=[s.originPort,s.origin_port,s.destinationPort,s.destination_port,s.liveTracking?.nextPort].filter(Boolean).map(v=>String(v).toLowerCase());
+        return names.includes(String(x.name).toLowerCase()) || names.includes(String(x.code||'').toLowerCase());
+      });
+      const activityEl=qs(doc,'#atlasPortActivity');
+      if(activityEl){
+        activityEl.innerHTML=relatedAll.length
+          ? relatedAll.slice(0,6).map(s=>'<div style="padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08)"><b>'+esc(s.reference||('Shipment '+String(s.id).slice(0,8)))+'</b><br><small>'+esc(shipmentLabel(s.status))+' • '+esc(s.originPort||'Origin')+' → '+esc(s.destinationPort||'Destination')+'</small></div>').join('')
+          : 'No shipment is currently linked to this port in the Atlas feed.';
+      }
     }
 
     async function showRoutes(x) {
@@ -1206,14 +1222,11 @@ function atlasTimelinePoint(t,s){
     function setMode(mode) {
       mapMode=mode;
       qsa(doc,'[data-mapmode]').forEach(b=>b.classList.toggle('active',b.dataset.mapmode===mode));
-      const target=mode==='day'?DAY_STYLE:(mode==='dark'?NIGHT_STYLE:mode==='satellite'?BLUE_MARBLE:NIGHT_STYLE);
+      const target=mode==='day'?DAY_STYLE:NIGHT_STYLE;
       map.setStyle(target);
       map.once('styledata',()=>{addCorridorLayer();applyRasterMood();renderShipmentRoutes();});
     }
     qsa(doc,'[data-mapmode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mapmode));
-
-    const observer=new MutationObserver(()=>{if(themeIsDark(doc)&&mapMode==='day')setMode('dark');});
-    observer.observe(doc.documentElement,{attributes:true,attributeFilter:['data-theme','class']});
 
     loadLocations();
     loadShipments();
