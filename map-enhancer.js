@@ -663,6 +663,9 @@ function atlasTimelinePoint(t,s){
           <div class="atlasTimeline">${rows.map((r,i)=>'<button type="button" class="atlasStep '+esc(r.status)+'" data-atlas-event-index="'+i+'"><span class="atlasStepDot"></span><div><b>'+esc(r.label)+'</b><small>'+esc(r.detail)+(r.time?' • '+esc(r.time):'')+'</small></div></button>').join('')}</div>
           <div class="atlasSectionTitle">Trade parties</div>
           <div class="atlasDescription">${s.buyerName?'Buyer: '+esc(s.buyerName)+'<br>':''}${s.supplierName?'Supplier: '+esc(s.supplierName):'Supplier details restricted by access role.'}</div>
+          <div class="atlasSectionTitle">Next operational action</div>
+          <div class="atlasDescription" id="atlasNextActionText"></div>
+          <div class="atlasActions"><button class="atlasAction primary" id="atlasNextAction">Open next stage</button></div>
           <div class="atlasSectionTitle">Customs & clearance</div>
           <div class="atlasDescription">${esc(String(customs.status||'not_started').replace(/_/g,' '))}${customs.authority?' • '+esc(customs.authority):''}${customs.declarationRef?' • Declaration '+esc(customs.declarationRef):''}</div>
           <div class="atlasFactGrid">
@@ -738,6 +741,28 @@ function atlasTimelinePoint(t,s){
       qs(doc,'#atlasInfoClose').onclick=()=>{panel.classList.remove('open');clearSelectedShipmentPath();};
       qs(doc,'#atlasOpenShipment').onclick=()=>{ window.location.href='/trade-os.html?shipment='+encodeURIComponent(s.id); };
       qs(doc,'#atlasOpenOrder').onclick=()=>{ window.location.href='/trade-os.html?order='+encodeURIComponent(s.orderId); };
+      qs(doc,'#atlasNextAction').onclick=()=>{
+        const customsStatus=String(s.customs?.status||'not_started');
+        const deliveryStatus=String(s.delivery?.status||'pending');
+        let stage='logistics', label='Continue logistics';
+        if(['documents_required','under_assessment','payment_due','inspection','on_hold'].includes(customsStatus)){stage='customs';label='Continue customs clearance';}
+        else if(customsStatus==='cleared'){stage='customs';label='Prepare customs release';}
+        else if(customsStatus==='released' && deliveryStatus!=='confirmed'){stage='delivery';label='Continue final delivery';}
+        else if(deliveryStatus==='confirmed'){stage='delivery';label='Review completed delivery';}
+        const textEl=qs(doc,'#atlasNextActionText'); if(textEl) textEl.textContent=label+' • '+String(stage).replace(/_/g,' ');
+        window.location.href='/trade-os.html?shipment='+encodeURIComponent(s.id)+'&stage='+encodeURIComponent(stage);
+      };
+      {
+        const customsStatus=String(s.customs?.status||'not_started');
+        const deliveryStatus=String(s.delivery?.status||'pending');
+        let stage='logistics', label='Continue logistics';
+        if(['documents_required','under_assessment','payment_due','inspection','on_hold'].includes(customsStatus)){stage='customs';label='Continue customs clearance';}
+        else if(customsStatus==='cleared'){stage='customs';label='Prepare customs release';}
+        else if(customsStatus==='released' && deliveryStatus!=='confirmed'){stage='delivery';label='Continue final delivery';}
+        else if(deliveryStatus==='confirmed'){stage='delivery';label='Review completed delivery';}
+        const textEl=qs(doc,'#atlasNextActionText'); if(textEl) textEl.textContent=label+' • '+String(stage).replace(/_/g,' ');
+      }
+
       qs(doc,'#atlasRefreshShipment').onclick=async()=>{ await loadShipments(); const fresh=shipments.find(x=>String(x.id)===String(s.id)); if(fresh) openShipmentInfo(fresh); };
       qs(doc,'#atlasRecordMilestone').onclick=async()=>{
         const location=window.prompt('Milestone location / operational point:', s.liveTracking?.nextPort || s.destinationPort || '');
