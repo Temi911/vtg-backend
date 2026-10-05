@@ -138,6 +138,7 @@ CREATE TABLE tracking_events (
   shipment_id       UUID NOT NULL REFERENCES shipments(id) ON DELETE CASCADE,
   location          TEXT NOT NULL,
   detail            TEXT,
+  stage             TEXT NOT NULL DEFAULT 'logistics' CHECK (stage IN ('finance','logistics','customs','inspection','delivery')),
   status            TEXT NOT NULL DEFAULT 'pending', -- done | active | pending
   event_time        TIMESTAMPTZ NOT NULL DEFAULT now(),
   sort_order        INTEGER NOT NULL DEFAULT 0
@@ -299,6 +300,7 @@ CREATE TABLE country_compliance (
 );
 
 -- ── INDEXES ────────────────────────────────────────────────
+CREATE INDEX idx_tracking_events_shipment_stage ON tracking_events(shipment_id, stage, sort_order);
 CREATE INDEX idx_orders_buyer       ON orders(buyer_id);
 CREATE INDEX idx_orders_supplier    ON orders(supplier_id);
 CREATE INDEX idx_lc_order           ON letters_of_credit(order_id);
