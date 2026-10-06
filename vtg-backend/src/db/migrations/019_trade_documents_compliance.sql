@@ -1,12 +1,5 @@
 -- Phase 15: trade document compliance workflow.
--- Extend the existing document enum without changing legacy values.
-DO $$ BEGIN
-  ALTER TYPE doc_type ADD VALUE IF NOT EXISTS 'customs_declaration';
-  ALTER TYPE doc_type ADD VALUE IF NOT EXISTS 'duty_assessment';
-  ALTER TYPE doc_type ADD VALUE IF NOT EXISTS 'customs_release';
-  ALTER TYPE doc_type ADD VALUE IF NOT EXISTS 'proof_of_delivery';
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-
+-- Keep legacy enum values intact while allowing the expanding trade-document catalogue.\nALTER TABLE documents ALTER COLUMN doc_type TYPE TEXT USING doc_type::text;\nALTER TABLE trade_document_requirements ALTER COLUMN doc_type TYPE TEXT USING doc_type::text;\n
 CREATE TABLE IF NOT EXISTS trade_compliance_cases (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   order_id UUID NOT NULL UNIQUE REFERENCES orders(id) ON DELETE CASCADE,
