@@ -864,11 +864,13 @@ function atlasTimelinePoint(t,s){
       }
       box.innerHTML=rows.map(s=>{
         const status=shipmentLabel(s.status);
-        const point=s.journey?.current||s.routePoints?.[0];
-        const loc=s.liveTracking?.nextPort||s.journey?.next?.name||s.destinationPort||'Route position unavailable';
+        const current=s.journey?.current?.name||s.journey?.current||'Position unavailable';
+        const next=s.liveTracking?.nextPort||s.journey?.next?.name||s.destinationPort||'Next point unavailable';
+        const freshness=s.liveTracking?.available?liveTrackingState(s.liveTracking):null;
+        const freshnessText=freshness?(freshness.state==='stale'?'Tracking stale':'Live position'):'No live position';
         return '<button type="button" class="atlasShipmentCard '+(String(selectedShipmentId)===String(s.id)?'selected':'')+'" data-atlas-shipment-id="'+esc(s.id)+'">'+
           '<span class="atlasShipmentCardIcon">'+(s.status==='delivered'?'✓':s.status==='arrived'?'⚓':(s.status==='attention'||s.status==='disputed')?'!':'🚢')+'</span>'+
-          '<span class="atlasShipmentCardMain"><b>'+esc(s.reference||('Shipment '+String(s.id).slice(0,8)))+'</b><small>'+esc((s.originPort||'Origin')+' → '+(s.destinationPort||'Destination'))+' • '+esc(loc)+'</small></span>'+
+          '<span class="atlasShipmentCardMain"><b>'+esc(s.reference||('Shipment '+String(s.id).slice(0,8)))+'</b><small>'+esc((s.originPort||'Origin')+' → '+(s.destinationPort||'Destination'))+'</small><small>'+esc(current)+' → '+esc(next)+' • '+esc(freshnessText)+'</small></span>'+
           '<span class="atlasShipmentCardMeta"><span class="atlasShipmentBadge">'+esc(status)+'</span><span class="atlasShipmentPct">'+esc(String(s.percentComplete??0))+'%</span></span>'+
         '</button>';
       }).join('');
