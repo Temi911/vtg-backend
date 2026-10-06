@@ -349,7 +349,14 @@
     let shipmentRoutesVisible = false;
     let atlasRefreshInFlight = false;
     let selectedShipmentId = null;
-    let filterType='all', filterRegion='all', shipmentStatusFilter='all', mapMode='night';
+    let filterType='all', filterRegion='all', shipmentStatusFilter='all', mapMode='night'
+  // Atlas follows the user's local civil time by default: day 06:00–17:59, night 18:00–05:59.
+  let atlasAutoTime=true;
+  let atlasAutoTimer=null;
+  function atlasLocalMode(){
+    const hour=new Date().getHours();
+    return hour>=6&&hour<18?'day':'night';
+  };
 
     function addCorridorLayer() {
       if (map.getSource('vtg-atlas-corridors')) return;
@@ -1234,14 +1241,28 @@ function atlasTimelinePoint(t,s){
     };
     qs(doc,'#atlasCompass').onclick=()=>map.resetNorthPitch();
 
-    function setMode(mode) {
+    function setMode(mode, automatic=false) {
       mapMode=mode;
+      if(!automatic) atlasAutoTime=false;
       qsa(doc,'[data-mapmode]').forEach(b=>b.classList.toggle('active',b.dataset.mapmode===mode));
       const target=mode==='day'?DAY_STYLE:NIGHT_STYLE;
       map.setStyle(target);
       map.once('styledata',()=>{addCorridorLayer();renderShipmentRoutes();});
     }
-    qsa(doc,'[data-mapmode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mapmode));
+    function applyLocalTimeMode(force=false){
+      const mode=atlasLocalMode();
+      if(force || atlasAutoTime || mapMode!==mode) setMode(mode,true);
+    }
+    qsa(doc,'[data-mapmode]').forEach(b=>b.onclick=()=>{
+      atlasAutoTime=false;
+      setMode(b.dataset.mapmode);
+    });
+    // Start from the user's actual local clock and automatically switch at the next 06:00/18:00 boundary.
+    applyLocalTimeMode(true);
+    if(atlasAutoTimer) clearInterval(atlasAutoTimer);
+    atlasAutoTimer=window.setInterval(()=>{ if(atlasAutoTime) applyLocalTimeMode(false); },60000);
+    window.addEventListener('focus',()=>{if(atlasAutoTime) applyLocalTimeMode(false);});
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden&&atlasAutoTime) applyLocalTimeMode(false);});
 
     loadLocations();
     loadShipments();
