@@ -646,6 +646,8 @@ function atlasTimelinePoint(t,s){
     }
 
     async function selectShipment(s) {
+      locationPanelRequest++;
+      markers.forEach(m=>m.getElement().classList.remove('selected'));
       selectedShipmentId = s?.id || null;
       renderSelectedShipmentPath(s);
       const panel=qs(doc,'#vtgAtlasInfo');
@@ -1042,7 +1044,10 @@ function atlasTimelinePoint(t,s){
 
     async function selectLocation(x) {
       const requestId=++locationPanelRequest;
+      selectedShipmentId=null;
+      clearSelectedShipmentPath();
       markers.forEach(m=>m.getElement().classList.remove('selected'));
+      renderShipmentList();
       const found=markers.find(m=>Math.abs(m.getLngLat().lng-x.lng)<.0001&&Math.abs(m.getLngLat().lat-x.lat)<.0001);
       found?.getElement().classList.add('selected');
       map.flyTo({center:[x.lng,x.lat],zoom:7.2,duration:1200});
@@ -1082,7 +1087,7 @@ function atlasTimelinePoint(t,s){
           <div class="atlasActions"><button class="atlasAction primary" id="atlasRoute">Explore routes</button><button class="atlasAction" id="atlasZoom">Zoom location</button></div>
           <div class="atlasImageCredit">${image?'Location image supplied through Wikimedia Commons search.':'No suitable public location image was returned; VTG location data remains available.'}</div>
         </div>`;
-      qs(doc,'#atlasInfoClose').onclick=()=>panel.classList.remove('open');
+      qs(doc,'#atlasInfoClose').onclick=()=>{locationPanelRequest++;panel.classList.remove('open');markers.forEach(m=>m.getElement().classList.remove('selected'));};
       qs(doc,'#atlasZoom').onclick=()=>map.flyTo({center:[x.lng,x.lat],zoom:11,duration:1000});
       qs(doc,'#atlasRoute').onclick=()=>showRoutes(x);
       const relatedAll=shipments.filter(s=>{
