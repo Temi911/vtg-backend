@@ -17,7 +17,7 @@ CREATE INDEX IF NOT EXISTS idx_trade_compliance_cases_status ON trade_compliance
 CREATE TABLE IF NOT EXISTS trade_document_requirements (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
-  doc_type doc_type NOT NULL,
+  doc_type TEXT NOT NULL,
   label TEXT NOT NULL,
   required BOOLEAN NOT NULL DEFAULT TRUE,
   status TEXT NOT NULL DEFAULT 'required' CHECK (status IN ('required','uploaded','under_review','accepted','rejected','superseded','not_applicable')),
