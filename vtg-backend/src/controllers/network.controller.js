@@ -7,13 +7,13 @@ const directory=asyncHandler(async(req,res)=>{
   const role=String(req.query.role||'').trim();
   const allowed=['supplier','bank','agent'];
   const params=[];
-  let filter="u.role = ANY($1::text[]) AND u.business_verification_status='verified'";
+  let filter="((u.role IN ('supplier','bank') AND u.business_verification_status='verified') OR (u.role='agent' AND ap.status='approved'))";
   params.push(role&&allowed.includes(role)?[role]:allowed);
   const q=await query(`
     SELECT u.id,u.role,u.full_name,u.business_verification_status,
            sp.company_name,sp.company_logo_url,
            bp.bank_name,bp.institution_logo_url,
-           ap.city,ap.country,ap.languages,ap.regions
+           ap.city,ap.country,ap.languages,ap.regions_served
       FROM users u
       LEFT JOIN supplier_profiles sp ON sp.user_id=u.id
       LEFT JOIN bank_profiles bp ON bp.user_id=u.id
@@ -26,7 +26,7 @@ const directory=asyncHandler(async(req,res)=>{
     fullName:x.full_name,verificationStatus:x.business_verification_status,
     logoUrl:x.company_logo_url||x.institution_logo_url||null,
     location:[x.city,x.country].filter(Boolean).join(', ')||null,
-    languages:x.languages||null,regions:x.regions||null
+    languages:x.languages||null,regions:x.regions_served||null
   }))});
 });
 
@@ -73,7 +73,7 @@ const performance=asyncHandler(async(req,res)=>{
   const role=u.rows[0].role;
   const [orders,inspections,payments,relationships]=await Promise.all([
     query(`SELECT count(*)::int AS count FROM orders WHERE ${role==='supplier'?'supplier_id':role==='buyer'?'buyer_id':'id'}=$1`,[target]),
-    query(`SELECT count(*)::int AS count FROM inspection_requests WHERE ${role==='buyer'?'buyer_id':'agent_id'}=$1`,[target]).catch(()=>({rows:[{count:0}]})),
+    query(`SELECT count(*)::int AS count FROM inspection_requests WHERE ${role==='buyer'?'buyer_id':'assigned_agent_id'}=$1`,[target]).catch(()=>({rows:[{count:0}]})),
     query(`SELECT count(*)::int AS count FROM payment_requests WHERE initiated_by=$1`,[target]).catch(()=>({rows:[{count:0}]})),
     query('SELECT count(*)::int AS count FROM partner_relationships WHERE (requester_id=$1 OR partner_id=$1) AND status=\'approved\'',[target])
   ]);
