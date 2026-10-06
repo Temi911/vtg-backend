@@ -5,4 +5,5 @@ router.get('/status',requireAuth,ctrl.integrationStatus);
 router.get('/fx',requireAuth,ctrl.rates);
 router.get('/vessel',requireAuth,ctrl.vessel);
 router.get('/news',requireAuth,ctrl.newsFeed);
+router.get('/freshness',requireAuth,ctrl.freshness);
 module.exports=router;
