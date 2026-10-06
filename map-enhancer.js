@@ -710,7 +710,7 @@ function atlasTimelinePoint(t,s){
             (s.inspection.completedAt?' • Completed '+esc(new Date(s.inspection.completedAt).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})):'')+
             '</div><div class="atlasFactGrid"><div class="atlasFact"><small>Checks</small><b>'+esc(s.inspection.requestedChecks||'Standard verification')+'</b></div><div class="atlasFact"><small>Report</small><b>'+esc(s.inspection.summary?'Available':'Pending')+'</b></div>'+(s.inspection.payoutStatus?'<div class="atlasFact"><small>Agent payout</small><b>'+esc(s.inspection.payoutStatus)+'</b></div>':'')+'</div>' : ''}
           <div class="atlasSectionTitle">Delivery & proof</div>
-          <div class="atlasDescription">${esc(delivery.status||'Awaiting confirmation')}${delivery.recipientName?' • Recipient: '+esc(delivery.recipientName):''}${delivery.notes?' • '+esc(delivery.notes):''}</div>
+          <div class="atlasDescription"><b>${esc(String(delivery.status||'Awaiting confirmation').replace(/_/g,' '))}</b>${delivery.recipientName?' • Recipient: '+esc(delivery.recipientName):''}${delivery.notes?' • '+esc(delivery.notes):''}${delivery.proofAttached?' • Proof attached':''}</div>
           <div class="atlasFactGrid">
             <div class="atlasFact"><small>Proof</small><b>${delivery.proofAttached?'Attached':'Not attached'}</b></div>
             <div class="atlasFact"><small>Confirmed</small><b>${delivery.confirmedAt?esc(new Date(delivery.confirmedAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):'Pending'}</b></div>
@@ -722,9 +722,6 @@ function atlasTimelinePoint(t,s){
             <article class="atlasMediaCard"><img id="atlasMediaDestination" alt="${esc(destination)} port"><div><b>Destination</b><small>${esc(destination)}</small></div></article>
             <article class="atlasMediaCard"><img id="atlasMediaRoute" alt="${esc(origin)} to ${esc(destination)} shipping corridor"><div><b>Trade corridor</b><small>${esc(origin)} ↔ ${esc(destination)}</small></div></article>
           </div><div class="atlasMediaStatus" id="atlasMediaStatus">Loading real trade imagery…</div></div>
-          <div class="atlasSectionTitle">Final delivery</div>
-          <div class="atlasDescription">${esc(String(s.delivery?.status||'pending').replace(/_/g,' '))}${s.delivery?.recipientName?' • Recipient: '+esc(s.delivery.recipientName):''}${s.delivery?.proofAttached?' • Proof of delivery attached':''}${s.delivery?.confirmedAt?' • '+esc(new Date(s.delivery.confirmedAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):''}</div>
-          <div class="atlasActions"><button class="atlasAction primary" id="atlasDeliveryUpdate">Update delivery</button><button class="atlasAction" id="atlasOpenShipment">Open shipment</button><button class="atlasAction" id="atlasOpenOrder">Open order</button></div>
           <div class="atlasActions"><button class="atlasAction primary" id="atlasRecordMilestone">Record milestone</button><button class="atlasAction" id="atlasRefreshShipment">Refresh shipment</button></div>
         </div>`;
       const mediaStatus=qs(doc,'#atlasMediaStatus');
