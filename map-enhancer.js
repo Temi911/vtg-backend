@@ -941,6 +941,7 @@ function atlasTimelinePoint(t,s){
         const d=await r.json();
         shipments=Array.isArray(d.shipments)?d.shipments:[];
         renderOperationalSummary();
+        renderShipmentList();
         const meta=qs(doc,'#atlasOpsLiveMeta');
         if(meta){
           const now=new Date();
