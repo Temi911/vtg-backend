@@ -310,7 +310,11 @@
         </div>
       </div>`;
 
-    qs(doc, '#vtgAtlasClose').onclick = () => { drawer.classList.remove('open'); doc.body.style.overflow=''; };
+    const closeAtlas = () => { drawer.classList.remove('open'); doc.body.style.overflow=''; };
+    qs(doc, '#vtgAtlasClose').onclick = closeAtlas;
+    doc.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && drawer.classList.contains('open')) closeAtlas();
+    });
     if (!doc.querySelector('script[data-vtg-atlas-maplibre]')) {
       const s = doc.createElement('script');
       s.src = MAPLIBRE; s.dataset.vtgAtlasMaplibre='1'; doc.head.appendChild(s);
