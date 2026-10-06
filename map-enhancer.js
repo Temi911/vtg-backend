@@ -881,13 +881,15 @@ function atlasTimelinePoint(t,s){
         const next=s.liveTracking?.nextPort||s.journey?.next?.name||s.destinationPort||'Next point unavailable';
         const freshness=s.liveTracking?.available?liveTrackingState(s.liveTracking):null;
         const freshnessText=freshness?(freshness.state==='stale'?'Tracking stale':'Live position'):'No live position';
-        return '<button type="button" class="atlasShipmentCard '+(String(selectedShipmentId)===String(s.id)?'selected':'')+'" data-atlas-shipment-id="'+esc(s.id)+'">'+
-          '<span class="atlasShipmentCardIcon">'+(s.status==='delivered'?'✓':s.status==='arrived'?'⚓':(s.status==='attention'||s.status==='disputed')?'!':'🚢')+'</span>'+
+        const cardLabel=(s.reference||('Shipment '+String(s.id).slice(0,8)))+' • '+status+' • '+current+' to '+next+' • '+freshnessText+' • '+String(s.percentComplete??0)+'% complete';
+        return '<button type="button" class="atlasShipmentCard '+(String(selectedShipmentId)===String(s.id)?'selected':'')+'" data-atlas-shipment-id="'+esc(s.id)+'" aria-label="Open '+esc(cardLabel)+'" aria-haspopup="dialog">'+
+          '<span class="atlasShipmentCardIcon" aria-hidden="true">'+(s.status==='delivered'?'✓':s.status==='arrived'?'⚓':(s.status==='attention'||s.status==='disputed')?'!':'🚢')+'</span>'+
           '<span class="atlasShipmentCardMain"><b>'+esc(s.reference||('Shipment '+String(s.id).slice(0,8)))+'</b><small>'+esc((s.originPort||'Origin')+' → '+(s.destinationPort||'Destination'))+'</small><small>'+esc(current)+' → '+esc(next)+' • '+esc(freshnessText)+'</small></span>'+
           '<span class="atlasShipmentCardMeta"><span class="atlasShipmentBadge">'+esc(status)+'</span><span class="atlasShipmentPct">'+esc(String(s.percentComplete??0))+'%</span></span>'+
         '</button>';
       }).join('');
-      qsa(box,'[data-atlas-shipment-id]').forEach(btn=>btn.onclick=()=>{
+      qsa(box,'[data-atlas-shipment-id]').forEach(btn=>{
+        const activate=()=>{
         const s=shipments.find(x=>String(x.id)===String(btn.dataset.atlasShipmentId));
         if(!s)return;
         shipmentRoutesVisible=true;
@@ -895,6 +897,9 @@ function atlasTimelinePoint(t,s){
         selectShipment(s);
         renderShipmentList();
         renderShipmentRoutes();
+        };
+        btn.onclick=activate;
+        btn.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();activate();}};
       });
     }
 
