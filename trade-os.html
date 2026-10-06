@@ -245,7 +245,7 @@ function initAtlasHandoff(){
     const notes=window.prompt(status==='confirmed'?'Delivery notes (optional):':'Reason / delivery notes (optional):',s.delivery?.notes||''); if(notes===null)return;
     const body={status,recipientName:recipientName.trim()||undefined,notes:notes.trim()||undefined};
     if(s.delivery?.proofDocumentId)body.proofDocumentId=s.delivery.proofDocumentId;
-    const r=await fetch('/api/shipments/'+encodeURIComponent(s.id)+'/delivery',{method:'PATCH',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(body)});
+    const r=await fetch('/api/shipments/'+encodeURIComponent(s.id)+'/delivery',{method:'PATCH',headers:{'Content-Type':'application/json','Accept':'application/json',...(localStorage.getItem('vtg_access_token')?{Authorization:'Bearer '+localStorage.getItem('vtg_access_token')}:{})},body:JSON.stringify(body)});
     const d=await r.json().catch(()=>({})); if(!r.ok)throw new Error(d.message||d.error||'Unable to update delivery');
     host.querySelector('.atlasHandoffMeta').insertAdjacentHTML('beforeend','<span>Delivery updated: '+escTrade(status)+'</span>');
     if(status==='confirmed') showTab('trade-room');
@@ -264,13 +264,14 @@ async function runIntel(){
  const input=document.getElementById('productInput'), result=document.getElementById('intelResult'), sources=document.getElementById('intelSources');
  const question=input?.value.trim()||'Give me a current trade intelligence brief for my active transactions.';
  const token=localStorage.getItem('vtg_access_token');
+ const prior=Array.isArray(window.VTG_INTEL_HISTORY)?window.VTG_INTEL_HISTORY:[];
  if(!token){result.innerHTML='<div class="notice">Please sign in to use Trade Intelligence with your VTG trade context.</div>';return;}
  result.innerHTML='<div class="notice">VTG AI is researching this trade question…</div>'; sources.innerHTML='';
  try{
    const me=await fetch('/api/auth/me',{headers:{Authorization:'Bearer '+token,Accept:'application/json'}});
    const auth=me.ok?await me.json():{};
    const u=auth.user||{};
-   const r=await fetch('/api/ai/trade-intelligence',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json',Authorization:'Bearer '+token},body:JSON.stringify({message:question,history:[],country:u.country||'Nigeria',role:u.role||'buyer'})});
+   const r=await fetch('/api/ai/trade-intelligence',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json',Authorization:'Bearer '+token},body:JSON.stringify({message:question,history:prior.slice(-8),country:u.country||'Nigeria',role:u.role||'buyer'})});
    const d=await r.json().catch(()=>({}));
    if(!r.ok)throw new Error(d.error||d.message||'Trade Intelligence is unavailable');
    result.innerHTML='<div class="notice"><strong>VTG AI Trade Brief</strong><div style="margin-top:8px;white-space:pre-wrap">'+String(d.reply||'No intelligence was returned.').replace(/[&<>]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[ch]))+'</div></div>';
