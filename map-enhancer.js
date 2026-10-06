@@ -327,7 +327,7 @@
       center: [50, 13],
       zoom: 1.75,
       projection: { type: 'globe' },
-      attributionControl: false,
+      attributionControl: true,
       pitch: 12
     });
     map.addControl(new ml.NavigationControl({showCompass:false,showZoom:false}), 'bottom-right');
@@ -853,12 +853,12 @@ function atlasTimelinePoint(t,s){
         const pct=Number(pctRaw);
         if(!Number.isInteger(pct)||pct<0||pct>100){window.alert('Completion percentage must be a whole number from 0 to 100.');return;}
         try{
-          const resp=await fetch('/api/shipments/'+encodeURIComponent(s.id)+'/events',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({location,detail,stage:String(stage).toLowerCase(),status:String(status).toLowerCase(),percentComplete:pct})});
+          const resp=await fetch('/api/shipments/'+encodeURIComponent(s.id)+'/events',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json',...(localStorage.getItem('vtg_access_token')?{Authorization:'Bearer '+localStorage.getItem('vtg_access_token')}:{})},body:JSON.stringify({location,detail,stage:String(stage).toLowerCase(),status:String(status).toLowerCase(),percentComplete:pct})});
           const data=await resp.json().catch(()=>({}));
           if(!resp.ok)throw new Error(data.message||data.error||'Unable to record milestone');
           await loadShipments();
           const fresh=shipments.find(x=>String(x.id)===String(s.id));
-          if(fresh) openShipmentInfo(fresh);
+          if(fresh) await selectShipment(fresh);
         }catch(err){window.alert(err.message||'Unable to record milestone.');}
       };
     }
