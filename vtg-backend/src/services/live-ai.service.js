@@ -168,4 +168,8 @@ async function tradeIntelligence({ question, history = [], country, role, contex
   }
 }
 
-function providerStatus() {\n  return { enabled: enabled(), provider: GEMINI_MODEL, liveSearch: true };\n}\n\nmodule.exports = { enabled, publicChat, tradeIntelligence, providerStatus };
+function providerStatus() {
+  return { enabled: enabled(), provider: GEMINI_MODEL, liveSearch: true };
+}
+
+module.exports = { enabled, publicChat, tradeIntelligence, providerStatus };
