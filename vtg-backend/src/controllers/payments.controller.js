@@ -209,6 +209,35 @@ const listMine = asyncHandler(async (req, res) => {
   res.json({ paymentRequests: rows });
 });
 
+// GET /payments/summary — role-scoped finance dashboard totals
+const summary = asyncHandler(async (req, res) => {
+  const where = [];
+  const params = [];
+  if (req.user.role === 'buyer') { params.push(req.user.id); where.push('p.initiated_by = $1'); }
+  else if (req.user.role === 'bank') { params.push(req.user.id); where.push('(o.bank_id = $1 OR p.initiated_by = $1)'); }
+  else if (req.user.role !== 'admin') throw new AppError('Finance summary is not available for this role', 403, 'FORBIDDEN');
+  const filter = where.length ? 'WHERE ' + where.join(' AND ') : '';
+  const { rows } = await query(
+    `SELECT COUNT(*)::int AS total,
+            COUNT(*) FILTER (WHERE p.status='pending')::int AS pending,
+            COUNT(*) FILTER (WHERE p.status='processing')::int AS processing,
+            COUNT(*) FILTER (WHERE p.status='completed')::int AS completed,
+            COUNT(*) FILTER (WHERE p.status='failed')::int AS failed,
+            COUNT(*) FILTER (WHERE p.status='refunded')::int AS refunded,
+            COALESCE(SUM(p.amount) FILTER (WHERE p.status IN ('pending','processing')),0) AS outstanding_amount,
+            COALESCE(SUM(p.amount) FILTER (WHERE p.status='completed'),0) AS completed_amount
+       FROM payment_requests p
+       LEFT JOIN orders o ON o.id=p.order_id
+      ${filter}`, params);
+  const { rows: byCurrency } = await query(
+    `SELECT p.currency, p.status, COUNT(*)::int AS count, COALESCE(SUM(p.amount),0) AS amount
+       FROM payment_requests p
+       LEFT JOIN orders o ON o.id=p.order_id
+      ${filter}
+      GROUP BY p.currency,p.status ORDER BY p.currency,p.status`, params);
+  res.json({ summary: rows[0] || {}, byCurrency });
+});
+
 // GET /payments/ledger — authenticated finance ledger/report view
 const ledger = asyncHandler(async (req, res) => {
   const schema = z.object({
@@ -294,4 +323,4 @@ const compliance = asyncHandler(async (req, res) => {
   res.json({ compliance: rows });
 });
 
-module.exports = { initiate, listMine, getReconciliation, updateStatus, ledger, forexRates, convert, compliance };
+module.exports = { initiate, listMine, getReconciliation, updateStatus, summary, ledger, forexRates, convert, compliance };
