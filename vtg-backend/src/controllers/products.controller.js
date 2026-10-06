@@ -10,7 +10,8 @@ const productSchema = z.object({
   minOrderQty: z.string().optional(),
   hsCode: z.string().optional(),
   leadTime: z.string().optional(),
-  description: z.string().optional(),
+  description: z.string().max(5000).optional(),
+  imageUrl: z.string().url().max(2000).optional(),
 });
 
 // GET /products — public browse (buyers), optional ?category=&supplierId=
@@ -54,9 +55,9 @@ const getOne = asyncHandler(async (req, res) => {
 const create = asyncHandler(async (req, res) => {
   const data = productSchema.parse(req.body);
   const { rows } = await query(
-    `INSERT INTO products (supplier_id, name, category, unit_price_usd, min_order_qty, hs_code, lead_time, description)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
-    [req.user.id, data.name, data.category || null, data.unitPriceUsd, data.minOrderQty || null, data.hsCode || null, data.leadTime || null, data.description || null]
+    `INSERT INTO products (supplier_id, name, category, unit_price_usd, min_order_qty, hs_code, lead_time, description, image_url)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
+    [req.user.id, data.name, data.category || null, data.unitPriceUsd, data.minOrderQty || null, data.hsCode || null, data.leadTime || null, data.description || null, data.imageUrl || null]
   );
   res.status(201).json({ product: rows[0] });
 });
@@ -79,7 +80,7 @@ const update = asyncHandler(async (req, res) => {
        unit_price_usd = COALESCE($3, unit_price_usd), min_order_qty = COALESCE($4, min_order_qty),
        hs_code = COALESCE($5, hs_code), lead_time = COALESCE($6, lead_time), description = COALESCE($7, description)
      WHERE id = $8 RETURNING *`,
-    [data.name, data.category, data.unitPriceUsd, data.minOrderQty, data.hsCode, data.leadTime, data.description, req.params.id]
+    [data.name, data.category, data.unitPriceUsd, data.minOrderQty, data.hsCode, data.leadTime, data.description, data.imageUrl, req.params.id]
   );
   res.json({ product: rows[0] });
 });
