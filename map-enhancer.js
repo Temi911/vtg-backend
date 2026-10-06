@@ -54,9 +54,16 @@
     } catch (_) { return ''; }
   }
 
+  function getAutoMode() {
+    const hour = new Date().getHours();
+    return hour >= 6 && hour < 18 ? 'day' : 'night';
+  }
+
   function run(doc) {
     if (!doc || doc.getElementById('vtgAtlasPremiumStyle')) return;
     const drawer = doc.getElementById('mapDrawer');
+    const autoMode = getAutoMode();
+
     if (!drawer) return;
 
     const style = doc.createElement('style');
