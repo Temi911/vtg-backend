@@ -7,30 +7,9 @@
   const MAPLIBRE = 'https://unpkg.com/maplibre-gl@5.13.0/dist/maplibre-gl.js';
   const DAY_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
   const NIGHT_STYLE = 'https://tiles.openfreemap.org/styles/dark';
-  const BLUE_MARBLE = {
-    version: 8,
-    sources: {
-      earth: {
-        type: 'raster',
-        tiles: ['https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_NextGeneration/default/500m/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg'],
-        tileSize: 256,
-        maxzoom: 8,
-        attribution: 'Imagery © NASA EOSDIS GIBS / Blue Marble'
-      }
-    },
-    layers: [{ id: 'earth', type: 'raster', source: 'earth',
-      paint: { 'raster-brightness-min': 0.02, 'raster-brightness-max': 0.58, 'raster-saturation': -0.08 } }]
-  };
-
   const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const qs = (doc, s) => doc.querySelector(s);
   const qsa = (doc, s) => Array.from(doc.querySelectorAll(s));
-
-  function themeIsDark(doc) {
-    return doc.documentElement.getAttribute('data-theme') === 'dark' ||
-      doc.body?.classList.contains('dark') ||
-      window.matchMedia?.('(prefers-color-scheme: dark)').matches;
-  }
 
   function imageSearchUrl(name, city, country, type) {
     const subject = type === 'airport' ? 'airport' : 'port';
@@ -188,7 +167,7 @@
       #mapDrawer .legendDot.live{background:#fff;color:#fff}
       #mapDrawer .legendDot.next{background:#f0c66b;color:#f0c66b}
       #mapDrawer .legendDot.destination{background:#65c987;color:#65c987}
-      #mapDrawer .atlasControls{position:absolute;right:22px;bottom:22px;z-index:15;display:grid;gap:7px}
+      #mapDrawer .atlasControls{position:absolute;right:22px;bottom:76px;z-index:15;display:grid;gap:7px}
       #mapDrawer .atlasControl{width:42px;height:42px;border:1px solid rgba(255,255,255,.14);border-radius:13px;background:rgba(5,9,14,.7);backdrop-filter:blur(16px);color:#e8edf0;font-weight:900;cursor:pointer}
       #mapDrawer .atlasControl:hover{border-color:#d71920;color:#ffb5b8}
       #mapDrawer .atlasMode{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:15;display:flex;padding:4px;border:1px solid rgba(255,255,255,.13);border-radius:14px;background:rgba(5,9,14,.72);backdrop-filter:blur(18px)}
@@ -274,8 +253,8 @@
       #mapDrawer .atlasMediaCard b{display:block;color:#fff;font-size:8px}
       #mapDrawer .atlasMediaCard small{display:block;color:#c2cbd0;font-size:7px;margin-top:2px}
       #mapDrawer .atlasMediaStatus{color:#7f8e99;font-size:7px;margin-top:7px}
-      @media(max-width:1000px){#mapDrawer .atlasTop{left:14px;right:70px;flex-wrap:wrap;align-items:flex-start}#mapDrawer .atlasSearch{flex:1 1 420px}#mapDrawer .atlasChips{display:flex;flex:1 1 100%;width:100%;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding-bottom:2px;scrollbar-width:none}#mapDrawer .atlasChips::-webkit-scrollbar{display:none}#mapDrawer .atlasOpsSummary{left:14px;top:145px;max-width:calc(100vw - 28px)}#mapDrawer .atlasOpsLiveMeta{left:14px;top:191px}#mapDrawer .atlasShipmentList{left:14px;top:210px;width:min(390px,calc(100vw - 28px));max-height:170px}#mapDrawer .atlasInfo{right:14px;top:auto;bottom:14px;max-height:58vh;width:min(430px,calc(100vw - 28px))}#mapDrawer .atlasLegend{left:14px;bottom:78px;max-width:calc(100vw - 28px);overflow:auto;white-space:nowrap}#mapDrawer .atlasWeather{display:none}#mapDrawer .atlasMode{bottom:14px}}
-      @media(max-width:620px){#mapDrawer .atlasBrand{display:none}#mapDrawer .atlasTop{right:58px}#mapDrawer .atlasSearch{max-width:none;flex-basis:100%}#mapDrawer .atlasSearch button{padding:8px}#mapDrawer .atlasOpsSummary{top:133px;max-width:calc(100vw - 28px)}#mapDrawer .atlasOpsLiveMeta{top:177px}#mapDrawer .atlasShipmentList{top:196px;max-height:132px}#mapDrawer .atlasInfo{max-height:62vh}.atlasHero{height:150px!important}#mapDrawer .atlasStats{grid-template-columns:1fr 1fr}#mapDrawer .atlasMode{left:14px;right:14px;transform:none;justify-content:center}#mapDrawer .atlasMode button{padding:8px 7px}}
+      @media(max-width:1000px){#mapDrawer .atlasTop{left:14px;right:70px;flex-wrap:wrap;align-items:flex-start}#mapDrawer .atlasSearch{flex:1 1 420px}#mapDrawer .atlasChips{display:flex;flex:1 1 100%;width:100%;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding-bottom:2px;scrollbar-width:none}#mapDrawer .atlasChips::-webkit-scrollbar{display:none}#mapDrawer .atlasOpsSummary{left:14px;top:145px;max-width:calc(100vw - 28px)}#mapDrawer .atlasOpsLiveMeta{left:14px;top:191px}#mapDrawer .atlasShipmentList{left:14px;top:210px;width:min(390px,calc(100vw - 28px));max-height:170px}#mapDrawer .atlasInfo{right:14px;top:auto;bottom:72px;max-height:55vh;width:min(430px,calc(100vw - 28px))}#mapDrawer .atlasLegend{left:14px;bottom:78px;max-width:calc(100vw - 28px);overflow:auto;white-space:nowrap}#mapDrawer .atlasWeather{display:none}#mapDrawer .atlasMode{bottom:14px}}
+      @media(max-width:620px){#mapDrawer .atlasBrand{display:none}#mapDrawer .atlasTop{right:58px}#mapDrawer .atlasSearch{max-width:none;flex-basis:100%}#mapDrawer .atlasSearch button{padding:8px}#mapDrawer .atlasOpsSummary{top:133px;max-width:calc(100vw - 28px)}#mapDrawer .atlasOpsLiveMeta{top:177px}#mapDrawer .atlasShipmentList{top:196px;max-height:132px}#mapDrawer .atlasInfo{bottom:72px;max-height:57vh}.atlasHero{height:150px!important}#mapDrawer .atlasStats{grid-template-columns:1fr 1fr}#mapDrawer .atlasMode{left:14px;right:14px;transform:none;justify-content:center}#mapDrawer .atlasMode button{padding:8px 7px}}
     `;
     doc.head.appendChild(style);
 
@@ -1006,13 +985,6 @@ function atlasTimelinePoint(t,s){
       }
     }
 
-    const applyRasterMood = () => {
-      if (map.getLayer('earth')) {
-        map.setPaintProperty('earth','raster-brightness-max', mapMode==='satellite'?1:mapMode==='day'?1:0.58);
-        map.setPaintProperty('earth','raster-saturation', mapMode==='satellite'?0:mapMode==='day'?-0.02:-0.2);
-      }
-    };
-
     function clearMarkers() { markers.splice(0).forEach(m => m.remove()); }
 
     function visible() {
@@ -1040,45 +1012,6 @@ function atlasTimelinePoint(t,s){
       const activeShipments=filteredAtlasShipments();
       qs(doc,'#vtgAtlasCount').textContent=v.length+' locations • '+(v.filter(x=>x.type==='seaport').length)+' seaports • '+(v.filter(x=>x.type==='airport').length)+' airports • '+activeShipments.length+' shipments';
       // Main location markers are the single source of truth for ports and airports; avoid stacking a second port marker over the same location.
-    }
-
-    function operationalPorts() {
-      const byKey=new Map();
-      locations.filter(x=>x.type==='seaport').forEach(x=>byKey.set(String(x.code||x.name),x));
-      shipments.forEach(s=>{
-        [s.originPort,s.origin_port,s.destinationPort,s.destination_port,s.liveTracking?.nextPort].filter(Boolean).forEach(name=>{
-          const hit=locations.find(x=>String(x.name).toLowerCase()===String(name).toLowerCase() || String(x.code||'').toLowerCase()===String(name).toLowerCase());
-          if(hit) byKey.set(String(hit.code||hit.name),hit);
-        });
-      });
-      return [...byKey.values()];
-    }
-
-    function renderOperationalPortMarkers() {
-      doc.querySelectorAll('.atlasOperationalPortMarker').forEach(el=>el.remove());
-      operationalPorts().forEach(x=>{
-        const related=shipments.filter(s=>{
-
-          const names=[s.originPort,s.origin_port,s.destinationPort,s.destination_port,s.liveTracking?.nextPort].filter(Boolean).map(v=>String(v).toLowerCase());
-          return names.includes(String(x.name).toLowerCase()) || names.includes(String(x.code||'').toLowerCase());
-        });
-        const filteredRelated=related.filter(s=>{
-          if(shipmentStatusFilter==='all') return true;
-          if(shipmentStatusFilter==='customs') return Boolean(s.customs?.status&&s.customs.status!=='not_started'&&!['cleared','released'].includes(s.customs.status));
-          return s.status===shipmentStatusFilter;
-        });
-        const customs=related.map(s=>s.customs?.status).filter(Boolean);
-        const active=customs.some(v=>!['cleared','released','not_started'].includes(v));
-        const el=doc.createElement('button');
-        el.type='button'; el.className='atlasOperationalPortMarker '+(active?'customs':'');
-        el.title=x.name+' • '+x.city+', '+x.country+' • '+(x.code||'')+(filteredRelated.length?' • '+filteredRelated.length+' related shipment'+(filteredRelated.length===1?'':'s'):'');
-        el.innerHTML='<span class="atlasPortHalo"></span><span class="atlasPortIcon">⚓</span><span class="atlasPortLabel">'+esc(x.name)+(x.code?' · '+esc(x.code):'')+'</span>';
-        el.onclick=e=>{
-          e.stopPropagation();
-          selectLocation(x);
-        };
-        new ml.Marker({element:el,anchor:'center'}).setLngLat([Number(x.lng),Number(x.lat)]).addTo(map);
-      });
     }
 
     async function selectLocation(x) {
