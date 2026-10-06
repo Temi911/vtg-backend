@@ -999,9 +999,15 @@ function atlasTimelinePoint(t,s){
     function markerFor(x) {
       const el=doc.createElement('button');
       el.className='atlasMarker '+(x.type==='airport'?'air':'port');
-      el.title=x.name+' • '+x.city+', '+x.country+' • '+(x.code||'');
-      el.innerHTML='<span class="atlasMarkerIcon">'+(x.type==='airport'?'✈':'⚓')+'</span><span class="pulse"></span><span class="atlasMarkerLabel">'+esc(x.name)+(x.code?' · '+esc(x.code):'')+'</span>';
+      el.type='button';
+      const kind=x.type==='airport'?'Airport':'Seaport';
+      const locationLabel=x.name+' • '+x.city+', '+x.country+(x.code?' • '+x.code:'');
+      el.title=locationLabel;
+      el.setAttribute('aria-label','Open '+kind+' details for '+locationLabel);
+      el.setAttribute('aria-haspopup','dialog');
+      el.innerHTML='<span class="atlasMarkerIcon" aria-hidden="true">'+(x.type==='airport'?'✈':'⚓')+'</span><span class="pulse" aria-hidden="true"></span><span class="atlasMarkerLabel">'+esc(x.name)+(x.code?' · '+esc(x.code):'')+'</span>';
       el.onclick=e=>{e.stopPropagation(); selectLocation(x)};
+      el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();selectLocation(x)}};
       return new ml.Marker({element:el,anchor:'center'}).setLngLat([x.lng,x.lat]).addTo(map);
     }
 
