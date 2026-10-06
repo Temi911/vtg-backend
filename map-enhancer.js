@@ -267,13 +267,13 @@
       #mapDrawer .atlasControls{position:absolute;right:22px;bottom:76px;z-index:15;display:grid;gap:7px}
       #mapDrawer .atlasControl{width:42px;height:42px;border:1px solid rgba(255,255,255,.14);border-radius:13px;background:rgba(5,9,14,.7);backdrop-filter:blur(16px);color:#e8edf0;font-weight:900;cursor:pointer}
       #mapDrawer .atlasControl:hover{border-color:#d71920;color:#ffb5b8}
-      #mapDrawer .atlasFeatureDock{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:18;display:flex;align-items:center;gap:5px;max-width:calc(100vw - 420px);padding:6px;border:1px solid rgba(92,225,190,.20);border-radius:16px;background:rgba(4,10,15,.72);backdrop-filter:blur(20px);box-shadow:0 16px 50px rgba(0,0,0,.32)}
+      #mapDrawer .atlasFeatureDock{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:18;display:flex;align-items:center;gap:5px;max-width:min(920px,calc(100vw - 40px));padding:6px;border:1px solid rgba(92,225,190,.20);border-radius:16px;background:rgba(4,10,15,.72);backdrop-filter:blur(20px);box-shadow:0 16px 50px rgba(0,0,0,.32)}
       #mapDrawer .atlasFeatureDock button{border:1px solid transparent;border-radius:10px;background:transparent;color:#9eafb8;padding:8px 9px;font:800 7px Manrope,system-ui;letter-spacing:.04em;cursor:pointer;white-space:nowrap}
       #mapDrawer .atlasFeatureDock button:hover,#mapDrawer .atlasFeatureDock button.active{color:#ecfff8;border-color:rgba(76,221,177,.32);background:rgba(44,205,161,.10)}
       #mapDrawer .atlasFeatureDock button span{display:block;font-size:12px;margin-bottom:2px}
       #mapDrawer .atlasGlobeHint{position:absolute;left:50%;top:50%;transform:translate(-50%,calc(min(36vw,410px)));z-index:7;pointer-events:none;color:rgba(190,221,215,.56);font:800 7px Manrope,system-ui;letter-spacing:.12em;text-transform:uppercase;text-align:center}
       #mapDrawer .atlasGlobeHint b{color:rgba(101,228,190,.82)}
-      #mapDrawer .atlasMode{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:15;display:flex;padding:4px;border:1px solid rgba(255,255,255,.13);border-radius:14px;background:rgba(5,9,14,.72);backdrop-filter:blur(18px)}
+      #mapDrawer .atlasMode{position:absolute;right:80px;bottom:18px;left:auto;transform:none;z-index:15;display:flex;padding:4px;border:1px solid rgba(255,255,255,.13);border-radius:14px;background:rgba(5,9,14,.72);backdrop-filter:blur(18px)}
       #mapDrawer .atlasMode button{border:0;background:transparent;color:#8f9da7;padding:8px 11px;border-radius:10px;font-size:8px;font-weight:900;cursor:pointer}
       #mapDrawer .atlasMode button.active{background:rgba(215,25,32,.17);color:#ffb5b8}
       #mapDrawer .atlasInfo{position:absolute;right:24px;top:82px;z-index:30;width:min(410px,calc(100vw - 48px));max-height:calc(100vh - 124px);overflow:auto;border:1px solid rgba(244,210,129,.25);border-radius:24px;background:rgba(7,11,17,.86);backdrop-filter:blur(24px);box-shadow:0 25px 80px rgba(0,0,0,.48);transform:translateX(110%);opacity:0;transition:.38s cubic-bezier(.2,.8,.2,1)}
@@ -523,8 +523,8 @@
     const map = new ml.Map({
       container: doc.getElementById('vtgPremiumMap'),
       style: atlasLocalMode() === 'day' ? DAY_STYLE : NIGHT_STYLE,
-      center: [50, 13],
-      zoom: 0.72,
+      center: [15, 10],
+      zoom: 0.42,
       minZoom: 0,
       maxZoom: 18,
       projection: { type: 'globe' },
@@ -1546,7 +1546,7 @@ function atlasTimelinePoint(t,s){
       renderMarkers();
       renderShipmentRoutes();
       locationPanelRequest++; qs(doc,'#vtgAtlasInfo')?.classList.remove('open');
-      map.flyTo({center:[20,10],zoom:0.72,duration:900,pitch:0,bearing:0,essential:true});
+      map.flyTo({center:[15,10],zoom:0.42,duration:900,pitch:0,bearing:0,essential:true});
     };
     qsa(doc,'[data-atlas-feature]').forEach(btn=>{
       btn.onclick=()=>{
@@ -1556,7 +1556,7 @@ function atlasTimelinePoint(t,s){
         if(feature==='network'){
           filterType='all'; filterRegion='all'; shipmentStatusFilter='all'; shipmentRoutesVisible=true;
           qs(doc,'#atlasShipmentsToggle')?.classList.add('active');
-          map.flyTo({center:[20,10],zoom:0.72,duration:900,essential:true});
+          map.flyTo({center:[15,10],zoom:0.42,duration:900,essential:true});
           renderMarkers(); renderShipmentRoutes();
         } else if(feature==='ports'){
           filterType='seaport'; filterRegion='all'; shipmentRoutesVisible=false;
@@ -1647,4 +1647,123 @@ function atlasTimelinePoint(t,s){
   };
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>window.VTGInitMap(),{once:true});
   else window.VTGInitMap();
+})();
+
+/* VTG Atlas visual reconciliation layer — preserves the existing data/API and logo. */
+(()=>{'use strict';
+  const style=document.createElement('style');
+  style.id='vtgAtlasReconciliationStyle';
+  style.textContent=`
+    #mapDrawer .atlasCanvas{
+      background:
+        radial-gradient(circle at 50% 48%,rgba(27,218,174,.16) 0%,transparent 24%),
+        radial-gradient(circle at 50% 48%,rgba(36,137,255,.14) 0%,transparent 42%),
+        radial-gradient(circle at 50% 48%,#061a26 0%,#020812 49%,#000107 100%) !important;
+    }
+    #mapDrawer .atlasCanvas:before{
+      content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.62;
+      background:
+        radial-gradient(circle at 12% 18%,rgba(91,239,198,.9) 0 1px,transparent 2px),
+        radial-gradient(circle at 24% 74%,rgba(79,161,255,.75) 0 1px,transparent 2px),
+        radial-gradient(circle at 79% 19%,rgba(255,255,255,.75) 0 1px,transparent 2px),
+        radial-gradient(circle at 88% 67%,rgba(91,239,198,.75) 0 1px,transparent 2px),
+        radial-gradient(circle at 62% 86%,rgba(255,255,255,.6) 0 1px,transparent 2px);
+      background-size:260px 230px,310px 280px,370px 330px,290px 250px,410px 360px;
+    }
+    #mapDrawer .atlasOrbit{
+      position:absolute;left:50%;top:50%;border:1px solid rgba(77,226,190,.12);
+      border-radius:50%;pointer-events:none;z-index:0;box-shadow:0 0 28px rgba(49,180,255,.05);
+      transform:translate(-50%,-50%) rotate(-18deg);
+    }
+    #mapDrawer .atlasOrbitA{width:min(72vw,820px);height:min(27vw,310px);animation:vtgAtlasOrbit 26s linear infinite}
+    #mapDrawer .atlasOrbitB{width:min(62vw,720px);height:min(20vw,235px);transform:translate(-50%,-50%) rotate(28deg);border-color:rgba(40,153,255,.13);animation:vtgAtlasOrbitReverse 34s linear infinite}
+    #mapDrawer .atlasOrbitC{width:min(86vw,980px);height:min(35vw,390px);transform:translate(-50%,-50%) rotate(6deg);border-color:rgba(93,239,198,.07)}
+    @keyframes vtgAtlasOrbit{to{transform:translate(-50%,-50%) rotate(342deg)}}
+    @keyframes vtgAtlasOrbitReverse{to{transform:translate(-50%,-50%) rotate(-332deg)}}
+    #mapDrawer .maplibregl-canvas{filter:saturate(1.08) contrast(1.05)}
+    #mapDrawer .atlasFeatureDock{bottom:18px;max-width:min(920px,calc(100vw - 40px))}
+    #mapDrawer .atlasMode{right:80px;left:auto;bottom:18px;transform:none}
+    #mapDrawer .atlasLocationGallery{position:absolute;inset:0;z-index:2;overflow:hidden;background:#071018}
+    #mapDrawer .atlasLocationGallery img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .45s ease}
+    #mapDrawer .atlasLocationGallery img.active{opacity:.84}
+    #mapDrawer .atlasLocationFallback{position:absolute;inset:0;z-index:2;display:grid;place-items:center;color:#63e0b5;font-size:58px}
+    #mapDrawer .atlasLocationMediaStrip{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0 12px}
+    #mapDrawer .atlasLocationMediaStrip img{width:100%;height:64px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.09)}
+    @media(max-width:900px){
+      #mapDrawer .atlasFeatureDock{overflow:auto;justify-content:flex-start;max-width:calc(100vw - 24px);bottom:12px}
+      #mapDrawer .atlasMode{right:14px;bottom:78px}
+    }
+  `;
+  document.head.appendChild(style);
+
+  const addOrbit=(drawer)=>{
+    const canvas=drawer&&drawer.querySelector('.atlasCanvas');
+    if(!canvas||canvas.querySelector('.atlasOrbitA'))return;
+    ['atlasOrbitA','atlasOrbitB','atlasOrbitC'].forEach(cls=>{
+      const d=document.createElement('div');d.className='atlasOrbit '+cls;canvas.appendChild(d);
+    });
+  };
+
+  const imageSearch=(q)=>{
+    const url='https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch='+
+      encodeURIComponent(q)+'&gsrnamespace=6&gsrlimit=14&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=1200&format=json&origin=*';
+    return fetch(url,{headers:{Accept:'application/json'}}).then(r=>r.json()).then(d=>{
+      const pages=Object.values(d&&d.query&&d.query.pages||{}),seen=new Set(),out=[];
+      pages.forEach(p=>{
+        const im=p&&p.imageinfo&&p.imageinfo[0],u=im&&(im.thumburl||im.url);
+        if(!u||seen.has(u)||!(/\.(jpe?g|png|webp)(\?|$)/i.test(u)))return;
+        seen.add(u);out.push({url:u,title:String(p.title||'')});
+      });
+      return out.slice(0,7);
+    }).catch(()=>[]);
+  };
+
+  const enhanceLocationPanel=async(panel)=>{
+    if(!panel||panel.dataset.vtgMediaEnhanced==='1'||!panel.classList.contains('open'))return;
+    const hero=panel.querySelector('.atlasHero'), title=hero&&hero.querySelector('h2'), meta=hero&&hero.querySelector('p');
+    if(!hero||!title)return;
+    const name=title.textContent.trim(), context=(meta&&meta.textContent||'').trim();
+    if(!name)return;
+    panel.dataset.vtgMediaEnhanced='1';
+    const gallery=document.createElement('div');
+    gallery.className='atlasLocationGallery';
+    gallery.setAttribute('aria-label','Selected location image gallery');
+    gallery.innerHTML='<div class="atlasGalleryCaption">Location imagery</div>';
+    hero.insertBefore(gallery,hero.firstChild);
+    const images=await imageSearch(name+' '+context+' '+(/Airport/i.test(hero.textContent)?'airport':'seaport'));
+    if(!panel.isConnected)return;
+    if(images.length){
+      images.forEach((im,i)=>{
+        const img=document.createElement('img');img.src=im.url;img.alt=im.title||name;img.className=i===0?'active':'';
+        img.onerror=()=>img.remove();gallery.appendChild(img);
+      });
+      if(images.length>1){
+        const controls=document.createElement('div');controls.className='atlasGalleryControls';
+        controls.innerHTML='<button class="atlasGalleryButton" aria-label="Previous location image">‹</button><button class="atlasGalleryButton" aria-label="Next location image">›</button>';
+        gallery.appendChild(controls);
+        const dots=document.createElement('div');dots.className='atlasGalleryDots';
+        images.forEach((_,i)=>{const b=document.createElement('button');b.className='atlasGalleryDot '+(i===0?'active':'');b.setAttribute('aria-label','Show location image '+(i+1));b.onclick=()=>show(i);dots.appendChild(b);});
+        gallery.appendChild(dots);
+        let active=0;
+        const show=(n)=>{const imgs=[...gallery.querySelectorAll('img')];if(!imgs.length)return;active=(n+imgs.length)%imgs.length;imgs.forEach((im,i)=>im.classList.toggle('active',i===active));[...dots.children].forEach((b,i)=>b.classList.toggle('active',i===active));};
+        controls.children[0].onclick=()=>show(active-1);controls.children[1].onclick=()=>show(active+1);
+        const timer=setInterval(()=>show(active+1),4500);
+        panel.querySelector('#atlasInfoClose')?.addEventListener('click',()=>clearInterval(timer),{once:true});
+      }
+    }else{
+      gallery.innerHTML='<div class="atlasLocationFallback">⌁</div><div class="atlasGalleryCaption">Location intelligence</div>';
+    }
+  };
+
+  const watch=()=>{
+    const drawer=document.getElementById('mapDrawer');if(!drawer)return;
+    addOrbit(drawer);
+    const panel=document.getElementById('vtgAtlasInfo');
+    if(panel){
+      const mo=new MutationObserver(()=>enhanceLocationPanel(panel));
+      mo.observe(panel,{attributes:true,childList:true,subtree:true});
+      if(panel.classList.contains('open'))enhanceLocationPanel(panel);
+    }
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watch,{once:true});else watch();
 })();
