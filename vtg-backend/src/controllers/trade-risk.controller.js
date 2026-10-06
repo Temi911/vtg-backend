@@ -1,0 +1,10 @@
+const {asyncHandler}=require('../utils/asyncHandler');
+const {AppError}=require('../utils/AppError');
+const risk=require('../services/trade-risk.service');
+const automation=require('../services/trade-automation.service');
+const scan=asyncHandler(async(req,res)=>res.json(await risk.scanOrder(req.params.orderId)));
+const portfolio=asyncHandler(async(req,res)=>res.json({assessments:await risk.scanOpenOrders()}));
+const run=asyncHandler(async(req,res)=>{if(req.user.role!=='admin')throw new AppError('Admin access required',403,'FORBIDDEN');res.json(await automation.run());});
+const actions=asyncHandler(async(req,res)=>res.json({actions:await automation.list()}));
+const update=asyncHandler(async(req,res)=>{if(!['admin','buyer','supplier','bank','agent'].includes(req.user.role))throw new AppError('Forbidden',403,'FORBIDDEN');const x=await automation.update(req.params.id,req.body.status);if(!x)throw new AppError('Action not found',404,'NOT_FOUND');res.json({action:x});});
+module.exports={scan,portfolio,run,actions,update};
