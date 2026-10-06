@@ -78,8 +78,8 @@ const update = asyncHandler(async (req, res) => {
     `UPDATE products SET
        name = COALESCE($1, name), category = COALESCE($2, category),
        unit_price_usd = COALESCE($3, unit_price_usd), min_order_qty = COALESCE($4, min_order_qty),
-       hs_code = COALESCE($5, hs_code), lead_time = COALESCE($6, lead_time), description = COALESCE($7, description)
-     WHERE id = $8 RETURNING *`,
+       hs_code = COALESCE($5, hs_code), lead_time = COALESCE($6, lead_time), description = COALESCE($7, description), image_url = COALESCE($8, image_url)
+     WHERE id = $9 RETURNING *`,
     [data.name, data.category, data.unitPriceUsd, data.minOrderQty, data.hsCode, data.leadTime, data.description, data.imageUrl, req.params.id]
   );
   res.json({ product: rows[0] });
