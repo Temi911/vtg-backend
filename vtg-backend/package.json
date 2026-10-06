@@ -11,7 +11,8 @@
     "db:seed": "node db/seed.js",
     "test": "node --test",
     "start:staging": "NODE_ENV=staging node src/server.js",
-    "staging:health": "node scripts/staging-healthcheck.js"
+    "staging:health": "node scripts/staging-healthcheck.js",
+    "smoke:production": "node scripts/production-smokecheck.js"
   },
   "engines": {
     "node": ">=18.0.0"
