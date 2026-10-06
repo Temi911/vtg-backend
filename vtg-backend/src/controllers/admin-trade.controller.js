@@ -60,4 +60,15 @@ const getLC = asyncHandler(async(req,res)=>{
   res.json({letterOfCredit:r.rows[0]});
 });
 
-module.exports={overview,getOrder,getLC};
+
+const operations=asyncHandler(async(req,res)=>{
+  adminOnly(req);
+  const [exceptions,compliance,documentGaps,stalled] = await Promise.all([
+    query(`SELECT p.id,p.order_id,p.status,p.amount,p.currency,p.method,p.created_at,o.reference AS order_reference FROM payment_requests p LEFT JOIN orders o ON o.id=p.order_id WHERE p.status='failed' OR (p.status IN ('pending','processing') AND p.created_at < now()-interval '48 hours') ORDER BY p.created_at ASC LIMIT 50`),
+    query(`SELECT c.*,o.reference AS order_reference FROM trade_compliance_cases c JOIN orders o ON o.id=c.order_id WHERE c.status NOT IN ('cleared','closed') ORDER BY c.updated_at ASC LIMIT 50`),
+    query(`SELECT r.order_id,r.label,r.doc_type,r.status,r.required,o.reference AS order_reference FROM trade_document_requirements r JOIN orders o ON o.id=r.order_id WHERE r.required=TRUE AND r.status IN ('required','rejected') ORDER BY r.updated_at ASC LIMIT 100`),
+    query(`SELECT s.id,s.order_id,s.status,s.updated_at,o.reference AS order_reference FROM shipments s JOIN orders o ON o.id=s.order_id WHERE s.status NOT IN ('delivered','cancelled') AND s.updated_at < now()-interval '72 hours' ORDER BY s.updated_at ASC LIMIT 50`)
+  ]);
+  res.json({exceptions:exceptions.rows,compliance:compliance.rows,documentGaps:documentGaps.rows,stalledShipments:stalled.rows,summary:{exceptions:exceptions.rows.length,compliance:compliance.rows.length,documentGaps:documentGaps.rows.length,stalledShipments:stalled.rows.length}});
+});
+module.exports={overview,getOrder,getLC,operations};
