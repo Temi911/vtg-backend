@@ -299,7 +299,8 @@ async function runIntel(){
    const d=await r.json().catch(()=>({}));
    if(!r.ok)throw new Error(d.error||d.message||'Trade Intelligence is unavailable');
    result.innerHTML='<div class="notice"><strong>VTG AI Trade Brief</strong><div style="margin-top:8px;white-space:pre-wrap">'+String(d.reply||'No intelligence was returned.').replace(/[&<>]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[ch]))+'</div></div>';
-   window.VTG_INTEL_HISTORY=[...(prior||[]),{role:'user',content:question},{role:'assistant',content:String(d.reply||'')}].slice(-8);\n   if(Array.isArray(d.citations)&&d.citations.length){
+   window.VTG_INTEL_HISTORY=[...(prior||[]),{role:'user',content:question},{role:'assistant',content:String(d.reply||'')}].slice(-8);
+   if(Array.isArray(d.citations)&&d.citations.length){
      sources.innerHTML='<div class="sub" style="margin-bottom:6px">Sources used</div><div class="list">'+d.citations.map(s=>'<div class="item"><strong>'+String(s.title||'Source').replace(/[&<>]/g,'')+'</strong><small>'+String(s.url||'').replace(/[&<>]/g,'')+'</small></div>').join('')+'</div>';
    }
  }catch(e){result.innerHTML='<div class="notice">'+String(e.message||'VTG Trade Intelligence is temporarily unavailable.').replace(/[&<>]/g,'')+'</div>';}
@@ -312,24 +313,46 @@ async function askIntel(question){
   await runIntel(question);
 }
 async function refreshIntelStatus(){
-  const badge=document.getElementById('intelProviderStatus'),count=document.getElementById('intelTradeCount');
+  const badge=document.getElementById('intelProviderStatus');
+  const count=document.getElementById('intelTradeCount');
   try{
     const r=await fetch('/api/ai/status',{headers:{Accept:'application/json'},cache:'no-store'});
     const d=await r.json().catch(()=>({}));
-    if(badge){badge.textContent=d.status==='ready'?'LIVE AI':'PROVIDER OFF';badge.className='tag '+(d.status==='ready'?'ok':'');}
-  }catch(e){if(badge)badge.textContent='UNAVAILABLE'}
+    if(badge){
+      badge.textContent=d.status==='ready'?'LIVE AI':'PROVIDER OFF';
+      badge.className='tag '+(d.status==='ready'?'ok':'');
+    }
+  }catch(e){if(badge)badge.textContent='UNAVAILABLE';}
   try{
-    const token=localStorage.getItem('vtg_access_token'); if(!token)return;
+    const token=localStorage.getItem('vtg_access_token');
+    if(!token){if(count)count.textContent='Sign in required';return;}
     const r=await fetch('/api/shipments/atlas',{headers:{Authorization:'Bearer '+token,Accept:'application/json'},cache:'no-store'});
     const d=await r.json().catch(()=>({}));
     if(count)count.textContent=(Array.isArray(d.shipments)?d.shipments.length:0)+' shipments';
-  }catch(e){if(count)count.textContent='Context unavailable'}
+  }catch(e){if(count)count.textContent='Context unavailable';}
 }
 function recalcLandedCost(){
   const n=id=>Math.max(0,Number(document.getElementById(id)?.value)||0);
-  const product=n('lcQty')*n('lcUnit'), logistics=n('lcFreight')+n('lcInsurance')+n('lcLocal'), total=product+logistics+n('lcDuty');
-  const money=v=>'\n<script src="/buyer-trade-os.js" defer></script>
-<script src="/buyer-trade-room.js" defer></script>\n<script src="/vtg-finance-centre.js" defer></script>
+  const product=n('lcQty')*n('lcUnit');
+  const logistics=n('lcFreight')+n('lcInsurance')+n('lcLocal');
+  const total=product+logistics+n('lcDuty');
+  const money=v=>'$'+v.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('lcProduct').textContent=money(product);
+  document.getElementById('lcLogistics').textContent=money(logistics);
+  document.getElementById('lcTotal').textContent=money(total);
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  refreshIntelStatus();
+  recalcLandedCost();
+  ['lcQty','lcUnit','lcFreight','lcInsurance','lcDuty','lcLocal'].forEach(id=>{
+    document.getElementById(id)?.addEventListener('input',recalcLandedCost);
+  });
+});
+</script>
+<script src="/vtg-trade-workflow.js" defer></script>
+<script src="/buyer-trade-os.js" defer></script>
+<script src="/buyer-trade-room.js" defer></script>
+<script src="/vtg-finance-centre.js" defer></script>
 <script src="/buyer-communication.js" defer></script>
 <script src="/page-visuals.js"></script>
 <script src="/bank-trade-os.js"></script>
