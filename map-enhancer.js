@@ -334,7 +334,7 @@
     if (!ml) return setTimeout(() => init(doc), 120);
     const map = new ml.Map({
       container: doc.getElementById('vtgPremiumMap'),
-      style: autoMode === 'day' ? DAY_STYLE : NIGHT_STYLE,
+      style: atlasLocalMode() === 'day' ? DAY_STYLE : NIGHT_STYLE,
       center: [50, 13],
       zoom: 1.75,
       projection: { type: 'globe' },
