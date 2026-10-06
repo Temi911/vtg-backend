@@ -12,6 +12,8 @@ async function run(){
  for(const x of ships.rows)await add(x.order_id,'shipment_stalled','high','Shipment update is overdue',`No shipment update has been recorded within the 72-hour operating threshold for ${x.reference}.`);
  const compliance=await query(`SELECT c.order_id,o.reference FROM trade_compliance_cases c JOIN orders o ON o.id=c.order_id WHERE c.status NOT IN ('cleared','closed')`);
  for(const x of compliance.rows)await add(x.order_id,'compliance_attention','medium','Compliance case remains open',`Compliance review for ${x.reference} is not yet cleared or closed.`);
+ const risk=await query(`SELECT r.order_id,o.reference,r.score,r.level FROM trade_risk_assessments r JOIN orders o ON o.id=r.order_id WHERE r.level IN ('high','critical') AND o.status NOT IN ('delivered','cancelled')`);
+ for(const x of risk.rows)await add(x.order_id,'risk_attention',x.level,'Trade risk requires review',`Automated risk score ${x.score}/100 (${x.level}) for ${x.reference}. Review the listed risk factors before the next release or commitment.`);
  return {generatedAt:new Date().toISOString(),actions};
 }
 async function list(){const r=await query(`SELECT a.*,o.reference AS order_reference FROM trade_automation_actions a LEFT JOIN orders o ON o.id=a.order_id WHERE a.status IN ('open','acknowledged') ORDER BY CASE a.priority WHEN 'critical' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 ELSE 4 END,a.created_at ASC LIMIT 200`);return r.rows;}
