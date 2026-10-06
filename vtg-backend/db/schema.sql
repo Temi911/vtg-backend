@@ -91,6 +91,7 @@ CREATE TABLE products (
   hs_code           TEXT,
   lead_time         TEXT,
   description       TEXT,
+  image_url         TEXT,
   is_verified       BOOLEAN NOT NULL DEFAULT FALSE,
   is_active         BOOLEAN NOT NULL DEFAULT TRUE,
   created_at        TIMESTAMPTZ NOT NULL DEFAULT now()
