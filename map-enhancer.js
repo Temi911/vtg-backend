@@ -138,9 +138,11 @@
       #mapDrawer{background:#05080c!important}
       #mapDrawer .drawerPanel{position:relative!important;width:100vw!important;max-width:none!important;height:100vh!important;max-height:none!important;padding:0!important;border-radius:0!important;background:#05080c!important;color:#f7f0df!important;overflow:hidden!important}
       #mapDrawer .atlasX{position:absolute;right:22px;top:18px;z-index:40;width:44px;height:44px;border:1px solid rgba(244,210,129,.32);border-radius:14px;background:rgba(7,10,15,.72);backdrop-filter:blur(18px);color:#f5d38b;font-size:24px;cursor:pointer;box-shadow:0 10px 35px rgba(0,0,0,.3)}
-      #mapDrawer .atlasCanvas{position:absolute;inset:0}
-      #mapDrawer #vtgPremiumMap{position:absolute;inset:0}
-      #mapDrawer .mapWash{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 48% 48%,transparent 0,rgba(2,5,9,.08) 42%,rgba(2,5,9,.72) 100%);z-index:2}
+      #mapDrawer .atlasCanvas{position:absolute;inset:0;overflow:hidden;background:radial-gradient(circle at 50% 48%,#071d29 0%,#020812 48%,#000107 100%)}
+      #mapDrawer #vtgPremiumMap{position:absolute;inset:0;z-index:1}
+      #mapDrawer .atlasCanvas:before{content:"";position:absolute;left:50%;top:50%;width:min(78vw,900px);aspect-ratio:1;transform:translate(-50%,-48%);z-index:0;pointer-events:none;border-radius:50%;background:radial-gradient(circle,rgba(45,224,179,.22) 0%,rgba(32,153,255,.16) 34%,rgba(19,77,120,.10) 52%,transparent 70%);filter:blur(18px);opacity:.95}
+      #mapDrawer .atlasCanvas:after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(circle at 50% 50%,transparent 0,min(32vw,360px),rgba(1,4,9,.02) 54%,rgba(1,4,9,.72) 100%),radial-gradient(circle at 18% 20%,rgba(83,232,195,.10),transparent 18%),radial-gradient(circle at 83% 78%,rgba(38,130,255,.12),transparent 24%)}
+      #mapDrawer .mapWash{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 50%,transparent 0 34%,rgba(1,4,9,.12) 50%,rgba(1,4,9,.78) 100%);z-index:3}
       #mapDrawer .atlasTop{position:absolute;left:24px;right:82px;top:18px;z-index:20;display:flex;align-items:center;gap:14px;pointer-events:none}
       #mapDrawer .atlasBrand{pointer-events:auto;display:flex;align-items:center;gap:11px;padding:9px 13px;border:1px solid rgba(244,210,129,.22);border-radius:16px;background:rgba(5,9,14,.66);backdrop-filter:blur(18px);box-shadow:0 12px 40px rgba(0,0,0,.28)}
       #mapDrawer .atlasBrandMark{width:46px;height:32px;border-radius:8px;display:block;object-fit:contain;object-position:center;background:transparent}
@@ -265,6 +267,12 @@
       #mapDrawer .atlasControls{position:absolute;right:22px;bottom:76px;z-index:15;display:grid;gap:7px}
       #mapDrawer .atlasControl{width:42px;height:42px;border:1px solid rgba(255,255,255,.14);border-radius:13px;background:rgba(5,9,14,.7);backdrop-filter:blur(16px);color:#e8edf0;font-weight:900;cursor:pointer}
       #mapDrawer .atlasControl:hover{border-color:#d71920;color:#ffb5b8}
+      #mapDrawer .atlasFeatureDock{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:18;display:flex;align-items:center;gap:5px;max-width:calc(100vw - 420px);padding:6px;border:1px solid rgba(92,225,190,.20);border-radius:16px;background:rgba(4,10,15,.72);backdrop-filter:blur(20px);box-shadow:0 16px 50px rgba(0,0,0,.32)}
+      #mapDrawer .atlasFeatureDock button{border:1px solid transparent;border-radius:10px;background:transparent;color:#9eafb8;padding:8px 9px;font:800 7px Manrope,system-ui;letter-spacing:.04em;cursor:pointer;white-space:nowrap}
+      #mapDrawer .atlasFeatureDock button:hover,#mapDrawer .atlasFeatureDock button.active{color:#ecfff8;border-color:rgba(76,221,177,.32);background:rgba(44,205,161,.10)}
+      #mapDrawer .atlasFeatureDock button span{display:block;font-size:12px;margin-bottom:2px}
+      #mapDrawer .atlasGlobeHint{position:absolute;left:50%;top:50%;transform:translate(-50%,calc(min(36vw,410px)));z-index:7;pointer-events:none;color:rgba(190,221,215,.56);font:800 7px Manrope,system-ui;letter-spacing:.12em;text-transform:uppercase;text-align:center}
+      #mapDrawer .atlasGlobeHint b{color:rgba(101,228,190,.82)}
       #mapDrawer .atlasMode{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:15;display:flex;padding:4px;border:1px solid rgba(255,255,255,.13);border-radius:14px;background:rgba(5,9,14,.72);backdrop-filter:blur(18px)}
       #mapDrawer .atlasMode button{border:0;background:transparent;color:#8f9da7;padding:8px 11px;border-radius:10px;font-size:8px;font-weight:900;cursor:pointer}
       #mapDrawer .atlasMode button.active{background:rgba(215,25,32,.17);color:#ffb5b8}
@@ -473,6 +481,17 @@
             <span style="margin-left:7px" class="legendDot next"></span> Next
             <span style="margin-left:7px" class="legendDot destination"></span> Destination
           </div>
+          <div class="atlasFeatureDock" aria-label="VTG Atlas modules">
+            <button type="button" data-atlas-feature="network"><span>✦</span>Global Network</button>
+            <button type="button" data-atlas-feature="ports"><span>⚓</span>Ports</button>
+            <button type="button" data-atlas-feature="shipments"><span>▣</span>Shipments</button>
+            <button type="button" data-atlas-feature="vessels"><span>🚢</span>Vessels</button>
+            <button type="button" data-atlas-feature="customs"><span>▤</span>Customs</button>
+            <button type="button" data-atlas-feature="finance"><span>◈</span>Finance</button>
+            <button type="button" data-atlas-feature="inspection"><span>✓</span>Inspection</button>
+            <button type="button" data-atlas-feature="parties"><span>◉</span>Trade Parties</button>
+          </div>
+          <div class="atlasGlobeHint">Drag to rotate • <b>scroll to zoom</b> • world view available</div>
           <div class="atlasMode" aria-label="Atlas map view">
             <button class="active" data-mapmode="night">Night</button>
             <button data-mapmode="day">Day</button>
@@ -505,10 +524,12 @@
       container: doc.getElementById('vtgPremiumMap'),
       style: atlasLocalMode() === 'day' ? DAY_STYLE : NIGHT_STYLE,
       center: [50, 13],
-      zoom: 1.75,
+      zoom: 0.72,
+      minZoom: 0,
+      maxZoom: 18,
       projection: { type: 'globe' },
       attributionControl: true,
-      pitch: 8,
+      pitch: 0,
       bearing: 0,
       dragRotate: true,
       touchZoomRotate: true
@@ -1525,9 +1546,36 @@ function atlasTimelinePoint(t,s){
       renderMarkers();
       renderShipmentRoutes();
       locationPanelRequest++; qs(doc,'#vtgAtlasInfo')?.classList.remove('open');
-      map.flyTo({center:[50,13],zoom:1.75,duration:900});
+      map.flyTo({center:[20,10],zoom:0.72,duration:900,pitch:0,bearing:0,essential:true});
     };
-    qs(doc,'#atlasCompass').onclick=()=>map.resetNorthPitch();
+    qsa(doc,'[data-atlas-feature]').forEach(btn=>{
+      btn.onclick=()=>{
+        qsa(doc,'[data-atlas-feature]').forEach(x=>x.classList.remove('active'));
+        btn.classList.add('active');
+        const feature=btn.dataset.atlasFeature;
+        if(feature==='network'){
+          filterType='all'; filterRegion='all'; shipmentStatusFilter='all'; shipmentRoutesVisible=true;
+          qs(doc,'#atlasShipmentsToggle')?.classList.add('active');
+          map.flyTo({center:[20,10],zoom:0.72,duration:900,essential:true});
+          renderMarkers(); renderShipmentRoutes();
+        } else if(feature==='ports'){
+          filterType='seaport'; filterRegion='all'; shipmentRoutesVisible=false;
+          renderMarkers(); renderShipmentRoutes();
+        } else if(feature==='shipments'||feature==='vessels'){
+          shipmentRoutesVisible=true;
+          qs(doc,'#atlasShipmentsToggle')?.classList.add('active');
+          renderShipmentRoutes();
+          if(shipments[0]) selectShipment(shipments.find(s=>s.liveTracking?.available)||shipments[0]);
+        } else {
+          shipmentRoutesVisible=true;
+          qs(doc,'#atlasShipmentsToggle')?.classList.add('active');
+          renderShipmentRoutes();
+          const target=shipments.find(s=>s.customs || s.finance || s.inspection || s.buyerName || s.supplierName);
+          if(target) selectShipment(target);
+        }
+      };
+    });
+        qs(doc,'#atlasCompass').onclick=()=>map.resetNorthPitch();
 
     function setMode(mode, automatic=false) {
       mapMode=mode;
@@ -1536,7 +1584,10 @@ function atlasTimelinePoint(t,s){
       qsa(doc,'[data-mapmode]').forEach(b=>b.classList.toggle('active',b.dataset.mapmode===mode));
       const target=mode==='day'?DAY_STYLE:NIGHT_STYLE;
       map.setStyle(target);
-      map.once('styledata',()=>{enhanceGlobeVisuals();addCorridorLayer();renderShipmentRoutes();});
+      map.once('styledata',()=>{
+        try { map.setProjection({type:'globe'}); } catch (_) {}
+        enhanceGlobeVisuals();addCorridorLayer();renderShipmentRoutes();applyAtlasZoomDetail();
+      });
     }
     function applyLocalTimeMode(force=false){
       const mode=atlasLocalMode();
@@ -1580,6 +1631,7 @@ function atlasTimelinePoint(t,s){
     map.on('rotate',applyAtlasZoomDetail);
     map.on('moveend',applyAtlasZoomDetail);
     map.on('load',()=>{
+      try { map.setProjection({type:'globe'}); } catch (_) {}
       enhanceGlobeVisuals();
       addCorridorLayer();
       renderShipmentRoutes();
