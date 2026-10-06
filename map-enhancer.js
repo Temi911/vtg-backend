@@ -32,19 +32,30 @@
       window.matchMedia?.('(prefers-color-scheme: dark)').matches;
   }
 
-  function imageSearchUrl(name, city, country) {
-    const q = encodeURIComponent((name + ' ' + city + ' ' + country).trim());
+  function imageSearchUrl(name, city, country, type) {
+    const subject = type === 'airport' ? 'airport' : 'port';
+    const q = encodeURIComponent((name + ' ' + city + ' ' + country + ' ' + subject).trim());
     return 'https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=' +
-      q + '&gsrnamespace=6&gsrlimit=6&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=1000&format=json&origin=*';
+      q + '&gsrnamespace=6&gsrlimit=10&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=1000&format=json&origin=*';
   }
 
   async function getLocationImage(location) {
     try {
-      const r = await fetch(imageSearchUrl(location.name, location.city, location.country), { headers: { Accept: 'application/json' } });
+      const r = await fetch(imageSearchUrl(location.name, location.city, location.country, location.type), { headers: { Accept: 'application/json' } });
       const d = await r.json();
       const pages = Object.values(d?.query?.pages || {});
-      const usable = pages.find(p => p.imageinfo?.[0]?.thumburl) || pages.find(p => p.imageinfo?.[0]?.url);
-      return usable?.imageinfo?.[0]?.thumburl || usable?.imageinfo?.[0]?.url || '';
+      const subject = location.type === 'airport' ? 'airport' : 'port';
+      const terms = [String(location.name||''), String(location.city||''), String(location.country||''), subject]
+        .map(v=>v.toLowerCase()).filter(Boolean);
+      const scored = pages.map(p => {
+        const title = String(p?.title||'').toLowerCase();
+        const score = terms.reduce((n,t)=>n+(title.includes(t)?1:0),0);
+        return {p,score};
+      }).sort((a,b)=>b.score-a.score);
+      const usable = scored.find(x => x.score >= 2 && x.p.imageinfo?.[0]?.thumburl)
+        || scored.find(x => x.p.imageinfo?.[0]?.thumburl)
+        || scored.find(x => x.p.imageinfo?.[0]?.url);
+      return usable?.p?.imageinfo?.[0]?.thumburl || usable?.p?.imageinfo?.[0]?.url || '';
     } catch (_) { return ''; }
   }
 
@@ -297,7 +308,7 @@
           <div class="atlasOpsSummary" id="atlasOpsSummary" aria-label="Shipment operational summary"></div>
           <div class="atlasOpsLiveMeta" id="atlasOpsLiveMeta">Vessel tracking status</div>
           <div class="atlasShipmentList" id="atlasShipmentList" aria-label="Shipment operations"></div>
-          <div class="atlasWeather"><b id="atlasWeatherTitle">Trade conditions</b><small id="atlasWeatherText">Monitoring global trade corridors and shipment activity</small></div>
+          <div class="atlasWeather"><b id="atlasWeatherTitle">Network status</b><small id="atlasWeatherText">Monitoring trade corridors, ports and shipment activity</small></div>
           <div class="atlasInfo" id="vtgAtlasInfo"></div>
           <div class="atlasLegend" aria-label="Trade Atlas map legend">
             <span class="legendDot port"></span> Seaport
@@ -1028,7 +1039,7 @@ function atlasTimelinePoint(t,s){
       v.forEach(x=>markers.push(markerFor(x)));
       const activeShipments=filteredAtlasShipments();
       qs(doc,'#vtgAtlasCount').textContent=v.length+' locations • '+(v.filter(x=>x.type==='seaport').length)+' seaports • '+(v.filter(x=>x.type==='airport').length)+' airports • '+activeShipments.length+' shipments';
-      renderOperationalPortMarkers();
+      // Main location markers are the single source of truth for ports and airports; avoid stacking a second port marker over the same location.
     }
 
     function operationalPorts() {
@@ -1236,8 +1247,8 @@ function atlasTimelinePoint(t,s){
     const wh=qs(doc,'#atlasWeatherTitle');
     if (wt && wh) {
       const hour=new Date().getUTCHours();
-      wh.textContent=hour>=6&&hour<18?'Global trade network':'Trade network • night view';
-      wt.textContent='Africa ↔ China ↔ South Korea • shipments, ports and corridors';
+      wh.textContent=hour>=6&&hour<18?'Global trade network':'Trade network';
+      wt.textContent='Africa ↔ China ↔ South Korea • ports, shipments and corridors';
     }
     const shipmentFromFeature=e=>{
       const id=e.features?.[0]?.properties?.shipmentId;
