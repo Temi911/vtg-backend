@@ -39,20 +39,32 @@
     } catch (_) { return ''; }
   }
 
-  async function getTradeImage(query) {
+  async function getTradeImages(query, limit=6) {
     try {
       const q = encodeURIComponent(String(query || '').trim());
-      if (!q) return '';
-      const url = 'https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=' +
-        q + '&gsrnamespace=6&gsrlimit=8&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=1200&format=json&origin=*';
-      const r = await fetch(url, {headers:{Accept:'application/json'}});
+      if (!q) return [];
+      const url = 'https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=' + q +
+        '&gsrnamespace=6&gsrlimit=20&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=1400&format=json&origin=*';
+      const r = await fetch(url,{headers:{Accept:'application/json'}});
       const d = await r.json();
       const pages = Object.values(d?.query?.pages || {});
-      const usable = pages.find(p => p.imageinfo?.[0]?.thumburl && /.(jpe?g|png|webp)$/i.test(p.imageinfo[0].thumburl))
-        || pages.find(p => p.imageinfo?.[0]?.thumburl)
-        || pages.find(p => p.imageinfo?.[0]?.url);
-      return usable?.imageinfo?.[0]?.thumburl || usable?.imageinfo?.[0]?.url || '';
-    } catch (_) { return ''; }
+      const seen = new Set(), out = [];
+      for (const p of pages) {
+        const url = p?.imageinfo?.[0]?.thumburl || p?.imageinfo?.[0]?.url || '';
+        if (!url || !/\.(jpe?g|png|webp)(\?|$)/i.test(url)) continue;
+        const key=url.split('?')[0];
+        if(seen.has(key)) continue;
+        seen.add(key);
+        out.push({url,title:String(p?.title||'')});
+        if(out.length>=limit) break;
+      }
+      return out;
+    } catch (_) { return []; }
+  }
+
+  async function getTradeImage(query) {
+    const images=await getTradeImages(query,1);
+    return images[0]?.url || '';
   }
 
   function getAutoMode() {
@@ -192,6 +204,15 @@
       #mapDrawer .atlasZoomRegional .atlasMarkerLabel{opacity:.86}
       #mapDrawer .atlasZoomDetail .atlasMarker{transform:scale(1)}
       #mapDrawer .atlasZoomDetail .atlasMarkerLabel{opacity:1}
+      #mapDrawer .atlasShipmentGallery{position:absolute;inset:0;z-index:2}
+      #mapDrawer .atlasShipmentGallery img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .45s ease}
+      #mapDrawer .atlasShipmentGallery img.active{opacity:.82}
+      #mapDrawer .atlasGalleryControls{position:absolute;left:14px;right:14px;top:50%;transform:translateY(-50%);display:flex;justify-content:space-between;pointer-events:none;z-index:5}
+      #mapDrawer .atlasGalleryButton{pointer-events:auto;width:31px;height:31px;border:1px solid rgba(255,255,255,.22);border-radius:50%;background:rgba(4,8,13,.52);color:#fff;backdrop-filter:blur(10px);cursor:pointer;font-size:17px}
+      #mapDrawer .atlasGalleryDots{position:absolute;left:50%;bottom:13px;transform:translateX(-50%);display:flex;gap:5px;z-index:6}
+      #mapDrawer .atlasGalleryDot{width:6px;height:6px;border-radius:50%;border:0;padding:0;background:rgba(255,255,255,.38);cursor:pointer}
+      #mapDrawer .atlasGalleryDot.active{width:18px;border-radius:999px;background:#6fe3b3}
+      #mapDrawer .atlasGalleryCaption{position:absolute;left:15px;top:14px;z-index:6;padding:5px 8px;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(4,8,13,.5);color:#e9f4ef;font-size:7px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;backdrop-filter:blur(10px)}
       #mapDrawer .atlasMovingRouteMarker{width:13px;height:13px;border-radius:50%;background:#64e4ac;border:2px solid #eafff6;box-shadow:0 0 0 5px rgba(100,228,172,.12),0 0 24px rgba(100,228,172,.8);pointer-events:none}
       #mapDrawer .atlasLocationStatus{display:inline-flex;align-items:center;gap:5px;margin-left:6px;padding:4px 7px;border-radius:999px;background:rgba(73,201,139,.1);border:1px solid rgba(73,201,139,.25);color:#69e1ad;font-size:6px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
       #mapDrawer .atlasLocationStatus:before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;box-shadow:0 0 9px currentColor}
@@ -950,7 +971,12 @@ function atlasTimelinePoint(t,s){
       const vesselName=vessel.name||s.carrier||'Container vessel';
       panel.innerHTML=`
         <div class="atlasHero">
-          <img id="atlasShipmentHeroImage" src="https://images.unsplash.com/photo-1606185540834-d6e7483ee1a4?q=85&w=1400&auto=format&fit=crop" alt="Real container ship used for VTG shipment context" style="width:100%;height:100%;object-fit:cover;display:block;opacity:.82"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(4,7,11,.94))"></div>
+          <div class="atlasShipmentGallery" id="atlasShipmentGallery">
+            <div class="atlasGalleryCaption" id="atlasGalleryCaption">Trade imagery</div>
+            <div class="atlasGalleryControls"><button class="atlasGalleryButton" id="atlasGalleryPrev" aria-label="Previous shipment image">‹</button><button class="atlasGalleryButton" id="atlasGalleryNext" aria-label="Next shipment image">›</button></div>
+            <div class="atlasGalleryDots" id="atlasGalleryDots"></div>
+          </div>
+          <div style="position:absolute;inset:0;z-index:3;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(4,7,11,.94));pointer-events:none"></div>
           <div class="atlasHeroText"><span class="atlasType">${deliveryComplete?'✓ Completed shipment':'🚢 Shipment'} • ${esc(status)}</span><h2>${esc(s.reference||'Shipment')}</h2><p>${esc(s.originPort||'Origin')} → ${esc(s.destinationPort||'Destination')}</p></div>
           <button class="atlasInfoClose" id="atlasInfoClose">×</button>
         </div>
@@ -1026,18 +1052,28 @@ function atlasTimelinePoint(t,s){
         </div>`;
       const mediaStatus=qs(doc,'#atlasMediaStatus');
       Promise.all([
-        getTradeImage(origin + ' container port terminal'),
-        getTradeImage(vesselName + ' container ship vessel'),
-        getTradeImage(destination + ' container port terminal'),
-        getTradeImage((origin + ' ' + destination + ' container shipping trade route').trim())
-      ]).then(([a,b,c,d])=>{
-        const urls=[['#atlasMediaOrigin',a],['#atlasMediaVessel',b],['#atlasMediaDestination',c],['#atlasMediaRoute',d]];
+        getTradeImages(origin + ' container port terminal',5),
+        getTradeImages(vesselName + ' container ship vessel',6),
+        getTradeImages(destination + ' container port terminal',5),
+        getTradeImages((origin + ' ' + destination + ' container shipping trade route').trim(),5)
+      ]).then(([originImgs,vesselImgs,destinationImgs,routeImgs])=>{
+        const urls=[['#atlasMediaOrigin',originImgs[0]?.url],['#atlasMediaVessel',vesselImgs[0]?.url],['#atlasMediaDestination',destinationImgs[0]?.url],['#atlasMediaRoute',routeImgs[0]?.url]];
         let count=0;
         urls.forEach(([sel,url])=>{const el=panel.querySelector(sel);if(el&&url){el.src=url;el.onerror=()=>el.removeAttribute('src');count++;}});
-        const hero=panel.querySelector('#atlasShipmentHeroImage');
-        const placeholder=panel.querySelector('#atlasShipmentHeroPlaceholder');
-        if(hero&&b){hero.src=b;hero.onload=()=>{hero.style.display='block';if(placeholder)placeholder.style.display='none';};hero.onerror=()=>{hero.removeAttribute('src');hero.style.display='none';if(placeholder)placeholder.style.display='grid';};}
-        if(mediaStatus) mediaStatus.textContent=count?count+' real trade images loaded from public geographic/media sources.':'No public trade image matched this shipment yet; live shipment data remains available.';
+        const gallery=panel.querySelector('#atlasShipmentGallery'), dotWrap=panel.querySelector('#atlasGalleryDots'), caption=panel.querySelector('#atlasGalleryCaption');
+        const galleryImages=[...vesselImgs,...originImgs,...destinationImgs,...routeImgs].filter((item,index,arr)=>item?.url&&arr.findIndex(x=>x.url===item.url)===index).slice(0,8);
+        if(gallery&&galleryImages.length){
+          let active=0;
+          galleryImages.forEach((item,index)=>{const img=doc.createElement('img');img.src=item.url;img.alt=item.title||'VTG trade imagery';img.className=index===0?'active':'';img.onerror=()=>img.remove();gallery.insertBefore(img,gallery.querySelector('.atlasGalleryControls'));});
+          if(dotWrap) dotWrap.innerHTML=galleryImages.map((_,index)=>'<button class="atlasGalleryDot '+(index===0?'active':'')+'" data-atlas-gallery-index="'+index+'" aria-label="Show shipment image '+(index+1)+'"></button>').join('');
+          const show=(next)=>{const imgs=[...gallery.querySelectorAll('img')];if(!imgs.length)return;active=(next+imgs.length)%imgs.length;imgs.forEach((el,i)=>el.classList.toggle('active',i===active));gallery.querySelectorAll('.atlasGalleryDot').forEach((el,i)=>el.classList.toggle('active',i===active));if(caption)caption.textContent=active<vesselImgs.length?'Vessel':active<vesselImgs.length+originImgs.length?'Origin':active<vesselImgs.length+originImgs.length+destinationImgs.length?'Destination':'Trade corridor';};
+          qs(panel,'#atlasGalleryPrev')?.addEventListener('click',()=>show(active-1));
+          qs(panel,'#atlasGalleryNext')?.addEventListener('click',()=>show(active+1));
+          qsa(panel,'[data-atlas-gallery-index]').forEach(btn=>btn.addEventListener('click',()=>show(Number(btn.dataset.atlasGalleryIndex))));
+          const auto=window.setInterval(()=>show(active+1),6500);
+          panel.querySelector('#atlasInfoClose')?.addEventListener('click',()=>window.clearInterval(auto),{once:true});
+        }
+        if(mediaStatus) mediaStatus.textContent=count+' core trade images loaded; shipment gallery contains '+galleryImages.length+' contextual images.';
       }).catch(()=>{if(mediaStatus)mediaStatus.textContent='Trade imagery is temporarily unavailable; live shipment data remains available.';});
       qsa(panel,'[data-atlas-stage]').forEach(btn=>btn.onclick=async()=>{
           const stage=String(btn.dataset.atlasStage||'logistics');
