@@ -183,6 +183,19 @@
       #mapDrawer .atlasPortPhoto{margin:8px 0 12px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.1);background:#10161d;min-height:150px}
       #mapDrawer .atlasPortPhoto img{width:100%;height:180px;display:block;object-fit:cover}
       #mapDrawer .atlasPortPhotoEmpty{min-height:150px;display:grid;place-items:center;padding:18px;color:#8d9aa4;font-size:9px;text-align:center}
+      #mapDrawer .atlasCanvas:before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(circle at 34% 28%,rgba(78,220,184,.12),transparent 22%),radial-gradient(circle at 68% 64%,rgba(30,150,255,.11),transparent 28%);mix-blend-mode:screen;opacity:.9}
+      #mapDrawer .atlasCanvas:after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(circle at 23% 36%,rgba(255,220,150,.24),transparent 12%),radial-gradient(circle at 82% 76%,rgba(24,105,255,.08),transparent 25%);opacity:.75;transition:opacity .8s ease}
+      #mapDrawer[data-atlas-mode="night"] .atlasCanvas:after{background:radial-gradient(circle at 76% 30%,rgba(74,151,255,.18),transparent 13%),radial-gradient(circle at 42% 56%,rgba(35,205,170,.06),transparent 30%);opacity:.62}
+      #mapDrawer .atlasZoomFar .atlasMarker{transform:scale(.72);opacity:.82}
+      #mapDrawer .atlasZoomFar .atlasMarkerLabel{opacity:0;transform:translateX(-50%) scale(.7)}
+      #mapDrawer .atlasZoomRegional .atlasMarker{transform:scale(.9)}
+      #mapDrawer .atlasZoomRegional .atlasMarkerLabel{opacity:.86}
+      #mapDrawer .atlasZoomDetail .atlasMarker{transform:scale(1)}
+      #mapDrawer .atlasZoomDetail .atlasMarkerLabel{opacity:1}
+      #mapDrawer .atlasMovingRouteMarker{width:13px;height:13px;border-radius:50%;background:#64e4ac;border:2px solid #eafff6;box-shadow:0 0 0 5px rgba(100,228,172,.12),0 0 24px rgba(100,228,172,.8);pointer-events:none}
+      #mapDrawer .atlasLocationStatus{display:inline-flex;align-items:center;gap:5px;margin-left:6px;padding:4px 7px;border-radius:999px;background:rgba(73,201,139,.1);border:1px solid rgba(73,201,139,.25);color:#69e1ad;font-size:6px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+      #mapDrawer .atlasLocationStatus:before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;box-shadow:0 0 9px currentColor}
+
       #mapDrawer .atlasOperationalPortMarker{position:relative;width:31px;height:31px;border:1px solid rgba(240,198,107,.5);border-radius:11px;background:rgba(20,18,12,.9);color:#f0c66b;display:grid;place-items:center;padding:0;cursor:pointer;box-shadow:0 0 0 4px rgba(240,198,107,.08),0 7px 22px rgba(0,0,0,.4)}
       #mapDrawer .atlasRoutePopup{min-width:170px;max-width:240px;padding:10px 12px;border:1px solid rgba(255,255,255,.16);border-radius:12px;background:rgba(13,17,23,.94);box-shadow:0 12px 30px rgba(0,0,0,.35);color:#eef3f6;backdrop-filter:blur(10px);font-family:Manrope,sans-serif;pointer-events:none}
       #mapDrawer .atlasRoutePopup strong{display:block;font-size:9px;letter-spacing:.12em;color:#f0c66b;margin-bottom:4px}
@@ -492,6 +505,9 @@
   // Atlas follows the user's local civil time by default: day 06:00–17:59, night 18:00–05:59.
   let atlasAutoTime=true;
   let atlasAutoTimer=null;
+  let atlasMotionFrame=null;
+  let atlasMotionMarker=null;
+  let atlasSelectedLocationMarker=null;
   function atlasLocalMode(){
     const hour=new Date().getHours();
     return hour>=6&&hour<18?'day':'night';
@@ -558,7 +574,52 @@
       map.addLayer({id:'vtg-atlas-corridors',type:'line',source:'vtg-atlas-corridors',paint:{'line-color':'#e05c63','line-width':1.5,'line-opacity':.42,'line-dasharray':[3,2]}});
     }
 
-    function clearSelectedShipmentPath() {
+    
+    function stopAtlasRouteMotion() {
+      if (atlasMotionFrame) cancelAnimationFrame(atlasMotionFrame);
+      atlasMotionFrame=null;
+      if (atlasMotionMarker) { try { atlasMotionMarker.remove(); } catch (_) {} }
+      atlasMotionMarker=null;
+    }
+
+    function startAtlasRouteMotion(s) {
+      stopAtlasRouteMotion();
+      const route=(s?.routePoints||[]).filter(validPoint);
+      if(route.length<2 || !map.loaded()) return;
+      const el=doc.createElement('div');
+      el.className='atlasMovingRouteMarker';
+      atlasMotionMarker=new ml.Marker({element:el,anchor:'center'}).setLngLat([Number(route[0].lng),Number(route[0].lat)]).addTo(map);
+      const started=performance.now();
+      const duration=Math.max(9000,Math.min(18000,route.length*3200));
+      const frame=(now)=>{
+        const progress=((now-started)%duration)/duration;
+        const scaled=progress*(route.length-1);
+        const idx=Math.min(route.length-2,Math.floor(scaled));
+        const local=scaled-idx;
+        const a=route[idx], b=route[idx+1];
+        const lng=Number(a.lng)+(Number(b.lng)-Number(a.lng))*local;
+        const lat=Number(a.lat)+(Number(b.lat)-Number(a.lat))*local;
+        atlasMotionMarker?.setLngLat([lng,lat]);
+        atlasMotionFrame=requestAnimationFrame(frame);
+      };
+      atlasMotionFrame=requestAnimationFrame(frame);
+    }
+
+    function applyAtlasZoomDetail() {
+      const z=map.getZoom();
+      const canvas=map.getContainer?.();
+      if(!canvas) return;
+      canvas.classList.toggle('atlasZoomFar',z<2.7);
+      canvas.classList.toggle('atlasZoomRegional',z>=2.7&&z<6.2);
+      canvas.classList.toggle('atlasZoomDetail',z>=6.2);
+    }
+
+    function setAtlasModeAttribute(mode) {
+      drawer.setAttribute('data-atlas-mode',mode);
+    }
+
+function clearSelectedShipmentPath() {
+      stopAtlasRouteMotion();
       if (map.getLayer('vtg-selected-shipment-route')) map.removeLayer('vtg-selected-shipment-route');
       if (map.getLayer('vtg-selected-shipment-glow')) map.removeLayer('vtg-selected-shipment-glow');
       if (map.getSource('vtg-selected-shipment-route')) map.removeSource('vtg-selected-shipment-route');
@@ -873,6 +934,7 @@ function atlasTimelinePoint(t,s){
       selectedShipmentId = s?.id || null;
       renderShipmentList();
       renderSelectedShipmentPath(s);
+      startAtlasRouteMotion(s);
       const panel=qs(doc,'#vtgAtlasInfo');
       panel.classList.add('open');
       panel.innerHTML='<div class="atlasHero"><div class="atlasLoading">Loading shipment intelligence…</div><button class="atlasInfoClose" id="atlasInfoClose">×</button></div><div class="atlasInfoBody"><div class="atlasLoading">Loading shipment details…</div></div>';
@@ -1281,7 +1343,7 @@ function atlasTimelinePoint(t,s){
       renderShipmentList();
       const found=markers.find(m=>Math.abs(m.getLngLat().lng-x.lng)<.0001&&Math.abs(m.getLngLat().lat-x.lat)<.0001);
       found?.getElement().classList.add('selected');
-      map.flyTo({center:[x.lng,x.lat],zoom:7.2,duration:1200});
+      map.flyTo({center:[x.lng,x.lat],zoom:x.type==='airport'?8.1:7.4,duration:1350,essential:true});
       const panel=qs(doc,'#vtgAtlasInfo');
       panel.classList.add('open');
       panel.innerHTML='<div class="atlasHero"><div class="atlasLoading">Loading location imagery…</div><button class="atlasInfoClose" id="atlasInfoClose">×</button></div><div class="atlasInfoBody"><div class="atlasLoading">Loading location intelligence…</div></div>';
@@ -1296,7 +1358,7 @@ function atlasTimelinePoint(t,s){
       panel.innerHTML=`
         <div class="atlasHero">
           ${image?'<img src="'+esc(image)+'" alt="'+esc(x.name)+'">':'<div style="height:100%;display:grid;place-items:center;color:#d5a74f;font-size:44px">'+(x.type==='airport'?'✈':'⚓')+'</div>'}
-          <div class="atlasHeroText"><span class="atlasType">${x.type==='airport'?'✈ Airport':'⚓ Seaport'} • ${esc(regionLabel)}</span><h2>${esc(x.name)}</h2><p>${esc(x.city)}, ${esc(x.country)} • ${esc(x.code)}</p></div>
+          <div class="atlasHeroText"><span class="atlasType">${x.type==='airport'?'✈ Airport':'⚓ Seaport'} • ${esc(regionLabel)}<span class="atlasLocationStatus">${x.type==='airport'?'AIR GATEWAY':'MARITIME GATEWAY'}</span></span><h2>${esc(x.name)}</h2><p>${esc(x.city)}, ${esc(x.country)} • ${esc(x.code)}</p></div>
           <button class="atlasInfoClose" id="atlasInfoClose">×</button>
         </div>
         <div class="atlasInfoBody">
@@ -1433,6 +1495,7 @@ function atlasTimelinePoint(t,s){
 
     function setMode(mode, automatic=false) {
       mapMode=mode;
+      setAtlasModeAttribute(mode);
       if(!automatic) atlasAutoTime=false;
       qsa(doc,'[data-mapmode]').forEach(b=>b.classList.toggle('active',b.dataset.mapmode===mode));
       const target=mode==='day'?DAY_STYLE:NIGHT_STYLE;
@@ -1477,7 +1540,16 @@ function atlasTimelinePoint(t,s){
       map.on('mouseenter',layer,()=>{map.getCanvas().style.cursor='pointer';});
       map.on('mouseleave',layer,()=>{map.getCanvas().style.cursor='';});
     });
-    map.on('load',()=>{enhanceGlobeVisuals();addCorridorLayer();renderShipmentRoutes();});
+    map.on('zoom',applyAtlasZoomDetail);
+    map.on('rotate',applyAtlasZoomDetail);
+    map.on('moveend',applyAtlasZoomDetail);
+    map.on('load',()=>{
+      enhanceGlobeVisuals();
+      addCorridorLayer();
+      renderShipmentRoutes();
+      setAtlasModeAttribute(mapMode);
+      applyAtlasZoomDetail();
+    });
   }
 
   window.VTGInitMap = () => {
