@@ -361,25 +361,3 @@ document.addEventListener('DOMContentLoaded',()=>{
 <script src="/bank-audit-centre.js"></script>
 </body>
 </html>
-+v.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
-  document.getElementById('lcProduct').textContent=money(product);
-  document.getElementById('lcLogistics').textContent=money(logistics);
-  document.getElementById('lcTotal').textContent=money(total);
-}
-document.addEventListener('DOMContentLoaded',()=>{
-  refreshIntelStatus(); recalcLandedCost();
-  ['lcQty','lcUnit','lcFreight','lcInsurance','lcDuty','lcLocal'].forEach(id=>document.getElementById(id)?.addEventListener('input',recalcLandedCost));
-});
-</script>
-<script src="/vtg-trade-workflow.js" defer></script>
-<script src="/buyer-trade-os.js" defer></script>
-<script src="/buyer-trade-room.js" defer></script>
-<script src="/vtg-finance-centre.js" defer></script>
-<script src="/buyer-communication.js" defer></script>
-<script src="/page-visuals.js"></script>
-<script src="/bank-trade-os.js"></script>
-<script src="/bank-trade-room.js"></script>
-<script src="/bank-compliance-risk.js"></script>
-<script src="/bank-audit-centre.js"></script>
-</body>
-</html>
