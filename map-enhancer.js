@@ -1168,7 +1168,7 @@ function atlasTimelinePoint(t,s){
       qsa(doc,'[data-mapmode]').forEach(b=>b.classList.toggle('active',b.dataset.mapmode===mode));
       const target=mode==='day'?DAY_STYLE:NIGHT_STYLE;
       map.setStyle(target);
-      map.once('styledata',()=>{addCorridorLayer();applyRasterMood();renderShipmentRoutes();});
+      map.once('styledata',()=>{addCorridorLayer();renderShipmentRoutes();});
     }
     qsa(doc,'[data-mapmode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mapmode));
 
@@ -1195,7 +1195,7 @@ function atlasTimelinePoint(t,s){
       map.on('mouseenter',layer,()=>{map.getCanvas().style.cursor='pointer';});
       map.on('mouseleave',layer,()=>{map.getCanvas().style.cursor='';});
     });
-    map.on('load',()=>{addCorridorLayer();applyRasterMood();renderShipmentRoutes();});
+    map.on('load',()=>{addCorridorLayer();renderShipmentRoutes();});
   }
 
   window.VTGInitMap = () => {
