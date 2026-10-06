@@ -11,7 +11,7 @@ function cacheKey(identifier) {
 }
 
 function unavailable(reason) {
-  return { available: false, provider: PROVIDER, reason };
+  return { available: false, provider: PROVIDER, status: 'unavailable', reason };
 }
 
 async function fetchDatalastic(identifier) {
@@ -29,9 +29,13 @@ async function fetchDatalastic(identifier) {
     return unavailable('Provider returned no current vessel position.');
   }
 
+  const lastUpdated=d.last_position_UTC || null;
+  const ageMs=lastUpdated?Math.max(0,Date.now()-Date.parse(lastUpdated)):Infinity;
   return {
     available: true,
     provider: 'datalastic',
+    status: ageMs <= Math.max(60000,Number(process.env.VTG_DATA_STALE_AFTER_MS||300000)) ? 'fresh' : 'stale',
+    ageMs,
     vessel: {
       name: d.name || identifier.vesselName || null,
       imo: d.imo || identifier.imo || null,
