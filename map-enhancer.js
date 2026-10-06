@@ -653,6 +653,7 @@ function atlasTimelinePoint(t,s){
       locationPanelRequest++;
       markers.forEach(m=>m.getElement().classList.remove('selected'));
       selectedShipmentId = s?.id || null;
+      renderShipmentList();
       renderSelectedShipmentPath(s);
       const panel=qs(doc,'#vtgAtlasInfo');
       panel.classList.add('open');
@@ -1194,6 +1195,9 @@ function atlasTimelinePoint(t,s){
       qs(doc,'[data-shipment-status="all"]')?.classList.add('active');
       qs(doc,'#atlasShipmentsToggle')?.classList.remove('active');
       const search=qs(doc,'#vtgAtlasSearch'); if(search) search.value='';
+      selectedShipmentId=null;
+      clearSelectedShipmentPath();
+      if(activeRoutePopupMarker){try{activeRoutePopupMarker.remove();}catch(_){} activeRoutePopupMarker=null;}
       renderMarkers();
       renderShipmentRoutes();
       locationPanelRequest++; qs(doc,'#vtgAtlasInfo')?.classList.remove('open');
