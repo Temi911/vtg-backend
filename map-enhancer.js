@@ -1046,9 +1046,9 @@ function atlasTimelinePoint(t,s){
           <div class="atlasDescription">${Number(x.lat).toFixed(4)}° ${Number(x.lat)>=0?'N':'S'} • ${Math.abs(Number(x.lng)).toFixed(4)}° ${Number(x.lng)>=0?'E':'W'}</div>
           <div class="atlasSectionTitle">VTG trade context</div>
           <div class="atlasDescription">${x.region==='Africa'?'African trade gateway connecting regional markets with global suppliers and buyers.':x.region==='China'?'Chinese production and export gateway with direct relevance to Africa–Asia trade corridors.':'South Korean trade gateway supporting advanced manufacturing, maritime and air-cargo connectivity.'}</div>
-          <div class="atlasSectionTitle">Port activity</div>
+          <div class="atlasSectionTitle">${x.type==='airport'?'Air-cargo activity':'Port activity'}</div>
           <div class="atlasDescription" id="atlasPortActivity">Loading related trade activity…</div>
-          <div class="atlasSectionTitle">Port image</div>
+          <div class="atlasSectionTitle">${x.type==='airport'?'Airport image':'Port image'}</div>
           <div class="atlasPortPhoto">${image?'<img src="'+esc(image)+'" alt="'+esc(x.name)+' port">':'<div class="atlasPortPhotoEmpty">No suitable public port image was returned.</div>'}</div>
           <div class="atlasActions"><button class="atlasAction primary" id="atlasRoute">Explore routes</button><button class="atlasAction" id="atlasZoom">Zoom location</button></div>
           <div class="atlasImageCredit">${image?'Location image supplied through Wikimedia Commons search.':'No suitable public location image was returned; VTG location data remains available.'}</div>
@@ -1058,7 +1058,8 @@ function atlasTimelinePoint(t,s){
       qs(doc,'#atlasRoute').onclick=()=>showRoutes(x);
       const relatedAll=shipments.filter(s=>{
         const names=[s.originPort,s.origin_port,s.destinationPort,s.destination_port,s.liveTracking?.nextPort].filter(Boolean).map(v=>String(v).toLowerCase());
-        return names.includes(String(x.name).toLowerCase()) || names.includes(String(x.code||'').toLowerCase());
+        const target=[x.name,x.code,x.city].filter(Boolean).map(v=>String(v).toLowerCase());
+        return target.some(t=>names.some(n=>n===t||n.includes(t)||t.includes(n)));
       });
       const activityEl=qs(doc,'#atlasPortActivity');
       if(activityEl){
