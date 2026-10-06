@@ -521,6 +521,13 @@
         if(shipmentStatusFilter==='customs') return Boolean(s.customs?.status&&s.customs.status!=='not_started'&&!['cleared','released'].includes(s.customs.status));
         return s.status===shipmentStatusFilter;
       });
+      const selectedVisible=selectedShipmentId
+        ? visibleShipments.find(s=>String(s.id)===String(selectedShipmentId))
+        : null;
+      if(selectedShipmentId && !selectedVisible){
+        selectedShipmentId=null;
+        renderShipmentList();
+      }
       const features=visibleShipments.filter(s=>(s.routePoints||[]).length>=2).map(s=>({
         type:'Feature',
         properties:{shipmentId:s.id,reference:s.reference||'Shipment'},
@@ -555,6 +562,9 @@
         addLiveVesselPositionMarker(s);
       });
       addProgressPointMarkers(visibleShipments);
+      // Re-apply the selected route after rebuilding the Atlas route layers.
+      // This keeps the focused shipment visible after refreshes and Night/Day style changes.
+      if(selectedVisible) renderSelectedShipmentPath(selectedVisible);
     }
 
     function shipmentLabel(status) {
@@ -965,6 +975,10 @@ function atlasTimelinePoint(t,s){
         }
         const d=await r.json();
         shipments=Array.isArray(d.shipments)?d.shipments:[];
+        if(selectedShipmentId && !shipments.some(s=>String(s.id)===String(selectedShipmentId))){
+          selectedShipmentId=null;
+          clearSelectedShipmentPath();
+        }
         renderOperationalSummary();
         renderShipmentList();
         const meta=qs(doc,'#atlasOpsLiveMeta');
@@ -1050,6 +1064,7 @@ function atlasTimelinePoint(t,s){
     async function selectLocation(x) {
       const requestId=++locationPanelRequest;
       selectedShipmentId=null;
+      if(activeRoutePopupMarker){try{activeRoutePopupMarker.remove();}catch(_){} activeRoutePopupMarker=null;}
       clearSelectedShipmentPath();
       markers.forEach(m=>m.getElement().classList.remove('selected'));
       renderShipmentList();
