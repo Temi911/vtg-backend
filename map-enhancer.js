@@ -786,8 +786,10 @@ function atlasTimelinePoint(t,s){
         if(p&&Number.isFinite(Number(p.lng))&&Number.isFinite(Number(p.lat))) map.flyTo({center:[Number(p.lng),Number(p.lat)],zoom:7,duration:900});
       });
       qs(doc,'#atlasInfoClose').onclick=()=>{panel.classList.remove('open');selectedShipmentId=null;clearSelectedShipmentPath();renderShipmentList();};
-      qs(doc,'#atlasOpenShipment').onclick=()=>{ window.location.href='/trade-os.html?shipment='+encodeURIComponent(s.id); };
-      qs(doc,'#atlasDeliveryUpdate').onclick=async()=>{
+      const openShipmentBtn=qs(doc,'#atlasOpenShipment');
+      if(openShipmentBtn) openShipmentBtn.onclick=()=>{ window.location.href='/trade-os.html?shipment='+encodeURIComponent(s.id); };
+      const deliveryUpdateBtn=qs(doc,'#atlasDeliveryUpdate');
+      if(deliveryUpdateBtn) deliveryUpdateBtn.onclick=async()=>{
         const current=String(s.delivery?.status||'pending');
         const status=window.prompt('Delivery status: pending, confirmed, or disputed',current);
         if(status===null)return;
@@ -804,16 +806,17 @@ function atlasTimelinePoint(t,s){
         const notes=window.prompt('Delivery notes (optional):',s.delivery?.notes||'');
         if(notes===null)return;
         try{
-          const resp=await fetch('/api/shipments/'+encodeURIComponent(s.id)+'/delivery',{method:'PATCH',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({status:normalized,recipientName:recipientName.trim()||undefined,notes:notes.trim()||undefined,proofDocumentId})});
+          const resp=await fetch('/api/shipments/'+encodeURIComponent(s.id)+'/delivery',{method:'PATCH',headers:{'Content-Type':'application/json','Accept':'application/json',...(localStorage.getItem('vtg_access_token')?{Authorization:'Bearer '+localStorage.getItem('vtg_access_token')}:{})},body:JSON.stringify({status:normalized,recipientName:recipientName.trim()||undefined,notes:notes.trim()||undefined,proofDocumentId})});
           const data=await resp.json().catch(()=>({}));
           if(!resp.ok)throw new Error(data.message||data.error||'Unable to update delivery');
           await loadShipments();
           const fresh=shipments.find(x=>String(x.id)===String(s.id));
-          if(fresh) openShipmentInfo(fresh);
+          if(fresh) await selectShipment(fresh);
         }catch(err){window.alert(err.message||'Unable to update delivery.');}
       };
 
-      qs(doc,'#atlasOpenOrder').onclick=()=>{ window.location.href='/trade-os.html?order='+encodeURIComponent(s.orderId); };
+      const openOrderBtn=qs(doc,'#atlasOpenOrder');
+      if(openOrderBtn) openOrderBtn.onclick=()=>{ window.location.href='/trade-os.html?order='+encodeURIComponent(s.orderId); };
       qs(doc,'#atlasNextAction').onclick=()=>{
         const customsStatus=String(s.customs?.status||'not_started');
         const deliveryStatus=String(s.delivery?.status||'pending');
@@ -836,7 +839,7 @@ function atlasTimelinePoint(t,s){
         const textEl=qs(doc,'#atlasNextActionText'); if(textEl) textEl.textContent=label+' • '+String(stage).replace(/_/g,' ');
       }
 
-      qs(doc,'#atlasRefreshShipment').onclick=async()=>{ await loadShipments(); const fresh=shipments.find(x=>String(x.id)===String(s.id)); if(fresh) openShipmentInfo(fresh); };
+      qs(doc,'#atlasRefreshShipment').onclick=async()=>{ await loadShipments(); const fresh=shipments.find(x=>String(x.id)===String(s.id)); if(fresh) await selectShipment(fresh); };
       qs(doc,'#atlasRecordMilestone').onclick=async()=>{
         const location=window.prompt('Milestone location / operational point:', s.liveTracking?.nextPort || s.destinationPort || '');
         if(location===null)return;
