@@ -452,8 +452,11 @@
         if(validPoint(next)){
           const el=doc.createElement('button');
           el.type='button'; el.className='atlasNextOperationalMarker'; el.title='Next operational point • '+(next.name||'Next point');
-          el.innerHTML='<span class="label">NEXT</span><span class="core">◆</span>';
+          el.setAttribute('aria-label','Open next operational point for '+(s.reference||'Shipment')+': '+(next.name||'Next point'));
+          el.setAttribute('aria-haspopup','dialog');
+          el.innerHTML='<span class="label" aria-hidden="true">NEXT</span><span class="core" aria-hidden="true">◆</span>';
           el.onclick=e=>{e.stopPropagation();focusShipmentStage(s,'logistics',next);showAtlasRoutePopup(s,'next',next);};
+          el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();focusShipmentStage(s,'logistics',next);showAtlasRoutePopup(s,'next',next);}};
           shipmentMarkers.push(new ml.Marker({element:el,anchor:'center'}).setLngLat([Number(next.lng),Number(next.lat)]).addTo(map));
         }
         if(validPoint(destination)){
@@ -461,8 +464,11 @@
           if(same) return;
           const el=doc.createElement('button');
           el.type='button'; el.className='atlasDestinationMarker'; el.title='Destination • '+(s.destinationPort||'Destination');
-          el.innerHTML='<span class="core">⚓</span><span class="label">Destination</span>';
+          el.setAttribute('aria-label','Open destination for '+(s.reference||'Shipment')+': '+(s.destinationPort||'Destination'));
+          el.setAttribute('aria-haspopup','dialog');
+          el.innerHTML='<span class="core" aria-hidden="true">⚓</span><span class="label" aria-hidden="true">Destination</span>';
           el.onclick=e=>{e.stopPropagation();focusShipmentStage(s,'delivery',destination);showAtlasRoutePopup(s,'destination',destination);};
+          el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();focusShipmentStage(s,'delivery',destination);showAtlasRoutePopup(s,'destination',destination);}};
           shipmentMarkers.push(new ml.Marker({element:el,anchor:'center'}).setLngLat([Number(destination.lng),Number(destination.lat)]).addTo(map));
         }
       });
@@ -493,8 +499,11 @@
       el.type='button';
       el.className='atlasLiveVesselPosition '+(freshness.state==='stale'?'stale':'');
       el.title=(s.reference||'Shipment')+' • '+(freshness.label);
+      el.setAttribute('aria-label','Open live position for '+(s.reference||'Shipment')+' • '+freshness.label);
+      el.setAttribute('aria-haspopup','dialog');
       el.innerHTML='<span class="atlasLiveVesselCore"></span><span class="atlasLiveVesselRing"></span><span class="atlasLiveVesselLabel">'+(freshness.state==='stale'?'STALE':'LIVE')+'</span>';
       el.onclick=e=>{e.stopPropagation();selectShipment(s);showAtlasRoutePopup(s,'current',shipmentPoint(s));};
+      el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();selectShipment(s);showAtlasRoutePopup(s,'current',shipmentPoint(s));}};
       const marker=new ml.Marker({element:el,anchor:'center'}).setLngLat([lng,lat]).addTo(map);
       shipmentMarkers.push(marker);
     }
@@ -530,10 +539,14 @@
         el.dataset.status=state;
         el.dataset.liveState=liveState.state;
         el.type='button';
-        el.title=(s.reference||'Shipment')+' • '+(isLivePosition ? 'Vessel '+liveState.label : shipmentLabel(s.status));
+        const markerLabel=(s.reference||'Shipment')+' • '+(isLivePosition ? 'Vessel '+liveState.label : shipmentLabel(s.status));
+        el.title=markerLabel;
+        el.setAttribute('aria-label','Open shipment '+markerLabel);
+        el.setAttribute('aria-haspopup','dialog');
         const icon=state==='delivered'?'✓':state==='arrived'?'⚓':state==='attention'?'!':isLivePosition?'◉':'🚢';
         el.innerHTML='<span class="atlasShipmentPulse"></span><span class="atlasShipmentIcon">'+icon+'</span>';
         el.onclick=e=>{e.stopPropagation();selectShipment(s);};
+        el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();selectShipment(s);}};
         shipmentMarkers.push(new ml.Marker({element:el,anchor:'center'}).setLngLat([Number(p.lng),Number(p.lat)]).addTo(map));
         addLiveVesselPositionMarker(s);
       });
