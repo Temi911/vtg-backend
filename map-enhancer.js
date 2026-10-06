@@ -1013,7 +1013,10 @@ function atlasTimelinePoint(t,s){
       // Main location markers are the single source of truth for ports and airports; avoid stacking a second port marker over the same location.
     }
 
+    let locationPanelRequest=0;
+
     async function selectLocation(x) {
+      const requestId=++locationPanelRequest;
       markers.forEach(m=>m.getElement().classList.remove('selected'));
       const found=markers.find(m=>Math.abs(m.getLngLat().lng-x.lng)<.0001&&Math.abs(m.getLngLat().lat-x.lat)<.0001);
       found?.getElement().classList.add('selected');
@@ -1024,6 +1027,7 @@ function atlasTimelinePoint(t,s){
       qs(doc,'#atlasInfoClose').onclick=()=>panel.classList.remove('open');
 
       const image=await getLocationImage(x);
+      if (requestId!==locationPanelRequest) return;
       const description=x.type==='seaport'
         ? `${x.name} is a strategic maritime gateway serving ${x.city}, ${x.country}. VTG Atlas identifies it as a seaport for trade-route discovery, shipment planning and port-to-port logistics.`
         : `${x.name} is an international air gateway serving ${x.city}, ${x.country}. VTG Atlas identifies it as an airport for air-cargo planning, trade connectivity and time-sensitive movement.`;
