@@ -768,7 +768,7 @@ function atlasTimelinePoint(t,s){
         const p=event?.coordinates;
         if(p&&Number.isFinite(Number(p.lng))&&Number.isFinite(Number(p.lat))) map.flyTo({center:[Number(p.lng),Number(p.lat)],zoom:7,duration:900});
       });
-      qs(doc,'#atlasInfoClose').onclick=()=>{panel.classList.remove('open');clearSelectedShipmentPath();};
+      qs(doc,'#atlasInfoClose').onclick=()=>{panel.classList.remove('open');selectedShipmentId=null;clearSelectedShipmentPath();renderShipmentList();};
       qs(doc,'#atlasOpenShipment').onclick=()=>{ window.location.href='/trade-os.html?shipment='+encodeURIComponent(s.id); };
       qs(doc,'#atlasDeliveryUpdate').onclick=async()=>{
         const current=String(s.delivery?.status||'pending');
@@ -1049,7 +1049,7 @@ function atlasTimelinePoint(t,s){
       const panel=qs(doc,'#vtgAtlasInfo');
       panel.classList.add('open');
       panel.innerHTML='<div class="atlasHero"><div class="atlasLoading">Loading location imagery…</div><button class="atlasInfoClose" id="atlasInfoClose">×</button></div><div class="atlasInfoBody"><div class="atlasLoading">Loading location intelligence…</div></div>';
-      qs(doc,'#atlasInfoClose').onclick=()=>panel.classList.remove('open');
+      qs(doc,'#atlasInfoClose').onclick=()=>{locationPanelRequest++;panel.classList.remove('open');markers.forEach(m=>m.getElement().classList.remove('selected'));};
 
       const image=await getLocationImage(x);
       if (requestId!==locationPanelRequest) return;
@@ -1187,7 +1187,7 @@ function atlasTimelinePoint(t,s){
       const search=qs(doc,'#vtgAtlasSearch'); if(search) search.value='';
       renderMarkers();
       renderShipmentRoutes();
-      qs(doc,'#vtgAtlasInfo')?.classList.remove('open');
+      locationPanelRequest++; qs(doc,'#vtgAtlasInfo')?.classList.remove('open');
       map.flyTo({center:[50,13],zoom:1.75,duration:900});
     };
     qs(doc,'#atlasCompass').onclick=()=>map.resetNorthPitch();
