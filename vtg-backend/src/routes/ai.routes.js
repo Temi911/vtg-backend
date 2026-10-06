@@ -22,7 +22,8 @@ const publicAiLimiter = rateLimit({
   message: { error: { code: 'RATE_LIMITED', message: 'Too many assistant requests from this connection. Please wait a few minutes, or sign in for full access.' } },
 });
 
-router.get('/status', ctrl.status);\nrouter.post('/chat', requireAuth, aiLimiter, ctrl.chat);
+router.get('/status', ctrl.status);
+router.post('/chat', requireAuth, aiLimiter, ctrl.chat);
 router.post('/trade-intelligence', requireAuth, aiLimiter, ctrl.tradeIntelligence);
 router.post('/public-chat', publicAiLimiter, ctrl.publicChat);
 
