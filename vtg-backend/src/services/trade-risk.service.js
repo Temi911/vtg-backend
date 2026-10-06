@@ -13,7 +13,12 @@ function assess(row){
  score=Math.min(100,score);
  return {score,level:level(score),factors,recommendations};
 }
-async function scanOrder(orderId){
+async function scanOrder(orderId,user){
+ const role=user?.role;
+ if(role&&role!=='admin'){
+  const a=await query(`SELECT id FROM orders WHERE id=$1 AND (buyer_id=$2 OR supplier_id=$2 OR bank_id=$2 OR id IN (SELECT order_id FROM inspection_requests WHERE assigned_agent_id=$2))`,[orderId,user.id]);
+  if(!a.rows[0]) return null;
+ }
  const r=await query(`SELECT o.id,o.status AS order_status,
  p.status AS payment_status,EXTRACT(EPOCH FROM (now()-p.created_at))/3600 AS payment_age_hours,
  c.status AS compliance_status,
@@ -32,8 +37,9 @@ async function scanOrder(orderId){
  await query(`INSERT INTO trade_risk_assessments(order_id,score,level,factors,recommendations,assessed_at) VALUES($1,$2,$3,$4,$5,now()) ON CONFLICT(order_id) DO UPDATE SET score=EXCLUDED.score,level=EXCLUDED.level,factors=EXCLUDED.factors,recommendations=EXCLUDED.recommendations,assessed_at=now()`,[orderId,result.score,result.level,JSON.stringify(result.factors),JSON.stringify(result.recommendations)]);
  return {orderId,...result,assessedAt:new Date().toISOString()};
 }
-async function scanOpenOrders(){
- const r=await query(`SELECT id FROM orders WHERE status NOT IN ('delivered','cancelled') ORDER BY updated_at DESC LIMIT 200`);
- const out=[];for(const x of r.rows){const a=await scanOrder(x.id);if(a)out.push(a);}return out;
+async function scanOpenOrders(user){
+ let sql=`SELECT id FROM orders WHERE status NOT IN ('delivered','cancelled')`,params=[];
+ if(user?.role&&user.role!=='admin'){sql+=` AND (buyer_id=$1 OR supplier_id=$1 OR bank_id=$1 OR id IN (SELECT order_id FROM inspection_requests WHERE assigned_agent_id=$1))`;params=[user.id];}
+ sql+=' ORDER BY updated_at DESC LIMIT 200'; const r=await query(sql,params); const out=[];for(const x of r.rows){const a=await scanOrder(x.id,user);if(a)out.push(a);}return out;
 }
 module.exports={scanOrder,scanOpenOrders,assess};
