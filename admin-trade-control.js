@@ -21,6 +21,7 @@
     render(j);
     loadProviderReadiness();
     loadLedger();
+    loadOperations();
   }
   function render(d){
     const k=document.getElementById('atc-kpis');
@@ -33,6 +34,17 @@
     document.getElementById('atc-shipments').innerHTML=d.shipments.length?d.shipments.map(s=>'<div class="atc-row"><div><b>'+esc(s.order_reference)+'</b><small>'+esc(s.origin_port||'Origin pending')+' → '+esc(s.destination_port||'Destination pending')+' · '+esc(s.carrier||'Carrier pending')+'</small></div><span>'+badge(s.order_status)+'</span><b>'+Number(s.percent_complete||0)+'%</b></div>').join(''):'<div class="atc-empty">No shipments found.</div>';
     document.getElementById('atc-docs').innerHTML=d.documents.length?d.documents.map(x=>'<div class="atc-row"><div><b>'+esc(x.doc_type.replace(/_/g,' '))+'</b><small>'+esc(x.file_name)+' · '+esc(x.owner_name)+'</small></div><span>'+badge(x.status)+'</span></div>').join(''):'<div class="atc-empty">No documents found.</div>';
   }
+  async function loadOperations(){
+    const ids=['atc-exceptions','atc-compliance','atc-doc-gaps','atc-stalled'];
+    try{const r=await fetch('/api/admin/trade/operations',{headers:{Authorization:'Bearer '+token}});const j=await r.json();if(!r.ok)throw Error(j.error?.message||j.message||'Unable to load operations queue');
+      const list=(id,rows,fn)=>{const b=document.getElementById(id);if(!b)return;b.innerHTML=rows.length?rows.map(fn).join(''):'<div class="atc-empty">No current exceptions.</div>';};
+      list('atc-exceptions',j.exceptions||[],x=>'<div class="atc-row"><div><b>'+esc(x.order_reference||'Unlinked payment')+'</b><small>'+esc(String(x.method||'').toUpperCase())+' · '+esc(x.status)+'</small></div><span class="atc-badge">FINANCE</span><b>'+fmt(x.amount)+' '+esc(x.currency)+'</b></div>');
+      list('atc-compliance',j.compliance||[],x=>'<div class="atc-row"><div><b>'+esc(x.order_reference)+'</b><small>'+esc(x.authority||'Compliance review pending')+'</small></div><span class="atc-badge">'+esc(x.status)+'</span></div>');
+      list('atc-doc-gaps',j.documentGaps||[],x=>'<div class="atc-row"><div><b>'+esc(x.order_reference)+'</b><small>'+esc(x.label)+'</small></div><span class="atc-badge">'+esc(x.status)+'</span></div>');
+      list('atc-stalled',j.stalledShipments||[],x=>'<div class="atc-row"><div><b>'+esc(x.order_reference)+'</b><small>Last update '+new Date(x.updated_at).toLocaleString()+'</small></div><span class="atc-badge">STALLED</span></div>');
+    }catch(e){['atc-exceptions','atc-compliance','atc-doc-gaps','atc-stalled'].forEach(id=>{const b=document.getElementById(id);if(b)b.innerHTML='<div class="atc-empty">'+esc(e.message)+'</div>'})}
+  }
+
   async function loadLedger(){
     const box=document.getElementById('atc-ledger');
     if(!box)return;
