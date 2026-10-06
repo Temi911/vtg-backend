@@ -7,6 +7,7 @@
   const MAPLIBRE = 'https://unpkg.com/maplibre-gl@5.13.0/dist/maplibre-gl.js';
   const DAY_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
   const NIGHT_STYLE = 'https://tiles.openfreemap.org/styles/dark';
+  const ATLAS_SATELLITE = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
   const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const qs = (doc, s) => doc.querySelector(s);
   const qsa = (doc, s) => Array.from(doc.querySelectorAll(s));
@@ -57,6 +58,59 @@
   function getAutoMode() {
     const hour = new Date().getHours();
     return hour >= 6 && hour < 18 ? 'day' : 'night';
+  }
+
+  function applyAtlasAtmosphere(map, mode) {
+    try {
+      if (typeof map.setSky === 'function') {
+        const night = mode === 'night';
+        map.setSky({
+          'sky-color': night ? '#020611' : '#07192b',
+          'sky-horizon-blend': night ? 0.34 : 0.52,
+          'horizon-color': night ? '#06234a' : '#65cfff',
+          'horizon-fog-blend': night ? 0.42 : 0.22,
+          'fog-color': night ? '#01050d' : '#0b2c3d',
+          'fog-ground-blend': night ? 0.48 : 0.18,
+          'atmosphere-blend': ['interpolate',['linear'],['zoom'],0,1,4,0.92,8,0.58,12,0]
+        });
+      }
+      if (typeof map.setLight === 'function') {
+        map.setLight({
+          anchor: 'map',
+          position: mode === 'night' ? [1.35, 210, 75] : [1.35, 35, 75],
+          color: mode === 'night' ? '#6fa8ff' : '#fff4d6',
+          intensity: mode === 'night' ? 0.28 : 0.72
+        });
+      }
+    } catch (_) {}
+  }
+
+  function addAtlasSatellite(map) {
+    try {
+      if (map.getSource('vtg-atlas-satellite')) return;
+      map.addSource('vtg-atlas-satellite', {
+        type: 'raster',
+        tiles: [ATLAS_SATELLITE],
+        tileSize: 256,
+        attribution: '© Esri, Maxar, Earthstar Geographics, and the GIS User Community'
+      });
+      const firstSymbol = (map.getStyle()?.layers || []).find(l => l.type === 'symbol')?.id;
+      map.addLayer({
+        id: 'vtg-atlas-satellite',
+        type: 'raster',
+        source: 'vtg-atlas-satellite',
+        minzoom: 0,
+        maxzoom: 18,
+        paint: {
+          'raster-opacity': 0.82,
+          'raster-saturation': 0.24,
+          'raster-contrast': 0.08,
+          'raster-brightness-min': 0.02,
+          'raster-brightness-max': 0.96,
+          'raster-fade-duration': 220
+        }
+      }, firstSymbol);
+    } catch (_) {}
   }
 
   function run(doc) {
@@ -263,6 +317,47 @@
       @media(max-width:1000px){#mapDrawer .atlasTop{left:14px;right:70px;flex-wrap:wrap;align-items:flex-start}#mapDrawer .atlasSearch{flex:1 1 420px}#mapDrawer .atlasChips{display:flex;flex:1 1 100%;width:100%;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding-bottom:2px;scrollbar-width:none}#mapDrawer .atlasChips::-webkit-scrollbar{display:none}#mapDrawer .atlasOpsSummary{left:14px;top:145px;max-width:calc(100vw - 28px)}#mapDrawer .atlasOpsLiveMeta{left:14px;top:191px}#mapDrawer .atlasShipmentList{left:14px;top:210px;width:min(390px,calc(100vw - 28px));max-height:170px}#mapDrawer .atlasInfo{right:14px;top:auto;bottom:72px;max-height:55vh;width:min(430px,calc(100vw - 28px))}#mapDrawer .atlasLegend{left:14px;bottom:78px;max-width:calc(100vw - 28px);overflow:auto;white-space:nowrap}#mapDrawer .atlasWeather{display:none}#mapDrawer .atlasMode{bottom:14px}}
       @media(max-width:620px){#mapDrawer .atlasBrand{display:none}#mapDrawer .atlasTop{right:58px}#mapDrawer .atlasSearch{max-width:none;flex-basis:100%}#mapDrawer .atlasSearch button{padding:8px}#mapDrawer .atlasOpsSummary{top:133px;max-width:calc(100vw - 28px)}#mapDrawer .atlasOpsLiveMeta{top:177px}#mapDrawer .atlasShipmentList{top:196px;max-height:132px}#mapDrawer .atlasInfo{bottom:72px;max-height:57vh}.atlasHero{height:150px!important}#mapDrawer .atlasStats{grid-template-columns:1fr 1fr}#mapDrawer .atlasMode{left:14px;right:14px;transform:none;justify-content:center}#mapDrawer .atlasMode button{padding:8px 7px}}
     `;
+
+
+      /* VTG Atlas — cinematic globe finish: preserve the existing VTG logo exactly */
+      #mapDrawer #vtgPremiumMap{background:#01040a!important}
+      #mapDrawer .atlasCanvas{background:
+        radial-gradient(circle at 50% 48%,rgba(0,184,255,.16),transparent 33%),
+        radial-gradient(circle at 50% 50%,rgba(35,220,160,.07),transparent 48%),
+        linear-gradient(180deg,#020814 0%,#01050b 100%)!important}
+      #mapDrawer .atlasCanvas:before{background:
+        radial-gradient(ellipse at 50% 50%,rgba(0,206,255,.20) 0%,rgba(0,121,255,.08) 28%,transparent 58%),
+        radial-gradient(circle at 74% 20%,rgba(83,190,255,.10),transparent 22%)!important;
+        filter:blur(1px)}
+      #mapDrawer .atlasCanvas:after{opacity:.62!important}
+      #mapDrawer .mapWash{background:
+        radial-gradient(circle at 50% 45%,transparent 0,rgba(0,34,52,.02) 42%,rgba(0,4,10,.58) 100%)!important}
+      #mapDrawer .atlasBrandMark{background:transparent!important;filter:none!important}
+      #mapDrawer .atlasLive i{background:#39e2b1!important;box-shadow:0 0 14px #39e2b1!important}
+      #mapDrawer .atlasCount{border-color:rgba(67,200,255,.28)!important;background:rgba(1,12,24,.72)!important;color:#bfeeff!important}
+      #mapDrawer .atlasWeather{border-color:rgba(67,200,255,.22)!important;background:rgba(1,12,24,.72)!important}
+      #mapDrawer .atlasWeather b{color:#e9fbff!important}
+      #mapDrawer .atlasWeather small{color:#8fd9ee!important}
+      #mapDrawer .atlasInfo .atlasStats .atlasStat,
+      #mapDrawer .atlasInfo .atlasFact{background:rgba(0,153,255,.055)!important;border-color:rgba(67,200,255,.14)!important}
+      #mapDrawer .atlasInfo .atlasStat b{color:#ecfbff!important}
+      #mapDrawer .atlasInfo .atlasDescription{color:#a9c7d2!important}
+      #mapDrawer .atlasAction{border-color:rgba(67,200,255,.25)!important;background:rgba(0,71,120,.24)!important;color:#dff9ff!important}
+      #mapDrawer .atlasAction.primary{background:linear-gradient(135deg,#087eff,#00c7ff 55%,#21dfad)!important;border-color:transparent!important;color:#fff!important;box-shadow:0 8px 28px rgba(0,157,255,.24)!important}
+      #mapDrawer .atlasHeroText .atlasType{color:#62edc2!important}
+      #mapDrawer .atlasHeroText h2{color:#f1fcff!important}
+      #mapDrawer .atlasHeroText p{color:#9ed8e8!important}
+      #mapDrawer .atlasInfoClose{border-color:rgba(67,200,255,.24)!important;background:rgba(0,15,27,.68)!important;color:#dff9ff!important}
+      #mapDrawer .atlasControl{box-shadow:0 0 22px rgba(0,134,255,.10),0 10px 30px rgba(0,0,0,.34)!important}
+      #mapDrawer .atlasControl:first-child{color:#79e9ff!important}
+      #mapDrawer .atlasMode button{color:#9bc9d8!important}
+      #mapDrawer .atlasMode button.active{background:linear-gradient(135deg,rgba(0,126,255,.30),rgba(31,224,173,.16))!important;border-color:rgba(67,200,255,.44)!important}
+      #mapDrawer .atlasMode button[data-mapmode="day"].active{color:#eaffff!important}
+      #mapDrawer .atlasMode button[data-mapmode="night"].active{color:#cceeff!important}
+      #mapDrawer .atlasPortPhoto{border-color:rgba(67,200,255,.18)!important;box-shadow:0 0 30px rgba(0,157,255,.08)}
+      @media(max-width:900px){
+        #mapDrawer .atlasInfo{background:rgba(1,10,20,.92)!important}
+      }
 
       /* VTG Atlas visual direction: vivid blue/green Earth, space backdrop, preserved VTG identity */
       #mapDrawer .drawerPanel{background:#020812!important}
