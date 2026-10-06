@@ -433,8 +433,11 @@
       map.addLayer({id:'vtg-shipment-current',type:'line',source:'vtg-shipment-progress',filter:['==',['get','stage'],'current'],paint:{'line-color':'#f0c66b','line-width':3.4,'line-opacity':.98,'line-dasharray':[1,1]}});
     }
 
+    let activeRoutePopupMarker=null;
+
     function showAtlasRoutePopup(s, kind, point) {
       if(!point||!Number.isFinite(Number(point.lng))||!Number.isFinite(Number(point.lat))) return;
+      if(activeRoutePopupMarker){ try{activeRoutePopupMarker.remove();}catch(_){} activeRoutePopupMarker=null; }
       const popup=doc.createElement('div');
       popup.className='atlasRoutePopup';
       const title=kind==='next'?'NEXT OPERATIONAL POINT':kind==='destination'?'DESTINATION':'CURRENT VESSEL POSITION';
@@ -442,7 +445,8 @@
       const status=s.status||'In transit';
       popup.innerHTML='<strong>'+title+'</strong><span>'+name+'</span><small>'+status+(s.liveTracking?.eta&&kind==='next'?' • ETA '+s.liveTracking.eta:'')+'</small>';
       const marker=new ml.Marker({element:popup,anchor:'bottom'}).setLngLat([Number(point.lng),Number(point.lat)]).addTo(map);
-      window.setTimeout(()=>{ try{marker.remove();}catch(_){} },4200);
+      activeRoutePopupMarker=marker;
+      window.setTimeout(()=>{ if(activeRoutePopupMarker===marker){ try{marker.remove();}catch(_){} activeRoutePopupMarker=null; } },4200);
     }
 
     function addProgressPointMarkers(visibleShipments) {
