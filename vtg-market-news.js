@@ -17,12 +17,12 @@
       if (!r.ok) throw new Error('Market feed unavailable');
       const data = await r.json();
       renderNews(data.news || []); renderPreview(data.news || []); renderRates(data.forex, data.crypto);
-      window.dispatchEvent(new CustomEvent('vtg:market-ready', {detail:data}));
+      window.dispatchEvent(new CustomEvent('vtg:market-ready', {detail:data})); ensureLucide();
     } catch (e) { document.querySelectorAll('[data-vtg-live-status]').forEach(el => el.textContent = 'Live feed temporarily unavailable'); }
   }
   function renderNews(items) {
     const wrap = document.querySelector('.newsLarge'); if (!wrap || !items.length) return;
-    wrap.innerHTML = items.slice(0, 8).map(item => `<article><div class="liveNewsBody"><div class="liveNewsMeta"><span>${esc(item.source || 'Market source')}</span><time>${esc(timeAgo(item.published))}</time></div><h3>${esc(item.title)}</h3><a class="newsSource" href="${esc(item.link || '#')}" target="_blank" rel="noopener noreferrer">Read source <span aria-hidden="true">↗</span></a></div></article>`).join('');
+    wrap.innerHTML = items.slice(0, 8).map(item => `<article><div class="liveNewsBody"><div class="liveNewsMeta"><span>${esc(item.source || 'Market source')}</span><time>${esc(timeAgo(item.published))}</time></div><h3>${esc(item.title)}</h3><a class="newsSource" href="${esc(item.link || '#')}" target="_blank" rel="noopener noreferrer">Read source <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div></article>`).join('');
     const ticker = document.querySelectorAll('.ticker span'); const text = items.slice(0, 8).map(x => x.title).join(' • '); ticker.forEach(x => x.textContent = text || 'Global trade • China trade • Vehicles • Freight • Ports • FX');
   }
   function renderPreview(items) {
