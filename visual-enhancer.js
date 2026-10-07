@@ -318,10 +318,6 @@
     `;
     document.head.appendChild(css);
 
-    const nav=document.querySelector('#mainNav');
-    if(nav){
-      nav.innerHTML='<a href="#market">Marketplace</a><a href="#vtgAtlasPreview">Trade Atlas</a><a href="/about-vintage.html">Company</a>';
-    }
 
     const heroContent=heroIn.querySelector(':scope>div:first-child');
     if(heroContent){
