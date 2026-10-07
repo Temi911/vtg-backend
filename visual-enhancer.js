@@ -237,8 +237,89 @@
     restart();
   }
 
+
+  function upgradeLandingExperience(){
+    const hero=document.querySelector('.hero');
+    const heroIn=document.querySelector('.heroIn');
+    if(!hero || !heroIn || hero.dataset.vtgLandingEnhanced) return;
+    hero.dataset.vtgLandingEnhanced='1';
+
+    const style=document.createElement('style');
+    style.id='vtgLandingExperienceStyles';
+    style.textContent=`
+      .vtgTradeJourney{grid-column:1/-1;position:relative;margin-top:-2px;padding:15px 17px;border:1px solid rgba(255,255,255,.16);border-radius:18px;background:rgba(7,18,27,.48);backdrop-filter:blur(14px);box-shadow:0 16px 45px rgba(0,0,0,.16)}
+      .vtgTradeJourneyHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+      .vtgTradeJourneyHead strong{font-size:10px;color:#fff;letter-spacing:.14em;text-transform:uppercase}
+      .vtgTradeJourneyHead span{font-size:8px;color:#b9ccd5}
+      .vtgJourneySteps{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
+      .vtgJourneyStep{position:relative;display:flex;align-items:center;gap:8px;min-width:0;padding:9px 8px;border:1px solid rgba(255,255,255,.10);border-radius:12px;background:rgba(255,255,255,.045);transition:.22s ease}
+      .vtgJourneyStep:hover{transform:translateY(-2px);background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22)}
+      .vtgJourneyIcon{width:30px;height:30px;flex:none;display:grid;place-items:center;border-radius:9px;background:rgba(192,57,43,.18);color:#ff9a91}
+      .vtgJourneyIcon svg{width:15px;height:15px;stroke-width:1.9}
+      .vtgJourneyStep b{display:block;color:#fff;font-size:8px;white-space:nowrap}
+      .vtgJourneyStep small{display:block;color:#9fb2bc;font-size:7px;margin-top:2px;white-space:nowrap}
+      .vtgLivePill{display:inline-flex;align-items:center;gap:5px;color:#c8e9d8!important}
+      .vtgLivePill i{width:6px;height:6px;border-radius:50%;background:#48c98a;box-shadow:0 0 0 4px rgba(72,201,138,.10);animation:vtgLivePulse 1.8s ease-in-out infinite}
+      @keyframes vtgLivePulse{50%{opacity:.45;transform:scale(.75)}}
+      .vtgValueStrip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
+      .vtgValueItem{padding:15px 16px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,var(--white),var(--soft));transition:.2s ease}
+      .vtgValueItem:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(7,31,48,.08)}
+      .vtgValueTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+      .vtgValueIcon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--soft);color:var(--teal)}
+      .vtgValueIcon svg{width:17px;height:17px;stroke-width:1.8}
+      .vtgValueItem b{font-size:11px;color:var(--ink)}
+      .vtgValueItem p{font-size:9px;line-height:1.55;color:var(--muted);margin:8px 0 0}
+      .vtgSectionKicker{display:inline-flex;align-items:center;gap:7px;font-size:8px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--teal)}
+      .vtgSectionKicker:before{content:'';width:18px;height:1px;background:currentColor}
+      @media(max-width:900px){.vtgJourneySteps{grid-template-columns:repeat(3,1fr)}.vtgValueStrip{grid-template-columns:repeat(2,1fr)}}
+      @media(max-width:560px){.vtgTradeJourney{padding:12px}.vtgJourneySteps{grid-template-columns:repeat(2,1fr)}.vtgJourneyStep{padding:8px}.vtgJourneyStep small{white-space:normal}.vtgValueStrip{grid-template-columns:1fr}}
+    `;
+    document.head.appendChild(style);
+
+    const journey=document.createElement('div');
+    journey.className='vtgTradeJourney';
+    journey.innerHTML=`
+      <div class="vtgTradeJourneyHead">
+        <strong>Your trade, connected from source to destination</strong>
+        <span class="vtgLivePill"><i></i> VTG trade network</span>
+      </div>
+      <div class="vtgJourneySteps">
+        <div class="vtgJourneyStep"><span class="vtgJourneyIcon"><i data-lucide="search"></i></span><span><b>Discover</b><small>Find products</small></span></div>
+        <div class="vtgJourneyStep"><span class="vtgJourneyIcon"><i data-lucide="handshake"></i></span><span><b>Trade</b><small>Verified partners</small></span></div>
+        <div class="vtgJourneyStep"><span class="vtgJourneyIcon"><i data-lucide="landmark"></i></span><span><b>Finance</b><small>Trade finance</small></span></div>
+        <div class="vtgJourneyStep"><span class="vtgJourneyIcon"><i data-lucide="ship"></i></span><span><b>Ship</b><small>Global logistics</small></span></div>
+        <div class="vtgJourneyStep"><span class="vtgJourneyIcon"><i data-lucide="map-pin"></i></span><span><b>Track</b><small>Live milestones</small></span></div>
+        <div class="vtgJourneyStep"><span class="vtgJourneyIcon"><i data-lucide="package-check"></i></span><span><b>Receive</b><small>Complete the trade</small></span></div>
+      </div>
+    `;
+    heroIn.appendChild(journey);
+
+    const firstSection=document.querySelector('.section');
+    if(firstSection){
+      const values=document.createElement('div');
+      values.className='vtgValueStrip';
+      values.innerHTML=`
+        <div class="vtgValueItem"><div class="vtgValueTop"><b>Global sourcing</b><span class="vtgValueIcon"><i data-lucide="globe-2"></i></span></div><p>Discover products and trading partners across the VTG Africa–China–World network.</p></div>
+        <div class="vtgValueItem"><div class="vtgValueTop"><b>Verified trade</b><span class="vtgValueIcon"><i data-lucide="badge-check"></i></span></div><p>Bring suppliers, buyers, agents and institutions into a more trusted workflow.</p></div>
+        <div class="vtgValueItem"><div class="vtgValueTop"><b>Connected logistics</b><span class="vtgValueIcon"><i data-lucide="route"></i></span></div><p>Connect orders to shipment milestones, ports, customs and final delivery.</p></div>
+        <div class="vtgValueItem"><div class="vtgValueTop"><b>Trade intelligence</b><span class="vtgValueIcon"><i data-lucide="chart-no-axes-combined"></i></span></div><p>Use VTG AI and market intelligence to make better trade decisions.</p></div>
+      `;
+      firstSection.insertBefore(values, firstSection.querySelector('.sectionHead')?.nextSibling || null);
+    }
+
+    const sectionHeads=document.querySelectorAll('.sectionHead');
+    sectionHeads.forEach((h,i)=>{
+      if(i===0 && !h.querySelector('.vtgSectionKicker')){
+        const k=document.createElement('span'); k.className='vtgSectionKicker'; k.textContent='The VTG ecosystem';
+        h.insertBefore(k,h.firstChild);
+      }
+    });
+
+    if(window.lucide?.createIcons) window.lucide.createIcons({attrs:{'stroke-width':1.9}});
+  }
+
   function apply(){
-    try{upgradeAI();loadLiveMarket();replaceMarketplaceIntro();upgradeMarketIntelligence();installVTGCarousel();setInterval(loadLiveMarket,300000);if(window.lucide?.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.9}});}catch(e){console.warn('VTG visual enhancer failed',e);}
+    try{upgradeAI();loadLiveMarket();replaceMarketplaceIntro();upgradeMarketIntelligence();installVTGCarousel();upgradeLandingExperience();setInterval(loadLiveMarket,300000);if(window.lucide?.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.9}});}catch(e){console.warn('VTG visual enhancer failed',e);}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
 })();
