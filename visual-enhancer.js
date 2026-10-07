@@ -238,88 +238,172 @@
   }
 
 
-  function upgradeLandingExperience(){
+
+  function buildMinimalLanding(){
+    const landing=document.querySelector('#landing');
     const hero=document.querySelector('.hero');
     const heroIn=document.querySelector('.heroIn');
-    if(!hero || !heroIn || hero.dataset.vtgLandingEnhanced) return;
-    hero.dataset.vtgLandingEnhanced='1';
+    const market=document.querySelector('#market');
+    if(!landing || !hero || !heroIn || !market || landing.dataset.vtgMinimalLanding) return;
+    landing.dataset.vtgMinimalLanding='1';
 
-    const style=document.createElement('style');
-    style.id='vtgLandingExperienceStyles';
-    style.textContent=`
-      .vtgTradeJourney{grid-column:1/-1;position:relative;margin-top:-2px;padding:15px 17px;border:1px solid rgba(255,255,255,.16);border-radius:18px;background:rgba(7,18,27,.48);backdrop-filter:blur(14px);box-shadow:0 16px 45px rgba(0,0,0,.16)}
-      .vtgTradeJourneyHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
-      .vtgTradeJourneyHead strong{font-size:10px;color:#fff;letter-spacing:.14em;text-transform:uppercase}
-      .vtgTradeJourneyHead span{font-size:8px;color:#b9ccd5}
-      .vtgJourneySteps{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
-      .vtgJourneyStep{position:relative;display:flex;align-items:center;gap:8px;min-width:0;padding:9px 8px;border:1px solid rgba(255,255,255,.10);border-radius:12px;background:rgba(255,255,255,.045);transition:.22s ease}
-      .vtgJourneyStep:hover{transform:translateY(-2px);background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22)}
-      .vtgJourneyIcon{width:30px;height:30px;flex:none;display:grid;place-items:center;border-radius:9px;background:rgba(192,57,43,.18);color:#ff9a91}
-      .vtgJourneyIcon svg{width:15px;height:15px;stroke-width:1.9}
-      .vtgJourneyStep b{display:block;color:#fff;font-size:8px;white-space:nowrap}
-      .vtgJourneyStep small{display:block;color:#9fb2bc;font-size:7px;margin-top:2px;white-space:nowrap}
-      .vtgLivePill{display:inline-flex;align-items:center;gap:5px;color:#c8e9d8!important}
-      .vtgLivePill i{width:6px;height:6px;border-radius:50%;background:#48c98a;box-shadow:0 0 0 4px rgba(72,201,138,.10);animation:vtgLivePulse 1.8s ease-in-out infinite}
-      @keyframes vtgLivePulse{50%{opacity:.45;transform:scale(.75)}}
-      .vtgValueStrip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
-      .vtgValueItem{padding:15px 16px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,var(--white),var(--soft));transition:.2s ease}
-      .vtgValueItem:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(7,31,48,.08)}
-      .vtgValueTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
-      .vtgValueIcon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--soft);color:var(--teal)}
-      .vtgValueIcon svg{width:17px;height:17px;stroke-width:1.8}
-      .vtgValueItem b{font-size:11px;color:var(--ink)}
-      .vtgValueItem p{font-size:9px;line-height:1.55;color:var(--muted);margin:8px 0 0}
-      .vtgSectionKicker{display:inline-flex;align-items:center;gap:7px;font-size:8px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--teal)}
-      .vtgSectionKicker:before{content:'';width:18px;height:1px;background:currentColor}
-      @media(max-width:900px){.vtgJourneySteps{grid-template-columns:repeat(3,1fr)}.vtgValueStrip{grid-template-columns:repeat(2,1fr)}}
-      @media(max-width:560px){.vtgTradeJourney{padding:12px}.vtgJourneySteps{grid-template-columns:repeat(2,1fr)}.vtgJourneyStep{padding:8px}.vtgJourneyStep small{white-space:normal}.vtgValueStrip{grid-template-columns:1fr}}
+    const css=document.createElement('style');
+    css.id='vtgMinimalLandingStyles';
+    css.textContent=`
+      #landing .hero{
+        min-height:0;
+        background:
+          linear-gradient(90deg,rgba(7,18,27,.84) 0%,rgba(7,18,27,.60) 48%,rgba(7,18,27,.20) 100%),
+          url('https://images.unsplash.com/photo-1724597500306-a4cbb7d1324e?auto=format&fit=crop&w=2200&q=88') center/cover no-repeat;
+      }
+      #landing .hero:before{display:none}
+      #landing .heroIn{display:block;max-width:1320px;min-height:680px;padding:150px 30px 105px}
+      #landing .heroIn>div:first-child{max-width:760px}
+      #landing .hero .visual,#landing .hero .newsPreview,#landing .hero .heroStats{display:none!important}
+      #landing .hero h1{font-size:clamp(48px,7vw,92px);max-width:820px;letter-spacing:-.055em;margin:17px 0 18px}
+      #landing .hero p{font-size:15px;max-width:610px;line-height:1.8;color:#e7eef2}
+      #landing .heroActions{margin-top:30px}
+      #landing .heroActions .primary,#landing .heroActions .outline{padding:13px 18px;font-size:10px}
+      #landing .heroActions .outline{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.32);color:#fff}
+      #landing .topline{height:3px}
+      #landing .navin{max-width:1320px;padding:12px 24px}
+      #landing .navlinks{gap:22px}
+      #landing .navlinks a{font-size:10px}
+      #landing .navtools #newsBtn,#landing .navtools #themeBtn{display:none}
+      #landing .navtools #mapBtn{display:grid}
+      #landing .navtools #mapBtn:after{content:'Atlas';font-size:8px;margin-left:5px}
+      #landing .navtools #mapBtn{width:auto;padding:0 10px;display:flex;align-items:center;gap:3px}
+      #landing #market{background:#f7f9fa}
+      #landing #market .section{padding:88px 24px 80px}
+      #landing #market .sectionHead{display:block;text-align:center;margin-bottom:22px}
+      #landing #market .sectionHead .eyebrow{justify-content:center}
+      #landing #market .sectionHead h2{font-size:clamp(30px,4vw,48px);margin-top:8px}
+      #landing #market .sectionHead p,#landing #market .trust,#landing #market .section>div[style]{display:none!important}
+      #landing #market #vtgProductCarousel{margin-top:22px}
+      #landing .vtgCategoryGroups{display:none!important}
+      .vtgMinimalAbout{max-width:1320px;margin:0 auto;padding:95px 24px;display:grid;grid-template-columns:.9fr 1.1fr;gap:70px;align-items:center}
+      .vtgMinimalAbout .copy{max-width:560px}
+      .vtgMinimalAbout .kicker,.vtgMinimalAtlas .kicker{font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);display:inline-flex;align-items:center;gap:8px}
+      .vtgMinimalAbout .kicker:before,.vtgMinimalAtlas .kicker:before{content:'';width:20px;height:1px;background:currentColor}
+      .vtgMinimalAbout h2,.vtgMinimalAtlas h2{font-size:clamp(30px,4vw,50px);line-height:1.05;letter-spacing:-.04em;color:var(--navy);margin:13px 0 15px}
+      .vtgMinimalAbout p,.vtgMinimalAtlas p{font-size:12px;line-height:1.8;color:var(--muted);max-width:560px}
+      .vtgAboutImage{height:420px;border-radius:26px;overflow:hidden;box-shadow:0 22px 60px rgba(7,31,48,.15);position:relative}
+      .vtgAboutImage img{width:100%;height:100%;object-fit:cover}
+      .vtgAboutImage:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(5,19,28,.50))}
+      .vtgMinimalAtlas{background:#07131c;color:#fff}
+      .vtgMinimalAtlasInner{max-width:1320px;margin:auto;padding:100px 24px;display:grid;grid-template-columns:1fr 1fr;gap:65px;align-items:center}
+      .vtgMinimalAtlas h2{color:#fff}
+      .vtgMinimalAtlas p{color:#aebfc8}
+      .vtgGlobeFrame{height:410px;border-radius:28px;overflow:hidden;position:relative;background:#02070b;box-shadow:0 25px 80px rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.08)}
+      .vtgGlobeFrame img{width:100%;height:100%;object-fit:cover}
+      .vtgGlobeShade{position:absolute;inset:0;background:radial-gradient(circle at 60% 45%,transparent 0 28%,rgba(2,7,11,.08) 46%,rgba(2,7,11,.70) 100%)}
+      .vtgAtlasBadge{position:absolute;left:20px;bottom:20px;padding:10px 12px;border-radius:12px;background:rgba(4,16,24,.72);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(12px);color:#fff;font-size:9px;font-weight:800}
+      .vtgMinimalCta{max-width:1320px;margin:auto;padding:95px 24px 105px;text-align:center}
+      .vtgMinimalCta h2{font-size:clamp(34px,5vw,58px);letter-spacing:-.045em;margin:8px 0 14px;color:var(--navy)}
+      .vtgMinimalCta p{font-size:12px;color:var(--muted);margin:0 auto 25px}
+      .vtgMinimalCta .primary{padding:14px 22px}
+      @media(max-width:900px){
+        #landing .heroIn{min-height:590px;padding:120px 22px 80px}
+        .vtgMinimalAbout,.vtgMinimalAtlasInner{grid-template-columns:1fr;gap:35px;padding-top:70px;padding-bottom:70px}
+        .vtgAboutImage,.vtgGlobeFrame{height:330px}
+      }
+      @media(max-width:600px){
+        #landing .heroIn{min-height:560px;padding:105px 18px 70px}
+        #landing .hero h1{font-size:47px}
+        #landing .hero p{font-size:13px}
+        #landing .navlinks a:nth-child(n+3){display:none}
+        .vtgMinimalAbout,.vtgMinimalAtlasInner,.vtgMinimalCta{padding-left:18px;padding-right:18px}
+        .vtgAboutImage,.vtgGlobeFrame{height:280px;border-radius:20px}
+      }
     `;
-    document.head.appendChild(style);
+    document.head.appendChild(css);
 
-    const journey=document.createElement('div');
-    journey.className='vtgTradeJourney';
-    journey.innerHTML=`
-      <div class="vtgTradeJourneyHead">
-        <strong>Your trade, connected from source to destination</strong>
-        <span class="vtgLivePill"><i></i> VTG trade network</span>
-      </div>
-      <div class="vtgJourneySteps">
-        <div class="vtgJourneyStep"><span class="vtgJourneyIcon"><i data-lucide="search"></i></span><span><b>Discover</b><small>Find products</small></span></div>
-        <div class="vtgJourneyStep"><span class="vtgJourneyIcon"><i data-lucide="handshake"></i></span><span><b>Trade</b><small>Verified partners</small></span></div>
-        <div class="vtgJourneyStep"><span class="vtgJourneyIcon"><i data-lucide="landmark"></i></span><span><b>Finance</b><small>Trade finance</small></span></div>
-        <div class="vtgJourneyStep"><span class="vtgJourneyIcon"><i data-lucide="ship"></i></span><span><b>Ship</b><small>Global logistics</small></span></div>
-        <div class="vtgJourneyStep"><span class="vtgJourneyIcon"><i data-lucide="map-pin"></i></span><span><b>Track</b><small>Live milestones</small></span></div>
-        <div class="vtgJourneyStep"><span class="vtgJourneyIcon"><i data-lucide="package-check"></i></span><span><b>Receive</b><small>Complete the trade</small></span></div>
-      </div>
-    `;
-    heroIn.appendChild(journey);
-
-    const firstSection=document.querySelector('.section');
-    if(firstSection){
-      const values=document.createElement('div');
-      values.className='vtgValueStrip';
-      values.innerHTML=`
-        <div class="vtgValueItem"><div class="vtgValueTop"><b>Global sourcing</b><span class="vtgValueIcon"><i data-lucide="globe-2"></i></span></div><p>Discover products and trading partners across the VTG Africa–China–World network.</p></div>
-        <div class="vtgValueItem"><div class="vtgValueTop"><b>Verified trade</b><span class="vtgValueIcon"><i data-lucide="badge-check"></i></span></div><p>Bring suppliers, buyers, agents and institutions into a more trusted workflow.</p></div>
-        <div class="vtgValueItem"><div class="vtgValueTop"><b>Connected logistics</b><span class="vtgValueIcon"><i data-lucide="route"></i></span></div><p>Connect orders to shipment milestones, ports, customs and final delivery.</p></div>
-        <div class="vtgValueItem"><div class="vtgValueTop"><b>Trade intelligence</b><span class="vtgValueIcon"><i data-lucide="chart-no-axes-combined"></i></span></div><p>Use VTG AI and market intelligence to make better trade decisions.</p></div>
-      `;
-      firstSection.insertBefore(values, firstSection.querySelector('.sectionHead')?.nextSibling || null);
+    const nav=document.querySelector('#mainNav');
+    if(nav){
+      nav.innerHTML='<a href="#market">Marketplace</a><a href="#vtgAtlasPreview">Trade Atlas</a><a href="/about-vintage.html">Company</a>';
     }
 
-    const sectionHeads=document.querySelectorAll('.sectionHead');
-    sectionHeads.forEach((h,i)=>{
-      if(i===0 && !h.querySelector('.vtgSectionKicker')){
-        const k=document.createElement('span'); k.className='vtgSectionKicker'; k.textContent='The VTG ecosystem';
-        h.insertBefore(k,h.firstChild);
-      }
+    const heroContent=heroIn.querySelector(':scope>div:first-child');
+    if(heroContent){
+      heroContent.innerHTML=`
+        <span class="eyebrow">Africa • China • World</span>
+        <h1>Trade without borders.</h1>
+        <p>One intelligent place to discover products, connect with trusted trade partners and move business across borders.</p>
+        <div class="heroActions">
+          <a class="primary" href="#market">Explore the marketplace <i data-lucide="arrow-up-right"></i></a>
+          <button class="outline" type="button" id="minimalEnterVtg">Enter VTG <i data-lucide="log-in"></i></button>
+        </div>
+      `;
+    }
+
+    market.querySelector('.sectionHead h2').textContent='Discover what moves through VTG.';
+    const carousel=market.querySelector('#vtgProductCarousel');
+    if(carousel) carousel.setAttribute('aria-label','VTG marketplace categories');
+
+    const about=document.createElement('section');
+    about.className='vtgMinimalAbout';
+    about.innerHTML=`
+      <div class="copy">
+        <span class="kicker">A new way to trade</span>
+        <h2>From product discovery to the real world.</h2>
+        <p>VTG brings the commercial side of cross-border trade into one connected environment — products, suppliers, verification, finance and movement — without making the public experience feel like a dashboard.</p>
+      </div>
+      <div class="vtgAboutImage">
+        <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1640529494825-4add7eed660e?auto=format&fit=crop&w=1600&q=86" alt="Aerial container port in Shenzhen">
+      </div>
+    `;
+    market.insertAdjacentElement('afterend',about);
+
+    const atlas=document.createElement('section');
+    atlas.className='vtgMinimalAtlas';
+    atlas.id='vtgAtlasPreview';
+    atlas.innerHTML=`
+      <div class="vtgMinimalAtlasInner">
+        <div>
+          <span class="kicker">Trade Atlas</span>
+          <h2>See trade in motion.</h2>
+          <p>Explore the world from the major trade corridors to individual ports and business locations. The full VTG Atlas remains inside the platform, while the landing page gives visitors just enough to want to explore.</p>
+          <button class="primary" type="button" id="minimalAtlasBtn" style="margin-top:10px">Open Trade Atlas <i data-lucide="globe-2"></i></button>
+        </div>
+        <div class="vtgGlobeFrame">
+          <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1770723965031-65f135a58636?auto=format&fit=crop&w=1400&q=88" alt="Earth from space showing Africa and Europe">
+          <div class="vtgGlobeShade"></div>
+          <div class="vtgAtlasBadge"><i data-lucide="sun"></i> Live world view • Africa • China • South Korea</div>
+        </div>
+      </div>
+    `;
+    about.insertAdjacentElement('afterend',atlas);
+
+    const cta=document.createElement('section');
+    cta.className='vtgMinimalCta';
+    cta.innerHTML=`
+      <span class="eyebrow">Your next trade starts here</span>
+      <h2>Ready when you are.</h2>
+      <p>Enter VTG and choose the workspace built for your role.</p>
+      <button class="primary" type="button" id="minimalFinalEnter">Enter VTG <i data-lucide="arrow-right"></i></button>
+    `;
+    atlas.insertAdjacentElement('afterend',cta);
+
+    ['#how','#network','#contact'].forEach(sel=>{const el=document.querySelector(sel);if(el)el.remove();});
+    document.querySelectorAll('.heroIn>.vtgTradeJourney,.vtgValueStrip').forEach(el=>el.remove());
+    const footer=document.querySelector('#landing .footer');
+    if(footer) footer.style.marginTop='0';
+
+    const open=()=>document.getElementById('joinBtn')?.click();
+    document.getElementById('minimalEnterVtg')?.addEventListener('click',open);
+    document.getElementById('minimalFinalEnter')?.addEventListener('click',open);
+    document.getElementById('minimalAtlasBtn')?.addEventListener('click',()=>document.getElementById('mapBtn')?.click());
+
+    const oldFooterLinks=footer?.querySelectorAll('a');
+    oldFooterLinks?.forEach(a=>{
+      if(['#how','#network','#contact'].includes(a.getAttribute('href'))) a.remove();
     });
 
-    if(window.lucide?.createIcons) window.lucide.createIcons({attrs:{'stroke-width':1.9}});
+    if(window.lucide?.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.85}});
   }
 
   function apply(){
-    try{upgradeAI();loadLiveMarket();replaceMarketplaceIntro();upgradeMarketIntelligence();installVTGCarousel();upgradeLandingExperience();setInterval(loadLiveMarket,300000);if(window.lucide?.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.9}});}catch(e){console.warn('VTG visual enhancer failed',e);}
+    try{upgradeAI();loadLiveMarket();replaceMarketplaceIntro();upgradeMarketIntelligence();installVTGCarousel();buildMinimalLanding();setInterval(loadLiveMarket,300000);if(window.lucide?.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.9}});}catch(e){console.warn('VTG visual enhancer failed',e);}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
 })();
