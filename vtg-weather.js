@@ -9,12 +9,12 @@
   ];
 
   const CODES = {
-    0: '☀ Clear', 1: '🌤 Mostly clear', 2: '⛅ Partly cloudy', 3: '☁ Overcast',
-    45: '🌫 Fog', 48: '🌫 Fog', 51: '🌦 Light drizzle', 61: '🌧 Light rain',
-    63: '🌧 Rain', 65: '🌧 Heavy rain', 71: '🌨 Snow', 80: '🌦 Showers',
-    95: '⛈ Thunderstorm'
+    0: ['sun','Clear'], 1: ['sun-medium','Mostly clear'], 2: ['cloud-sun','Partly cloudy'], 3: ['cloud','Overcast'],
+    45: ['cloud-fog','Fog'], 48: ['cloud-fog','Fog'], 51: ['cloud-drizzle','Light drizzle'], 61: ['cloud-rain','Light rain'],
+    63: ['cloud-rain','Rain'], 65: ['cloud-rain-wind','Heavy rain'], 71: ['cloud-snow','Snow'], 80: ['cloud-rain','Showers'],
+    95: ['cloud-lightning','Thunderstorm']
   };
-  const desc = code => CODES[code] || '—';
+  const desc = code => CODES[code] || ['cloud','—'];
 
   async function fetchHub(hub) {
     try {
@@ -35,7 +35,7 @@
     .vtgWxCard{border:1px solid var(--line);border-radius:10px;padding:9px;text-align:center}
     .vtgWxCard b{display:block;font-size:9px;color:var(--navy)}
     .vtgWxCard .t{font-size:15px;font-weight:800;color:var(--teal);margin:3px 0}
-    .vtgWxCard small{font-size:8px;color:var(--muted)}
+    .vtgWxCard small{font-size:8px;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:4px}.vtgWxIcon{display:inline-grid;place-items:center}.vtgWxIcon svg{width:14px;height:14px;stroke-width:1.8}
     `;
     document.head.appendChild(style);
     const panel = document.createElement('div');
@@ -52,8 +52,9 @@
     const grid = $('#vtgWxGrid'); if (!grid) return;
     const results = await Promise.all(HUBS.map(fetchHub));
     grid.innerHTML = results.map(h => `
-      <div class="vtgWxCard"><b>${h.name}</b><div class="t">${h.temp != null ? h.temp + '°C' : '—'}</div><small>${h.temp != null ? desc(h.code) : 'Unavailable'}</small></div>
+      <div class="vtgWxCard"><b>${h.name}</b><div class="t">${h.temp != null ? h.temp + '°C' : '—'}</div><small>${h.temp != null ? '<span class="vtgWxIcon"><i data-lucide="'+desc(h.code)[0]+'"></i></span>'+desc(h.code)[1] : '<span class="vtgWxIcon"><i data-lucide="cloud-off"></i></span>Unavailable'}</small></div>
     `).join('');
+    if(window.lucide?.createIcons)window.lucide.createIcons();
   }
 
   let started = false;
