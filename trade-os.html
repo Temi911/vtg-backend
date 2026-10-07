@@ -14,6 +14,8 @@ button,input,select{font:inherit}.shell{display:grid;grid-template-columns:250px
 @media(max-width:620px){.main{padding:18px}.stats,.three{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.hero h2{font-size:23px}}
 .brand{display:flex;align-items:center;gap:10px;color:var(--navy);font-weight:800}<style>.atlasHandoff{margin:0 0 16px;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:14px;background:var(--card);padding:14px 16px;box-shadow:0 6px 24px rgba(12,35,43,.04)}.atlasHandoffHead{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.atlasHandoffEyebrow{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}.atlasHandoff h3{margin:4px 0;font-size:15px}.atlasHandoff p{margin:0;color:var(--muted);font-size:10px;line-height:1.5}.atlasHandoffMeta{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.atlasHandoffMeta span{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:5px 8px;font-size:9px;color:var(--muted)}.atlasHandoffActions{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}.atlasHandoffActions button{font-size:10px;padding:8px 10px}@media(max-width:620px){.atlasHandoffHead{flex-direction:column}}</style>
 </style>
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.js"></script>
+<style>.vtgCountryIcon{display:inline-grid;place-items:center;width:20px;height:20px;margin-right:5px;vertical-align:-5px;color:var(--teal,#c0392b)}.vtgCountryIcon svg{width:16px;height:16px;stroke-width:1.9}</style>
 </head>
 <body>
 <div class="shell">
@@ -206,11 +208,11 @@ document.addEventListener('DOMContentLoaded',async()=>{if(await initWorkspaceGat
 
 (function(){
   function ctx(){ return window.VTG_GET_CONTEXT ? window.VTG_GET_CONTEXT() : {country:'Nigeria',currency:'NGN',language:'en',role:'buyer',countryData:{code:'NG'}}; }
-  function flag(code){if(!code||code.length!==2)return '🌍';return String.fromCodePoint(...code.toUpperCase().split('').map(x=>127397+x.charCodeAt(0)));}
+  function flag(code){return '<span class="vtgCountryIcon" title="'+String(code||'Global').replace(/[&<>"']/g,'')+'"><i data-lucide="globe-2"></i></span>';}
   function applyBuyerContext(){
     const c=ctx(), d=c.countryData||{};
     const destination=document.getElementById('buyerDestination');
-    if(destination) destination.innerHTML=flag(d.code)+' '+c.country;
+    if(destination){destination.innerHTML=flag(d.code)+' '+c.country;if(window.lucide?.createIcons)window.lucide.createIcons();}
     const corridor=document.getElementById('buyerCorridor');
     if(corridor) corridor.textContent='China → '+c.country;
     const network=document.getElementById('networkTitle');
