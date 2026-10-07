@@ -250,7 +250,7 @@
     const css=document.createElement('style');
     css.id='vtgMinimalLandingStyles';
     css.textContent=`
-      #landing .hero{
+      #landing,#landing *{font-family:'Manrope',sans-serif}\n      #landing .hero{
         min-height:0;
         background:
           linear-gradient(90deg,rgba(7,18,27,.84) 0%,rgba(7,18,27,.60) 48%,rgba(7,18,27,.20) 100%),
