@@ -285,27 +285,18 @@
       #landing #market #vtgProductCarousel .vtgExplore:hover{transform:translateY(-1px);border-color:rgba(156,36,29,.5);box-shadow:0 8px 20px rgba(7,31,48,.08)}
       #landing #market #vtgProductCarousel .vtgExplore svg{width:14px;height:14px;stroke-width:2}
       #landing .vtgCategoryGroups{display:none!important}
-      .vtgMinimalAbout{max-width:1320px;margin:0 auto;padding:95px 24px;display:grid;grid-template-columns:.9fr 1.1fr;gap:70px;align-items:center}
-      .vtgMinimalAbout .copy{max-width:560px}
-      .vtgMinimalAbout .kicker,.vtgMinimalAtlas .kicker{font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);display:inline-flex;align-items:center;gap:8px}
-      .vtgMinimalAbout .kicker:before,.vtgMinimalAtlas .kicker:before{content:'';width:20px;height:1px;background:currentColor}
-      .vtgMinimalAbout h2,.vtgMinimalAtlas h2{font-size:clamp(30px,4vw,50px);line-height:1.05;letter-spacing:-.04em;color:var(--navy);margin:13px 0 15px}
-      .vtgMinimalAbout p,.vtgMinimalAtlas p{font-size:12px;line-height:1.8;color:var(--muted);max-width:560px}
-      .vtgAboutImage{height:420px;border-radius:26px;overflow:hidden;box-shadow:0 22px 60px rgba(7,31,48,.15);position:relative}
-      .vtgAboutImage img{width:100%;height:100%;object-fit:cover}
-      .vtgAboutImage:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(5,19,28,.50))}
-      .vtgMinimalAtlas{background:#07131c;color:#fff}
-      .vtgMinimalAtlasInner{max-width:1320px;margin:auto;padding:100px 24px;display:grid;grid-template-columns:1fr 1fr;gap:65px;align-items:center}
-      .vtgMinimalAtlas h2{color:#fff}
-      .vtgMinimalAtlas p{color:#aebfc8}
-      .vtgGlobeFrame{height:410px;border-radius:28px;overflow:hidden;position:relative;background:#02070b;box-shadow:0 25px 80px rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.08)}
-      .vtgGlobeFrame img{width:100%;height:100%;object-fit:cover}
-      .vtgGlobeShade{position:absolute;inset:0;background:radial-gradient(circle at 60% 45%,transparent 0 28%,rgba(2,7,11,.08) 46%,rgba(2,7,11,.70) 100%)}
-      .vtgAtlasBadge{position:absolute;left:20px;bottom:20px;padding:10px 12px;border-radius:12px;background:rgba(4,16,24,.72);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(12px);color:#fff;font-size:9px;font-weight:800}
-      .vtgMinimalCta{max-width:1320px;margin:auto;padding:95px 24px 105px;text-align:center}
-      .vtgMinimalCta h2{font-size:clamp(34px,5vw,58px);letter-spacing:-.045em;margin:8px 0 14px;color:var(--navy)}
-      .vtgMinimalCta p{font-size:12px;color:var(--muted);margin:0 auto 25px}
-      .vtgMinimalCta .primary{padding:14px 22px}
+      .vtgMinimalAbout{display:none!important}
+      .vtgMinimalAtlas{background:#06151a;color:#fff;position:relative;overflow:hidden}
+      .vtgMinimalAtlas:before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 72% 35%,rgba(44,190,151,.16),transparent 30%),radial-gradient(circle at 18% 80%,rgba(42,121,205,.12),transparent 34%);pointer-events:none}
+      .vtgMinimalAtlasInner{max-width:1320px;margin:auto;padding:92px 24px 98px;display:grid;grid-template-columns:.78fr 1.22fr;gap:58px;align-items:center;position:relative;z-index:1}
+      .vtgMinimalAtlas .kicker{font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:#66d6a4;display:inline-flex;align-items:center;gap:8px}
+      .vtgMinimalAtlas .kicker:before{content:'';width:20px;height:1px;background:currentColor}
+      .vtgMinimalAtlas h2{font-size:clamp(34px,4.5vw,58px);line-height:1.02;letter-spacing:-.045em;color:#fff;margin:13px 0 15px}
+      .vtgMinimalAtlas p{font-size:12px;line-height:1.85;color:#a9c0c2;max-width:500px}
+      .vtgAtlasActions{display:flex;gap:9px;flex-wrap:wrap;margin-top:22px}.vtgAtlasActions .primary{background:#16865d}.vtgAtlasActions .outline{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16);color:#fff}
+      .vtgGlobeFrame{height:470px;border-radius:30px;overflow:hidden;position:relative;background:#02080b;box-shadow:0 30px 90px rgba(0,0,0,.42);border:1px solid rgba(113,208,171,.18)}
+      .vtgGlobeCanvas{position:absolute;inset:0}.vtgGlobeCanvas .maplibregl-canvas{outline:none}.vtgGlobeShade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 40%,rgba(1,7,10,.08) 58%,rgba(1,7,10,.68) 100%)}
+      .vtgAtlasHud{position:absolute;left:17px;right:17px;top:17px;display:flex;justify-content:space-between;gap:10px;z-index:4;pointer-events:none}.vtgAtlasHud span,.vtgAtlasBadge{padding:8px 10px;border-radius:10px;background:rgba(3,17,15,.72);border:1px solid rgba(116,207,173,.18);backdrop-filter:blur(12px);color:#d6ece3;font-size:8px;font-weight:800}.vtgAtlasBadge{position:absolute;left:17px;bottom:17px;z-index:4}.vtgAtlasHud span:last-child{color:#80dcb1}.vtgAtlasHint{position:absolute;right:17px;bottom:17px;z-index:4;padding:8px 10px;border-radius:10px;background:rgba(3,17,15,.62);border:1px solid rgba(255,255,255,.10);color:#9eb7ae;font-size:7px}
       @media(max-width:900px){
         #landing .heroIn{min-height:590px;padding:120px 22px 80px}
         .vtgMinimalAbout,.vtgMinimalAtlasInner{grid-template-columns:1fr;gap:35px;padding-top:70px;padding-bottom:70px}
@@ -360,38 +351,30 @@
 
     const about=document.createElement('section');
     about.className='vtgMinimalAbout';
-    about.innerHTML=`
-      <div class="copy">
-        <span class="kicker">A new way to trade</span>
-        <h2>From product discovery to the real world.</h2>
-        <p>VTG brings the commercial side of cross-border trade into one connected environment — products, suppliers, verification, finance and movement — without making the public experience feel like a dashboard.</p>
-      </div>
-      <div class="vtgAboutImage">
-        <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1640529494825-4add7eed660e?auto=format&fit=crop&w=1600&q=86" alt="Aerial container port in Shenzhen">
-      </div>
-    `;
     market.insertAdjacentElement('afterend',about);
 
     const atlas=document.createElement('section');
     atlas.className='vtgMinimalAtlas';
     atlas.id='vtgAtlasPreview';
-    atlas.innerHTML=`
-      <div class="vtgMinimalAtlasInner">
-        <div>
-          <span class="kicker">Trade Atlas</span>
-          <h2>See trade in motion.</h2>
-          <p>Explore the world from the major trade corridors to individual ports and business locations. The full VTG Atlas remains inside the platform, while the landing page gives visitors just enough to want to explore.</p>
-          <button class="primary" type="button" id="minimalAtlasBtn" style="margin-top:10px">Open Trade Atlas <i data-lucide="globe-2"></i></button>
-        </div>
-        <div class="vtgGlobeFrame">
-          <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1770723965031-65f135a58636?auto=format&fit=crop&w=1400&q=88" alt="Earth from space showing Africa and Europe">
-          <div class="vtgGlobeShade"></div>
-          <div class="vtgAtlasBadge"><i data-lucide="sun"></i> Live world view • Africa • China • South Korea</div>
-        </div>
-      </div>
-    `;
+    atlas.innerHTML='<div class="vtgMinimalAtlasInner"><div><span class="kicker">VTG Trade Atlas</span><h2>See global trade in motion.</h2><p>Explore the trade corridors connecting Africa, China and South Korea — from ports and airports to vessels, shipments and key trade locations.</p><div class="vtgAtlasActions"><button class="primary" type="button" id="minimalAtlasBtn">Open Trade Atlas <i data-lucide="globe-2"></i></button><button class="outline" type="button" id="atlasNigeriaBtn"><i data-lucide="map-pin"></i> Africa corridor</button></div></div><div class="vtgGlobeFrame"><div class="vtgGlobeCanvas" id="vtgLandingGlobe" aria-label="Interactive VTG Trade Atlas globe"></div><div class="vtgGlobeShade"></div><div class="vtgAtlasHud"><span><i data-lucide="sun"></i> Automatic day / night</span><span>Africa ↔ Asia</span></div><div class="vtgAtlasBadge"><i data-lucide="route"></i> Live trade corridor preview</div><div class="vtgAtlasHint">Drag to rotate • Scroll to zoom</div></div></div>';
     about.insertAdjacentElement('afterend',atlas);
 
+    const initLandingGlobe=()=>{
+      const target=document.getElementById('vtgLandingGlobe');
+      if(!target || target.dataset.ready) return;
+      target.dataset.ready='1';
+      const boot=()=>{
+        if(!window.maplibregl){setTimeout(boot,120);return;}
+        const map=new maplibregl.Map({container:target,style:{version:8,projection:{type:'globe'},sources:{sat:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:18}},layers:[{id:'sat',type:'raster',source:'sat'}]},center:[68,18],zoom:1.45,attributionControl:false,dragRotate:true,touchZoomRotate:true});
+        map.on('load',()=>{
+          map.setFog({color:'rgba(4,15,18,.35)',highColor:'rgba(8,25,32,.28)',spaceColor:'rgba(1,5,8,1)',starIntensity:.75});
+          [['Tin Can Island Port',3.3848,6.4607],['Nansha Port',113.5833,22.7167],['Busan Port',129.0403,35.1028]].forEach(p=>{const el=document.createElement('button');el.type='button';el.title=p[0];el.setAttribute('aria-label',p[0]);el.style.cssText='width:12px;height:12px;border:2px solid #d8fff0;border-radius:50%;background:#1eb77a;box-shadow:0 0 0 5px rgba(30,183,122,.18);cursor:pointer;padding:0';new maplibregl.Marker({element:el}).setLngLat([p[1],p[2]]).addTo(map);el.onclick=()=>map.flyTo({center:[p[1],p[2]],zoom:4.2,duration:1100});});
+          let bearing=0;const spin=()=>{if(document.hidden)return;bearing=(bearing+.035)%360;map.setBearing(bearing);requestAnimationFrame(spin)};requestAnimationFrame(spin);
+        });
+      };
+      if(!window.maplibregl){const link=document.createElement('link');link.rel='stylesheet';link.href='https://unpkg.com/maplibre-gl@5.13.0/dist/maplibre-gl.css';document.head.appendChild(link);const s=document.createElement('script');s.src='https://unpkg.com/maplibre-gl@5.13.0/dist/maplibre-gl.js';s.onload=boot;document.head.appendChild(s)}else boot();
+    };
+    initLandingGlobe();
     const cta=document.createElement('section');
     cta.className='vtgMinimalCta';
     cta.innerHTML=`
@@ -411,6 +394,7 @@
     document.getElementById('minimalEnterVtg')?.addEventListener('click',open);
     document.getElementById('minimalFinalEnter')?.addEventListener('click',open);
     document.getElementById('minimalAtlasBtn')?.addEventListener('click',()=>document.getElementById('mapBtn')?.click());
+    document.getElementById('atlasNigeriaBtn')?.addEventListener('click',()=>document.getElementById('mapBtn')?.click());
 
     const oldFooterLinks=footer?.querySelectorAll('a');
     oldFooterLinks?.forEach(a=>{
