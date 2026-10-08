@@ -25,7 +25,17 @@ main{width:min(1180px,calc(100% - 40px));margin:0 auto}.section{padding:82px 0}.
 @media(max-width:850px){.helpGrid,.connectGrid{grid-template-columns:1fr 1fr}.enquiry{grid-template-columns:1fr;gap:30px}.footerTop{grid-template-columns:1fr}.footerLinks{grid-template-columns:repeat(2,1fr)}.sectionHead{display:block}.sectionHead p{margin-top:16px}}
 @media(max-width:600px){.nav{height:68px}.hero{min-height:500px}.heroIn{padding:70px 0 58px}.hero h1{font-size:44px}.hero p{font-size:15px}.helpGrid,.connectGrid,.fields{grid-template-columns:1fr}.field.full{grid-column:auto}.form{padding:21px}.section{padding:62px 0}.footerLinks{grid-template-columns:1fr 1fr}.footerBottom{display:block}.footerBottom div{margin-top:12px;flex-wrap:wrap}}
 </style>
-</head>
+<style id="vtg-response-desk">
+.helpCard{cursor:pointer;text-align:left;width:100%;border:1px solid var(--line);transition:.2s ease}
+.helpCard:hover,.helpCard:focus-visible{transform:translateY(-3px);border-color:#cfd5db;box-shadow:0 14px 34px rgba(16,21,27,.08);outline:none}
+.helpCard.active{border-color:var(--red);box-shadow:0 0 0 3px rgba(215,25,32,.08)}
+.deskRoute{display:none;margin-top:18px;border:1px solid var(--line);border-radius:18px;background:var(--soft);padding:20px}
+.deskRoute.open{display:block}.deskRouteTop{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
+.deskRoute strong{font-size:15px}.deskRoute p{margin:6px 0 0;color:var(--muted);font-size:12px}.deskBadge{font-size:11px;font-weight:800;color:var(--red);white-space:nowrap}
+.topicRow{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.topicBtn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 12px;font:inherit;font-size:11px;cursor:pointer}.topicBtn.active{border-color:var(--red);color:var(--red)}
+.routeSteps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.routeStep{border:1px solid var(--line);border-radius:16px;padding:20px;background:#fff}.routeStep .icon{margin-bottom:12px}
+@media(max-width:700px){.deskRouteTop{display:block}.deskBadge{display:block;margin-top:12px}.routeSteps{grid-template-columns:1fr}}
+</style></head>
 <body>
 <header class="nav">
   <a class="logo" href="/"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a>
@@ -43,14 +53,14 @@ main{width:min(1180px,calc(100% - 40px));margin:0 auto}.section{padding:82px 0}.
 
 <main>
 <section class="section">
-  <div class="sectionHead"><div><span class="eyebrow">How can we help?</span><h2>Start with the right team.</h2></div><p>Choose the area that best matches your enquiry. Keeping these paths separate makes it easier to get a useful response without unnecessary back-and-forth.</p></div>
+  <div class="sectionHead"><div><span class="eyebrow">VTG Response Desk</span><h2>Tell VTG what you need.</h2></div><p>Choose the service area that best matches your enquiry. Your selection identifies the VTG team best positioned to handle it.</p></div>
   <div class="helpGrid">
-    <article class="helpCard"><div class="icon"><i data-lucide="handshake"></i></div><h3>Trade Support</h3><p>Questions about sourcing, importing, selling or navigating a VTG trade workflow.</p></article>
-    <article class="helpCard"><div class="icon"><i data-lucide="store"></i></div><h3>Marketplace Support</h3><p>Help with products, supplier profiles, buyer enquiries or marketplace activity.</p></article>
-    <article class="helpCard"><div class="icon"><i data-lucide="ship"></i></div><h3>Logistics & Shipping</h3><p>Enquiries about shipments, routes, ports, milestones and delivery coordination.</p></article>
-    <article class="helpCard"><div class="icon"><i data-lucide="landmark"></i></div><h3>Finance & Payments</h3><p>Questions about trade finance, settlement coordination or payment-related workflows.</p></article>
-    <article class="helpCard"><div class="icon"><i data-lucide="factory"></i></div><h3>Supplier Support</h3><p>Assistance with supplier participation, company profiles and trade activity on VTG.</p></article>
-    <article class="helpCard"><div class="icon"><i data-lucide="shield-alert"></i></div><h3>Complaints & Resolution</h3><p>Report a problem or raise a formal concern so the appropriate team can review it.</p></article>
+    <button type="button" class="helpCard" data-category="Trade Support" data-team="VTG Trade Support Team"><div class="icon"><i data-lucide="handshake"></i></div><h3>Trade Support</h3><p>Questions about sourcing, importing, selling or navigating a VTG trade workflow.</p></button>
+    <button type="button" class="helpCard" data-category="Marketplace Support" data-team="VTG Marketplace Team"><div class="icon"><i data-lucide="store"></i></div><h3>Marketplace Support</h3><p>Help with products, supplier profiles, buyer enquiries or marketplace activity.</p></button>
+    <button type="button" class="helpCard" data-category="Logistics & Shipping" data-team="VTG Logistics Team"><div class="icon"><i data-lucide="ship"></i></div><h3>Logistics & Shipping</h3><p>Enquiries about shipments, routes, ports, milestones and delivery coordination.</p></button>
+    <button type="button" class="helpCard" data-category="Finance & Payments" data-team="VTG Finance Team"><div class="icon"><i data-lucide="landmark"></i></div><h3>Finance & Payments</h3><p>Questions about trade finance, settlement coordination or payment-related workflows.</p></button>
+    <button type="button" class="helpCard" data-category="Supplier Support" data-team="VTG Supplier Relations Team"><div class="icon"><i data-lucide="factory"></i></div><h3>Supplier Support</h3><p>Assistance with supplier participation, company profiles and trade activity on VTG.</p></button>
+    <button type="button" class="helpCard" data-category="Complaints & Resolution" data-team="VTG Resolution Team"><div class="icon"><i data-lucide="shield-alert"></i></div><h3>Complaints & Resolution</h3><p>Report a problem or raise a formal concern so the appropriate team can review it.</p></button>
   </div>
 </section>
 
@@ -77,13 +87,15 @@ main{width:min(1180px,calc(100% - 40px));margin:0 auto}.section{padding:82px 0}.
   </form>
 </section>
 
-<section class="section connect">
-  <div class="sectionHead"><div><span class="eyebrow">Connect with VTG</span><h2>Direct paths for important enquiries.</h2></div><p>For a general question, an active trade issue or a business conversation, use the route that fits your need.</p></div>
-  <div class="connectGrid">
-    <article class="connectCard"><div class="icon"><i data-lucide="mail"></i></div><h3>General Enquiries</h3><p>For questions that do not fit one of the specialist support areas.</p><a href="mailto:vintageafricatrade@gmail.com">Email VTG <i data-lucide="arrow-up-right"></i></a></article>
-    <article class="connectCard"><div class="icon"><i data-lucide="life-buoy"></i></div><h3>Trade Support</h3><p>Use the enquiry form above for help with an active trade or VTG workflow.</p><a href="#contactForm">Start an enquiry <i data-lucide="arrow-up-right"></i></a></article>
-    <article class="connectCard"><div class="icon"><i data-lucide="briefcase-business"></i></div><h3>Business Partnerships</h3><p>For organizations interested in working with VTG on strategic business opportunities.</p><a href="/partnerships.html">View partnerships <i data-lucide="arrow-up-right"></i></a></article>
-  </div>
+<section class="section">
+<div class="sectionHead"><div><span class="eyebrow">How VTG responds</span><h2>A clearer path to the right people.</h2></div><p>Your enquiry moves from service selection to the right team, with the context needed to reduce unnecessary back-and-forth.</p></div>
+<div class="routeSteps">
+<article class="routeStep"><div class="icon"><i data-lucide="route"></i></div><h3>Choose a team</h3><p>Select the area that matches what you need help with.</p></article>
+<article class="routeStep"><div class="icon"><i data-lucide="file-text"></i></div><h3>Give the context</h3><p>Choose a topic and provide your message and any useful reference.</p></article>
+<article class="routeStep"><div class="icon"><i data-lucide="messages-square"></i></div><h3>Continue the conversation</h3><p>VTG responds through the contact details you provide.</p></article>
+</div></section><section class="section">
+<div class="sectionHead"><div><span class="eyebrow">General enquiry</span><h2>Not sure where you belong?</h2></div><p>Start a general enquiry and VTG can route it to the appropriate team.</p></div>
+<div class="routeSteps"><article class="routeStep"><div class="icon"><i data-lucide="help-circle"></i></div><h3>General enquiry</h3><p>For questions that do not fit one of the specialist service areas.</p><a href="#contactForm" id="generalEnquiry">Start a general enquiry <i data-lucide="arrow-right"></i></a></article><article class="routeStep"><div class="icon"><i data-lucide="briefcase-business"></i></div><h3>Business partnerships</h3><p>Strategic partnership opportunities have their own dedicated route.</p><a href="/partnerships.html">View partnerships <i data-lucide="arrow-right"></i></a></article><article class="routeStep"><div class="icon"><i data-lucide="user-plus"></i></div><h3>Become an agent</h3><p>Agent registration remains separate so applicants get the correct onboarding flow.</p><a href="/agent.html">Agent portal <i data-lucide="arrow-right"></i></a></article></div>
 </section>
 </main>
 
@@ -100,15 +112,43 @@ main{width:min(1180px,calc(100% - 40px));margin:0 auto}.section{padding:82px 0}.
 <div class="footerIn footerBottom"><span>© 2026 Vintage Trade Global • Powered by Folayele Global Resources Limited</span><div><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/code-of-conduct.html">Code of Conduct</a></div></div>
 </footer>
 <script>
-lucide.createIcons();
-document.getElementById('contactForm').addEventListener('submit',function(e){
-  e.preventDefault();
-  const d=new FormData(this);
-  const subject=encodeURIComponent('[VTG Enquiry] '+d.get('subject'));
-  const body=encodeURIComponent('Name: '+d.get('name')+'\nEmail: '+d.get('email')+'\nCompany: '+(d.get('company')||'Not provided')+'\nEnquiry type: '+d.get('category')+'\nReference: '+(d.get('reference')||'Not provided')+'\n\n'+d.get('message'));
-  window.location.href='mailto:vintageafricatrade@gmail.com?subject='+subject+'&body='+body;
-  document.getElementById('status').textContent='Your email application is opening with the enquiry prepared.';
+const VTG_ROUTES={
+"Trade Support":{team:"VTG Trade Support Team",topics:["Sourcing & buying","Importing & selling","Trade workflow","Account or trade question"]},
+"Marketplace Support":{team:"VTG Marketplace Team",topics:["Product enquiry","Supplier profile","Buyer enquiry","Marketplace activity"]},
+"Logistics & Shipping":{team:"VTG Logistics Team",topics:["Shipment status","Port or route","Customs","Delivery coordination"]},
+"Finance & Payments":{team:"VTG Finance Team",topics:["Trade finance","Payment or settlement","Currency / FX","Finance workflow"]},
+"Supplier Support":{team:"VTG Supplier Relations Team",topics:["Supplier onboarding","Company profile","Verification","Trade activity"]},
+"Complaints & Resolution":{team:"VTG Resolution Team",topics:["Order or shipment issue","Marketplace issue","Service complaint","Formal concern"]},
+"General Enquiry":{team:"VTG General Enquiries Team",topics:["General question","Business enquiry","Other"]}
+};
+const form=document.getElementById("contactForm"),category=document.getElementById("category"),status=document.getElementById("status");
+const route=document.createElement("div");route.className="deskRoute";route.id="deskRoute";
+route.innerHTML='<div class="deskRouteTop"><div><strong id="routeTitle">VTG Response Desk</strong><p id="routeText">Choose a service area to route your enquiry.</p></div><span class="deskBadge" id="routeTeam">Team routing</span></div><div class="topicRow" id="topicRow"></div>';
+document.querySelector("#contactForm").parentElement.insertBefore(route,form);
+function chooseRoute(cat,scroll=true){
+ const r=VTG_ROUTES[cat]; if(!r)return;
+ category.value=cat; route.classList.add("open");
+ document.getElementById("routeTitle").textContent="Your enquiry is going to the right team";
+ document.getElementById("routeText").textContent="Choose the closest topic so "+r.team+" receives the right context.";
+ document.getElementById("routeTeam").textContent=r.team;
+ const row=document.getElementById("topicRow");row.innerHTML=r.topics.map(t=>'<button type="button" class="topicBtn">'+t+'</button>').join("");
+ row.querySelectorAll(".topicBtn").forEach(b=>b.onclick=()=>{row.querySelectorAll(".topicBtn").forEach(x=>x.classList.remove("active"));b.classList.add("active");let sel=document.getElementById("topic");if(sel)sel.value=b.textContent});
+ let sel=document.getElementById("topic");if(sel)sel.innerHTML='<option value="">Select a topic</option>'+r.topics.map(t=>'<option>'+t+'</option>').join("");
+ document.querySelectorAll(".helpCard").forEach(x=>x.classList.toggle("active",x.dataset.category===cat));
+ if(scroll)document.getElementById("contactForm").scrollIntoView({behavior:"smooth",block:"center"});
+ lucide.createIcons();
+}
+document.querySelectorAll(".helpCard").forEach(card=>card.addEventListener("click",()=>chooseRoute(card.dataset.category)));
+category.addEventListener("change",()=>{if(category.value)chooseRoute(category.value,false)});
+const general=document.getElementById("generalEnquiry");if(general)general.addEventListener("click",e=>{e.preventDefault();chooseRoute("General Enquiry");});
+form.addEventListener("submit",function(e){
+ e.preventDefault();const d=new FormData(this),r=VTG_ROUTES[d.get("category")]||VTG_ROUTES["General Enquiry"];
+ const subject=encodeURIComponent("["+r.team+"] "+d.get("subject"));
+ const body=encodeURIComponent("VTG Team: "+r.team+"\nCategory: "+d.get("category")+"\nTopic: "+(d.get("topic")||"Not specified")+"\nName: "+d.get("name")+"\nEmail: "+d.get("email")+"\nCompany: "+(d.get("company")||"Not provided")+"\nReference: "+(d.get("reference")||"Not provided")+"\n\n"+d.get("message"));
+ window.location.href="mailto:vintageafricatrade@gmail.com?subject="+subject+"&body="+body;
+ status.textContent="Your enquiry is prepared for "+r.team+". Your email application is opening now.";
 });
+lucide.createIcons();
 </script>
 </body>
 </html>
