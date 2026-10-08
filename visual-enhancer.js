@@ -279,36 +279,34 @@
       #landing #market .sectionHead p,#landing #market .trust,#landing #market .section>div[style]{display:none!important}
       #landing #market #vtgProductCarousel{margin-top:22px}
       #landing .vtgCategoryGroups{display:none!important}
-      .vtgMinimalAbout{background:linear-gradient(180deg,#f8f9fa 0%,#eef1f3 100%);max-width:none;padding:92px 24px 100px;display:grid;grid-template-columns:minmax(0,560px) minmax(0,620px);justify-content:center;gap:72px;align-items:center;border-top:1px solid rgba(156,36,29,.08);border-bottom:1px solid rgba(7,31,48,.06);position:relative;overflow:hidden}
-      .vtgMinimalAbout:before{content:'';position:absolute;width:760px;height:760px;border:1px solid rgba(156,36,29,.045);border-radius:50%;right:-360px;top:-300px;pointer-events:none}
+      .vtgMinimalAbout{background:linear-gradient(180deg,#f7f9fa 0%,#eef2f4 100%);max-width:none;padding:95px 24px;display:grid;grid-template-columns:minmax(0,560px) minmax(0,660px);justify-content:center;gap:70px;align-items:center;border-top:1px solid rgba(156,36,29,.08);border-bottom:1px solid rgba(7,31,48,.06);position:relative;overflow:hidden}
       .vtgMinimalAbout .copy{max-width:560px;position:relative;z-index:2}
       .vtgMinimalAbout .kicker{font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:#9c241d;display:inline-flex;align-items:center;gap:8px}
       .vtgMinimalAbout .kicker:before{content:'';width:20px;height:1px;background:currentColor}
       .vtgMinimalAbout h2{font-size:clamp(30px,4vw,50px);line-height:1.05;letter-spacing:-.04em;color:#0d1117;margin:13px 0 15px}.vtgMinimalAbout h2 span{color:#9c241d}
-      .vtgMinimalAbout p{font-size:12px;line-height:1.8;color:#586771;max-width:540px}
-      .vtgEcosystem{position:relative;width:min(520px,100%);aspect-ratio:1/1;margin:8px auto 0}
-      .vtgOrbit{position:absolute;inset:0;border:1px solid rgba(156,36,29,.18);border-radius:50%;animation:vtgOrbitSpin 32s linear infinite}
-      .vtgOrbit:before{content:'';position:absolute;inset:13%;border:1px dashed rgba(92,108,117,.18);border-radius:50%}
-      .vtgOrbit:after{content:'';position:absolute;width:7px;height:7px;border-radius:50%;background:#9c241d;top:8%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 7px rgba(156,36,29,.07),0 0 18px rgba(156,36,29,.24)}
-      .vtgOrbitCore{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:128px;height:128px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#fff,#f2f4f5);border:1px solid rgba(156,36,29,.22);box-shadow:0 18px 45px rgba(7,31,48,.12),inset 0 0 0 8px rgba(156,36,29,.035);z-index:3}
-      .vtgOrbitCore strong{font-size:25px;letter-spacing:-.05em;color:#9c241d}
-      .vtgOrbitCore span{display:block;font-size:7px;letter-spacing:.14em;text-transform:uppercase;color:#66747c;margin-top:2px}
-      .vtgOrbitNode{position:absolute;left:50%;top:50%;width:92px;height:92px;margin:-46px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.94);border:1px solid rgba(13,17,23,.09);box-shadow:0 12px 28px rgba(7,31,48,.09);z-index:4}
-      .vtgOrbitNode:nth-child(2){transform:translate(-50%,-50%) translateY(-190px)}
-      .vtgOrbitNode:nth-child(3){transform:translate(-50%,-50%) translate(181px,-59px)}
-      .vtgOrbitNode:nth-child(4){transform:translate(-50%,-50%) translate(112px,155px)}
-      .vtgOrbitNode:nth-child(5){transform:translate(-50%,-50%) translate(-112px,155px)}
-      .vtgOrbitNode:nth-child(6){transform:translate(-50%,-50%) translate(-181px,-59px)}
-      .vtgOrbitNode .icon{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:#f8f1f0;color:#9c241d;margin:auto}
-      .vtgOrbitNode svg{width:15px;height:15px;stroke-width:1.8}
-      .vtgOrbitNode strong{display:block;font-size:8px;color:#17212b;text-align:center;margin-top:5px}
-      .vtgOrbitNode span{display:block;font-size:6.5px;color:#74818a;text-align:center;margin-top:3px}
-      .vtgOrbitNode>div{display:flex;flex-direction:column;align-items:center}
-      @keyframes vtgOrbitSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-      @media(prefers-reduced-motion:reduce){.vtgOrbit{animation:none}}
-      .vtgAboutImage{height:420px;border-radius:26px;overflow:hidden;box-shadow:0 22px 60px rgba(7,31,48,.15);position:relative;border:1px solid rgba(156,36,29,.10);z-index:1}
-      .vtgAboutImage img{width:100%;height:100%;object-fit:cover}
-      .vtgAboutImage:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 42%,rgba(5,19,28,.50))}
+      .vtgMinimalAbout p{font-size:12px;line-height:1.8;color:#586771;max-width:560px}
+      .tradeNetworkVisual{height:470px;position:relative;overflow:hidden;border:1px solid rgba(156,36,29,.18);border-radius:28px;background:radial-gradient(circle at 72% 28%,rgba(156,36,29,.16),transparent 28%),radial-gradient(circle at 28% 72%,rgba(156,36,29,.08),transparent 32%),rgba(5,10,16,.96);box-shadow:0 28px 80px rgba(7,31,48,.22)}
+      .networkGlow{position:absolute;width:240px;height:240px;border-radius:50%;right:45px;top:25px;background:rgba(156,36,29,.10);filter:blur(3px)}
+      .networkLines{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+      .routePath{fill:none;stroke:#9c241d;stroke-width:2.5;stroke-linecap:round;stroke-dasharray:9 10;animation:vtgRouteFlow 5s linear infinite;filter:drop-shadow(0 0 5px rgba(156,36,29,.38));opacity:.9}
+      .route2{animation-delay:-2.2s;opacity:.55}
+      .routeNode{fill:#f7d8d5;stroke:#9c241d;stroke-width:3;filter:drop-shadow(0 0 5px rgba(156,36,29,.38))}
+      @keyframes vtgRouteFlow{to{stroke-dashoffset:-95}}
+      .networkMapShape{position:absolute;border:1px solid rgba(156,36,29,.20);background:linear-gradient(145deg,rgba(156,36,29,.10),rgba(7,31,48,.08))}
+      .networkMapShape.africa{left:8%;bottom:18%;width:155px;height:170px;border-radius:48% 42% 58% 38%;transform:rotate(20deg)}
+      .networkMapShape.africa span{position:absolute;inset:20px;border:1px dashed rgba(156,36,29,.24);border-radius:50% 40% 55% 45%}
+      .networkMapShape.asia{right:5%;top:10%;width:190px;height:125px;border-radius:55% 35% 48% 42%;transform:rotate(-14deg)}
+      .networkMapShape.asia span{position:absolute;inset:17px;border:1px dashed rgba(156,36,29,.22);border-radius:45% 55% 40% 60%}
+      .networkNode{position:absolute;z-index:3;display:flex;flex-direction:column;gap:3px;padding:10px 12px;border:1px solid rgba(255,255,255,.13);background:rgba(9,16,23,.78);border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.18);backdrop-filter:blur(10px)}
+      .networkNode .lucide{width:15px;height:15px;color:#d95a50}.networkNode strong{font-size:10px;color:#f5f8fa}.networkNode small{font-size:7px;color:#aebbc5}
+      .nodeAfrica{left:5%;bottom:8%}.nodeChina{right:3%;top:7%}.nodeKorea{right:9%;top:39%}
+      .networkCenter{position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);z-index:4;text-align:center;padding:20px 24px;border:1px solid rgba(156,36,29,.35);border-radius:20px;background:rgba(7,14,21,.82);box-shadow:0 18px 55px rgba(0,0,0,.28);backdrop-filter:blur(14px);min-width:190px}
+      .centerIcon{width:48px;height:48px;margin:0 auto 9px;border-radius:15px;display:grid;place-items:center;background:rgba(156,36,29,.13);border:1px solid rgba(156,36,29,.35);color:#f0a29b}.centerIcon .lucide{width:25px;height:25px}
+      .networkCenter strong{display:block;color:#fff;font-size:12px}.networkCenter span{display:block;margin-top:5px;color:#aebbc5;font-size:7px;letter-spacing:.08em;text-transform:uppercase}
+      .networkRouteBadge{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);z-index:5;display:grid;grid-template-columns:auto auto;column-gap:7px;align-items:center;padding:8px 12px;border-radius:999px;border:1px solid rgba(156,36,29,.28);background:rgba(9,18,25,.86);color:#ead0cd;font-size:7px}
+      .networkRouteBadge .lucide{grid-row:span 2;width:14px;color:#c54a41}.networkRouteBadge span{opacity:.7}.networkRouteBadge b{font-size:8px;color:#fff}
+      @media(max-width:900px){.vtgMinimalAbout,.vtgMinimalAtlasInner{grid-template-columns:1fr;gap:35px;padding-top:70px;padding-bottom:70px}.tradeNetworkVisual{height:390px}.networkMapShape.africa{width:120px;height:130px}.networkMapShape.asia{width:150px;height:100px}.networkCenter{min-width:170px;padding:16px 18px}.networkNode{padding:8px 10px}.nodeKorea{top:34%;right:5%}}
+      @media(max-width:600px){.vtgMinimalAbout,.vtgMinimalAtlasInner,.vtgMinimalCta{padding-left:18px;padding-right:18px}.tradeNetworkVisual{height:340px;border-radius:22px}.networkCenter{top:50%;min-width:150px;padding:13px 15px}.centerIcon{width:40px;height:40px}.networkNode small{display:none}.networkMapShape.africa{left:2%;bottom:16%;width:95px;height:105px}.networkMapShape.asia{right:1%;top:12%;width:120px;height:80px}.nodeAfrica{left:3%;bottom:5%}.nodeChina{right:2%;top:5%}.nodeKorea{right:3%;top:34%}.networkRouteBadge{bottom:12px}}
       .vtgMinimalAtlas{background:#07131c;color:#fff}
       .vtgMinimalAtlasInner{max-width:1320px;margin:auto;padding:100px 24px;display:grid;grid-template-columns:1fr 1fr;gap:65px;align-items:center}
       .vtgMinimalAtlas h2{color:#fff}
@@ -376,18 +374,21 @@
         <span class="kicker">WHAT VTG IS</span>
         <h2>One connected ecosystem for <span>real trade.</span></h2>
         <p>VTG connects buyers, verified suppliers, financial partners and logistics providers across Africa, China and South Korea — bringing sourcing, verification, finance and movement into one connected trade ecosystem.</p>
-        <div class="vtgEcosystem" aria-label="VTG trade ecosystem">
-          <div class="vtgOrbit" aria-hidden="true"></div>
-          <div class="vtgOrbitCore"><div><strong>VTG</strong><span>Trade ecosystem</span></div></div>
-          <div class="vtgOrbitNode"><div><div class="icon"><i data-lucide="search"></i></div><strong>Discover</strong><span>Products & partners</span></div></div>
-          <div class="vtgOrbitNode"><div><div class="icon"><i data-lucide="badge-check"></i></div><strong>Verify</strong><span>Trusted trade</span></div></div>
-          <div class="vtgOrbitNode"><div><div class="icon"><i data-lucide="landmark"></i></div><strong>Finance</strong><span>Trade funding</span></div></div>
-          <div class="vtgOrbitNode"><div><div class="icon"><i data-lucide="ship"></i></div><strong>Move</strong><span>Logistics & customs</span></div></div>
-          <div class="vtgOrbitNode"><div><div class="icon"><i data-lucide="package-check"></i></div><strong>Deliver</strong><span>To the buyer</span></div></div>
-        </div>
       </div>
-      <div class="vtgAboutImage">
-        <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1640529494825-4add7eed660e?auto=format&fit=crop&w=1600&q=86" alt="Aerial container port in Shenzhen">
+      <div class="tradeNetworkVisual" aria-label="VTG trade network connecting Africa, China and South Korea">
+        <div class="networkGlow"></div>
+        <svg class="networkLines" viewBox="0 0 660 470" preserveAspectRatio="none" aria-hidden="true">
+          <path class="routePath" d="M112 352 C205 295, 315 245, 390 205 C470 160, 525 125, 560 88"></path>
+          <path class="routePath route2" d="M126 352 C240 345, 320 330, 402 288 C475 250, 520 225, 565 215"></path>
+          <circle class="routeNode" cx="112" cy="352" r="6"></circle><circle class="routeNode" cx="560" cy="88" r="6"></circle><circle class="routeNode" cx="565" cy="215" r="6"></circle>
+        </svg>
+        <div class="networkMapShape africa"><span></span></div>
+        <div class="networkMapShape asia"><span></span></div>
+        <div class="networkNode nodeAfrica"><i data-lucide="map-pin"></i><strong>Africa</strong><small>Buyer market</small></div>
+        <div class="networkNode nodeChina"><i data-lucide="factory"></i><strong>China</strong><small>Supplier network</small></div>
+        <div class="networkNode nodeKorea"><i data-lucide="landmark"></i><strong>South Korea</strong><small>Trade & technology</small></div>
+        <div class="networkCenter"><div class="centerIcon"><i data-lucide="globe-2"></i></div><strong>VTG Trade Network</strong><span>Source • Verify • Finance • Move</span></div>
+        <div class="networkRouteBadge"><i data-lucide="route"></i><span>Connected corridor</span><b>Africa ↔ Asia</b></div>
       </div>
     `;
     market.insertAdjacentElement('afterend',about);
