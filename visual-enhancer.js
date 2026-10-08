@@ -276,8 +276,14 @@
       #landing #market .sectionHead{display:block;text-align:center;margin-bottom:22px}
       #landing #market .sectionHead .eyebrow{justify-content:center}
       #landing #market .sectionHead h2{font-size:clamp(30px,4vw,48px);margin-top:8px}
-      #landing #market .sectionHead p,#landing #market .trust,#landing #market .section>div[style]{display:none!important}
-      #landing #market #vtgProductCarousel{margin-top:22px}
+      #landing #market .sectionHead p{display:block!important;max-width:650px;margin:10px auto 0;font-size:12px;line-height:1.7;color:var(--muted)}
+      #landing #market .trust,#landing #market .section>div[style]{display:none!important}
+      #landing #market #vtgProductCarousel{margin-top:26px}
+      #landing #market #vtgProductCarousel .vtgMarketplaceMeta{display:flex;justify-content:center;align-items:center;gap:9px;margin:0 auto 15px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--muted)}
+      #landing #market #vtgProductCarousel .vtgMarketplaceMeta i{width:13px;height:13px;color:var(--teal)}
+      #landing #market #vtgProductCarousel .vtgExplore{display:inline-flex;align-items:center;gap:8px;margin:17px auto 0;padding:11px 16px;border:1px solid var(--line);border-radius:999px;background:var(--white);color:var(--navy);font-size:10px;font-weight:800;cursor:pointer;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+      #landing #market #vtgProductCarousel .vtgExplore:hover{transform:translateY(-1px);border-color:rgba(156,36,29,.5);box-shadow:0 8px 20px rgba(7,31,48,.08)}
+      #landing #market #vtgProductCarousel .vtgExplore svg{width:14px;height:14px;stroke-width:2}
       #landing .vtgCategoryGroups{display:none!important}
       .vtgMinimalAbout{max-width:1320px;margin:0 auto;padding:95px 24px;display:grid;grid-template-columns:.9fr 1.1fr;gap:70px;align-items:center}
       .vtgMinimalAbout .copy{max-width:560px}
@@ -330,9 +336,27 @@
       `;
     }
 
-    market.querySelector('.sectionHead h2').textContent='Discover what moves through VTG.';
+    market.querySelector('.sectionHead h2').textContent='Trade what moves the world.';
+    const marketIntro=market.querySelector('.sectionHead p');
+    if(marketIntro) marketIntro.textContent='Explore 36 trade categories connecting buyers, suppliers and commercial opportunities across Africa, China and South Korea.';
     const carousel=market.querySelector('#vtgProductCarousel');
-    if(carousel) carousel.setAttribute('aria-label','VTG marketplace categories');
+    if(carousel){
+      carousel.setAttribute('aria-label','VTG marketplace categories');
+      if(!carousel.querySelector('.vtgMarketplaceMeta')){
+        const meta=document.createElement('div');
+        meta.className='vtgMarketplaceMeta';
+        meta.innerHTML='<i data-lucide="network"></i><span>36 trade categories • Africa ↔ China ↔ South Korea</span>';
+        carousel.prepend(meta);
+      }
+      if(!carousel.querySelector('.vtgExplore')){
+        const explore=document.createElement('button');
+        explore.type='button';
+        explore.className='vtgExplore';
+        explore.innerHTML='Explore Marketplace <i data-lucide="arrow-up-right"></i>';
+        explore.addEventListener('click',()=>document.querySelector('#marketplace')?.scrollIntoView({behavior:'smooth',block:'start'}));
+        carousel.appendChild(explore);
+      }
+    }
 
     const about=document.createElement('section');
     about.className='vtgMinimalAbout';
