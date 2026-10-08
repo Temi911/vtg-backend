@@ -15,7 +15,7 @@ const PATHWAY_META={
 
 function recipientFor(pathway){
   const meta=PATHWAY_META[pathway];
-  return (meta&&process.env[meta.team])||process.env.PARTNERSHIP_TEAM_EMAIL||process.env.CONTACT_TEAM_EMAIL||process.env.SMTP_USER||process.env.SMTP_FROM;
+  return (meta&&process.env[meta.team])||process.env.PARTNERSHIP_TEAM_EMAIL||process.env.CONTACT_TEAM_EMAIL||'vintageafricatrade@gmail.com';
 }
 function transporter(){
   if(!process.env.SMTP_HOST||!process.env.SMTP_USER||!process.env.SMTP_PASS) return null;
