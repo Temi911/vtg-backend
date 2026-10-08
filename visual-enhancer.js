@@ -490,7 +490,7 @@
       <p>Enter VTG and choose the workspace built for your role.</p>
       <button class="primary" type="button" id="minimalFinalEnter">Enter VTG <i data-lucide="arrow-right"></i></button>
     `;
-    atlas.insertAdjacentElement('afterend',cta);
+    ai.insertAdjacentElement('afterend',cta);
 
     ['#how','#network','#contact'].forEach(sel=>{const el=document.querySelector(sel);if(el)el.remove();});
     document.querySelectorAll('.heroIn>.vtgTradeJourney,.vtgValueStrip').forEach(el=>el.remove());
