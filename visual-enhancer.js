@@ -78,6 +78,10 @@
     const old=document.querySelector('#vtgProductCarousel');
     if(old) old.remove();
     const market=document.querySelector('.market .section');
+    const vtgIntro=document.createElement('section');
+    vtgIntro.className='vtgIntroLayer';
+    vtgIntro.innerHTML='<div class="vtgIntroInner"><div class="vtgIntroCopy"><span class="vtgIntroKicker">The VTG ecosystem</span><h2>One connected place for <span>real trade.</span></h2><p>VTG brings buyers, verified suppliers, financial partners and logistics providers into one trade environment — connecting sourcing, verification, finance and movement across Africa, China and South Korea.</p><div class="vtgIntroPillars"><span><i data-lucide="shopping-bag"></i> Source</span><span><i data-lucide="badge-check"></i> Verify</span><span><i data-lucide="landmark"></i> Finance</span><span><i data-lucide="ship"></i> Move</span></div></div><div class="vtgIntroVisual"><div class="vtgOrbit orbitOne"></div><div class="vtgOrbit orbitTwo"></div><div class="vtgCore"><i data-lucide="globe-2"></i><strong>VTG</strong><small>Trade Network</small></div><div class="vtgNode nAfrica"><i data-lucide="map-pin"></i><b>Africa</b><small>Buyer markets</small></div><div class="vtgNode nChina"><i data-lucide="factory"></i><b>China</b><small>Supplier network</small></div><div class="vtgNode nKorea"><i data-lucide="landmark"></i><b>South Korea</b><small>Trade & technology</small></div></div></div>';
+    market.insertAdjacentElement('afterend',vtgIntro);
     if(!market) return;
 
     const categories=[
@@ -133,6 +137,19 @@
       'General Merchandise':'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1600&q=88',
       'Import, Export & Trade Services':'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1600&q=88'
     };
+
+    const introStyle=document.createElement('style');
+    introStyle.id='vtgIntroLayerStyles';
+    introStyle.textContent=`
+      .vtgIntroLayer{position:relative;overflow:hidden;background:linear-gradient(135deg,#071b1d 0%,#082a27 48%,#071d2b 100%);color:#eef8f4;border-top:1px solid rgba(80,190,153,.10);border-bottom:1px solid rgba(80,190,153,.10)}
+      .vtgIntroLayer:before{content:'';position:absolute;width:620px;height:620px;right:-180px;top:-260px;border-radius:50%;background:radial-gradient(circle,rgba(41,185,142,.18),transparent 67%);pointer-events:none}
+      .vtgIntroInner{max-width:1320px;margin:auto;padding:92px 24px;display:grid;grid-template-columns:1fr .9fr;gap:70px;align-items:center}
+      .vtgIntroKicker{font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:#63d6a0}.vtgIntroCopy h2{font-size:clamp(34px,4.3vw,57px);line-height:1.04;letter-spacing:-.045em;margin:13px 0 17px;color:#fff}.vtgIntroCopy h2 span{color:#5ed69f}.vtgIntroCopy p{max-width:570px;color:#aec5c5;font-size:12px;line-height:1.9}.vtgIntroPillars{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}.vtgIntroPillars span{display:inline-flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid rgba(116,211,174,.18);background:rgba(255,255,255,.045);border-radius:10px;color:#d8ebe5;font-size:8px;font-weight:800}.vtgIntroPillars svg{width:14px;height:14px;color:#63d6a0}
+      .vtgIntroVisual{height:390px;position:relative;display:grid;place-items:center}.vtgOrbit{position:absolute;border:1px solid rgba(88,213,170,.22);border-radius:50%;transform:rotate(-18deg)}.orbitOne{width:300px;height:190px;animation:vtgOrbit 14s linear infinite}.orbitTwo{width:400px;height:245px;animation:vtgOrbit 19s linear infinite reverse}.vtgCore{width:112px;height:112px;border-radius:50%;display:grid;place-items:center;align-content:center;gap:3px;background:radial-gradient(circle at 35% 30%,#209e70,#083d35 70%);border:1px solid rgba(137,239,202,.45);box-shadow:0 0 65px rgba(37,191,145,.22);z-index:2}.vtgCore svg{width:25px}.vtgCore strong{font-size:18px;letter-spacing:.08em}.vtgCore small{font-size:7px;color:#bce9d8}.vtgNode{position:absolute;z-index:3;padding:9px 11px;border-radius:11px;background:rgba(4,19,21,.84);border:1px solid rgba(113,203,172,.22);backdrop-filter:blur(12px);box-shadow:0 10px 35px rgba(0,0,0,.25);display:grid;grid-template-columns:auto 1fr;column-gap:7px;align-items:center}.vtgNode svg{grid-row:span 2;width:15px;color:#65d7a2}.vtgNode b{font-size:9px}.vtgNode small{font-size:7px;color:#8fa9a5}.nAfrica{left:2%;top:23%}.nChina{right:0;top:9%}.nKorea{right:4%;bottom:13%}@keyframes vtgOrbit{to{transform:rotate(342deg)}}
+      @media(max-width:900px){.vtgIntroInner{grid-template-columns:1fr;gap:30px;padding:72px 22px}.vtgIntroVisual{height:330px}}
+      @media(max-width:600px){.vtgIntroInner{padding:65px 18px}.vtgIntroVisual{height:280px}.orbitTwo{width:320px;height:200px}.orbitOne{width:245px;height:155px}.vtgNode{transform:scale(.9)}.nAfrica{left:0}.nChina{right:0}.nKorea{right:0}}
+`;
+    document.head.appendChild(introStyle);
 
     const style=document.createElement('style');
     style.id='vtgCarouselRebuildStyles';
