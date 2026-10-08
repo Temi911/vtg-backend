@@ -279,15 +279,23 @@
       #landing #market .sectionHead p,#landing #market .trust,#landing #market .section>div[style]{display:none!important}
       #landing #market #vtgProductCarousel{margin-top:22px}
       #landing .vtgCategoryGroups{display:none!important}
-      .vtgMinimalAbout{background:linear-gradient(180deg,#f7f9fa 0%,#eef2f4 100%);max-width:none;padding:95px 24px;display:grid;grid-template-columns:minmax(0,560px) minmax(0,660px);justify-content:center;gap:70px;align-items:center;border-top:1px solid rgba(156,36,29,.08);border-bottom:1px solid rgba(7,31,48,.06);position:relative;overflow:hidden}
-      .vtgMinimalAbout .copy{max-width:560px;position:relative;z-index:2}
+      .vtgMinimalAbout{background:linear-gradient(180deg,#f8f9fa 0%,#eef1f3 100%);max-width:none;padding:92px 24px 100px;display:grid;grid-template-columns:minmax(0,520px) minmax(0,700px);justify-content:center;gap:64px;align-items:center;border-top:1px solid rgba(156,36,29,.08);border-bottom:1px solid rgba(7,31,48,.06);position:relative;overflow:hidden}
+      .vtgMinimalAbout:before{content:'';position:absolute;width:620px;height:620px;border:1px solid rgba(156,36,29,.055);border-radius:50%;right:-260px;top:-290px;box-shadow:0 0 0 80px rgba(156,36,29,.018),0 0 0 160px rgba(156,36,29,.012);pointer-events:none}
+      .vtgMinimalAbout .copy{max-width:520px;position:relative;z-index:2}
       .vtgMinimalAbout .kicker{font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:#9c241d;display:inline-flex;align-items:center;gap:8px}
       .vtgMinimalAbout .kicker:before{content:'';width:20px;height:1px;background:currentColor}
       .vtgMinimalAbout h2{font-size:clamp(30px,4vw,50px);line-height:1.05;letter-spacing:-.04em;color:#0d1117;margin:13px 0 15px}.vtgMinimalAbout h2 span{color:#9c241d}
-      .vtgMinimalAbout p{font-size:12px;line-height:1.8;color:#586771;max-width:560px}
-      .vtgAboutImage{height:420px;border-radius:26px;overflow:hidden;box-shadow:0 22px 60px rgba(7,31,48,.15);position:relative;border:1px solid rgba(156,36,29,.10)}
+      .vtgMinimalAbout p{font-size:12px;line-height:1.8;color:#586771;max-width:520px}
+      .vtgEcosystem{margin-top:28px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;max-width:520px}
+      .vtgEcoStep{position:relative;padding:12px 8px 10px;text-align:center;background:rgba(255,255,255,.72);border:1px solid rgba(13,17,23,.08);border-radius:13px}
+      .vtgEcoStep:not(:last-child):after{content:'';position:absolute;width:7px;height:1px;background:#b9c2c7;right:-7px;top:50%;z-index:2}
+      .vtgEcoIcon{width:30px;height:30px;margin:0 auto 7px;display:grid;place-items:center;border-radius:9px;background:#fff;color:#9c241d;border:1px solid rgba(156,36,29,.12)}
+      .vtgEcoIcon svg{width:15px;height:15px;stroke-width:1.8}
+      .vtgEcoStep strong{display:block;font-size:9px;color:#17212b;line-height:1.2}
+      .vtgEcoStep span{display:block;font-size:7px;color:#71808a;margin-top:4px;line-height:1.3}
+      .vtgAboutImage{height:420px;border-radius:26px;overflow:hidden;box-shadow:0 22px 60px rgba(7,31,48,.15);position:relative;border:1px solid rgba(156,36,29,.10);z-index:1}
       .vtgAboutImage img{width:100%;height:100%;object-fit:cover}
-      .vtgAboutImage:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(5,19,28,.50))}
+      .vtgAboutImage:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 42%,rgba(5,19,28,.50))}
       .vtgMinimalAtlas{background:#07131c;color:#fff}
       .vtgMinimalAtlasInner{max-width:1320px;margin:auto;padding:100px 24px;display:grid;grid-template-columns:1fr 1fr;gap:65px;align-items:center}
       .vtgMinimalAtlas h2{color:#fff}
@@ -304,6 +312,7 @@
         #landing .heroIn{min-height:590px;padding:120px 22px 80px}
         .vtgMinimalAbout,.vtgMinimalAtlasInner{grid-template-columns:1fr;gap:35px;padding-top:70px;padding-bottom:70px}
         .vtgAboutImage,.vtgGlobeFrame{height:330px}
+        .vtgEcosystem{max-width:none}
       }
       @media(max-width:600px){
         #landing .heroIn{min-height:560px;padding:105px 18px 70px}
@@ -312,6 +321,12 @@
         #landing .navlinks a:nth-child(n+3){display:none}
         .vtgMinimalAbout,.vtgMinimalAtlasInner,.vtgMinimalCta{padding-left:18px;padding-right:18px}
         .vtgAboutImage,.vtgGlobeFrame{height:280px;border-radius:20px}
+        .vtgEcosystem{grid-template-columns:repeat(5,minmax(0,1fr));gap:3px}
+        .vtgEcoStep{padding:9px 3px}
+        .vtgEcoStep:not(:last-child):after{display:none}
+        .vtgEcoIcon{width:27px;height:27px}
+        .vtgEcoStep strong{font-size:8px}
+        .vtgEcoStep span{font-size:6px}
       }
     `;
     document.head.appendChild(css);
@@ -342,6 +357,13 @@
         <span class="kicker">WHAT VTG IS</span>
         <h2>One connected ecosystem for <span>real trade.</span></h2>
         <p>VTG connects buyers, verified suppliers, financial partners and logistics providers across Africa, China and South Korea — bringing sourcing, verification, finance and movement into one connected trade ecosystem.</p>
+        <div class="vtgEcosystem" aria-label="VTG trade ecosystem">
+          <div class="vtgEcoStep"><div class="vtgEcoIcon"><i data-lucide="search"></i></div><strong>Discover</strong><span>Products & partners</span></div>
+          <div class="vtgEcoStep"><div class="vtgEcoIcon"><i data-lucide="badge-check"></i></div><strong>Verify</strong><span>Trusted trade</span></div>
+          <div class="vtgEcoStep"><div class="vtgEcoIcon"><i data-lucide="landmark"></i></div><strong>Finance</strong><span>Trade funding</span></div>
+          <div class="vtgEcoStep"><div class="vtgEcoIcon"><i data-lucide="ship"></i></div><strong>Move</strong><span>Logistics & customs</span></div>
+          <div class="vtgEcoStep"><div class="vtgEcoIcon"><i data-lucide="package-check"></i></div><strong>Deliver</strong><span>To the buyer</span></div>
+        </div>
       </div>
       <div class="vtgAboutImage">
         <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1640529494825-4add7eed660e?auto=format&fit=crop&w=1600&q=86" alt="Aerial container port in Shenzhen">
