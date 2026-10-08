@@ -318,25 +318,9 @@
       .vtgMinimalAtlasInner{max-width:1320px;margin:auto;padding:100px 24px;display:grid;grid-template-columns:1fr 1fr;gap:65px;align-items:center}
       .vtgMinimalAtlas h2{color:#fff}
       .vtgMinimalAtlas p{color:#aebfc8}
-      .vtgGlobeFrame{height:410px;border-radius:28px;overflow:hidden;position:relative;background:#01070c;box-shadow:0 25px 80px rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.08);isolation:isolate}
-      .vtgGlobeStage{position:absolute;inset:0;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 48%,rgba(30,135,165,.18),transparent 38%),linear-gradient(145deg,#020a10,#04141c 55%,#010509)}
-      .vtgGlobe{width:min(370px,72%);aspect-ratio:1;border-radius:50%;position:relative;background:radial-gradient(circle at 32% 25%,rgba(255,255,255,.72),transparent 5%),radial-gradient(circle at 39% 34%,#3f9f7b 0 12%,#1d6e69 24%,#15526a 42%,#092b3e 68%,#020b13 100%);box-shadow:inset -48px -30px 72px rgba(0,0,0,.62),inset 18px 12px 42px rgba(91,226,194,.18),0 0 0 1px rgba(116,225,202,.24),0 0 90px rgba(30,154,177,.28);transform:rotate(-9deg);animation:vtgGlobeFloat 9s ease-in-out infinite}
-      .vtgGlobe:before{content:'';position:absolute;inset:5%;border-radius:50%;background:radial-gradient(ellipse at 42% 42%,rgba(255,255,255,.08),transparent 35%),repeating-linear-gradient(92deg,transparent 0 13%,rgba(105,210,220,.10) 13.2% 13.6%,transparent 13.9% 27%),repeating-linear-gradient(4deg,transparent 0 15%,rgba(93,201,192,.08) 15.2% 15.6%,transparent 15.9% 31%);opacity:.8;mix-blend-mode:screen}
-      .vtgGlobe:after{content:'';position:absolute;inset:0;border-radius:50%;background:linear-gradient(108deg,transparent 0 47%,rgba(0,0,0,.52) 74% 100%),radial-gradient(circle at 27% 25%,rgba(255,255,255,.18),transparent 18%);pointer-events:none}
-      .vtgContinent{position:absolute;background:linear-gradient(145deg,#72c894,#257861 72%,#164f55);filter:drop-shadow(0 0 9px rgba(82,210,163,.25));opacity:.95}
-      .vtgAfricaShape{width:25%;height:39%;left:39%;top:39%;clip-path:polygon(47% 0,68% 10%,82% 28%,70% 42%,77% 57%,65% 73%,55% 100%,42% 89%,33% 70%,22% 52%,30% 34%,19% 18%,30% 8%)}
-      .vtgAsiaShape{width:36%;height:23%;left:48%;top:24%;transform:rotate(-8deg);clip-path:polygon(4% 42%,19% 23%,40% 16%,57% 3%,78% 19%,96% 37%,77% 51%,68% 70%,46% 61%,27% 74%,12% 62%)}
-      .vtgKoreaDot,.vtgNigeriaDot{position:absolute;width:8px;height:8px;border-radius:50%;background:#f05f58;box-shadow:0 0 0 5px rgba(240,95,88,.12),0 0 18px rgba(240,95,88,.9);z-index:3}
-      .vtgKoreaDot{left:72%;top:30%}.vtgNigeriaDot{left:49%;top:53%}
-      .vtgRouteArc{position:absolute;width:55%;height:22%;left:29%;top:39%;border-top:2px solid rgba(240,95,88,.65);border-radius:50%;transform:rotate(9deg);z-index:2;filter:drop-shadow(0 0 5px rgba(240,95,88,.4))}
-      .vtgRouteArc:after{content:'';position:absolute;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 13px #fff;left:18%;top:-4px;animation:vtgRouteMove 3.6s linear infinite}
-      .vtgAtlasOrbital{position:absolute;width:410px;height:150px;border:1px solid rgba(95,205,181,.20);border-radius:50%;transform:rotate(-18deg);animation:vtgAtlasOrbit 20s linear infinite}
-      .vtgAtlasOrbital:after{content:'';position:absolute;width:7px;height:7px;border-radius:50%;background:#a8f0d8;right:9%;top:18%;box-shadow:0 0 16px rgba(88,223,183,.95)}
-      @keyframes vtgGlobeFloat{0%,100%{transform:rotate(-9deg) translateY(0)}50%{transform:rotate(-7deg) translateY(-8px)}}
-      @keyframes vtgRouteMove{to{left:82%}}
-      @keyframes vtgAtlasOrbit{to{transform:rotate(342deg)}}
-      .vtgGlobeShade{position:absolute;inset:0;background:radial-gradient(circle at 50% 48%,transparent 0 34%,rgba(1,7,12,.06) 52%,rgba(1,7,12,.58) 100%);pointer-events:none}
-      .vtgAtlasBadge{position:absolute;left:20px;bottom:20px;padding:10px 12px;border-radius:12px;background:rgba(3,15,22,.72);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(12px);color:#fff;font-size:9px;font-weight:800}
+      .vtgGlobeFrame{height:410px;border-radius:28px;overflow:hidden;position:relative;background:#02070b;box-shadow:0 25px 80px rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.08)}
+      .vtgGlobeFrame img{width:118%;height:118%;max-width:none;object-fit:cover;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+      .vtgGlobeShade{position:absolute;inset:0;background:radial-gradient(circle at 60% 45%,transparent 0 28%,rgba(2,7,11,.08) 46%,rgba(2,7,11,.70) 100%)}
       .vtgMinimalCta{max-width:1320px;margin:auto;padding:95px 24px 105px;text-align:center}
       .vtgMinimalCta h2{font-size:clamp(34px,5vw,58px);letter-spacing:-.045em;margin:8px 0 14px;color:var(--navy)}
       .vtgMinimalCta p{font-size:12px;color:var(--muted);margin:0 auto 25px}
@@ -424,18 +408,11 @@
           <p>Explore the world from the major trade corridors to individual ports and business locations. The full VTG Atlas remains inside the platform, while the landing page gives visitors just enough to want to explore.</p>
           <button class="primary" type="button" id="minimalAtlasBtn" style="margin-top:10px">Open Trade Atlas <i data-lucide="globe-2"></i></button>
         </div>
-        <div class="vtgGlobeFrame" aria-label="VTG Trade Atlas globe preview">
-          <div class="vtgGlobeStage">
-            <div class="vtgAtlasOrbital"></div>
-            <div class="vtgGlobe">
-              <span class="vtgContinent vtgAfricaShape"></span>
-              <span class="vtgContinent vtgAsiaShape"></span>
-              <span class="vtgNigeriaDot"></span>
-              <span class="vtgKoreaDot"></span>
-              <span class="vtgRouteArc"></span>
-            </div>
-          </div>
+        <div class="vtgGlobeFrame">
+          <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1770723965031-65f135a58636?auto=format&fit=crop&w=1600&q=88" alt="Earth from space showing Africa and Europe">
           <div class="vtgGlobeShade"></div>
+          <div class="vtgAtlasBadge"><i data-lucide="sun"></i> Live world view • Africa • China • South Korea</div>
+        </div>
         </div>
           <div class="vtgGlobeShade"></div>
           <div class="vtgAtlasBadge"><i data-lucide="radio"></i> Trade in motion • Africa ↔ Asia</div>
