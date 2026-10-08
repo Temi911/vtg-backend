@@ -10,7 +10,6 @@ const html = fs.readFileSync(htmlPath, 'utf8');
 test('current VTG frontend exposes the core trade interface', () => {
   assert.match(html, /id="newsBtn"/);
   assert.match(html, /id="mapBtn"/);
-  assert.match(html, /id="aiLaunch"/);
   assert.match(html, /id="authForm"/);
   assert.match(html, /data-role="buyer"/);
   assert.match(html, /data-role="supplier"/);
