@@ -351,10 +351,24 @@
       .vtgAIQuestion{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;padding:11px 12px;border:1px solid rgba(255,255,255,.08);border-radius:12px;color:#8196a2;font-size:7.5px}.vtgAIQuestion .lucide{width:13px;color:#f08b82}
       @media(max-width:900px){.vtgAIInner{grid-template-columns:1fr;gap:38px;padding-top:70px;padding-bottom:70px}.vtgAIVisual{min-height:420px}.vtgAIImage{width:82%;height:350px}}
       @media(max-width:600px){.vtgAIInner{padding-left:18px;padding-right:18px}.vtgAIVisual{min-height:330px}.vtgAIImage{width:90%;height:260px;border-radius:20px}.vtgAIConsole{width:72%;padding:12px;border-radius:17px}.vtgAIImageTag{left:10px;bottom:10px}.vtgAIPrompts button{font-size:7px}.vtgAICopy p{font-size:11px}}
-      .vtgMinimalCta{max-width:1320px;margin:auto;padding:95px 24px 105px;text-align:center}
-      .vtgMinimalCta h2{font-size:clamp(34px,5vw,58px);letter-spacing:-.045em;margin:8px 0 14px;color:var(--navy)}
-      .vtgMinimalCta p{font-size:12px;color:var(--muted);margin:0 auto 25px}
-      .vtgMinimalCta .primary{padding:14px 22px}
+      .vtgMinimalCta{max-width:1320px;margin:auto;padding:100px 24px 110px;text-align:center}
+      .vtgCtaInner{max-width:1080px;margin:auto}
+      .vtgMinimalCta h2{font-size:clamp(36px,5vw,62px);line-height:1.02;letter-spacing:-.05em;margin:9px 0 16px;color:var(--navy)}
+      .vtgMinimalCta h2 span{color:var(--red,#9c241d)}
+      .vtgMinimalCta p{font-size:12px;line-height:1.8;color:var(--muted);max-width:650px;margin:0 auto 34px}
+      .vtgCtaActions{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:1000px;margin:auto;text-align:left}
+      .vtgCtaAction{position:relative;display:grid;grid-template-columns:42px 1fr 18px;grid-template-rows:auto auto;column-gap:11px;align-items:center;padding:18px;border:1px solid var(--line);border-radius:18px;background:var(--white);color:var(--navy);cursor:pointer;text-align:left;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+      .vtgCtaAction:hover{transform:translateY(-3px);box-shadow:0 14px 35px rgba(7,31,48,.10);border-color:rgba(156,36,29,.25)}
+      .vtgCtaAction>span{grid-row:1/3;display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:var(--soft,#f5f7f8);color:var(--red,#9c241d)}
+      .vtgCtaAction>span .lucide{width:19px;height:19px}
+      .vtgCtaAction b{font-size:11px;line-height:1.25}
+      .vtgCtaAction small{font-size:8px;line-height:1.45;color:var(--muted);margin-top:3px}
+      .vtgCtaAction>svg:last-child{grid-column:3;grid-row:1/3;width:15px;height:15px;color:var(--muted)}
+      .vtgCtaAction.primaryCta{background:var(--navy);border-color:var(--navy);color:#fff;box-shadow:0 16px 35px rgba(7,31,48,.16)}
+      .vtgCtaAction.primaryCta>span{background:rgba(255,255,255,.09);color:#f08b82}
+      .vtgCtaAction.primaryCta small{color:#b9c8d0}
+      @media(max-width:900px){.vtgCtaActions{grid-template-columns:1fr}}
+      @media(max-width:600px){.vtgMinimalCta{padding-left:18px;padding-right:18px}.vtgMinimalCta p{font-size:11px}.vtgCtaAction{padding:15px}}
       @media(max-width:900px){
         #landing .heroIn{min-height:590px;padding:120px 22px 80px}
         .vtgMinimalAbout,.vtgMinimalAtlasInner{grid-template-columns:1fr;gap:35px;padding-top:70px;padding-bottom:70px}
@@ -485,10 +499,22 @@
     const cta=document.createElement('section');
     cta.className='vtgMinimalCta';
     cta.innerHTML=`
-      <span class="eyebrow">Your next trade starts here</span>
-      <h2>Ready when you are.</h2>
-      <p>Enter VTG and choose the workspace built for your role.</p>
-      <button class="primary" type="button" id="minimalFinalEnter">Enter VTG <i data-lucide="arrow-right"></i></button>
+      <div class="vtgCtaInner">
+        <span class="eyebrow">Your next trade starts here</span>
+        <h2>Turn an idea into a <span>real trade.</span></h2>
+        <p>VTG brings sourcing, verification, finance, logistics and trade intelligence together so you can move from discovery to action with one connected ecosystem.</p>
+        <div class="vtgCtaActions">
+          <button class="vtgCtaAction" type="button" id="minimalExploreMarketplace">
+            <span><i data-lucide="store"></i></span><b>Explore the Marketplace</b><small>Find products and trade opportunities.</small><i data-lucide="arrow-up-right"></i>
+          </button>
+          <button class="vtgCtaAction primaryCta" type="button" id="minimalFinalEnter">
+            <span><i data-lucide="log-in"></i></span><b>Enter VTG</b><small>Access the workspace built for your role.</small><i data-lucide="arrow-up-right"></i>
+          </button>
+          <button class="vtgCtaAction" type="button" id="minimalBecomePartner">
+            <span><i data-lucide="handshake"></i></span><b>Become a VTG Partner</b><small>Join as an agent, logistics or finance partner.</small><i data-lucide="arrow-up-right"></i>
+          </button>
+        </div>
+      </div>
     `;
     ai.insertAdjacentElement('afterend',cta);
 
@@ -506,6 +532,13 @@
     const open=()=>document.getElementById('joinBtn')?.click();
     document.getElementById('minimalEnterVtg')?.addEventListener('click',open);
     document.getElementById('minimalFinalEnter')?.addEventListener('click',open);
+    document.getElementById('minimalExploreMarketplace')?.addEventListener('click',()=>{
+      document.querySelector('#market')?.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+    document.getElementById('minimalBecomePartner')?.addEventListener('click',()=>{
+      const link=[...document.querySelectorAll('#landing .footer a')].find(a=>/partner|agent/i.test(a.textContent||''));
+      if(link) link.click(); else document.querySelector('#contact')?.scrollIntoView({behavior:'smooth',block:'center'});
+    });
     document.getElementById('minimalAtlasBtn')?.addEventListener('click',()=>{
       const target=document.querySelector('#vtgAtlasPreview');
       if(target) target.scrollIntoView({behavior:'smooth',block:'center'});
