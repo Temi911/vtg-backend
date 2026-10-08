@@ -34,7 +34,7 @@
       actions.innerHTML='<button type="button" class="outline" data-vtg-intel-news>Open live market news</button>';
       head.appendChild(actions);
       actions.querySelector('[data-vtg-intel-news]').onclick=()=>{const d=document.getElementById('newsDrawer');if(d){d.classList.add('open');document.body.style.overflow='hidden';}};
-      actions.querySelector('[data-vtg-intel-ai]').onclick=()=>{const p=document.getElementById('aiPanel');if(p)p.classList.add('open');};
+      if(p)p.classList.add('open');};
     }
 
     const rows=[...section.querySelectorAll('.intelRow')];
@@ -429,12 +429,6 @@
 
     ['#how','#network','#contact'].forEach(sel=>{const el=document.querySelector(sel);if(el)el.remove();});
     document.querySelectorAll('.heroIn>.vtgTradeJourney,.vtgValueStrip').forEach(el=>el.remove());
-    document.getElementById('vtgAIAsk')?.addEventListener('click',()=>document.getElementById('aiPanel')?.classList.add('open'));
-    document.querySelectorAll('[data-vtg-ai-prompt]').forEach(btn=>btn.addEventListener('click',()=>{
-      const input=document.getElementById('aiInput');      const panel=document.getElementById('aiPanel');
-      if(input){input.value=btn.getAttribute('data-vtg-ai-prompt')||'';panel?.classList.add('open');input.focus();}
-    }));
-
     const footer=document.querySelector('#landing .footer');
     if(footer) footer.style.marginTop='0';
 
