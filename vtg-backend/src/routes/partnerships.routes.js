@@ -7,6 +7,7 @@ const router=express.Router();
 const PATHWAY_META={
   'Trade & Commercial':{type:'Commercial partnership',team:'TRADE_PARTNERSHIP_EMAIL'},
   'Logistics & Shipping':{type:'Service / network partnership',team:'LOGISTICS_PARTNERSHIP_EMAIL'},
+  'Warehouse & Storage':{type:'Storage / fulfilment infrastructure partnership',team:'WAREHOUSE_PARTNERSHIP_EMAIL'},
   'Finance & Payments':{type:'Financial / payment relationship',team:'FINANCE_PARTNERSHIP_EMAIL'},
   'Supply & Manufacturing':{type:'Supplier / manufacturing relationship',team:'SUPPLY_PARTNERSHIP_EMAIL'},
   'Technology':{type:'Technology integration',team:'TECHNOLOGY_PARTNERSHIP_EMAIL'},
