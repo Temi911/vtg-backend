@@ -353,7 +353,7 @@
         explore.type='button';
         explore.className='vtgExplore';
         explore.innerHTML='Explore Marketplace <i data-lucide="arrow-up-right"></i>';
-        explore.addEventListener('click',()=>document.querySelector('#marketplace')?.scrollIntoView({behavior:'smooth',block:'start'}));
+        explore.addEventListener('click',()=>window.location.href='/marketplace.html');
         carousel.appendChild(explore);
       }
     }
