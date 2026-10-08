@@ -17,6 +17,31 @@
       }).catch(() => {});
   }
 
+  function upgradeAI() {
+    const form=document.querySelector('#aiForm'), input=document.querySelector('#aiInput'), msgs=document.querySelector('#aiMsgs');
+    if (!form || !input || !msgs || form.dataset.vtgAiEnhanced) return;
+    form.dataset.vtgAiEnhanced='1';
+    const history=[];
+    form.onsubmit=async e => {
+      e.preventDefault();
+      const q=input.value.trim(); if(!q) return;
+      const add=(role,t)=>{const d=document.createElement('div');d.className='msg '+role;d.textContent=t;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;};
+      add('user',q); input.value=''; history.push({role:'user',content:q});
+      try {
+        const c=new AbortController(), timer=setTimeout(()=>c.abort(),30000);
+        const r=await fetch('/api/ai/public-chat',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({message:q,history:history.slice(-20),country:'Nigeria',role:localStorage.getItem('vtg_role')||'buyer',live:true,currentDate:new Date().toISOString(),timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,page:location.href}),signal:c.signal});
+        clearTimeout(timer); const d=await r.json(); if(!r.ok) throw new Error();
+        const reply=d.reply||d.message||'I could not generate a response right now.';
+        add('assistant',reply); history.push({role:'assistant',content:reply});
+        if(Array.isArray(d.citations)&&d.citations.length){
+          const src=document.createElement('div'); src.className='msg assistant';
+          src.innerHTML='<small>Sources: '+d.citations.map(s=>'<a href="'+String(s.url||'#').replace(/"/g,'&quot;')+'" target="_blank" rel="noopener noreferrer">'+String(s.title||'Source').replace(/[&<>]/g,'')+'</a>').join(' • ')+'</small>';
+          msgs.appendChild(src); msgs.scrollTop=msgs.scrollHeight;
+        }
+      } catch(err) { add('assistant','I’m temporarily unable to connect to the VTG AI service. Please try again shortly.'); }
+    };
+  }
+
   function replaceMarketplaceIntro() {
     const intro=document.querySelector('.market .sectionHead p');
     if(intro) intro.textContent='Trade Documents & Compliance — Keep invoices, packing lists, shipping records and compliance steps organized around each transaction.';
@@ -31,10 +56,10 @@
     if(head && !head.querySelector('.vtgIntelActions')){
       const actions=document.createElement('div');
       actions.className='vtgIntelActions';
-      actions.innerHTML='<button type="button" class="outline" data-vtg-intel-news>Open live market news</button>';
+      actions.innerHTML='<button type="button" class="outline" data-vtg-intel-news>Open live market news</button><button type="button" class="primary" data-vtg-intel-ai>Ask VTG AI</button>';
       head.appendChild(actions);
       actions.querySelector('[data-vtg-intel-news]').onclick=()=>{const d=document.getElementById('newsDrawer');if(d){d.classList.add('open');document.body.style.overflow='hidden';}};
-      if(p)p.classList.add('open');};
+      actions.querySelector('[data-vtg-intel-ai]').onclick=()=>{const p=document.getElementById('aiPanel');if(p)p.classList.add('open');};
     }
 
     const rows=[...section.querySelectorAll('.intelRow')];
@@ -295,6 +320,37 @@
       .vtgGlobeFrame{height:410px;border-radius:28px;overflow:hidden;position:relative;background:#02070b;box-shadow:0 25px 80px rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.08)}
       .vtgGlobeFrame img{width:118%;height:118%;max-width:none;object-fit:cover;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
       .vtgGlobeShade{position:absolute;inset:0;background:radial-gradient(circle at 60% 45%,transparent 0 28%,rgba(2,7,11,.08) 46%,rgba(2,7,11,.70) 100%)}
+      .vtgMinimalAI{background:linear-gradient(180deg,#07131c 0%,#091923 100%);color:#fff;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden}
+      .vtgAIInner{max-width:1320px;margin:auto;padding:100px 24px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.02fr);gap:70px;align-items:center}
+      .vtgAICopy{max-width:590px}
+      .vtgAICopy .kicker{color:#f08b82}
+      .vtgAICopy h2{font-size:clamp(34px,4.5vw,58px);line-height:1.03;letter-spacing:-.045em;margin:13px 0 17px;color:#fff}
+      .vtgAICopy h2 span{color:#f08b82}
+      .vtgAICopy p{font-size:12px;line-height:1.85;color:#afc0c9;max-width:540px}
+      .vtgAIActions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:25px}
+      .vtgAIActions .primary{padding:13px 18px}
+      .vtgAIStatus{display:inline-flex;align-items:center;gap:6px;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:#91b7c9}
+      .vtgAIStatus .lucide{width:12px;height:12px;color:#66a9c7}
+      .vtgAIPrompts{display:flex;flex-wrap:wrap;gap:7px;margin-top:22px}
+      .vtgAIPrompts button{border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.045);color:#d9e5eb;border-radius:999px;padding:8px 10px;font:inherit;font-size:8px;cursor:pointer;transition:.2s ease}
+      .vtgAIPrompts button:hover{border-color:rgba(240,162,155,.35);background:rgba(156,36,29,.10)}
+      .vtgAIVisual{position:relative;min-height:470px}
+      .vtgAIImage{position:absolute;left:0;top:0;width:78%;height:390px;border-radius:26px;overflow:hidden;border:1px solid rgba(255,255,255,.12);box-shadow:0 28px 70px rgba(0,0,0,.30)}
+      .vtgAIImage img{width:100%;height:100%;object-fit:cover;display:block}
+      .vtgAIImageShade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,8,12,.02),rgba(2,8,12,.68))}
+      .vtgAIImageTag{position:absolute;left:16px;bottom:16px;display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:999px;background:rgba(5,13,19,.76);border:1px solid rgba(255,255,255,.12);font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:#e7eef2;backdrop-filter:blur(9px)}
+      .vtgAIImageTag .lucide{width:13px;color:#f08b82}
+      .vtgAIConsole{position:absolute;right:0;bottom:0;width:58%;padding:16px;border-radius:22px;background:rgba(9,20,28,.94);border:1px solid rgba(255,255,255,.13);box-shadow:0 25px 60px rgba(0,0,0,.38);backdrop-filter:blur(14px)}
+      .vtgAIConsoleTop{display:flex;justify-content:space-between;align-items:center;font-size:9px;color:#fff;letter-spacing:.08em;text-transform:uppercase}
+      .vtgAIConsoleTop span{display:flex;align-items:center;gap:6px}.vtgAIConsoleTop .lucide{width:13px;color:#f08b82}
+      .vtgAIConsoleTop em{font-style:normal;font-size:7px;color:#83b9a3;border:1px solid rgba(131,185,163,.28);padding:4px 6px;border-radius:999px}
+      .vtgAISignal{margin-top:15px;padding:14px;border-radius:15px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07)}
+      .vtgAISignal small{display:block;font-size:7px;letter-spacing:.14em;color:#78909c}
+      .vtgAISignal strong{display:block;margin-top:7px;font-size:11px;line-height:1.45;color:#f3f7f9}
+      .vtgAISignal span{display:flex;align-items:center;gap:5px;margin-top:10px;font-size:7px;color:#9fc0cf}.vtgAISignal .lucide{width:11px;color:#74b2ce}
+      .vtgAIQuestion{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;padding:11px 12px;border:1px solid rgba(255,255,255,.08);border-radius:12px;color:#8196a2;font-size:7.5px}.vtgAIQuestion .lucide{width:13px;color:#f08b82}
+      @media(max-width:900px){.vtgAIInner{grid-template-columns:1fr;gap:38px;padding-top:70px;padding-bottom:70px}.vtgAIVisual{min-height:420px}.vtgAIImage{width:82%;height:350px}}
+      @media(max-width:600px){.vtgAIInner{padding-left:18px;padding-right:18px}.vtgAIVisual{min-height:330px}.vtgAIImage{width:90%;height:260px;border-radius:20px}.vtgAIConsole{width:72%;padding:12px;border-radius:17px}.vtgAIImageTag{left:10px;bottom:10px}.vtgAIPrompts button{font-size:7px}.vtgAICopy p{font-size:11px}}
       .vtgMinimalCta{max-width:1320px;margin:auto;padding:100px 24px 110px;text-align:center}
       .vtgCtaInner{max-width:1080px;margin:auto}
       .vtgMinimalCta h2{font-size:clamp(36px,5vw,62px);line-height:1.02;letter-spacing:-.05em;margin:9px 0 16px;color:var(--navy)}
@@ -405,6 +461,41 @@
     `;
     about.insertAdjacentElement('afterend',atlas);
 
+    const ai=document.createElement('section');
+    ai.className='vtgMinimalAI';
+    ai.id='vtgAI';
+    ai.innerHTML=`
+      <div class="vtgAIInner">
+        <div class="vtgAICopy">
+          <span class="kicker">VTG AI</span>
+          <h2>Understand the trade. <span>Ask VTG AI.</span></h2>
+          <p>Your intelligent trade assistant for market signals, supplier discovery, logistics questions and cross-border decisions — built into the VTG ecosystem.</p>
+          <div class="vtgAIActions">
+            <button class="primary" type="button" id="vtgAIAsk">Ask VTG AI <i data-lucide="sparkles"></i></button>
+            <span class="vtgAIStatus"><i data-lucide="radio"></i> Intelligence connected</span>
+          </div>
+          <div class="vtgAIPrompts">
+            <button type="button" data-vtg-ai-prompt="What trade opportunities are active between Africa and China?">Market opportunities</button>
+            <button type="button" data-vtg-ai-prompt="Help me compare suppliers and shipping options.">Supplier &amp; shipping</button>
+            <button type="button" data-vtg-ai-prompt="What should I check before importing this product?">Import guidance</button>
+          </div>
+        </div>
+        <div class="vtgAIVisual">
+          <div class="vtgAIImage">
+            <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1774929103406-59c8882a9954?auto=format&fit=crop&w=1800&q=90" alt="Shipping containers and global trade logistics">
+            <div class="vtgAIImageShade"></div>
+            <div class="vtgAIImageTag"><i data-lucide="ship"></i><span>Trade intelligence</span></div>
+          </div>
+          <div class="vtgAIConsole">
+            <div class="vtgAIConsoleTop"><span><i data-lucide="sparkles"></i> VTG AI</span><em>LIVE</em></div>
+            <div class="vtgAISignal"><small>MARKET SIGNAL</small><strong>Connecting market context to your next trade decision.</strong><span><i data-lucide="trending-up"></i> Africa ↔ Asia corridor</span></div>
+            <div class="vtgAIQuestion"><span>Ask about sourcing, logistics, markets or trade.</span><i data-lucide="arrow-up-right"></i></div>
+          </div>
+        </div>
+      </div>
+    `;
+    atlas.insertAdjacentElement('afterend',ai);
+
     const cta=document.createElement('section');
     cta.className='vtgMinimalCta';
     cta.innerHTML=`
@@ -425,10 +516,16 @@
         </div>
       </div>
     `;
-    atlas.insertAdjacentElement('afterend',cta);
+    ai.insertAdjacentElement('afterend',cta);
 
     ['#how','#network','#contact'].forEach(sel=>{const el=document.querySelector(sel);if(el)el.remove();});
     document.querySelectorAll('.heroIn>.vtgTradeJourney,.vtgValueStrip').forEach(el=>el.remove());
+    document.getElementById('vtgAIAsk')?.addEventListener('click',()=>document.getElementById('aiPanel')?.classList.add('open'));
+    document.querySelectorAll('[data-vtg-ai-prompt]').forEach(btn=>btn.addEventListener('click',()=>{
+      const input=document.getElementById('aiInput');      const panel=document.getElementById('aiPanel');
+      if(input){input.value=btn.getAttribute('data-vtg-ai-prompt')||'';panel?.classList.add('open');input.focus();}
+    }));
+
     const footer=document.querySelector('#landing .footer');
     if(footer) footer.style.marginTop='0';
 
@@ -456,7 +553,7 @@
   }
 
   function apply(){
-    try{loadLiveMarket();replaceMarketplaceIntro();upgradeMarketIntelligence();installVTGCarousel();buildMinimalLanding();setInterval(loadLiveMarket,300000);if(window.lucide?.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.9}});}catch(e){console.warn('VTG visual enhancer failed',e);}
+    try{upgradeAI();loadLiveMarket();replaceMarketplaceIntro();upgradeMarketIntelligence();installVTGCarousel();buildMinimalLanding();setInterval(loadLiveMarket,300000);if(window.lucide?.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.9}});}catch(e){console.warn('VTG visual enhancer failed',e);}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
 })();
