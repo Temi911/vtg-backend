@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contact VTG | Vintage Trade Global</title>
+<meta name="description" content="Contact Vintage Trade Global for trade support, marketplace support, logistics, finance, supplier enquiries and complaints.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+:root{--red:#d71920;--red2:#b90f16;--ink:#10151b;--muted:#66717d;--line:#e7eaee;--soft:#f6f8fa;--white:#fff;--navy:#111a25}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Manrope,Arial,sans-serif;color:var(--ink);background:#fff}a{text-decoration:none;color:inherit}button,input,select,textarea{font:inherit}
+.nav{height:78px;border-bottom:1px solid rgba(16,21,27,.08);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,5vw,72px);background:rgba(255,255,255,.96);position:sticky;top:0;z-index:20;backdrop-filter:blur(12px)}
+.logo{display:flex;align-items:center}.logo img{width:112px;height:auto;display:block}.navBack{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:#424b55}.navBack:hover{color:var(--red)}
+.hero{min-height:520px;position:relative;display:flex;align-items:flex-end;overflow:hidden;background:#111}
+.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,12,18,.86) 0%,rgba(7,12,18,.62) 46%,rgba(7,12,18,.2) 100%),url("https://images.unsplash.com/photo-1494412651409-8963ce7935a7?auto=format&fit=crop&w=2200&q=85") center/cover no-repeat}
+.heroIn{position:relative;z-index:1;width:min(1180px,calc(100% - 40px));margin:0 auto;padding:92px 0 76px;color:#fff}.eyebrow{display:inline-flex;align-items:center;gap:8px;color:#ff6a70;text-transform:uppercase;letter-spacing:.14em;font-size:11px;font-weight:800}.eyebrow:before{content:"";width:24px;height:1px;background:currentColor}.hero h1{font-size:clamp(42px,6vw,76px);line-height:1.02;letter-spacing:-.045em;max-width:720px;margin:18px 0 20px}.hero p{max-width:610px;color:#d9e0e7;font-size:17px;line-height:1.75;margin:0}.heroMeta{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}.heroMeta span{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);padding:9px 12px;border-radius:999px;font-size:11px;font-weight:700;color:#eef2f5;backdrop-filter:blur(8px)}
+main{width:min(1180px,calc(100% - 40px));margin:0 auto}.section{padding:82px 0}.sectionHead{display:flex;justify-content:space-between;gap:40px;align-items:end;margin-bottom:34px}.sectionHead h2{font-size:clamp(30px,4vw,46px);letter-spacing:-.04em;margin:10px 0 0}.sectionHead p{max-width:500px;color:var(--muted);line-height:1.7;font-size:14px;margin:0}.helpGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.helpCard{border:1px solid var(--line);border-radius:18px;padding:26px;background:#fff;transition:.2s ease;min-height:190px}.helpCard:hover{transform:translateY(-3px);box-shadow:0 16px 38px rgba(16,21,27,.07);border-color:#d8dde3}.icon{width:42px;height:42px;border-radius:12px;background:#fff0f1;color:var(--red);display:grid;place-items:center;margin-bottom:22px}.icon svg{width:20px}.helpCard h3{margin:0 0 8px;font-size:17px}.helpCard p{margin:0;color:var(--muted);font-size:13px;line-height:1.65}
+.enquiry{display:grid;grid-template-columns:.82fr 1.18fr;gap:50px;align-items:start}.introBox{padding-top:8px}.introBox h2{font-size:clamp(30px,4vw,46px);letter-spacing:-.04em;line-height:1.08;margin:12px 0 16px}.introBox p{color:var(--muted);line-height:1.75;font-size:14px;max-width:430px}.contactMini{margin-top:28px;padding-top:24px;border-top:1px solid var(--line)}.contactMini strong{display:block;font-size:13px;margin-bottom:5px}.contactMini a{color:var(--red);font-weight:800;font-size:13px}
+.form{border:1px solid var(--line);border-radius:22px;padding:30px;background:#fff;box-shadow:0 20px 60px rgba(16,21,27,.06)}.fields{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{display:flex;flex-direction:column;gap:8px}.field.full{grid-column:1/-1}.field label{font-size:11px;font-weight:800;color:#4d5863;text-transform:uppercase;letter-spacing:.07em}.field input,.field select,.field textarea{width:100%;border:1px solid #dfe4e9;border-radius:11px;background:#fff;color:var(--ink);padding:13px 14px;outline:none}.field textarea{min-height:145px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(215,25,32,.09)}.formNote{font-size:11px;color:#7b848d;line-height:1.55;margin:14px 0 18px}.submit{border:0;background:var(--red);color:#fff;padding:13px 18px;border-radius:10px;font-weight:800;display:inline-flex;align-items:center;gap:8px;cursor:pointer}.submit:hover{background:var(--red2)}.status{font-size:12px;font-weight:700;margin-top:12px;min-height:18px}
+.connect{border-top:1px solid var(--line);padding-top:70px}.connectGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.connectCard{padding:25px;border:1px solid var(--line);border-radius:16px;background:var(--soft)}.connectCard .icon{background:#fff}.connectCard h3{font-size:16px;margin:0 0 7px}.connectCard p{font-size:12px;line-height:1.6;color:var(--muted);margin:0 0 14px}.connectCard a{font-size:12px;font-weight:800;color:var(--red);display:inline-flex;align-items:center;gap:6px}
+.footer{margin-top:20px;background:#0d1117;color:#d7dde3;padding:52px 20px 22px}.footerIn{width:min(1180px,100%);margin:auto}.footerTop{display:grid;grid-template-columns:1.1fr 2fr;gap:60px;padding-bottom:42px;border-bottom:1px solid #252c34}.footerBrand img{width:120px;filter:brightness(0) invert(1);opacity:.94}.footerBrand p{max-width:300px;color:#8f9aa6;font-size:12px;line-height:1.7;margin-top:18px}.footerLinks{display:grid;grid-template-columns:repeat(4,1fr);gap:30px}.footerLinks h4{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#fff;margin:0 0 16px}.footerLinks a{display:block;color:#8f9aa6;font-size:11px;margin:0 0 11px}.footerLinks a:hover{color:#fff}.footerBottom{display:flex;justify-content:space-between;gap:20px;padding-top:18px;color:#6f7984;font-size:10px}.footerBottom div{display:flex;gap:18px}.footerBottom a:hover{color:#fff}
+@media(max-width:850px){.helpGrid,.connectGrid{grid-template-columns:1fr 1fr}.enquiry{grid-template-columns:1fr;gap:30px}.footerTop{grid-template-columns:1fr}.footerLinks{grid-template-columns:repeat(2,1fr)}.sectionHead{display:block}.sectionHead p{margin-top:16px}}
+@media(max-width:600px){.nav{height:68px}.hero{min-height:500px}.heroIn{padding:70px 0 58px}.hero h1{font-size:44px}.hero p{font-size:15px}.helpGrid,.connectGrid,.fields{grid-template-columns:1fr}.field.full{grid-column:auto}.form{padding:21px}.section{padding:62px 0}.footerLinks{grid-template-columns:1fr 1fr}.footerBottom{display:block}.footerBottom div{margin-top:12px;flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<header class="nav">
+  <a class="logo" href="/"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a>
+  <a class="navBack" href="/"><i data-lucide="arrow-left"></i> Back to VTG</a>
+</header>
+
+<section class="hero">
+  <div class="heroIn">
+    <span class="eyebrow">VTG Support & Enquiries</span>
+    <h1>Contact Vintage Trade Global.</h1>
+    <p>Whether you need trade support, marketplace assistance, logistics coordination or help with a financial matter, tell us what you need and we’ll route your enquiry to the right place.</p>
+    <div class="heroMeta"><span>Trade support</span><span>Logistics & shipping</span><span>Finance & payments</span></div>
+  </div>
+</section>
+
+<main>
+<section class="section">
+  <div class="sectionHead"><div><span class="eyebrow">How can we help?</span><h2>Start with the right team.</h2></div><p>Choose the area that best matches your enquiry. Keeping these paths separate makes it easier to get a useful response without unnecessary back-and-forth.</p></div>
+  <div class="helpGrid">
+    <article class="helpCard"><div class="icon"><i data-lucide="handshake"></i></div><h3>Trade Support</h3><p>Questions about sourcing, importing, selling or navigating a VTG trade workflow.</p></article>
+    <article class="helpCard"><div class="icon"><i data-lucide="store"></i></div><h3>Marketplace Support</h3><p>Help with products, supplier profiles, buyer enquiries or marketplace activity.</p></article>
+    <article class="helpCard"><div class="icon"><i data-lucide="ship"></i></div><h3>Logistics & Shipping</h3><p>Enquiries about shipments, routes, ports, milestones and delivery coordination.</p></article>
+    <article class="helpCard"><div class="icon"><i data-lucide="landmark"></i></div><h3>Finance & Payments</h3><p>Questions about trade finance, settlement coordination or payment-related workflows.</p></article>
+    <article class="helpCard"><div class="icon"><i data-lucide="factory"></i></div><h3>Supplier Support</h3><p>Assistance with supplier participation, company profiles and trade activity on VTG.</p></article>
+    <article class="helpCard"><div class="icon"><i data-lucide="shield-alert"></i></div><h3>Complaints & Resolution</h3><p>Report a problem or raise a formal concern so the appropriate team can review it.</p></article>
+  </div>
+</section>
+
+<section class="section enquiry">
+  <div class="introBox">
+    <span class="eyebrow">Send an enquiry</span>
+    <h2>Tell us what you need.</h2>
+    <p>Give us enough context to understand your request. A shipment reference, order reference or company name can help us direct your enquiry faster, but is optional.</p>
+    <div class="contactMini"><strong>General email</strong><a href="mailto:vintageafricatrade@gmail.com">vintageafricatrade@gmail.com</a></div>
+  </div>
+  <form class="form" id="contactForm">
+    <div class="fields">
+      <div class="field"><label for="name">Name</label><input id="name" name="name" required autocomplete="name"></div>
+      <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" required autocomplete="email"></div>
+      <div class="field"><label for="company">Company</label><input id="company" name="company" autocomplete="organization"></div>
+      <div class="field"><label for="category">Enquiry type</label><select id="category" name="category" required><option value="">Select one</option><option>Trade Support</option><option>Marketplace Support</option><option>Logistics & Shipping</option><option>Finance & Payments</option><option>Supplier Support</option><option>Complaints & Resolution</option><option>General Enquiry</option></select></div>
+      <div class="field"><label for="reference">Reference (optional)</label><input id="reference" name="reference" placeholder="Order, shipment or company reference"></div>
+      <div class="field"><label for="subject">Subject</label><input id="subject" name="subject" required></div>
+      <div class="field full"><label for="message">Message</label><textarea id="message" name="message" required placeholder="Tell us what you need help with..."></textarea></div>
+    </div>
+    <p class="formNote">By sending this enquiry, you are asking VTG to review the information provided and respond through the contact details you supplied.</p>
+    <button class="submit" type="submit">Send enquiry <i data-lucide="arrow-right"></i></button>
+    <div class="status" id="status" aria-live="polite"></div>
+  </form>
+</section>
+
+<section class="section connect">
+  <div class="sectionHead"><div><span class="eyebrow">Connect with VTG</span><h2>Direct paths for important enquiries.</h2></div><p>For a general question, an active trade issue or a business conversation, use the route that fits your need.</p></div>
+  <div class="connectGrid">
+    <article class="connectCard"><div class="icon"><i data-lucide="mail"></i></div><h3>General Enquiries</h3><p>For questions that do not fit one of the specialist support areas.</p><a href="mailto:vintageafricatrade@gmail.com">Email VTG <i data-lucide="arrow-up-right"></i></a></article>
+    <article class="connectCard"><div class="icon"><i data-lucide="life-buoy"></i></div><h3>Trade Support</h3><p>Use the enquiry form above for help with an active trade or VTG workflow.</p><a href="#contactForm">Start an enquiry <i data-lucide="arrow-up-right"></i></a></article>
+    <article class="connectCard"><div class="icon"><i data-lucide="briefcase-business"></i></div><h3>Business Partnerships</h3><p>For organizations interested in working with VTG on strategic business opportunities.</p><a href="/partnerships.html">View partnerships <i data-lucide="arrow-up-right"></i></a></article>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+<div class="footerIn footerTop">
+  <div class="footerBrand"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"><p>Connecting Africa, China and the world through intelligent trade.</p></div>
+  <div class="footerLinks">
+    <div><h4>Explore</h4><a href="/#market">Marketplace</a><a href="/#vtgAtlasPreview">Trade Atlas</a><a href="/#aiLaunch">VTG AI</a><a href="/#vtgIntelLaunch">Market Intelligence</a></div>
+    <div><h4>Trade</h4><a href="/#how">How VTG Works</a><a href="/product-verification.html">Product Verification</a><a href="/partnerships.html#logistics">Logistics & Shipping</a><a href="/trade-os.html">Trade Workspace</a></div>
+    <div><h4>Business</h4><a href="/marketplace">Suppliers & Products</a><a href="/trade-os.html">Finance & Payments</a><a href="/trade-os.html">Orders & Documents</a><a href="/agent.html">Become an Agent</a></div>
+    <div><h4>Company</h4><a href="/about-vintage.html">About VTG</a><a href="/partnerships.html">Partnerships</a><a href="/contact.html">Contact VTG</a><a href="/contact.html#contactForm">Support & complaints</a></div>
+  </div>
+</div>
+<div class="footerIn footerBottom"><span>© 2026 Vintage Trade Global • Powered by Folayele Global Resources Limited</span><div><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/code-of-conduct.html">Code of Conduct</a></div></div>
+</footer>
+<script>
+lucide.createIcons();
+document.getElementById('contactForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  const d=new FormData(this);
+  const subject=encodeURIComponent('[VTG Enquiry] '+d.get('subject'));
+  const body=encodeURIComponent('Name: '+d.get('name')+'\nEmail: '+d.get('email')+'\nCompany: '+(d.get('company')||'Not provided')+'\nEnquiry type: '+d.get('category')+'\nReference: '+(d.get('reference')||'Not provided')+'\n\n'+d.get('message'));
+  window.location.href='mailto:vintageafricatrade@gmail.com?subject='+subject+'&body='+body;
+  document.getElementById('status').textContent='Your email application is opening with the enquiry prepared.';
+});
+</script>
+</body>
+</html>
