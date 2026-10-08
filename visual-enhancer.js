@@ -247,8 +247,7 @@
     if(!landing || !hero || !heroIn || !market || landing.dataset.vtgMinimalLanding) return;
     landing.dataset.vtgMinimalLanding='1';
 
-    const css=document.createElement('style');
-    css.id='vtgMinimalLandingStyles';
+    const css=document.createElement('style');    css.id='vtgMinimalLandingStyles';
     css.textContent=`
       #landing,#landing *{font-family:'Manrope',sans-serif}\n      #landing .hero{
         min-height:0;
@@ -469,7 +468,7 @@
         </div>
         <div class="vtgAIVisual">
           <div class="vtgAIImage">
-            <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1500&q=88" alt="Shipping containers and global trade logistics">
+            <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1774929103406-59c8882a9954?auto=format&fit=crop&w=1800&q=90" alt="Shipping containers and global trade logistics">
             <div class="vtgAIImageShade"></div>
             <div class="vtgAIImageTag"><i data-lucide="ship"></i><span>Trade intelligence</span></div>
           </div>
@@ -497,8 +496,7 @@
     document.querySelectorAll('.heroIn>.vtgTradeJourney,.vtgValueStrip').forEach(el=>el.remove());
     document.getElementById('vtgAIAsk')?.addEventListener('click',()=>document.getElementById('aiPanel')?.classList.add('open'));
     document.querySelectorAll('[data-vtg-ai-prompt]').forEach(btn=>btn.addEventListener('click',()=>{
-      const input=document.getElementById('aiInput');
-      const panel=document.getElementById('aiPanel');
+      const input=document.getElementById('aiInput');      const panel=document.getElementById('aiPanel');
       if(input){input.value=btn.getAttribute('data-vtg-ai-prompt')||'';panel?.classList.add('open');input.focus();}
     }));
 
