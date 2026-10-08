@@ -279,20 +279,33 @@
       #landing #market .sectionHead p,#landing #market .trust,#landing #market .section>div[style]{display:none!important}
       #landing #market #vtgProductCarousel{margin-top:22px}
       #landing .vtgCategoryGroups{display:none!important}
-      .vtgMinimalAbout{background:linear-gradient(180deg,#f8f9fa 0%,#eef1f3 100%);max-width:none;padding:92px 24px 100px;display:grid;grid-template-columns:minmax(0,520px) minmax(0,700px);justify-content:center;gap:64px;align-items:center;border-top:1px solid rgba(156,36,29,.08);border-bottom:1px solid rgba(7,31,48,.06);position:relative;overflow:hidden}
-      .vtgMinimalAbout:before{content:'';position:absolute;width:620px;height:620px;border:1px solid rgba(156,36,29,.055);border-radius:50%;right:-260px;top:-290px;box-shadow:0 0 0 80px rgba(156,36,29,.018),0 0 0 160px rgba(156,36,29,.012);pointer-events:none}
-      .vtgMinimalAbout .copy{max-width:520px;position:relative;z-index:2}
+      .vtgMinimalAbout{background:linear-gradient(180deg,#f8f9fa 0%,#eef1f3 100%);max-width:none;padding:92px 24px 100px;display:grid;grid-template-columns:minmax(0,560px) minmax(0,620px);justify-content:center;gap:72px;align-items:center;border-top:1px solid rgba(156,36,29,.08);border-bottom:1px solid rgba(7,31,48,.06);position:relative;overflow:hidden}
+      .vtgMinimalAbout:before{content:'';position:absolute;width:760px;height:760px;border:1px solid rgba(156,36,29,.045);border-radius:50%;right:-360px;top:-300px;pointer-events:none}
+      .vtgMinimalAbout .copy{max-width:560px;position:relative;z-index:2}
       .vtgMinimalAbout .kicker{font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:#9c241d;display:inline-flex;align-items:center;gap:8px}
       .vtgMinimalAbout .kicker:before{content:'';width:20px;height:1px;background:currentColor}
       .vtgMinimalAbout h2{font-size:clamp(30px,4vw,50px);line-height:1.05;letter-spacing:-.04em;color:#0d1117;margin:13px 0 15px}.vtgMinimalAbout h2 span{color:#9c241d}
-      .vtgMinimalAbout p{font-size:12px;line-height:1.8;color:#586771;max-width:520px}
-      .vtgEcosystem{margin-top:28px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;max-width:520px}
-      .vtgEcoStep{position:relative;padding:12px 8px 10px;text-align:center;background:rgba(255,255,255,.72);border:1px solid rgba(13,17,23,.08);border-radius:13px}
-      .vtgEcoStep:not(:last-child):after{content:'';position:absolute;width:7px;height:1px;background:#b9c2c7;right:-7px;top:50%;z-index:2}
-      .vtgEcoIcon{width:30px;height:30px;margin:0 auto 7px;display:grid;place-items:center;border-radius:9px;background:#fff;color:#9c241d;border:1px solid rgba(156,36,29,.12)}
-      .vtgEcoIcon svg{width:15px;height:15px;stroke-width:1.8}
-      .vtgEcoStep strong{display:block;font-size:9px;color:#17212b;line-height:1.2}
-      .vtgEcoStep span{display:block;font-size:7px;color:#71808a;margin-top:4px;line-height:1.3}
+      .vtgMinimalAbout p{font-size:12px;line-height:1.8;color:#586771;max-width:540px}
+      .vtgEcosystem{position:relative;width:min(520px,100%);aspect-ratio:1/1;margin:8px auto 0}
+      .vtgOrbit{position:absolute;inset:0;border:1px solid rgba(156,36,29,.18);border-radius:50%;animation:vtgOrbitSpin 32s linear infinite}
+      .vtgOrbit:before{content:'';position:absolute;inset:13%;border:1px dashed rgba(92,108,117,.18);border-radius:50%}
+      .vtgOrbit:after{content:'';position:absolute;width:7px;height:7px;border-radius:50%;background:#9c241d;top:8%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 7px rgba(156,36,29,.07),0 0 18px rgba(156,36,29,.24)}
+      .vtgOrbitCore{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:128px;height:128px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#fff,#f2f4f5);border:1px solid rgba(156,36,29,.22);box-shadow:0 18px 45px rgba(7,31,48,.12),inset 0 0 0 8px rgba(156,36,29,.035);z-index:3}
+      .vtgOrbitCore strong{font-size:25px;letter-spacing:-.05em;color:#9c241d}
+      .vtgOrbitCore span{display:block;font-size:7px;letter-spacing:.14em;text-transform:uppercase;color:#66747c;margin-top:2px}
+      .vtgOrbitNode{position:absolute;left:50%;top:50%;width:92px;height:92px;margin:-46px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.94);border:1px solid rgba(13,17,23,.09);box-shadow:0 12px 28px rgba(7,31,48,.09);z-index:4}
+      .vtgOrbitNode:nth-child(2){transform:translate(-50%,-50%) translateY(-190px)}
+      .vtgOrbitNode:nth-child(3){transform:translate(-50%,-50%) translate(181px,-59px)}
+      .vtgOrbitNode:nth-child(4){transform:translate(-50%,-50%) translate(112px,155px)}
+      .vtgOrbitNode:nth-child(5){transform:translate(-50%,-50%) translate(-112px,155px)}
+      .vtgOrbitNode:nth-child(6){transform:translate(-50%,-50%) translate(-181px,-59px)}
+      .vtgOrbitNode .icon{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:#f8f1f0;color:#9c241d;margin:auto}
+      .vtgOrbitNode svg{width:15px;height:15px;stroke-width:1.8}
+      .vtgOrbitNode strong{display:block;font-size:8px;color:#17212b;text-align:center;margin-top:5px}
+      .vtgOrbitNode span{display:block;font-size:6.5px;color:#74818a;text-align:center;margin-top:3px}
+      .vtgOrbitNode>div{display:flex;flex-direction:column;align-items:center}
+      @keyframes vtgOrbitSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+      @media(prefers-reduced-motion:reduce){.vtgOrbit{animation:none}}
       .vtgAboutImage{height:420px;border-radius:26px;overflow:hidden;box-shadow:0 22px 60px rgba(7,31,48,.15);position:relative;border:1px solid rgba(156,36,29,.10);z-index:1}
       .vtgAboutImage img{width:100%;height:100%;object-fit:cover}
       .vtgAboutImage:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 42%,rgba(5,19,28,.50))}
@@ -321,12 +334,18 @@
         #landing .navlinks a:nth-child(n+3){display:none}
         .vtgMinimalAbout,.vtgMinimalAtlasInner,.vtgMinimalCta{padding-left:18px;padding-right:18px}
         .vtgAboutImage,.vtgGlobeFrame{height:280px;border-radius:20px}
-        .vtgEcosystem{grid-template-columns:repeat(5,minmax(0,1fr));gap:3px}
-        .vtgEcoStep{padding:9px 3px}
-        .vtgEcoStep:not(:last-child):after{display:none}
-        .vtgEcoIcon{width:27px;height:27px}
-        .vtgEcoStep strong{font-size:8px}
-        .vtgEcoStep span{font-size:6px}
+        .vtgEcosystem{width:min(390px,100%);margin:8px auto 0}
+        .vtgOrbitNode{width:72px;height:72px;margin:-36px}
+        .vtgOrbitNode:nth-child(2){transform:translate(-50%,-50%) translateY(-142px)}
+        .vtgOrbitNode:nth-child(3){transform:translate(-50%,-50%) translate(135px,-44px)}
+        .vtgOrbitNode:nth-child(4){transform:translate(-50%,-50%) translate(84px,115px)}
+        .vtgOrbitNode:nth-child(5){transform:translate(-50%,-50%) translate(-84px,115px)}
+        .vtgOrbitNode:nth-child(6){transform:translate(-50%,-50%) translate(-135px,-44px)}
+        .vtgOrbitCore{width:98px;height:98px}
+        .vtgOrbitCore strong{font-size:20px}
+        .vtgOrbitNode .icon{width:25px;height:25px}
+        .vtgOrbitNode strong{font-size:7px}
+        .vtgOrbitNode span{font-size:5.5px}
       }
     `;
     document.head.appendChild(css);
@@ -358,11 +377,13 @@
         <h2>One connected ecosystem for <span>real trade.</span></h2>
         <p>VTG connects buyers, verified suppliers, financial partners and logistics providers across Africa, China and South Korea — bringing sourcing, verification, finance and movement into one connected trade ecosystem.</p>
         <div class="vtgEcosystem" aria-label="VTG trade ecosystem">
-          <div class="vtgEcoStep"><div class="vtgEcoIcon"><i data-lucide="search"></i></div><strong>Discover</strong><span>Products & partners</span></div>
-          <div class="vtgEcoStep"><div class="vtgEcoIcon"><i data-lucide="badge-check"></i></div><strong>Verify</strong><span>Trusted trade</span></div>
-          <div class="vtgEcoStep"><div class="vtgEcoIcon"><i data-lucide="landmark"></i></div><strong>Finance</strong><span>Trade funding</span></div>
-          <div class="vtgEcoStep"><div class="vtgEcoIcon"><i data-lucide="ship"></i></div><strong>Move</strong><span>Logistics & customs</span></div>
-          <div class="vtgEcoStep"><div class="vtgEcoIcon"><i data-lucide="package-check"></i></div><strong>Deliver</strong><span>To the buyer</span></div>
+          <div class="vtgOrbit" aria-hidden="true"></div>
+          <div class="vtgOrbitCore"><div><strong>VTG</strong><span>Trade ecosystem</span></div></div>
+          <div class="vtgOrbitNode"><div><div class="icon"><i data-lucide="search"></i></div><strong>Discover</strong><span>Products & partners</span></div></div>
+          <div class="vtgOrbitNode"><div><div class="icon"><i data-lucide="badge-check"></i></div><strong>Verify</strong><span>Trusted trade</span></div></div>
+          <div class="vtgOrbitNode"><div><div class="icon"><i data-lucide="landmark"></i></div><strong>Finance</strong><span>Trade funding</span></div></div>
+          <div class="vtgOrbitNode"><div><div class="icon"><i data-lucide="ship"></i></div><strong>Move</strong><span>Logistics & customs</span></div></div>
+          <div class="vtgOrbitNode"><div><div class="icon"><i data-lucide="package-check"></i></div><strong>Deliver</strong><span>To the buyer</span></div></div>
         </div>
       </div>
       <div class="vtgAboutImage">
