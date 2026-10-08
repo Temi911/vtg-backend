@@ -269,10 +269,8 @@
       #landing .navin{max-width:1320px;padding:12px 24px}
       #landing .navlinks{gap:22px}
       #landing .navlinks a{font-size:10px}
-      #landing .navtools #newsBtn,#landing .navtools #themeBtn{display:none}
-      #landing .navtools #mapBtn{display:grid}
-      #landing .navtools #mapBtn:after{content:'Atlas';font-size:8px;margin-left:5px}
-      #landing .navtools #mapBtn{width:auto;padding:0 10px;display:flex;align-items:center;gap:3px}
+      #landing .navtools{margin-left:auto}
+      #landing .navtools #mapBtn,#landing .navtools #aiHeaderBtn{display:flex}
       #landing #market{background:#f7f9fa}
       #landing #market .section{padding:88px 24px 80px}
       #landing #market .sectionHead{display:block;text-align:center;margin-bottom:22px}
