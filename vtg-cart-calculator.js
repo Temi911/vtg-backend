@@ -39,26 +39,29 @@
 
   function ensureUI() {
     if ($('#cartBtn')) return;
-    const tools = $('.navtools');
-    const joinBtn = $('#joinBtn');
-    if (tools && joinBtn) {
+    const market = $('#market');
+    const target = market?.querySelector('.sectionHead');
+    if (target) {
+      const tools = document.createElement('div');
+      tools.className = 'marketTools';
+      tools.setAttribute('aria-label','Marketplace tools');
       const calcBtn = document.createElement('button');
-      calcBtn.className = 'iconBtn'; calcBtn.id = 'calcBtn';
+      calcBtn.className = 'marketToolBtn'; calcBtn.id = 'calcBtn';
       calcBtn.title = 'Open landed-cost calculator'; calcBtn.setAttribute('aria-label', 'Open landed-cost calculator');
-      calcBtn.innerHTML = '<i data-lucide="calculator"></i>';
+      calcBtn.innerHTML = '<i data-lucide="calculator"></i><span>Cost calculator</span>';
       const cartBtn = document.createElement('button');
-      cartBtn.className = 'iconBtn'; cartBtn.id = 'cartBtn';
+      cartBtn.className = 'marketToolBtn'; cartBtn.id = 'cartBtn';
       cartBtn.title = 'Open cart'; cartBtn.setAttribute('aria-label', 'Open cart');
-      cartBtn.innerHTML = '<i data-lucide="shopping-cart"></i><span class="dot" id="cartDot" style="display:none"></span>';
-      tools.insertBefore(calcBtn, joinBtn);
-      tools.insertBefore(cartBtn, joinBtn);
+      cartBtn.innerHTML = '<i data-lucide="shopping-cart"></i><span>Cart</span><span class="dot" id="cartDot" style="display:none"></span>';
+      tools.append(calcBtn,cartBtn);
+      target.appendChild(tools);
       calcBtn.onclick = () => toggleDrawer('calcDrawer');
       cartBtn.onclick = () => toggleDrawer('cartDrawer');
     }
 
     const style = document.createElement('style');
     style.textContent = `
-    .vtgField{display:grid;gap:5px;margin-bottom:11px}.vtgField label{font-size:9px;font-weight:800;color:#4f6878}
+    .marketTools{display:flex;gap:8px;justify-content:center;margin-top:16px}.marketToolBtn{position:relative;border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:11px;padding:10px 13px;display:inline-flex;align-items:center;gap:7px;font-size:9px;font-weight:800}.marketToolBtn:hover{border-color:var(--teal);color:var(--teal)}.marketToolBtn .lucide{width:16px;height:16px;stroke-width:1.8}.marketToolBtn .dot{position:absolute;right:6px;top:5px;width:6px;height:6px;border-radius:50%;background:var(--gold)}.vtgField{display:grid;gap:5px;margin-bottom:11px}.vtgField label{font-size:9px;font-weight:800;color:#4f6878}
     .vtgField input,.vtgField select{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fbfdfe;font-size:11px}
     .vtgCalcOut{margin-top:16px;border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px}
     .vtgCalcRow{display:flex;justify-content:space-between;font-size:10px;padding:6px 0;border-bottom:1px solid #eef2f4;color:#526d7e}
