@@ -301,11 +301,13 @@
       .centerIcon .lucide{width:22px;height:22px}.networkCenter strong{display:block;color:#fff;font-size:13px;letter-spacing:.02em}.networkCenter span{display:block;margin-top:4px;color:#aebbc5;font-size:6.5px;letter-spacing:.1em;text-transform:uppercase}
       .networkNode{position:absolute;z-index:7;display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid rgba(255,255,255,.13);background:rgba(9,16,23,.78);border-radius:12px;box-shadow:0 10px 26px rgba(0,0,0,.18);backdrop-filter:blur(10px)}
       .networkNode .lucide{width:14px;height:14px;color:#d95a50}.networkNode strong{font-size:9px;color:#f5f8fa}.networkNode small{display:block;font-size:6.5px;color:#aebbc5;margin-top:1px}
-      .nodeAfrica{left:7%;bottom:13%}.nodeChina{right:7%;top:13%}.nodeKorea{right:4%;bottom:17%}
+      .nodeAfrica{left:5%;bottom:12%}.nodeChina{right:5%;top:12%}.nodeKorea{right:5%;bottom:12%}
       .networkRouteBadge{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:8;display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;border:1px solid rgba(156,36,29,.25);background:rgba(9,18,25,.86);color:#ead0cd;font-size:7px;white-space:nowrap}
-      .networkRouteBadge .lucide{width:13px;color:#c54a41}.networkRouteBadge b{font-size:8px;color:#fff}
+      .networkRouteBadge b{font-size:8px;color:#fff}
+      .networkRouteBadge .lucide{width:13px;color:#c54a41}
+      
       @media(max-width:900px){.tradeNetworkVisual{height:390px}.networkOrbit.one{width:300px;height:142px}.networkOrbit.two{width:340px;height:170px}.networkCenter{width:112px;height:112px}.centerIcon{width:37px;height:37px}.networkNode{padding:7px 8px}.nodeAfrica{left:4%;bottom:10%}.nodeChina{right:4%;top:9%}.nodeKorea{right:3%;bottom:12%}}
-      @media(max-width:600px){.tradeNetworkVisual{height:340px;border-radius:22px}.networkOrbit.one{width:260px;height:120px}.networkOrbit.two{width:285px;height:142px}.networkCenter{width:94px;height:94px}.centerIcon{width:31px;height:31px}.centerIcon .lucide{width:17px;height:17px}.networkCenter strong{font-size:10px}.networkCenter span{font-size:5px}.networkNode small{display:none}.networkNode strong{font-size:7px}.networkNode{padding:6px 7px}.nodeAfrica{left:2%;bottom:8%}.nodeChina{right:2%;top:7%}.nodeKorea{right:2%;bottom:9%}.networkRouteBadge{bottom:9px}}
+      @media(max-width:600px){.tradeNetworkVisual{height:340px;border-radius:22px}.networkOrbit.one{width:260px;height:120px}.networkOrbit.two{width:285px;height:142px}.networkCenter{width:94px;height:94px}.centerIcon{width:31px;height:31px}.centerIcon .lucide{width:17px;height:17px}.networkCenter strong{font-size:10px}.networkCenter span{font-size:5px}.networkNode small{display:none}.networkNode strong{font-size:7px}.networkNode{padding:6px 7px;width:118px;min-height:40px}.networkOrbitLabel{font-size:5.5px;padding:4px 6px}.networkOrbitLabel.inner{top:calc(50% - 76px)}.networkOrbitLabel.outer{bottom:calc(50% - 82px)}.networkFlowHint{top:10px;font-size:5.5px}.nodeAfrica{left:2%;bottom:8%}.nodeChina{right:2%;top:7%}.nodeKorea{right:2%;bottom:9%}.networkRouteBadge{bottom:9px}}
       .vtgMinimalAtlas{background:#07131c;color:#fff}
       .vtgMinimalAtlasInner{max-width:1320px;margin:auto;padding:100px 24px;display:grid;grid-template-columns:1fr 1fr;gap:65px;align-items:center}
       .vtgMinimalAtlas h2{color:#fff}
@@ -376,11 +378,14 @@
       </div>
       <div class="tradeNetworkVisual" aria-label="VTG orbital trade network connecting Africa, China and South Korea">
         <div class="networkGlow"></div>
+        <div class="networkFlowHint">Technology-powered global trade network</div>
         <div class="networkOrbit one"></div>
         <div class="networkOrbit two"></div>
-        <div class="networkNode nodeAfrica"><i data-lucide="map-pin"></i><div><strong>Africa</strong><small>Buyer markets</small></div></div>
-        <div class="networkNode nodeChina"><i data-lucide="factory"></i><div><strong>China</strong><small>Supplier network</small></div></div>
-        <div class="networkNode nodeKorea"><i data-lucide="landmark"></i><div><strong>South Korea</strong><small>Trade & technology</small></div></div>
+        <div class="networkOrbitLabel inner"><i data-lucide="workflow"></i>Source • Verify • Finance</div>
+        <div class="networkOrbitLabel outer"><i data-lucide="ship"></i>Ship • Customs • Deliver • Track</div>
+        <div class="networkNode nodeAfrica"><i data-lucide="map-pin"></i><div><strong>Africa</strong><small>Buyer Markets</small></div></div>
+        <div class="networkNode nodeChina"><i data-lucide="factory"></i><div><strong>China</strong><small>Suppliers &amp; Manufacturing</small></div></div>
+        <div class="networkNode nodeKorea"><i data-lucide="factory"></i><div><strong>South Korea</strong><small>Suppliers &amp; Manufacturing</small></div></div>
         <div class="networkCenter"><div class="centerIcon"><i data-lucide="globe-2"></i></div><strong>VTG</strong><span>Trade Network</span></div>
         <div class="networkRouteBadge"><i data-lucide="orbit"></i><span>Connected corridor</span><b>Africa ↔ Asia</b></div>
       </div>
