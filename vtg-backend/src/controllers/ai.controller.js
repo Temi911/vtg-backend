@@ -35,12 +35,20 @@ const chat = asyncHandler(async (req, res) => {
 
 
 const status = asyncHandler(async (req, res) => {
-  const provider = liveAi.providerStatus();
+  const primary = liveAi.providerStatus();
+  const fallbackEnabled = openrouterAi.enabled();
+  const ready = primary.enabled || fallbackEnabled;
   res.json({
-    status: provider.enabled ? 'ready' : 'unavailable',
-    provider: provider.provider,
-    liveSearch: provider.liveSearch,
-    message: provider.enabled ? 'VTG live trade intelligence is ready.' : 'VTG live trade intelligence is awaiting provider configuration.'
+    status: ready ? 'ready' : 'unavailable',
+    provider: primary.enabled ? primary.provider : (fallbackEnabled ? 'openrouter-fallback' : primary.provider),
+    primaryEnabled: primary.enabled,
+    fallbackEnabled,
+    liveSearch: Boolean(primary.enabled && primary.liveSearch),
+    message: !ready
+      ? 'VTG AI is awaiting provider configuration.'
+      : primary.enabled
+        ? 'VTG AI is ready with live web search.'
+        : 'VTG AI is ready in fallback mode; live web search is unavailable.'
   });
 });
 
@@ -140,6 +148,8 @@ const publicChat = asyncHandler(async (req, res) => {
         reply: result.reply,
         toolsUsed: result.toolsUsed || [],
         provider: result.provider || 'gemini',
+        citations: result.citations || [],
+        interactionId: result.interactionId || null,
       });
     } catch (err) {
       lastError = err;
@@ -159,6 +169,7 @@ const publicChat = asyncHandler(async (req, res) => {
         reply: result.reply,
         toolsUsed: result.toolsUsed || [],
         provider: result.provider || 'openrouter',
+        citations: result.citations || [],
         fallback: true,
       });
     } catch (err) {
