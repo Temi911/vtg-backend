@@ -71,7 +71,7 @@ router.post('/chat', limiter, async (req, res, next) => {
           })
         });
       } else {
-        const base = (process.env.VTG_AI_BASE_URL || 'https://api.openai.com/v1').replace(/\\/+$/, '');
+        const base = (process.env.VTG_AI_BASE_URL || 'https://api.openai.com/v1').replace(/\/+$/, '');
         const model = process.env.VTG_AI_MODEL || process.env.OPENAI_MODEL || 'gpt-4o-mini';
         upstream = await fetch(base + '/chat/completions', {
           method: 'POST',
