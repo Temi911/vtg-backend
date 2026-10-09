@@ -8,7 +8,7 @@
     '<div class="footerIn vtgFooterTop">',
     '<div class="vtgFooterBrand"><a href="/frontend-v3.html" aria-label="Vintage Trade Global homepage"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><p>Connecting Africa, China and the world through intelligent trade.</p></div>',
     '<div class="vtgFooterLinks">',
-    '<div><h4>Explore</h4><a data-navkey="marketplace" href="/frontend-v3.html#market">Marketplace</a><a data-navkey="atlas" href="/frontend-v3.html#vtgAtlasPreview">Trade Atlas</a><a id="footAi" data-navkey="ai" href="/vtg-ai.html">VTG AI</a><a id="footIntel" data-navkey="intelligence" href="/market-intelligence.html">Market Intelligence</a><a id="footTradeFeed" data-navkey="trade-feed" href="/trade-feed.html">Trade Feed</a></div>',
+    '<div><h4>Explore</h4><a data-navkey="marketplace" href="/frontend-v3.html#market">Marketplace</a><a data-navkey="atlas" href="/frontend-v3.html#vtgAtlasPreview">Trade Atlas</a><a id="footIntel" data-navkey="intelligence" href="/market-intelligence.html">Market Intelligence</a><a id="footTradeFeed" data-navkey="trade-feed" href="/trade-feed.html">Trade Feed</a></div>',
     '<div><h4>Trade</h4><a data-navkey="how" href="/frontend-v3.html#how">How VTG Works</a><a data-navkey="verification" href="/product-verification.html">Product Verification</a><a data-navkey="logistics" href="/logistics-shipping.html">Logistics &amp; Shipping</a><a data-navkey="workspace" href="/trade-workspace.html">Trade Workspace</a></div>',
     '<div><h4>Business</h4><a data-navkey="sourcing" href="/sourcing-suppliers.html">Sourcing &amp; Suppliers</a><a data-navkey="finance" href="/finance-payments.html">Finance &amp; Payments</a><a data-navkey="guide" href="/trade-guide.html">Trade Guide</a><a data-navkey="agent" href="/agent.html">Become an Agent</a></div>',
     '<div><h4>Company</h4><a data-navkey="about" href="/about-vintage.html">About VTG</a><a data-navkey="partnerships" href="/partnerships.html">Partnerships</a><a data-navkey="contact" href="/contact.html">Contact VTG</a></div>',
@@ -64,7 +64,6 @@
     var routeMap = {
       marketplace: ['/marketplace.html'],
       atlas: ['/trade-atlas.html'],
-      ai: ['/vtg-ai.html'],
       intelligence: ['/market-intelligence.html', '/intelligence-centre.html'],
       'trade-feed': ['/trade-feed.html', '/account-trade-feed.html'],
       how: [],
@@ -82,7 +81,7 @@
       terms: ['/terms.html'],
       conduct: ['/code-of-conduct.html']
     };
-    var hashMap = {'#market':'marketplace','#vtgatlaspreview':'atlas','#ailaunch':'ai','#vtgintellaunch':'intelligence','#how':'how'};
+    var hashMap = {'#market':'marketplace','#vtgatlaspreview':'atlas','#vtgintellaunch':'intelligence','#how':'how'};
     var active = home && hashMap[hash] ? hashMap[hash] : '';
     Object.keys(routeMap).forEach(function (key) { if (routeMap[key].indexOf(path) !== -1) active = key; });
     document.querySelectorAll('#' + FOOTER_ID + ' [data-navkey]').forEach(function (link) {
