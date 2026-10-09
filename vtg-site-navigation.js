@@ -91,7 +91,7 @@
     });
   }
   function adaptHomeAnchors() {
-    var path = (window.location.pathname || '/').replace(/\\/+$/, '') || '/';
+    var path = window.location.pathname || '/'; if (path.length > 1 && path.charAt(path.length - 1) === '/') path = path.slice(0, -1);
     var isHome = path === '/' || path === HOME || path.endsWith('/frontend-v3.html');
     if (!isHome) return;
     var homeAnchors = { marketplace: '#market', atlas: '#vtgAtlasPreview', ai: '#aiLaunch', how: '#how' };
