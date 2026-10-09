@@ -63,4 +63,5 @@ if(window.lucide)lucide.createIcons();
 const search=document.getElementById('briefSearch'),briefs=[...document.querySelectorAll('.brief')],tabs=[...document.querySelectorAll('.filterTab')],empty=document.getElementById('noBriefs');let active='all';
 function applyFilters(){let shown=0;const q=search.value.trim().toLowerCase();briefs.forEach(card=>{const topics=card.dataset.topic.split(' '),matchTopic=active==='all'||topics.includes(active),matchText=!q||card.innerText.toLowerCase().includes(q);const visible=matchTopic&&matchText;card.classList.toggle('hidden',!visible);if(visible)shown++});empty.style.display=shown?'none':'block'}
 tabs.forEach(tab=>tab.addEventListener('click',()=>{active=tab.dataset.filter;tabs.forEach(t=>t.setAttribute('aria-pressed',String(t===tab)));applyFilters()}));search.addEventListener('input',applyFilters);
-</script></body></html>
+</script><script src="/vtg-market-intelligence-live.js?v=20261009"></script>
+</body></html>
