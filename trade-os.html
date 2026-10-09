@@ -23,7 +23,6 @@ button,input,select{font:inherit}.shell{display:grid;grid-template-columns:250px
   <a class="brand " href="/" aria-label="Vintage Trade Global"><img class="" src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a>
   <nav class="nav">
     <button class="active" data-tab="overview">Overview</button>
-    <button data-tab="intelligence">Trade Intelligence</button>
     <button data-tab="trade-room">Trade Room</button>
     <button data-tab="documents">Document Centre</button>
     <button data-tab="network">Africa Network</button>
@@ -75,47 +74,6 @@ button,input,select{font:inherit}.shell{display:grid;grid-template-columns:250px
     <div class="card feature"><span class="tag">TRADE ATLAS</span><b>See the trade network</b><div class="sub">Ports, suppliers, buyers, logistics hubs and country routes in one map layer.</div></div>
     <div class="card feature"><span class="tag">AI TRADE ENGINE</span><b>Ask the trade journey</b><div class="sub">Country-aware guidance from sourcing through delivery, with clear estimates and source boundaries.</div></div>
     <div class="card feature"><span class="tag">DOCUMENT CENTRE</span><b>Never lose the paperwork</b><div class="sub">Track required, uploaded, verified and missing documents per transaction.</div></div>
-  </div>
-</section>
-
-<section id="intelligence" class="tab hidden">
-  <div class="grid two">
-    <div class="card">
-      <div class="row"><div><h2>VTG Trade Intelligence</h2><div class="sub">AI decision support for sourcing, logistics, compliance and active trades</div></div><span class="tag" id="intelProviderStatus">CHECKING</span></div>
-      <div class="search" style="margin-top:14px"><input id="productInput" value="Solar panels" placeholder="Product, shipment or trade question"><button class="btn primary" onclick="runIntel()">Run VTG AI</button></div>
-      <div class="grid three" style="margin-top:15px">
-        <div class="item"><small>Origin</small><strong>🇨🇳 China</strong></div><div class="item"><small>Destination</small><strong id="buyerDestination">🇳🇬 Nigeria</strong></div><div class="item"><small>Active context</small><strong id="intelTradeCount">Loading…</strong></div>
-      </div>
-      <div class="actions" style="margin-top:12px">
-        <button class="btn" type="button" onclick="askIntel('Give me the most important current risks and next actions for my active trades.')">Risk scan</button>
-        <button class="btn" type="button" onclick="askIntel('Review my active shipments and identify the most important operational bottleneck and next action.')">Shipment brief</button>
-        <button class="btn" type="button" onclick="askIntel('What current regulatory or document checks should I verify for my active China-to-Africa trade? Use current authoritative sources.')">Compliance watch</button>
-      </div>
-      <div id="intelResult" style="margin-top:15px"><div class="notice">Ask VTG AI for a current trade brief. Time-sensitive claims are intended to be grounded with live sources when the provider is available.</div></div>
-      <div id="intelSources" style="margin-top:10px"></div>
-    </div>
-    <div class="card">
-      <h2>Landed Cost Calculator</h2><div class="sub">Transparent planning estimate — not a customs assessment</div>
-      <div class="grid two" style="margin-top:12px">
-        <label class="item"><small>Quantity</small><input id="lcQty" type="number" min="0" step="1" value="500"></label>
-        <label class="item"><small>Unit price</small><input id="lcUnit" type="number" min="0" step="0.01" value="100"></label>
-        <label class="item"><small>Freight</small><input id="lcFreight" type="number" min="0" step="0.01" value="4200"></label>
-        <label class="item"><small>Insurance</small><input id="lcInsurance" type="number" min="0" step="0.01" value="600"></label>
-        <label class="item"><small>Duty/tax allowance</small><input id="lcDuty" type="number" min="0" step="0.01" value="0"></label>
-        <label class="item"><small>Local delivery</small><input id="lcLocal" type="number" min="0" step="0.01" value="1100"></label>
-      </div>
-      <div class="list" style="margin-top:12px">
-        <div class="item"><span>Product value</span><strong id="lcProduct">$0.00</strong></div>
-        <div class="item"><span>Logistics & insurance</span><strong id="lcLogistics">$0.00</strong></div>
-        <div class="item"><span>Estimated landed total</span><strong id="lcTotal">$0.00</strong></div>
-      </div>
-      <small>Duty/tax allowance is user-entered because official assessment depends on classification, valuation, origin, destination and applicable rules.</small>
-    </div>
-  </div>
-  <div class="grid three" style="margin-top:16px">
-    <div class="card"><span class="tag">RISK</span><h3>Trade Risk Radar</h3><div class="sub">AI can assess current operational, supplier, regulatory and logistics signals when live intelligence is available.</div><button class="btn" onclick="askIntel('Run a trade risk radar for my active transactions. Prioritize issues that could cause financial loss, delay, compliance problems or supplier risk.')">Run risk radar</button></div>
-    <div class="card"><span class="tag">CORRIDOR</span><h3>Corridor Intelligence</h3><div class="sub">Review route, port, customs and market signals for the user's active corridor.</div><button class="btn" onclick="askIntel('Analyze my main trade corridor and identify current route, port, customs and market signals I should watch.')">Analyze corridor</button></div>
-    <div class="card"><span class="tag">DOCUMENTS</span><h3>Document Intelligence</h3><div class="sub">Use current trade context to identify missing or high-priority document checks.</div><button class="btn" onclick="askIntel('Review my active trade context and give me a prioritized document checklist. Clearly mark what is verified, what is missing and what must be confirmed with the authority.')">Check documents</button></div>
   </div>
 </section>
 
@@ -293,53 +251,8 @@ const titles={overview:'Trade Command Centre',intelligence:'Trade Intelligence',
 function showTab(id){document.querySelectorAll('.tab').forEach(x=>x.classList.add('hidden'));const el=document.getElementById(id);if(el)el.classList.remove('hidden');document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));document.getElementById('pageTitle').textContent=titles[id]||'VTG Trade OS';}
 document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
 document.addEventListener('DOMContentLoaded',initAtlasHandoff);
-async function runIntel(){
- const input=document.getElementById('productInput'), result=document.getElementById('intelResult'), sources=document.getElementById('intelSources');
- const question=input?.value.trim()||'Give me a current trade intelligence brief for my active transactions.';
- const token=localStorage.getItem('vtg_access_token');
- const prior=Array.isArray(window.VTG_INTEL_HISTORY)?window.VTG_INTEL_HISTORY:[];
- if(!token){result.innerHTML='<div class="notice">Please sign in to use Trade Intelligence with your VTG trade context.</div>';return;}
- result.innerHTML='<div class="notice">VTG AI is researching this trade question…</div>'; sources.innerHTML='';
- try{
-   const me=await fetch('/api/auth/me',{headers:{Authorization:'Bearer '+token,Accept:'application/json'}});
-   const auth=me.ok?await me.json():{};
-   const u=auth.user||{};
-   const r=await fetch('/api/ai/trade-intelligence',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json',Authorization:'Bearer '+token},body:JSON.stringify({message:question,history:prior.slice(-8),country:u.country||'Nigeria',role:u.role||'buyer'})});
-   const d=await r.json().catch(()=>({}));
-   if(!r.ok)throw new Error(d.error||d.message||'Trade Intelligence is unavailable');
-   result.innerHTML='<div class="notice"><strong>VTG AI Trade Brief</strong><div style="margin-top:8px;white-space:pre-wrap">'+String(d.reply||'No intelligence was returned.').replace(/[&<>]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[ch]))+'</div></div>';
-   window.VTG_INTEL_HISTORY=[...(prior||[]),{role:'user',content:question},{role:'assistant',content:String(d.reply||'')}].slice(-8);
-   if(Array.isArray(d.citations)&&d.citations.length){
-     sources.innerHTML='<div class="sub" style="margin-bottom:6px">Sources used</div><div class="list">'+d.citations.map(s=>'<div class="item"><strong>'+String(s.title||'Source').replace(/[&<>]/g,'')+'</strong><small>'+String(s.url||'').replace(/[&<>]/g,'')+'</small></div>').join('')+'</div>';
-   }
- }catch(e){result.innerHTML='<div class="notice">'+String(e.message||'VTG Trade Intelligence is temporarily unavailable.').replace(/[&<>]/g,'')+'</div>';}
-}
 </script>
 <script>
-async function askIntel(question){
-  const input=document.getElementById('productInput');
-  if(input) input.value=question;
-  await runIntel(question);
-}
-async function refreshIntelStatus(){
-  const badge=document.getElementById('intelProviderStatus');
-  const count=document.getElementById('intelTradeCount');
-  try{
-    const r=await fetch('/api/ai/status',{headers:{Accept:'application/json'},cache:'no-store'});
-    const d=await r.json().catch(()=>({}));
-    if(badge){
-      badge.textContent=d.status==='ready'?'LIVE AI':'PROVIDER OFF';
-      badge.className='tag '+(d.status==='ready'?'ok':'');
-    }
-  }catch(e){if(badge)badge.textContent='UNAVAILABLE';}
-  try{
-    const token=localStorage.getItem('vtg_access_token');
-    if(!token){if(count)count.textContent='Sign in required';return;}
-    const r=await fetch('/api/shipments/atlas',{headers:{Authorization:'Bearer '+token,Accept:'application/json'},cache:'no-store'});
-    const d=await r.json().catch(()=>({}));
-    if(count)count.textContent=(Array.isArray(d.shipments)?d.shipments.length:0)+' shipments';
-  }catch(e){if(count)count.textContent='Context unavailable';}
-}
 function recalcLandedCost(){
   const n=id=>Math.max(0,Number(document.getElementById(id)?.value)||0);
   const product=n('lcQty')*n('lcUnit');
@@ -351,7 +264,6 @@ function recalcLandedCost(){
   document.getElementById('lcTotal').textContent=money(total);
 }
 document.addEventListener('DOMContentLoaded',()=>{
-  refreshIntelStatus();
   recalcLandedCost();
   ['lcQty','lcUnit','lcFreight','lcInsurance','lcDuty','lcLocal'].forEach(id=>{
     document.getElementById(id)?.addEventListener('input',recalcLandedCost);
