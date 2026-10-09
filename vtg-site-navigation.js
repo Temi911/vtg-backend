@@ -58,7 +58,7 @@
     }
   }
   function setActiveFooterLink() {
-    var path = (window.location.pathname || '/').replace(/\\/+$/, '') || '/';
+    var path = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
     var hash = (window.location.hash || '').toLowerCase();
     var home = path === '/' || path === HOME || path.endsWith('/frontend-v3.html');
     var routeMap = {
