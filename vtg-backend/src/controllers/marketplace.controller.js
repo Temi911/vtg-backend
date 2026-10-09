@@ -83,6 +83,8 @@ const listFeed = asyncHandler(async (req, res) => {
 const createFeedPost = asyncHandler(async (req, res) => {
   const d = z.object({postType:z.enum(['update','product','advert','news','announcement','trade_tip','video']).default('update'),body:z.string().max(5000).optional(),externalUrl:z.string().url().optional(),countryCode:z.string().max(8).optional(),storefrontId:z.string().uuid().optional()}).parse(req.body);
   if (!d.body && !d.externalUrl) throw new AppError('A post needs text or a link.', 400);
+  if (['advert','product'].includes(d.postType) && !['supplier','admin'].includes(req.user.role)) throw new AppError('Only supplier accounts can publish supplier adverts and product offers.', 403, 'FORBIDDEN');
+  if (d.postType === 'announcement' && !['supplier','bank','admin'].includes(req.user.role)) throw new AppError('Announcements are reserved for organisations and VTG administrators.', 403, 'FORBIDDEN');
   if (d.storefrontId) {
     const own = await query('SELECT 1 FROM storefronts WHERE id=$1 AND owner_id=$2', [d.storefrontId, req.user.id]);
     if (!own.rows[0]) throw new AppError('You cannot post for this storefront.', 403, 'FORBIDDEN');
