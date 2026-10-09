@@ -28,9 +28,15 @@ function safeRole(value) {
 }
 
 router.get('/status', (req, res) => {
-  const configured = Boolean(process.env.OPENAI_API_KEY || process.env.VTG_AI_API_KEY);
+  const hasGemini = Boolean(process.env.GEMINI_API_KEY);
+  const hasCompatible = Boolean(process.env.OPENAI_API_KEY || process.env.VTG_AI_API_KEY);
+  const configured = hasGemini || hasCompatible;
   res.set('Cache-Control', 'no-store');
-  res.json({ service: 'vtg-ai-assistant', configured, provider: configured ? (process.env.VTG_AI_BASE_URL ? 'compatible-api' : 'openai-compatible') : null });
+  res.json({
+    service: 'vtg-ai-assistant',
+    configured,
+    provider: hasGemini ? 'gemini' : hasCompatible ? (process.env.VTG_AI_BASE_URL ? 'compatible-api' : 'openai-compatible') : null
+  });
 });
 
 router.post('/chat', limiter, async (req, res, next) => {
@@ -40,45 +46,71 @@ router.post('/chat', limiter, async (req, res, next) => {
     if (!message) return res.status(400).json({ error: { code: 'MESSAGE_REQUIRED', message: 'Please enter a message.' } });
     if (message.length > 6000) return res.status(413).json({ error: { code: 'MESSAGE_TOO_LONG', message: 'Please keep each message under 6,000 characters.' } });
 
-    const apiKey = process.env.OPENAI_API_KEY || process.env.VTG_AI_API_KEY;
-    if (!apiKey) return res.status(503).json({ error: { code: 'AI_NOT_CONFIGURED', message: 'VTG AI is not configured on the server yet. Please try again later.' } });
+    const geminiKey = process.env.GEMINI_API_KEY;
+    const compatibleKey = process.env.OPENAI_API_KEY || process.env.VTG_AI_API_KEY;
+    if (!geminiKey && !compatibleKey) {
+      return res.status(503).json({ error: { code: 'AI_NOT_CONFIGURED', message: 'VTG AI is not configured on the server yet. Please try again later.' } });
+    }
 
-    const base = (process.env.VTG_AI_BASE_URL || 'https://api.openai.com/v1').replace(/\/+$/, '');
-    const model = process.env.VTG_AI_MODEL || process.env.OPENAI_MODEL || 'gpt-4o-mini';
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 30000);
     let upstream;
+    let provider = geminiKey ? 'gemini' : 'compatible';
     try {
-      upstream = await fetch(base + '/chat/completions', {
-        method: 'POST',
-        signal: controller.signal,
-        headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model,
-          temperature: 0.3,
-          max_tokens: 900,
-          messages: [
-            { role: 'system', content: SYSTEM_PROMPT + '\nCurrent user role: ' + role + '.' },
-            { role: 'user', content: message }
-          ]
-        })
-      });
+      if (geminiKey) {
+        const model = (process.env.GEMINI_MODEL || 'gemini-2.5-flash').trim();
+        const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(geminiKey);
+        upstream = await fetch(url, {
+          method: 'POST',
+          signal: controller.signal,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: SYSTEM_PROMPT + '\\nCurrent user role: ' + role + '.' }] },
+            contents: [{ role: 'user', parts: [{ text: message }] }],
+            generationConfig: { temperature: 0.3, maxOutputTokens: 900 }
+          })
+        });
+      } else {
+        const base = (process.env.VTG_AI_BASE_URL || 'https://api.openai.com/v1').replace(/\\/+$/, '');
+        const model = process.env.VTG_AI_MODEL || process.env.OPENAI_MODEL || 'gpt-4o-mini';
+        upstream = await fetch(base + '/chat/completions', {
+          method: 'POST',
+          signal: controller.signal,
+          headers: { 'Authorization': 'Bearer ' + compatibleKey, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model,
+            temperature: 0.3,
+            max_tokens: 900,
+            messages: [
+              { role: 'system', content: SYSTEM_PROMPT + '\\nCurrent user role: ' + role + '.' },
+              { role: 'user', content: message }
+            ]
+          })
+        });
+      }
     } finally {
       clearTimeout(timeout);
     }
+
     const payload = await upstream.json().catch(() => ({}));
     if (!upstream.ok) {
-      console.error('VTG AI provider error:', upstream.status, payload?.error?.type || payload?.error?.code || 'provider_error');
-      return res.status(502).json({ error: { code: 'AI_PROVIDER_ERROR', message: 'The assistant provider could not complete this request. Please try again shortly.' } });
+      // Never log provider response bodies or request URLs: they may contain sensitive data.
+      console.error('VTG AI provider error:', upstream.status, provider);
+      return res.status(502).json({ error: { code: 'AI_PROVIDER_ERROR', message: 'The assistant provider could not complete this request. Please check the server AI configuration or try again shortly.' } });
     }
-    const reply = payload?.choices?.[0]?.message?.content;
-    if (typeof reply !== 'string' || !reply.trim()) return res.status(502).json({ error: { code: 'AI_EMPTY_RESPONSE', message: 'The assistant returned an empty response. Please try again.' } });
+
+    const reply = provider === 'gemini'
+      ? (payload?.candidates?.[0]?.content?.parts || []).map(part => typeof part.text === 'string' ? part.text : '').join('').trim()
+      : (payload?.choices?.[0]?.message?.content || '').trim();
+
+    if (typeof reply !== 'string' || !reply.trim()) {
+      return res.status(502).json({ error: { code: 'AI_EMPTY_RESPONSE', message: 'The assistant returned an empty response. Please try again.' } });
+    }
     res.set('Cache-Control', 'no-store');
-    return res.json({ reply: reply.trim(), role, model, mode: 'live' });
+    return res.json({ reply: reply.trim(), role, model: provider === 'gemini' ? (process.env.GEMINI_MODEL || 'gemini-2.5-flash') : (process.env.VTG_AI_MODEL || process.env.OPENAI_MODEL || 'gpt-4o-mini'), provider, mode: 'live' });
   } catch (err) {
     if (err.name === 'AbortError') return res.status(504).json({ error: { code: 'AI_TIMEOUT', message: 'The assistant took too long to respond. Please try again.' } });
     return next(err);
   }
 });
-
 module.exports = router;
