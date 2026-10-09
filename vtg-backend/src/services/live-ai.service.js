@@ -91,6 +91,7 @@ async function publicChat({ message, history = [], country, role }) {
       toolsUsed: grounded ? ['google_search'] : [],
       provider: GEMINI_MODEL,
       interactionId: data?.id || null,
+      citations: extractCitations(data),
     };
   } finally {
     clearTimeout(timeout);
