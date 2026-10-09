@@ -60,7 +60,25 @@ const listFeed = asyncHandler(async (req, res) => {
   const limit = Math.min(60, Math.max(1, Number.parseInt(req.query.limit || '30', 10) || 30));
   const params = [];
   const filters = ['f.is_published=TRUE'];
-  if (country) { params.push(country); filters.push('(f.country_code=
+  if (country) { params.push(country); filters.push('(f.country_code=$' + params.length + ' OR f.country_code IS NULL)'); }
+  if (allowedTypes.includes(type)) { params.push(type); filters.push('f.post_type=$' + params.length); }
+  if (search) {
+    params.push('%' + search.replace(/[\\%_]/g, '\\$&') + '%');
+    const n = params.length;
+    filters.push('(f.body ILIKE $' + n + ' OR u.full_name ILIKE $' + n + ' OR s.display_name ILIKE $' + n + ')');
+  }
+  params.push(limit);
+  const sql = 'SELECT f.*, u.full_name, u.role, u.is_verified AS author_verified, ' +
+    's.display_name AS storefront_name, s.slug AS storefront_slug, s.logo_url AS storefront_logo, ' +
+    '(SELECT COUNT(*)::int FROM feed_comments c WHERE c.post_id=f.id) AS comment_count, ' +
+    "(SELECT COUNT(*)::int FROM feed_reactions r WHERE r.post_id=f.id AND r.reaction='like') AS reaction_count, " +
+    "COALESCE((SELECT json_agg(json_build_object('id',m.id,'type',m.media_type,'url',m.url,'thumbnail',m.thumbnail_url) ORDER BY m.sort_order) FROM feed_post_media m WHERE m.post_id=f.id),'[]'::json) AS media " +
+    'FROM feed_posts f JOIN users u ON u.id=f.author_id LEFT JOIN storefronts s ON s.id=f.storefront_id ' +
+    'WHERE ' + filters.join(' AND ') + ' ORDER BY f.created_at DESC LIMIT $' + params.length;
+  const result = await query(sql, params);
+  res.set('Cache-Control','public, max-age=20, stale-while-revalidate=60');
+  res.json({ posts: result.rows, count: result.rows.length });
+});
 
 const createFeedPost = asyncHandler(async (req, res) => {
   const d = z.object({postType:z.enum(['update','product','advert','news','announcement','trade_tip','video']).default('update'),body:z.string().max(5000).optional(),externalUrl:z.string().url().optional(),countryCode:z.string().max(8).optional(),storefrontId:z.string().uuid().optional()}).parse(req.body);
