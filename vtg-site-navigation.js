@@ -1,43 +1,43 @@
-/* VTG shared navigation and canonical footer. */
+/* VTG navigation. The homepage footer markup and visual system are the single source of truth site-wide. */
 (function () {
   'use strict';
   var HOME = '/frontend-v3.html';
-  var FOOTER_ID = 'vtgSiteFooter';
+  var FOOTER_ID = 'vtgFooter';
   var FOOTER_HTML = [
-    '<footer id="vtgSiteFooter" class="vtg-site-footer" aria-label="VTG site footer">',
-    '<div class="vtg-site-footer__top">',
-    '<a class="vtg-site-footer__brand" href="/frontend-v3.html" aria-label="Vintage Trade Global homepage"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"><span>Connecting Africa, China and the world through intelligent trade.</span></a>',
-    '<div class="vtg-site-footer__links">',
-    '<div class="vtg-site-footer__group"><h4>Explore</h4><a data-navkey="marketplace" href="/frontend-v3.html#market">Marketplace</a><a data-navkey="atlas" href="/frontend-v3.html#vtgAtlasPreview">Trade Atlas</a><a id="footAi" data-navkey="ai" href="/frontend-v3.html#aiLaunch">VTG AI</a><a id="footIntel" data-navkey="intelligence" href="/market-intelligence.html">Market Intelligence</a><a id="footTradeFeed" data-navkey="trade-feed" href="/trade-feed.html">Trade Feed</a></div>',
-    '<div class="vtg-site-footer__group"><h4>Trade</h4><a data-navkey="how" href="/frontend-v3.html#how">How VTG Works</a><a data-navkey="verification" href="/product-verification.html">Product Verification</a><a data-navkey="logistics" href="/logistics-shipping.html">Logistics &amp; Shipping</a><a data-navkey="workspace" href="/trade-workspace.html">Trade Workspace</a></div>',
-    '<div class="vtg-site-footer__group"><h4>Business</h4><a data-navkey="sourcing" href="/sourcing-suppliers.html">Sourcing &amp; Suppliers</a><a data-navkey="finance" href="/finance-payments.html">Finance &amp; Payments</a><a data-navkey="guide" href="/trade-guide.html">Trade Guide</a><a data-navkey="agent" href="/agent.html">Become an Agent</a></div>',
-    '<div class="vtg-site-footer__group"><h4>Company</h4><a data-navkey="about" href="/about-vintage.html">About VTG</a><a data-navkey="partnerships" href="/partnerships.html">Partnerships</a><a data-navkey="contact" href="/contact.html">Contact VTG</a></div>',
+    '<footer class="footer vtgCompactFooter" id="vtgFooter" aria-label="VTG site footer">',
+    '<div class="footerIn vtgFooterTop">',
+    '<div class="vtgFooterBrand"><a href="/frontend-v3.html" aria-label="Vintage Trade Global homepage"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><p>Connecting Africa, China and the world through intelligent trade.</p></div>',
+    '<div class="vtgFooterLinks">',
+    '<div><h4>Explore</h4><a data-navkey="marketplace" href="/frontend-v3.html#market">Marketplace</a><a data-navkey="atlas" href="/frontend-v3.html#vtgAtlasPreview">Trade Atlas</a><a id="footAi" data-navkey="ai" href="/frontend-v3.html#aiLaunch">VTG AI</a><a id="footIntel" data-navkey="intelligence" href="/market-intelligence.html">Market Intelligence</a><a id="footTradeFeed" data-navkey="trade-feed" href="/trade-feed.html">Trade Feed</a></div>',
+    '<div><h4>Trade</h4><a data-navkey="how" href="/frontend-v3.html#how">How VTG Works</a><a data-navkey="verification" href="/product-verification.html">Product Verification</a><a data-navkey="logistics" href="/logistics-shipping.html">Logistics &amp; Shipping</a><a data-navkey="workspace" href="/trade-workspace.html">Trade Workspace</a></div>',
+    '<div><h4>Business</h4><a data-navkey="sourcing" href="/sourcing-suppliers.html">Sourcing &amp; Suppliers</a><a data-navkey="finance" href="/finance-payments.html">Finance &amp; Payments</a><a data-navkey="guide" href="/trade-guide.html">Trade Guide</a><a data-navkey="agent" href="/agent.html">Become an Agent</a></div>',
+    '<div><h4>Company</h4><a data-navkey="about" href="/about-vintage.html">About VTG</a><a data-navkey="partnerships" href="/partnerships.html">Partnerships</a><a data-navkey="contact" href="/contact.html">Contact VTG</a></div>',
     '</div></div>',
-    '<div class="vtg-site-footer__bottom"><span>© 2026 Vintage Trade Global · Powered by Folayele Global Resources Limited</span><div class="vtg-site-footer__legal"><a data-navkey="privacy" href="/privacy.html">Privacy</a><a data-navkey="terms" href="/terms.html">Terms</a><a data-navkey="conduct" href="/code-of-conduct.html">Code of Conduct</a></div></div>',
+    '<div class="copyright vtgFooterBottom"><span>© 2026 Vintage Trade Global • Powered by Folayele Global Resources Limited</span><div><a data-navkey="privacy" href="/privacy.html">Privacy</a><a data-navkey="terms" href="/terms.html">Terms</a><a data-navkey="conduct" href="/code-of-conduct.html">Code of Conduct</a></div></div>',
     '</footer>'
   ].join('');
   var CSS = [
-    '.vtg-site-footer{position:relative;z-index:1;background:#240b09;color:#c9b4b1;border-top:1px solid rgba(255,255,255,.08);font-family:Manrope,Arial,sans-serif}',
-    '.vtg-site-footer *{box-sizing:border-box}',
-    '.vtg-site-footer__top{max-width:1260px;margin:0 auto;padding:38px 22px 32px;display:grid;grid-template-columns:minmax(170px,.9fr) minmax(0,2.1fr);gap:38px}',
-    '.vtg-site-footer__brand{display:flex;flex-direction:column;align-items:flex-start;gap:15px;text-decoration:none!important;min-width:0}',
-    '.vtg-site-footer__brand img{display:block;width:158px;max-width:100%;height:auto;object-fit:contain}',
-    '.vtg-site-footer__brand span{max-width:245px;font-size:11px;line-height:1.75;color:#c0b1b0}',
-    '.vtg-site-footer__links{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}',
-    '.vtg-site-footer__group h4{margin:2px 0 11px;color:#fff;font-size:11px;font-weight:800;letter-spacing:.035em}',
-    '.vtg-site-footer__group a,.vtg-site-footer__legal a{position:relative;display:table;width:fit-content;max-width:100%;margin:6px 0;padding:2px 0;color:#c4c8ce;text-decoration:none;font-size:10px;line-height:1.65;transition:color .16s ease,background .16s ease}',
-    '.vtg-site-footer__group a:hover,.vtg-site-footer__legal a:hover{color:#fff}',
-    '.vtg-site-footer__group a[aria-current="page"],.vtg-site-footer__legal a[aria-current="page"]{color:#ff8b82;font-weight:800}',
-    '.vtg-site-footer__group a[aria-current="page"]:after,.vtg-site-footer__legal a[aria-current="page"]:after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;border-radius:3px;background:#ff8b82}',
-    '.vtg-site-footer__bottom{max-width:1260px;margin:0 auto;border-top:1px solid rgba(255,255,255,.13);padding:15px 22px 18px;display:flex;justify-content:space-between;align-items:center;gap:18px;color:#aeb7bf;font-size:9px;line-height:1.6}',
-    '.vtg-site-footer__legal{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.vtg-site-footer__legal a{margin:0}',
-    '.vtg-page-nav{position:fixed;left:14px;bottom:14px;z-index:1200;display:flex;gap:6px;padding:5px;border:1px solid rgba(255,255,255,.15);border-radius:13px;background:rgba(20,10,10,.94);box-shadow:0 8px 26px rgba(0,0,0,.24);backdrop-filter:blur(12px);font-family:Manrope,Arial,sans-serif}',
-    '.vtg-page-nav button,.vtg-page-nav a{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:35px;padding:0 11px;border:1px solid transparent;border-radius:9px;background:transparent;color:#f4eeee;text-decoration:none;font:700 10px/1.2 Manrope,Arial,sans-serif;cursor:pointer;white-space:nowrap}',
-    '.vtg-page-nav button:hover,.vtg-page-nav a:hover,.vtg-page-nav button:focus-visible,.vtg-page-nav a:focus-visible{outline:none;background:#45201e;border-color:#77403b;color:#ffaaa2}.vtg-page-nav button:disabled{opacity:.55;cursor:default}',
-    '@media(max-width:800px){.vtg-site-footer__top{grid-template-columns:1fr;gap:25px;padding:30px 18px}.vtg-site-footer__links{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 16px}.vtg-site-footer__bottom{align-items:flex-start;flex-direction:column;padding:14px 18px 22px}.vtg-site-footer__legal{gap:14px}}',
-    '@media(max-width:420px){.vtg-site-footer__links{grid-template-columns:repeat(2,minmax(0,1fr))}.vtg-page-nav{left:8px;bottom:8px}.vtg-page-nav button,.vtg-page-nav a{padding:0 9px;font-size:9px}.vtg-site-footer__brand img{width:142px}}',
-    '@media(prefers-reduced-motion:reduce){.vtg-site-footer *,.vtg-page-nav *{transition:none!important}}'
-  ].join('\n');
+    '.vtgCompactFooter{display:block!important;position:relative;z-index:1;width:100%;margin-top:0;background:#0b1016!important;color:#d7dde3;border-top:1px solid rgba(255,255,255,.08);font-family:Manrope,Arial,sans-serif}',
+    '.vtgCompactFooter *{box-sizing:border-box}',
+    '.vtgCompactFooter .vtgFooterTop{width:100%;max-width:1260px;margin:0 auto;display:grid;grid-template-columns:minmax(220px,.9fr) minmax(0,2fr);gap:42px;padding:38px 24px 30px}',
+    '.vtgCompactFooter .vtgFooterBrand img{display:block;width:auto;max-width:150px;height:auto;max-height:38px;object-fit:contain;margin-bottom:13px}',
+    '.vtgCompactFooter .vtgFooterBrand p{max-width:290px;margin:0 0 18px;color:#9eabb5;font-size:11px;line-height:1.7}',
+    '.vtgCompactFooter .vtgFooterLinks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}',
+    '.vtgCompactFooter .vtgFooterLinks h4{margin:3px 0 12px;color:#f1f4f6;font-size:10px;letter-spacing:.04em;text-transform:uppercase}',
+    '.vtgCompactFooter .vtgFooterLinks a{position:relative;display:table;width:fit-content;max-width:100%;color:#9eabb5;text-decoration:none;font-size:10px;line-height:1.55;margin:0 0 8px;padding:1px 0;transition:color .18s}',
+    '.vtgCompactFooter .vtgFooterLinks a:hover,.vtgCompactFooter .vtgFooterBottom a:hover{color:#fff}',
+    '.vtgCompactFooter [data-navkey][aria-current="page"]{color:#ff8b82!important;font-weight:800}',
+    '.vtgCompactFooter .vtgFooterLinks [data-navkey][aria-current="page"]:after,.vtgCompactFooter .vtgFooterBottom [data-navkey][aria-current="page"]:after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;border-radius:2px;background:#ff8b82}',
+    '.vtgCompactFooter .vtgFooterBottom{position:relative;width:100%;max-width:1260px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:18px;border-top:1px solid rgba(255,255,255,.07);padding:13px 24px;color:#71808b;font-size:8.5px;text-align:left}',
+    '.vtgCompactFooter .vtgFooterBottom div{display:flex;gap:16px;flex-wrap:wrap}',
+    '.vtgCompactFooter .vtgFooterBottom a{position:relative;color:#8c99a3;text-decoration:none;padding:1px 0}',
+    '.vtg-page-nav{position:fixed;left:14px;bottom:14px;z-index:1200;display:flex;gap:6px;padding:5px;border:1px solid rgba(255,255,255,.15);border-radius:13px;background:rgba(12,16,22,.95);box-shadow:0 8px 26px rgba(0,0,0,.24);backdrop-filter:blur(12px);font-family:Manrope,Arial,sans-serif}',
+    '.vtg-page-nav button,.vtg-page-nav a{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:35px;padding:0 11px;border:1px solid transparent;border-radius:9px;background:transparent;color:#f4f6f8;text-decoration:none;font:700 10px/1.2 Manrope,Arial,sans-serif;cursor:pointer;white-space:nowrap}',
+    '.vtg-page-nav button:hover,.vtg-page-nav a:hover,.vtg-page-nav button:focus-visible,.vtg-page-nav a:focus-visible{outline:none;background:#211a1b;border-color:#77403b;color:#ffaaa2}.vtg-page-nav button:disabled{opacity:.55;cursor:default}',
+    '@media(max-width:800px){.vtgCompactFooter .vtgFooterTop{grid-template-columns:1fr;gap:25px;padding:30px 16px 22px}.vtgCompactFooter .vtgFooterLinks{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 15px}.vtgCompactFooter .vtgFooterBottom{padding:12px 16px;align-items:flex-start;flex-direction:column;gap:8px}}',
+    '@media(max-width:420px){.vtgCompactFooter .vtgFooterLinks{grid-template-columns:1fr 1fr}.vtg-page-nav{left:8px;bottom:8px}.vtg-page-nav button,.vtg-page-nav a{padding:0 9px;font-size:9px}}',
+    '@media(prefers-reduced-motion:reduce){.vtgCompactFooter *,.vtg-page-nav *{transition:none!important}}'
+  ].join('\\n');
   function addStyle() {
     if (document.getElementById('vtg-site-navigation-style')) return;
     var style = document.createElement('style');
@@ -58,7 +58,7 @@
     }
   }
   function setActiveFooterLink() {
-    var path = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
+    var path = (window.location.pathname || '/').replace(/\\/+$/, '') || '/';
     var hash = (window.location.hash || '').toLowerCase();
     var home = path === '/' || path === HOME || path.endsWith('/frontend-v3.html');
     var routeMap = {
@@ -91,7 +91,8 @@
     });
   }
   function adaptHomeAnchors() {
-    var path = window.location.pathname || '/'; if (path.length > 1 && path.charAt(path.length - 1) === '/') path = path.slice(0, -1);
+    var path = window.location.pathname || '/';
+    if (path.length > 1 && path.charAt(path.length - 1) === '/') path = path.slice(0, -1);
     var isHome = path === '/' || path === HOME || path.endsWith('/frontend-v3.html');
     if (!isHome) return;
     var homeAnchors = { marketplace: '#market', atlas: '#vtgAtlasPreview', ai: '#aiLaunch', how: '#how' };
