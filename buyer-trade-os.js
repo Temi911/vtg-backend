@@ -82,6 +82,7 @@
         <div class="buyerOsActions">
           <button class="btn primary" id="buyerRefresh">Refresh workspace</button>
           <button class="btn" id="buyerMarketplace">Browse marketplace</button>
+          <a class="btn" href="/account-trade-feed.html">Open Trade Feed</a>
         </div>
       </div>
       <div class="buyerOsKpis">
