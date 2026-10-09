@@ -24,8 +24,8 @@ header{position:sticky;top:0;z-index:10;background:#091522ed;backdrop-filter:blu
 <body>
 <header><div class="wrap nav">
 <a class="brand" href="/" aria-label="Vintage Trade Global"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a>
-<nav class="navlinks"><a href="/">Home</a><a href="/marketplace.html">Marketplace</a><a href="/market-intelligence.html">Market Intelligence</a><a href="/account-trade-feed.html">My Trade Feed</a></nav>
-<div class="navactions"><a class="btn ghost" href="/account-trade-feed.html">My Trade Feed <i data-lucide="arrow-up-right" class="icon"></i></a><button class="btn primary" id="signInBtn">Sign in</button></div>
+<nav class="navlinks"><a href="/">Home</a><a href="/marketplace.html">Marketplace</a><a href="/market-intelligence.html">Market Intelligence</a></nav>
+<div class="navactions"><button class="btn primary" id="signInBtn">Sign in</button></div>
 </div></header>
 <main class="wrap">
 <section class="intro"><div><div class="eyebrow">VTG social trade network</div><h1>Trade moves when people connect.</h1><p>One scrolling feed for supplier offers, company updates, buyer conversations, bank and finance announcements, and trade news from external publishers. Discover opportunities and build trusted relationships across trade corridors.</p></div><div class="liveflag"><i></i><span id="feedStatus">Connecting to the trade network</span></div></section>
@@ -45,7 +45,7 @@ header{position:sticky;top:0;z-index:10;background:#091522ed;backdrop-filter:blu
 <section class="center">
 <section class="panel composer public-composer" id="composer">
 <div class="composer-head"><div class="avatar" id="myAvatar">VTG</div><div><div class="composer-title" id="composerTitle">Join the trade conversation</div><div class="muted" style="font-size:10px;margin-top:4px" id="composerSub">Sign in to publish a trade update or offer.</div></div></div>
-<div class="public-feed-note"><div class="composer-title">The public group is read-only</div><p>Browse supplier offers, company updates and trade news here. Sign in to like, comment or follow. To publish a post, open your account Trade Feed.</p><a class="btn primary" href="/account-trade-feed.html"><i data-lucide="pen-square" class="icon"></i> Open account Trade Feed</a></div><form id="postForm" hidden>
+<div class="public-feed-note"><div class="composer-title">The public group is read-only</div><p>Browse supplier offers, company updates and trade news here. Sign in to like, comment or follow. Publishing is available from inside your VTG account.</p></div><form id="postForm" hidden>
 <textarea id="postBody" maxlength="5000" placeholder="Share a supplier offer, company update, trade question or market insight…" aria-label="Write a trade post"></textarea>
 <div class="compose-tools"><select id="postType" aria-label="Post type"><option value="update">Company update</option><option value="advert">Supplier advert</option><option value="product">Product offer</option><option value="announcement">Announcement</option><option value="trade_tip">Trade insight</option><option value="news">News link</option><option value="video">Video post</option></select><input id="postUrl" type="url" placeholder="Optional link to product, video or announcement"><input id="postFiles" class="filepick" type="file" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime" multiple><button class="btn" type="button" id="attachBtn"><i data-lucide="paperclip" class="icon"></i> Add media</button><span class="filehint" id="fileHint">No media attached</span><button class="btn primary" id="publishBtn" type="submit"><i data-lucide="send" class="icon"></i> Publish</button></div>
 <div class="compose-notice">Only share information you have rights to publish. Supplier adverts should accurately describe the product and seller. External news belongs to its publisher; share the link rather than copying the full article.</div>
