@@ -80,6 +80,10 @@ const listFeed = asyncHandler(async (req, res) => {
   res.json({ posts: result.rows, count: result.rows.length });
 });
 
+const rejectPublicFeedPost = asyncHandler(async (req, res) => {
+  throw new AppError('Publishing is only available inside your signed-in account Trade Feed.', 403, 'PUBLIC_FEED_READ_ONLY');
+});
+
 const createFeedPost = asyncHandler(async (req, res) => {
   const d = z.object({postType:z.enum(['update','product','advert','news','announcement','trade_tip','video']).default('update'),body:z.string().max(5000).optional(),externalUrl:z.string().url().optional(),countryCode:z.string().max(8).optional(),storefrontId:z.string().uuid().optional()}).parse(req.body);
   if (!d.body && !d.externalUrl) throw new AppError('A post needs text or a link.', 400);
@@ -172,7 +176,7 @@ const createVideoCall = asyncHandler(async (req, res) => {
   res.status(201).json({ call: rows[0] });
 });
 
-module.exports = {createStorefront,getStorefront,publishStorefront,listFeed,createFeedPost,reactToPost,listComments,createComment,toggleFollow,listFollowing,createEnquiry,listMyEnquiries,createSupportTicket,listMyTickets,createVideoCall};
+module.exports = {createStorefront,getStorefront,publishStorefront,listFeed,createFeedPost,rejectPublicFeedPost,reactToPost,listComments,createComment,toggleFollow,listFollowing,createEnquiry,listMyEnquiries,createSupportTicket,listMyTickets,createVideoCall};
  + params.length + ' OR f.country_code IS NULL)'); }
   if (allowedTypes.includes(type)) { params.push(type); filters.push('f.post_type=
 
