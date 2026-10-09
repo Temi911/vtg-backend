@@ -26,10 +26,11 @@
       e.preventDefault();
       const q=input.value.trim(); if(!q) return;
       const add=(role,t)=>{const d=document.createElement('div');d.className='msg '+role;d.textContent=t;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;};
+      const priorHistory=history.slice(-20);
       add('user',q); input.value=''; history.push({role:'user',content:q});
       try {
         const c=new AbortController(), timer=setTimeout(()=>c.abort(),30000);
-        const r=await fetch('/api/ai/public-chat',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({message:q,history:history.slice(-20),country:'Nigeria',role:localStorage.getItem('vtg_role')||'buyer',live:true,currentDate:new Date().toISOString(),timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,page:location.href}),signal:c.signal});
+        const r=await fetch('/api/ai/public-chat',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({message:q,history:priorHistory,country:'Nigeria',role:localStorage.getItem('vtg_role')||'buyer',live:true,currentDate:new Date().toISOString(),timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,page:location.href}),signal:c.signal});
         clearTimeout(timer); const d=await r.json(); if(!r.ok) throw new Error();
         const reply=d.reply||d.message||'I could not generate a response right now.';
         add('assistant',reply); history.push({role:'assistant',content:reply});
@@ -40,6 +41,26 @@
         }
       } catch(err) { add('assistant','I’m temporarily unable to connect to the VTG AI service. Please try again shortly.'); }
     };
+  }
+
+  function checkAIStatus() {
+    const sub=document.querySelector('.aiSub');
+    const badge=document.querySelector('.aiLaunch em');
+    fetch('/api/ai/status',{cache:'no-store',headers:{Accept:'application/json'}})
+      .then(r=>r.ok?r.json():Promise.reject(new Error('status unavailable')))
+      .then(data=>{
+        const ready=data.status==='ready';
+        if(sub) sub.textContent=ready
+          ? (data.liveSearch?'Live trade guidance · web search':'Trade guidance · live search unavailable')
+          : 'AI service temporarily unavailable';
+        if(badge) badge.textContent=ready?'READY':'OFFLINE';
+        const launch=document.querySelector('.aiLaunch');
+        if(launch) launch.setAttribute('aria-label',ready?'Open VTG AI Assistant':'VTG AI status: temporarily unavailable');
+      })
+      .catch(()=>{
+        if(sub) sub.textContent='AI connection status unavailable';
+        if(badge) badge.textContent='CHECK';
+      });
   }
 
   function replaceMarketplaceIntro() {
@@ -553,7 +574,7 @@
   }
 
   function apply(){
-    try{upgradeAI();loadLiveMarket();replaceMarketplaceIntro();upgradeMarketIntelligence();installVTGCarousel();buildMinimalLanding();setInterval(loadLiveMarket,300000);if(window.lucide?.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.9}});}catch(e){console.warn('VTG visual enhancer failed',e);}
+    try{upgradeAI();checkAIStatus();loadLiveMarket();replaceMarketplaceIntro();upgradeMarketIntelligence();installVTGCarousel();buildMinimalLanding();setInterval(loadLiveMarket,300000);if(window.lucide?.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.9}});}catch(e){console.warn('VTG visual enhancer failed',e);}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
 })();
