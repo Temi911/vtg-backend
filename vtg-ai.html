@@ -118,6 +118,6 @@ $('#suggestions').addEventListener('click',e=>{const b=e.target.closest('[data-p
 fetch('/api/ai/status',{headers:{Accept:'application/json'},cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()).then(s=>{if(s.status!=='ready'){$('#chatSub').textContent='AI provider is not currently connected';$('#accessCopy').textContent='The interface is ready, but the live AI provider is currently unavailable. Please try again later.'}}).catch(()=>{});
 })();
 </script>
-<script src="/vtg-site-navigation.js?v=20261010" defer></script>
+<script src="/vtg-site-navigation.js?v=20261011" defer></script>
 </body>
 </html>
