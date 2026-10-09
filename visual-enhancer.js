@@ -243,7 +243,7 @@
       #landing .navlinks{gap:22px}
       #landing .navlinks a{font-size:10px}
       #landing .navtools{margin-left:auto}
-      #landing .navtools #mapBtn,#landing .navtools #aiHeaderBtn{display:flex}
+      #landing .navtools #mapBtn{display:flex}
       #landing #market{background:#f7f9fa}
       #landing #market .section{padding:88px 24px 80px}
       #landing #market .sectionHead{display:block;text-align:center;margin-bottom:22px}
