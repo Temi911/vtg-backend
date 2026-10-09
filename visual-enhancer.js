@@ -435,41 +435,6 @@
     `;
     about.insertAdjacentElement('afterend',atlas);
 
-    const ai=document.createElement('section');
-    ai.className='vtgMinimalAI';
-    ai.id='vtgAI';
-    ai.innerHTML=`
-      <div class="vtgAIInner">
-        <div class="vtgAICopy">
-          <span class="kicker">VTG AI</span>
-          <h2>Understand the trade. <span>Ask VTG AI.</span></h2>
-          <p>Your intelligent trade assistant for market signals, supplier discovery, logistics questions and cross-border decisions — built into the VTG ecosystem.</p>
-          <div class="vtgAIActions">
-            <button class="primary" type="button" id="vtgAIAsk">Ask VTG AI <i data-lucide="sparkles"></i></button>
-            <span class="vtgAIStatus"><i data-lucide="radio"></i> Intelligence connected</span>
-          </div>
-          <div class="vtgAIPrompts">
-            <button type="button" data-vtg-ai-prompt="What trade opportunities are active between Africa and China?">Market opportunities</button>
-            <button type="button" data-vtg-ai-prompt="Help me compare suppliers and shipping options.">Supplier &amp; shipping</button>
-            <button type="button" data-vtg-ai-prompt="What should I check before importing this product?">Import guidance</button>
-          </div>
-        </div>
-        <div class="vtgAIVisual">
-          <div class="vtgAIImage">
-            <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1774929103406-59c8882a9954?auto=format&fit=crop&w=1800&q=90" alt="Shipping containers and global trade logistics">
-            <div class="vtgAIImageShade"></div>
-            <div class="vtgAIImageTag"><i data-lucide="ship"></i><span>Trade intelligence</span></div>
-          </div>
-          <div class="vtgAIConsole">
-            <div class="vtgAIConsoleTop"><span><i data-lucide="sparkles"></i> VTG AI</span><em>LIVE</em></div>
-            <div class="vtgAISignal"><small>MARKET SIGNAL</small><strong>Connecting market context to your next trade decision.</strong><span><i data-lucide="trending-up"></i> Africa ↔ Asia corridor</span></div>
-            <div class="vtgAIQuestion"><span>Ask about sourcing, logistics, markets or trade.</span><i data-lucide="arrow-up-right"></i></div>
-          </div>
-        </div>
-      </div>
-    `;
-    atlas.insertAdjacentElement('afterend',ai);
-
     const cta=document.createElement('section');
     cta.className='vtgMinimalCta';
     cta.innerHTML=`
@@ -494,12 +459,6 @@
 
     ['#how','#network','#contact'].forEach(sel=>{const el=document.querySelector(sel);if(el)el.remove();});
     document.querySelectorAll('.heroIn>.vtgTradeJourney,.vtgValueStrip').forEach(el=>el.remove());
-    document.getElementById('vtgAIAsk')?.addEventListener('click',()=>document.getElementById('aiPanel')?.classList.add('open'));
-    document.querySelectorAll('[data-vtg-ai-prompt]').forEach(btn=>btn.addEventListener('click',()=>{
-      const input=document.getElementById('aiInput');      const panel=document.getElementById('aiPanel');
-      if(input){input.value=btn.getAttribute('data-vtg-ai-prompt')||'';panel?.classList.add('open');input.focus();}
-    }));
-
     const footer=document.querySelector('#landing .footer');
     if(footer) footer.style.marginTop='0';
 
