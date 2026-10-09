@@ -1,11 +1,12 @@
 'use strict';
 
 const router = require('express').Router();
+const { requireAuth } = require('../middleware/auth');
 
 const ALLOWED_FLOWS = new Set(['M', 'X']);
 const CURRENT_YEAR = new Date().getUTCFullYear();
 
-router.get('/', async (req, res, next) => {
+router.get('/', requireAuth, async (req, res, next) => {
   try {
     const reporterCode = String(req.query.reporterCode || '');
     const flowCode = String(req.query.flowCode || 'M').toUpperCase();
