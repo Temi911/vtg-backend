@@ -145,8 +145,6 @@ this is just the map.
 | `GET/POST /messages/:conversationId/messages` | ✓ | Read/send messages |
 | `GET /compliance/audit-log` | bank | Full audit trail |
 | `GET /notifications` | ✓ | Your notification feed (order/LC/shipment updates) |
-| `POST /ai/chat` | ✓ | AI Trade Assistant — see §9 below for setup |
-| `POST /ai/public-chat` | – | Pre-login assistant (landing/sign-in pages) — signup guidance only, no account data possible since there's no account yet |
 | `PATCH /notifications/:id/read` | ✓ | Mark a notification as read |
 
 Every write action also writes an entry to `audit_log` automatically.
@@ -198,72 +196,6 @@ just say the word.
   intentionally left for you to wire up with a real email provider).
 - The rate limiter is a basic in-memory one; for multi-instance deployments,
   swap to a Redis-backed store (`rate-limit-redis`).
-
-## 9. AI Trade Assistant
-
-Every dashboard has a chat widget (bottom-right, powered by Claude) that can
-look up a signed-in user's **real** orders, shipment location, wallet
-balance, and Letters of Credit, and tell them what they still need to do
-(pending LC approvals, documents to present, payments to arrange). It never
-sees or can be tricked into fetching anyone else's data — the account
-scoping happens in the tool code, not in the prompt.
-
-It also has:
-- **Live exchange rates** (`get_exchange_rates`) via [Frankfurter](https://frankfurter.app) — free, no API key, ECB reference rates.
-- **Live crypto prices** (`get_crypto_prices`) via [CoinGecko](https://coingecko.com) — free, no API key.
-- **Real-time web search** (Anthropic's native `web_search_20250305` tool) for current market news and product/commodity trends — this is a real, live web search, not the model's training data.
-
-All three are wired so the assistant is instructed to always call the tool for anything time-sensitive (rates, prices, news) rather than answer from memory, and to say plainly when a live lookup fails rather than invent a number.
-
-**To turn it on:**
-1. Get an API key at [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
-2. Add it to your backend's environment variables (Railway/Render → Variables, or your local `.env`):
-   ```
-   ANTHROPIC_API_KEY=sk-ant-...
-   ```
-3. Redeploy. That's it — no code changes needed. The exchange rate and crypto price tools need no key or setup at all; they're already live via free public APIs the moment your server can reach the internet (which it will be able to on Railway/Render, unlike this development sandbox, which has restricted network egress).
-
-Until a key is set, the widget still appears and responds, but tells the
-user plainly that the assistant isn't configured yet, rather than failing
-silently or crashing.
-
-**Cost note:** every message is a real API call billed to your Anthropic
-account, and every web search Claude performs is billed separately per Anthropic's
-web search pricing. The `/api/ai/chat` route has its own tighter rate limit (30
-requests per 5 minutes per IP) separate from the rest of the API, specifically
-because this endpoint costs money per request in a way the others don't.
-
-### 9.1 Pre-login assistant (landing & sign-in pages)
-
-The same widget also appears before anyone logs in, backed by a separate
-`POST /ai/public-chat` endpoint (no auth required, its own tighter IP-based
-rate limit of 15 requests/15 min since it's more exposed to abuse with no
-account behind each request). It has a deliberately narrower tool set — no
-order/wallet/LC tools exist, since there's no account yet — but it can:
-
-- Explain how VTG Africa works
-- Tell a prospective signer-upper exactly what identity credential their
-  country's sign-up will require, via `get_signup_requirements(country, role)`
-- Give live exchange rates / crypto prices / general market news, same as
-  the logged-in version
-
-**A deliberate honesty rule worth knowing about:** the credential data in
-`SIGNUP_REQUIREMENTS` (in `ai.service.js`) is hand-verified, not
-model-generated, because USSD codes are operationally sensitive — a wrong
-one wastes someone's real time and possibly money on their own phone. Only
-Nigeria's BVN has a genuine, currently-real instant USSD lookup (`*565*0#`,
-confirmed across multiple sources as of 2026). Every other country
-(Ghana, Kenya, South Africa, Ethiopia) requires an in-person visit to the
-issuing authority for their core national ID — the data says so honestly
-rather than inventing a shortcut. If you add more countries, verify the
-same way (real current sources, not the model's memory) before hardcoding
-a code or "instant" claim.
-
-The buyer sign-up form's identity-credential field also relabels itself
-live based on the country selected (`BVN` → `Ghana Card Number` →
-`National ID Number`, etc.) — see `CREDENTIAL_LABELS` in the frontend's
-`<script>` — and has a "How do I get this?" link that opens the assistant
-with that exact question pre-filled.
 
 ## Production secrets
 
