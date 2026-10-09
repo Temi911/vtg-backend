@@ -100,15 +100,7 @@
       var link = document.querySelector('#' + FOOTER_ID + ' [data-navkey="' + key + '"]');
       if (link) link.setAttribute('href', homeAnchors[key]);
     });
-    var aiLink = document.getElementById('footAi');
-    if (aiLink && !aiLink.dataset.vtgAiBound) {
-      aiLink.dataset.vtgAiBound = '1';
-      aiLink.addEventListener('click', function (event) {
-        event.preventDefault();
-        var launcher = document.getElementById('aiLaunch');
-        if (launcher) launcher.click(); else window.location.hash = 'aiLaunch';
-      });
-    }
+
   }
   function addPageNavigation() {
     if (document.getElementById('vtgPageNavigation')) return;
