@@ -17,7 +17,7 @@
     '</footer>'
   ].join('');
   var CSS = [
-    '.vtgCompactFooter{display:block!important;position:relative;z-index:1;width:100%;margin-top:0;background:#0b1016!important;color:#d7dde3;border-top:1px solid rgba(255,255,255,.08);font-family:Manrope,Arial,sans-serif}',
+    '.vtgCompactFooter{display:block!important;position:relative;z-index:1;width:100%;margin:0!important;padding:0!important;background:#0b1016!important;color:#d7dde3;border-top:1px solid rgba(255,255,255,.08);font-family:Manrope,Arial,sans-serif}',
     '.vtgCompactFooter *{box-sizing:border-box}',
     '.vtgCompactFooter .vtgFooterTop{width:100%;max-width:1260px;margin:0 auto;display:grid;grid-template-columns:minmax(220px,.9fr) minmax(0,2fr);gap:42px;padding:38px 24px 30px}',
     '.vtgCompactFooter .vtgFooterBrand img{display:block;width:auto;max-width:150px;height:auto;max-height:38px;object-fit:contain;margin-bottom:13px}',
