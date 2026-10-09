@@ -54,6 +54,162 @@ const publishStorefront = asyncHandler(async (req, res) => {
 
 const listFeed = asyncHandler(async (req, res) => {
   const country = String(req.query.country || '').trim() || null;
+  const type = String(req.query.type || '').trim();
+  const search = String(req.query.q || '').trim().slice(0, 120);
+  const allowedTypes = ['update','product','advert','news','announcement','trade_tip','video'];
+  const limit = Math.min(60, Math.max(1, Number.parseInt(req.query.limit || '30', 10) || 30));
+  const params = [];
+  const filters = ['f.is_published=TRUE'];
+  if (country) { params.push(country); filters.push('(f.country_code=
+
+const createFeedPost = asyncHandler(async (req, res) => {
+  const d = z.object({postType:z.enum(['update','product','advert','news','announcement','trade_tip','video']).default('update'),body:z.string().max(5000).optional(),externalUrl:z.string().url().optional(),countryCode:z.string().max(8).optional(),storefrontId:z.string().uuid().optional()}).parse(req.body);
+  if (!d.body && !d.externalUrl) throw new AppError('A post needs text or a link.', 400);
+  if (d.storefrontId) {
+    const own = await query('SELECT 1 FROM storefronts WHERE id=$1 AND owner_id=$2', [d.storefrontId, req.user.id]);
+    if (!own.rows[0]) throw new AppError('You cannot post for this storefront.', 403, 'FORBIDDEN');
+  }
+  const { rows } = await query('INSERT INTO feed_posts (author_id,storefront_id,post_type,body,external_url,country_code) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *', [req.user.id,d.storefrontId||null,d.postType,d.body||null,d.externalUrl||null,d.countryCode||null]);
+  res.status(201).json({ post: rows[0] });
+});
+
+const reactToPost = asyncHandler(async (req, res) => {
+  const reaction = String(req.body.reaction || 'like');
+  if (reaction !== 'like') throw new AppError('Only the like reaction is currently supported.', 400, 'INVALID_REACTION');
+  const post = await query('SELECT id FROM feed_posts WHERE id=$1 AND is_published=TRUE', [req.params.postId]);
+  if (!post.rows[0]) throw new AppError('Post not found', 404, 'NOT_FOUND');
+  const existing = await query('DELETE FROM feed_reactions WHERE post_id=$1 AND user_id=$2 AND reaction=$3 RETURNING post_id', [req.params.postId,req.user.id,reaction]);
+  const liked = !existing.rowCount;
+  if (liked) await query('INSERT INTO feed_reactions(post_id,user_id,reaction) VALUES($1,$2,$3) ON CONFLICT DO NOTHING', [req.params.postId,req.user.id,reaction]);
+  const count = await query("SELECT COUNT(*)::int AS count FROM feed_reactions WHERE post_id=$1 AND reaction='like'", [req.params.postId]);
+  res.json({ ok:true, liked, count:count.rows[0].count });
+});
+
+const listComments = asyncHandler(async (req,res) => {
+  const { rows } = await query(`SELECT c.id,c.post_id,c.body,c.created_at,u.id AS author_id,u.full_name,u.role,u.is_verified
+    FROM feed_comments c JOIN users u ON u.id=c.author_id
+    JOIN feed_posts p ON p.id=c.post_id WHERE c.post_id=$1 AND p.is_published=TRUE
+    ORDER BY c.created_at ASC LIMIT 100`,[req.params.postId]);
+  res.json({ comments:rows });
+});
+const createComment = asyncHandler(async (req,res) => {
+  const body = z.object({body:z.string().trim().min(1).max(2000)}).parse(req.body).body;
+  const post = await query('SELECT id FROM feed_posts WHERE id=$1 AND is_published=TRUE',[req.params.postId]);
+  if(!post.rows[0]) throw new AppError('Post not found',404,'NOT_FOUND');
+  const { rows } = await query(`INSERT INTO feed_comments(post_id,author_id,body) VALUES($1,$2,$3)
+    RETURNING id,post_id,author_id,body,created_at`,[req.params.postId,req.user.id,body]);
+  res.status(201).json({comment:rows[0]});
+});
+const toggleFollow = asyncHandler(async (req,res) => {
+  const targetId = req.params.userId;
+  if(targetId===req.user.id) throw new AppError('You cannot follow your own account.',400,'INVALID_FOLLOW');
+  const target = await query("SELECT id,role FROM users WHERE id=$1 AND role IN ('buyer','supplier','bank')",[targetId]);
+  if(!target.rows[0]) throw new AppError('Trade account not found.',404,'NOT_FOUND');
+  const removed = await query('DELETE FROM user_follows WHERE follower_id=$1 AND following_id=$2 RETURNING follower_id',[req.user.id,targetId]);
+  const following = !removed.rowCount;
+  if(following) await query('INSERT INTO user_follows(follower_id,following_id) VALUES($1,$2) ON CONFLICT DO NOTHING',[req.user.id,targetId]);
+  const count = await query('SELECT COUNT(*)::int AS count FROM user_follows WHERE following_id=$1',[targetId]);
+  res.json({ok:true,following,followerCount:count.rows[0].count});
+});
+const listFollowing = asyncHandler(async(req,res)=>{
+  const {rows}=await query(`SELECT u.id,u.full_name,u.role,u.is_verified,f.created_at AS followed_at
+    FROM user_follows f JOIN users u ON u.id=f.following_id
+    WHERE f.follower_id=$1 ORDER BY f.created_at DESC LIMIT 200`,[req.user.id]);
+  res.json({following:rows});
+});
+
+const createEnquiry = asyncHandler(async (req, res) => {
+  const d = z.object({supplierId:z.string().uuid().optional(),bankId:z.string().uuid().optional(),productId:z.string().uuid().optional(),subject:z.string().min(2).max(200),message:z.string().min(2).max(5000)}).parse(req.body);
+  const reference = `VTG-ENQ-${Date.now().toString(36).toUpperCase()}`;
+  const { rows } = await query('INSERT INTO trade_enquiries(reference,buyer_id,supplier_id,bank_id,product_id,subject,message) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *', [reference,req.user.id,d.supplierId||null,d.bankId||null,d.productId||null,d.subject,d.message]);
+  res.status(201).json({ enquiry: rows[0] });
+});
+
+const listMyEnquiries = asyncHandler(async (req, res) => {
+  const { rows } = await query(`SELECT e.*, p.name AS product_name, s.display_name AS supplier_name
+    FROM trade_enquiries e LEFT JOIN products p ON p.id=e.product_id LEFT JOIN storefronts s ON s.owner_id=e.supplier_id
+    WHERE e.buyer_id=$1 OR e.supplier_id=$1 OR e.bank_id=$1 ORDER BY e.created_at DESC`, [req.user.id]);
+  res.json({ enquiries: rows });
+});
+
+const createSupportTicket = asyncHandler(async (req, res) => {
+  const d = z.object({category:z.enum(['general_enquiry','complaint','technical','payment','shipping','customs','verification','supplier','bank','other']),subject:z.string().min(2).max(200),description:z.string().min(2).max(10000),priority:z.enum(['low','normal','high','urgent']).default('normal')}).parse(req.body);
+  const reference = `VTG-SUP-${Date.now().toString(36).toUpperCase()}`;
+  const { rows } = await query('INSERT INTO support_tickets(reference,opened_by,category,subject,description,priority) VALUES($1,$2,$3,$4,$5,$6) RETURNING *', [reference,req.user.id,d.category,d.subject,d.description,d.priority]);
+  res.status(201).json({ ticket: rows[0] });
+});
+
+const listMyTickets = asyncHandler(async (req, res) => {
+  const { rows } = await query('SELECT * FROM support_tickets WHERE opened_by=$1 ORDER BY created_at DESC', [req.user.id]);
+  res.json({ tickets: rows });
+});
+
+const createVideoCall = asyncHandler(async (req, res) => {
+  const d = z.object({conversationId:z.string().uuid().optional(),enquiryId:z.string().uuid().optional(),scheduledFor:z.string().datetime().optional()}).parse(req.body);
+  if (!d.conversationId && !d.enquiryId) throw new AppError('A video call must be linked to a conversation or enquiry.', 400);
+  const { rows } = await query('INSERT INTO video_call_sessions(conversation_id,enquiry_id,created_by,scheduled_for) VALUES($1,$2,$3,$4) RETURNING id,status,provider,scheduled_for,created_at', [d.conversationId||null,d.enquiryId||null,req.user.id,d.scheduledFor||null]);
+  await query('INSERT INTO video_call_participants(call_id,user_id) VALUES($1,$2) ON CONFLICT DO NOTHING', [rows[0].id,req.user.id]);
+  res.status(201).json({ call: rows[0] });
+});
+
+module.exports = {createStorefront,getStorefront,publishStorefront,listFeed,createFeedPost,reactToPost,listComments,createComment,toggleFollow,listFollowing,createEnquiry,listMyEnquiries,createSupportTicket,listMyTickets,createVideoCall};
+ + params.length + ' OR f.country_code IS NULL)'); }
+  if (allowedTypes.includes(type)) { params.push(type); filters.push('f.post_type=
+
+const createFeedPost = asyncHandler(async (req, res) => {
+  const d = z.object({postType:z.enum(['update','product','advert','news','announcement','trade_tip','video']).default('update'),body:z.string().max(5000).optional(),externalUrl:z.string().url().optional(),countryCode:z.string().max(8).optional(),storefrontId:z.string().uuid().optional()}).parse(req.body);
+  if (!d.body && !d.externalUrl) throw new AppError('A post needs text or a link.', 400);
+  if (d.storefrontId) {
+    const own = await query('SELECT 1 FROM storefronts WHERE id=$1 AND owner_id=$2', [d.storefrontId, req.user.id]);
+    if (!own.rows[0]) throw new AppError('You cannot post for this storefront.', 403, 'FORBIDDEN');
+  }
+  const { rows } = await query('INSERT INTO feed_posts (author_id,storefront_id,post_type,body,external_url,country_code) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *', [req.user.id,d.storefrontId||null,d.postType,d.body||null,d.externalUrl||null,d.countryCode||null]);
+  res.status(201).json({ post: rows[0] });
+});
+
+const reactToPost = asyncHandler(async (req, res) => {
+  await query('INSERT INTO feed_reactions(post_id,user_id,reaction) VALUES($1,$2,$3) ON CONFLICT DO NOTHING', [req.params.postId,req.user.id,String(req.body.reaction||'like')]);
+  res.status(201).json({ ok: true });
+});
+
+const createEnquiry = asyncHandler(async (req, res) => {
+  const d = z.object({supplierId:z.string().uuid().optional(),bankId:z.string().uuid().optional(),productId:z.string().uuid().optional(),subject:z.string().min(2).max(200),message:z.string().min(2).max(5000)}).parse(req.body);
+  const reference = `VTG-ENQ-${Date.now().toString(36).toUpperCase()}`;
+  const { rows } = await query('INSERT INTO trade_enquiries(reference,buyer_id,supplier_id,bank_id,product_id,subject,message) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *', [reference,req.user.id,d.supplierId||null,d.bankId||null,d.productId||null,d.subject,d.message]);
+  res.status(201).json({ enquiry: rows[0] });
+});
+
+const listMyEnquiries = asyncHandler(async (req, res) => {
+  const { rows } = await query(`SELECT e.*, p.name AS product_name, s.display_name AS supplier_name
+    FROM trade_enquiries e LEFT JOIN products p ON p.id=e.product_id LEFT JOIN storefronts s ON s.owner_id=e.supplier_id
+    WHERE e.buyer_id=$1 OR e.supplier_id=$1 OR e.bank_id=$1 ORDER BY e.created_at DESC`, [req.user.id]);
+  res.json({ enquiries: rows });
+});
+
+const createSupportTicket = asyncHandler(async (req, res) => {
+  const d = z.object({category:z.enum(['general_enquiry','complaint','technical','payment','shipping','customs','verification','supplier','bank','other']),subject:z.string().min(2).max(200),description:z.string().min(2).max(10000),priority:z.enum(['low','normal','high','urgent']).default('normal')}).parse(req.body);
+  const reference = `VTG-SUP-${Date.now().toString(36).toUpperCase()}`;
+  const { rows } = await query('INSERT INTO support_tickets(reference,opened_by,category,subject,description,priority) VALUES($1,$2,$3,$4,$5,$6) RETURNING *', [reference,req.user.id,d.category,d.subject,d.description,d.priority]);
+  res.status(201).json({ ticket: rows[0] });
+});
+
+const listMyTickets = asyncHandler(async (req, res) => {
+  const { rows } = await query('SELECT * FROM support_tickets WHERE opened_by=$1 ORDER BY created_at DESC', [req.user.id]);
+  res.json({ tickets: rows });
+});
+
+const createVideoCall = asyncHandler(async (req, res) => {
+  const d = z.object({conversationId:z.string().uuid().optional(),enquiryId:z.string().uuid().optional(),scheduledFor:z.string().datetime().optional()}).parse(req.body);
+  if (!d.conversationId && !d.enquiryId) throw new AppError('A video call must be linked to a conversation or enquiry.', 400);
+  const { rows } = await query('INSERT INTO video_call_sessions(conversation_id,enquiry_id,created_by,scheduled_for) VALUES($1,$2,$3,$4) RETURNING id,status,provider,scheduled_for,created_at', [d.conversationId||null,d.enquiryId||null,req.user.id,d.scheduledFor||null]);
+  await query('INSERT INTO video_call_participants(call_id,user_id) VALUES($1,$2) ON CONFLICT DO NOTHING', [rows[0].id,req.user.id]);
+  res.status(201).json({ call: rows[0] });
+});
+
+module.exports = {createStorefront,getStorefront,publishStorefront,listFeed,createFeedPost,reactToPost,createEnquiry,listMyEnquiries,createSupportTicket,listMyTickets,createVideoCall};
+ + params.length); }
+  if (search) { params.push('%' + search.replace(/[\\%_]/g, '\\const listFeed = asyncHandler(async (req, res) => {
+  const country = String(req.query.country || '').trim() || null;
   const limit = Math.min(Number(req.query.limit || 30), 60);
   const params = country ? [country, limit] : [limit];
   const where = country ? 'WHERE f.is_published=TRUE AND (f.country_code=$1 OR f.country_code IS NULL)' : 'WHERE f.is_published=TRUE';
@@ -65,6 +221,179 @@ const listFeed = asyncHandler(async (req, res) => {
       ${where} ORDER BY f.created_at DESC LIMIT $${params.length}`;
   const { rows } = await query(sql, params);
   res.json({ posts: rows });
+});') + '%'); filters.push('(f.body ILIKE 
+
+const createFeedPost = asyncHandler(async (req, res) => {
+  const d = z.object({postType:z.enum(['update','product','advert','news','announcement','trade_tip','video']).default('update'),body:z.string().max(5000).optional(),externalUrl:z.string().url().optional(),countryCode:z.string().max(8).optional(),storefrontId:z.string().uuid().optional()}).parse(req.body);
+  if (!d.body && !d.externalUrl) throw new AppError('A post needs text or a link.', 400);
+  if (d.storefrontId) {
+    const own = await query('SELECT 1 FROM storefronts WHERE id=$1 AND owner_id=$2', [d.storefrontId, req.user.id]);
+    if (!own.rows[0]) throw new AppError('You cannot post for this storefront.', 403, 'FORBIDDEN');
+  }
+  const { rows } = await query('INSERT INTO feed_posts (author_id,storefront_id,post_type,body,external_url,country_code) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *', [req.user.id,d.storefrontId||null,d.postType,d.body||null,d.externalUrl||null,d.countryCode||null]);
+  res.status(201).json({ post: rows[0] });
+});
+
+const reactToPost = asyncHandler(async (req, res) => {
+  await query('INSERT INTO feed_reactions(post_id,user_id,reaction) VALUES($1,$2,$3) ON CONFLICT DO NOTHING', [req.params.postId,req.user.id,String(req.body.reaction||'like')]);
+  res.status(201).json({ ok: true });
+});
+
+const createEnquiry = asyncHandler(async (req, res) => {
+  const d = z.object({supplierId:z.string().uuid().optional(),bankId:z.string().uuid().optional(),productId:z.string().uuid().optional(),subject:z.string().min(2).max(200),message:z.string().min(2).max(5000)}).parse(req.body);
+  const reference = `VTG-ENQ-${Date.now().toString(36).toUpperCase()}`;
+  const { rows } = await query('INSERT INTO trade_enquiries(reference,buyer_id,supplier_id,bank_id,product_id,subject,message) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *', [reference,req.user.id,d.supplierId||null,d.bankId||null,d.productId||null,d.subject,d.message]);
+  res.status(201).json({ enquiry: rows[0] });
+});
+
+const listMyEnquiries = asyncHandler(async (req, res) => {
+  const { rows } = await query(`SELECT e.*, p.name AS product_name, s.display_name AS supplier_name
+    FROM trade_enquiries e LEFT JOIN products p ON p.id=e.product_id LEFT JOIN storefronts s ON s.owner_id=e.supplier_id
+    WHERE e.buyer_id=$1 OR e.supplier_id=$1 OR e.bank_id=$1 ORDER BY e.created_at DESC`, [req.user.id]);
+  res.json({ enquiries: rows });
+});
+
+const createSupportTicket = asyncHandler(async (req, res) => {
+  const d = z.object({category:z.enum(['general_enquiry','complaint','technical','payment','shipping','customs','verification','supplier','bank','other']),subject:z.string().min(2).max(200),description:z.string().min(2).max(10000),priority:z.enum(['low','normal','high','urgent']).default('normal')}).parse(req.body);
+  const reference = `VTG-SUP-${Date.now().toString(36).toUpperCase()}`;
+  const { rows } = await query('INSERT INTO support_tickets(reference,opened_by,category,subject,description,priority) VALUES($1,$2,$3,$4,$5,$6) RETURNING *', [reference,req.user.id,d.category,d.subject,d.description,d.priority]);
+  res.status(201).json({ ticket: rows[0] });
+});
+
+const listMyTickets = asyncHandler(async (req, res) => {
+  const { rows } = await query('SELECT * FROM support_tickets WHERE opened_by=$1 ORDER BY created_at DESC', [req.user.id]);
+  res.json({ tickets: rows });
+});
+
+const createVideoCall = asyncHandler(async (req, res) => {
+  const d = z.object({conversationId:z.string().uuid().optional(),enquiryId:z.string().uuid().optional(),scheduledFor:z.string().datetime().optional()}).parse(req.body);
+  if (!d.conversationId && !d.enquiryId) throw new AppError('A video call must be linked to a conversation or enquiry.', 400);
+  const { rows } = await query('INSERT INTO video_call_sessions(conversation_id,enquiry_id,created_by,scheduled_for) VALUES($1,$2,$3,$4) RETURNING id,status,provider,scheduled_for,created_at', [d.conversationId||null,d.enquiryId||null,req.user.id,d.scheduledFor||null]);
+  await query('INSERT INTO video_call_participants(call_id,user_id) VALUES($1,$2) ON CONFLICT DO NOTHING', [rows[0].id,req.user.id]);
+  res.status(201).json({ call: rows[0] });
+});
+
+module.exports = {createStorefront,getStorefront,publishStorefront,listFeed,createFeedPost,reactToPost,createEnquiry,listMyEnquiries,createSupportTicket,listMyTickets,createVideoCall};
+ + params.length + ' OR u.full_name ILIKE 
+
+const createFeedPost = asyncHandler(async (req, res) => {
+  const d = z.object({postType:z.enum(['update','product','advert','news','announcement','trade_tip','video']).default('update'),body:z.string().max(5000).optional(),externalUrl:z.string().url().optional(),countryCode:z.string().max(8).optional(),storefrontId:z.string().uuid().optional()}).parse(req.body);
+  if (!d.body && !d.externalUrl) throw new AppError('A post needs text or a link.', 400);
+  if (d.storefrontId) {
+    const own = await query('SELECT 1 FROM storefronts WHERE id=$1 AND owner_id=$2', [d.storefrontId, req.user.id]);
+    if (!own.rows[0]) throw new AppError('You cannot post for this storefront.', 403, 'FORBIDDEN');
+  }
+  const { rows } = await query('INSERT INTO feed_posts (author_id,storefront_id,post_type,body,external_url,country_code) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *', [req.user.id,d.storefrontId||null,d.postType,d.body||null,d.externalUrl||null,d.countryCode||null]);
+  res.status(201).json({ post: rows[0] });
+});
+
+const reactToPost = asyncHandler(async (req, res) => {
+  await query('INSERT INTO feed_reactions(post_id,user_id,reaction) VALUES($1,$2,$3) ON CONFLICT DO NOTHING', [req.params.postId,req.user.id,String(req.body.reaction||'like')]);
+  res.status(201).json({ ok: true });
+});
+
+const createEnquiry = asyncHandler(async (req, res) => {
+  const d = z.object({supplierId:z.string().uuid().optional(),bankId:z.string().uuid().optional(),productId:z.string().uuid().optional(),subject:z.string().min(2).max(200),message:z.string().min(2).max(5000)}).parse(req.body);
+  const reference = `VTG-ENQ-${Date.now().toString(36).toUpperCase()}`;
+  const { rows } = await query('INSERT INTO trade_enquiries(reference,buyer_id,supplier_id,bank_id,product_id,subject,message) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *', [reference,req.user.id,d.supplierId||null,d.bankId||null,d.productId||null,d.subject,d.message]);
+  res.status(201).json({ enquiry: rows[0] });
+});
+
+const listMyEnquiries = asyncHandler(async (req, res) => {
+  const { rows } = await query(`SELECT e.*, p.name AS product_name, s.display_name AS supplier_name
+    FROM trade_enquiries e LEFT JOIN products p ON p.id=e.product_id LEFT JOIN storefronts s ON s.owner_id=e.supplier_id
+    WHERE e.buyer_id=$1 OR e.supplier_id=$1 OR e.bank_id=$1 ORDER BY e.created_at DESC`, [req.user.id]);
+  res.json({ enquiries: rows });
+});
+
+const createSupportTicket = asyncHandler(async (req, res) => {
+  const d = z.object({category:z.enum(['general_enquiry','complaint','technical','payment','shipping','customs','verification','supplier','bank','other']),subject:z.string().min(2).max(200),description:z.string().min(2).max(10000),priority:z.enum(['low','normal','high','urgent']).default('normal')}).parse(req.body);
+  const reference = `VTG-SUP-${Date.now().toString(36).toUpperCase()}`;
+  const { rows } = await query('INSERT INTO support_tickets(reference,opened_by,category,subject,description,priority) VALUES($1,$2,$3,$4,$5,$6) RETURNING *', [reference,req.user.id,d.category,d.subject,d.description,d.priority]);
+  res.status(201).json({ ticket: rows[0] });
+});
+
+const listMyTickets = asyncHandler(async (req, res) => {
+  const { rows } = await query('SELECT * FROM support_tickets WHERE opened_by=$1 ORDER BY created_at DESC', [req.user.id]);
+  res.json({ tickets: rows });
+});
+
+const createVideoCall = asyncHandler(async (req, res) => {
+  const d = z.object({conversationId:z.string().uuid().optional(),enquiryId:z.string().uuid().optional(),scheduledFor:z.string().datetime().optional()}).parse(req.body);
+  if (!d.conversationId && !d.enquiryId) throw new AppError('A video call must be linked to a conversation or enquiry.', 400);
+  const { rows } = await query('INSERT INTO video_call_sessions(conversation_id,enquiry_id,created_by,scheduled_for) VALUES($1,$2,$3,$4) RETURNING id,status,provider,scheduled_for,created_at', [d.conversationId||null,d.enquiryId||null,req.user.id,d.scheduledFor||null]);
+  await query('INSERT INTO video_call_participants(call_id,user_id) VALUES($1,$2) ON CONFLICT DO NOTHING', [rows[0].id,req.user.id]);
+  res.status(201).json({ call: rows[0] });
+});
+
+module.exports = {createStorefront,getStorefront,publishStorefront,listFeed,createFeedPost,reactToPost,createEnquiry,listMyEnquiries,createSupportTicket,listMyTickets,createVideoCall};
+ + params.length + ' OR s.display_name ILIKE 
+
+const createFeedPost = asyncHandler(async (req, res) => {
+  const d = z.object({postType:z.enum(['update','product','advert','news','announcement','trade_tip','video']).default('update'),body:z.string().max(5000).optional(),externalUrl:z.string().url().optional(),countryCode:z.string().max(8).optional(),storefrontId:z.string().uuid().optional()}).parse(req.body);
+  if (!d.body && !d.externalUrl) throw new AppError('A post needs text or a link.', 400);
+  if (d.storefrontId) {
+    const own = await query('SELECT 1 FROM storefronts WHERE id=$1 AND owner_id=$2', [d.storefrontId, req.user.id]);
+    if (!own.rows[0]) throw new AppError('You cannot post for this storefront.', 403, 'FORBIDDEN');
+  }
+  const { rows } = await query('INSERT INTO feed_posts (author_id,storefront_id,post_type,body,external_url,country_code) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *', [req.user.id,d.storefrontId||null,d.postType,d.body||null,d.externalUrl||null,d.countryCode||null]);
+  res.status(201).json({ post: rows[0] });
+});
+
+const reactToPost = asyncHandler(async (req, res) => {
+  await query('INSERT INTO feed_reactions(post_id,user_id,reaction) VALUES($1,$2,$3) ON CONFLICT DO NOTHING', [req.params.postId,req.user.id,String(req.body.reaction||'like')]);
+  res.status(201).json({ ok: true });
+});
+
+const createEnquiry = asyncHandler(async (req, res) => {
+  const d = z.object({supplierId:z.string().uuid().optional(),bankId:z.string().uuid().optional(),productId:z.string().uuid().optional(),subject:z.string().min(2).max(200),message:z.string().min(2).max(5000)}).parse(req.body);
+  const reference = `VTG-ENQ-${Date.now().toString(36).toUpperCase()}`;
+  const { rows } = await query('INSERT INTO trade_enquiries(reference,buyer_id,supplier_id,bank_id,product_id,subject,message) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *', [reference,req.user.id,d.supplierId||null,d.bankId||null,d.productId||null,d.subject,d.message]);
+  res.status(201).json({ enquiry: rows[0] });
+});
+
+const listMyEnquiries = asyncHandler(async (req, res) => {
+  const { rows } = await query(`SELECT e.*, p.name AS product_name, s.display_name AS supplier_name
+    FROM trade_enquiries e LEFT JOIN products p ON p.id=e.product_id LEFT JOIN storefronts s ON s.owner_id=e.supplier_id
+    WHERE e.buyer_id=$1 OR e.supplier_id=$1 OR e.bank_id=$1 ORDER BY e.created_at DESC`, [req.user.id]);
+  res.json({ enquiries: rows });
+});
+
+const createSupportTicket = asyncHandler(async (req, res) => {
+  const d = z.object({category:z.enum(['general_enquiry','complaint','technical','payment','shipping','customs','verification','supplier','bank','other']),subject:z.string().min(2).max(200),description:z.string().min(2).max(10000),priority:z.enum(['low','normal','high','urgent']).default('normal')}).parse(req.body);
+  const reference = `VTG-SUP-${Date.now().toString(36).toUpperCase()}`;
+  const { rows } = await query('INSERT INTO support_tickets(reference,opened_by,category,subject,description,priority) VALUES($1,$2,$3,$4,$5,$6) RETURNING *', [reference,req.user.id,d.category,d.subject,d.description,d.priority]);
+  res.status(201).json({ ticket: rows[0] });
+});
+
+const listMyTickets = asyncHandler(async (req, res) => {
+  const { rows } = await query('SELECT * FROM support_tickets WHERE opened_by=$1 ORDER BY created_at DESC', [req.user.id]);
+  res.json({ tickets: rows });
+});
+
+const createVideoCall = asyncHandler(async (req, res) => {
+  const d = z.object({conversationId:z.string().uuid().optional(),enquiryId:z.string().uuid().optional(),scheduledFor:z.string().datetime().optional()}).parse(req.body);
+  if (!d.conversationId && !d.enquiryId) throw new AppError('A video call must be linked to a conversation or enquiry.', 400);
+  const { rows } = await query('INSERT INTO video_call_sessions(conversation_id,enquiry_id,created_by,scheduled_for) VALUES($1,$2,$3,$4) RETURNING id,status,provider,scheduled_for,created_at', [d.conversationId||null,d.enquiryId||null,req.user.id,d.scheduledFor||null]);
+  await query('INSERT INTO video_call_participants(call_id,user_id) VALUES($1,$2) ON CONFLICT DO NOTHING', [rows[0].id,req.user.id]);
+  res.status(201).json({ call: rows[0] });
+});
+
+module.exports = {createStorefront,getStorefront,publishStorefront,listFeed,createFeedPost,reactToPost,createEnquiry,listMyEnquiries,createSupportTicket,listMyTickets,createVideoCall};
+ + params.length + ')'); }
+  params.push(limit);
+  const sql = `SELECT f.*, u.full_name, u.role, u.is_verified AS author_verified,
+      s.display_name AS storefront_name, s.slug AS storefront_slug, s.logo_url AS storefront_logo,
+      (SELECT COUNT(*)::int FROM feed_comments c WHERE c.post_id=f.id) AS comment_count,
+      (SELECT COUNT(*)::int FROM feed_reactions r WHERE r.post_id=f.id AND r.reaction='like') AS reaction_count,
+      COALESCE((SELECT json_agg(json_build_object('id',m.id,'type',m.media_type,'url',m.url,'thumbnail',m.thumbnail_url) ORDER BY m.sort_order)
+        FROM feed_post_media m WHERE m.post_id=f.id),'[]'::json) AS media
+      FROM feed_posts f JOIN users u ON u.id=f.author_id
+      LEFT JOIN storefronts s ON s.id=f.storefront_id
+      WHERE ${filters.join(' AND ')} ORDER BY f.created_at DESC LIMIT ${params.length}`;
+  const { rows } = await query(sql, params);
+  res.set('Cache-Control','public, max-age=20, stale-while-revalidate=60');
+  res.json({ posts: rows, count: rows.length });
 });
 
 const createFeedPost = asyncHandler(async (req, res) => {
