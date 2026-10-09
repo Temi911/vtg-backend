@@ -10,10 +10,10 @@ function insertSection(){
  if(anchor&&anchor.parentElement)anchor.insertAdjacentElement('afterend',section);else document.body.appendChild(section);
  if(window.lucide)window.lucide.createIcons();
 }
-function render(items){
+function render(items,lastSync){
  const grid=document.getElementById('vtgLiveNewsGrid'),status=document.getElementById('vtgNewsStatus');if(!grid||!status)return;
- if(!items.length){status.innerHTML='<i data-lucide="clock-3"></i> Feed is warming up';grid.innerHTML='<article class="metric"><h3>New stories are being screened</h3><p style="color:var(--muted);font-size:11px;line-height:1.8">The hourly collector will display relevant reports here after it completes its first successful sync. No placeholder headlines are shown as live news.</p></article>';if(window.lucide)window.lucide.createIcons();return;}
- status.innerHTML='<i data-lucide="check-circle-2"></i> '+items.length+' verified-source links';grid.innerHTML=items.map(item=>{
+ if(!items.length){status.innerHTML='<i data-lucide="clock-3"></i> '+(lastSync&&lastSync.at?'Last sync '+esc(date(lastSync.at)):'Feed is warming up');grid.innerHTML='<article class="metric"><h3>New stories are being screened</h3><p style="color:var(--muted);font-size:11px;line-height:1.8">The hourly collector will display relevant reports here after it completes its first successful sync. No placeholder headlines are shown as live news.</p></article>';if(window.lucide)window.lucide.createIcons();return;}
+ status.innerHTML='<i data-lucide="check-circle-2"></i> '+items.length+' headlines · '+(lastSync&&lastSync.at?'last sync '+esc(date(lastSync.at)):'sync time unavailable');grid.innerHTML=items.map(item=>{
  const icon=icons[item.topic]||'newspaper';const dt=date(item.published||item.discovered);
  return '<article class="metric" style="display:flex;flex-direction:column;gap:10px;min-height:250px"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span class="tag"><i data-lucide="'+icon+'"></i> '+esc(item.topic||'Trade & logistics')+'</span><span style="font-size:8px;color:var(--muted)">'+esc(dt)+'</span></div><h3 style="font-size:14px;line-height:1.5;margin:3px 0">'+esc(item.title)+'</h3><p style="color:var(--muted);font-size:10px;line-height:1.8;margin:0">'+esc(item.summary||'Open the original report to verify the facts and assess the trade impact.')+'</p><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:10px;border-top:1px solid var(--line)"><span style="font-size:9px;color:var(--muted)">'+esc(item.source||item.domain||'External source')+'</span><a class="btn" href="'+esc(item.url)+'" target="_blank" rel="noopener noreferrer">Read original <i data-lucide="arrow-up-right"></i></a></div></article>';
  }).join('');
@@ -22,7 +22,7 @@ function render(items){
 async function load(){
  insertSection();
  const status=document.getElementById('vtgNewsStatus');
- try{const response=await fetch('/api/market-intelligence/news?limit=12',{headers:{Accept:'application/json'},cache:'no-store'});if(!response.ok)throw new Error('News endpoint returned '+response.status);const data=await response.json();render(data.items||[]);}
+ try{const response=await fetch('/api/market-intelligence/news?limit=12',{headers:{Accept:'application/json'},cache:'no-store'});if(!response.ok)throw new Error('News endpoint returned '+response.status);const data=await response.json();render(data.items||[],data.lastSync||null);}
  catch(e){if(status)status.textContent='News feed temporarily unavailable';const grid=document.getElementById('vtgLiveNewsGrid');if(grid)grid.innerHTML='<article class="metric"><h3>Trade news connection unavailable</h3><p style="color:var(--muted);font-size:11px;line-height:1.8">Please check back shortly. The page will not present sample headlines as current reporting.</p></article>';}
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
