@@ -49,6 +49,33 @@ html[data-theme="dark"] body .panel .hint,
 html[data-theme="dark"] body .panel .actions small {color:#b9c5ce!important}
 html[data-theme="dark"] body .hero .eyebrow,
 html[data-theme="dark"] body .lane {color:#ff777d!important}
+
+/* Theme-contrast safety net: keep the proposal headline and all supporting copy readable. */
+html:not([data-theme="dark"]) body,
+html[data-theme="light"] body {background:#fff!important;color:#18232d!important}
+html:not([data-theme="dark"]) body .hero h1,
+html[data-theme="light"] body .hero h1,
+html:not([data-theme="dark"]) body .intro h2,
+html[data-theme="light"] body .intro h2,
+html:not([data-theme="dark"]) body .panel,
+html[data-theme="light"] body .panel,
+html:not([data-theme="dark"]) body .panel :is(p,label,small,span,a,.hint),
+html[data-theme="light"] body .panel :is(p,label,small,span,a,.hint),
+html:not([data-theme="dark"]) body .hero p,
+html[data-theme="light"] body .hero p {color:#18232d!important}
+html:not([data-theme="dark"]) body .hero .eyebrow,
+html[data-theme="light"] body .hero .eyebrow,
+html:not([data-theme="dark"]) body .lane,
+html[data-theme="light"] body .lane {color:#b83227!important}
+html[data-theme="dark"] body .hero h1,
+html[data-theme="dark"] body .intro h2,
+html[data-theme="dark"] body .panel,
+html[data-theme="dark"] body .panel :is(p,label,small,span,a,.hint),
+html[data-theme="dark"] body .hero p {color:#eef3f6!important}
+html[data-theme="dark"] body .panel :is(.hint,.actions small,.check label),
+html[data-theme="dark"] body .intro p,
+html[data-theme="dark"] body .hero p {color:#b9c5ce!important}
+
 </style>
 <script>(function(){try{document.documentElement.dataset.theme=localStorage.getItem("vtg-theme")||"light"}catch(e){}})();</script>
 </head>
