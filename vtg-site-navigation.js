@@ -53,7 +53,7 @@
         'footer#vtgFooter.vtgCompactFooter .vtgFooterBottom>div{display:flex!important;float:none!important;gap:16px!important;flex-wrap:wrap!important;margin:0!important;padding:0!important}',
         'footer#vtgFooter.vtgCompactFooter .vtgFooterBottom a{display:inline-block!important;margin:0!important;padding:1px 0!important;color:#8c99a3!important;font-size:8.5px!important;line-height:1.5!important;text-decoration:none!important}',
         '@media(max-width:800px){footer#vtgFooter.vtgCompactFooter .footerIn.vtgFooterTop{grid-template-columns:1fr!important;gap:25px!important;padding:30px 16px 22px!important}footer#vtgFooter.vtgCompactFooter .vtgFooterLinks{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:20px 15px!important}footer#vtgFooter.vtgCompactFooter .vtgFooterBottom.copyright{padding:12px 16px!important;align-items:flex-start!important;flex-direction:column!important;gap:8px!important}footer#vtgFooter.vtgCompactFooter .vtgFooterBottom>div{gap:12px!important}}',
-        '@media(max-width:420px){footer#vtgFooter.vtgCompactFooter .vtgFooterLinks{grid-template-columns:repeat(2,minmax(0,1fr))!important}footer#vtgFooter.vtgCompactFooter .vtgFooterBottom.copyright{font-size:8px!important}}',,
+        '@media(max-width:420px){footer#vtgFooter.vtgCompactFooter .vtgFooterLinks{grid-template-columns:repeat(2,minmax(0,1fr))!important}footer#vtgFooter.vtgCompactFooter .vtgFooterBottom.copyright{font-size:8px!important}}',
     '@media(prefers-reduced-motion:reduce){.vtgCompactFooter *,.vtg-page-nav *{transition:none!important}}'
   ].join('\n');
   function addStyle() {
@@ -264,7 +264,7 @@
         'html[data-theme="light"] body footer :is(h1,h2,h3,h4,h5,h6,p,li,label,small),html[data-theme="light"] body .footer :is(h1,h2,h3,h4,h5,h6,p,li,label,small){color:#344454!important}',
         'html[data-theme="dark"] body footer :is(h1,h2,h3,h4,h5,h6,p,li,label,small),html[data-theme="dark"] body .footer :is(h1,h2,h3,h4,h5,h6,p,li,label,small){color:#b9c5ce!important}',
         'html[data-theme="light"] body input,html[data-theme="light"] body select,html[data-theme="light"] body textarea{color:#17212b!important}',
-        'html[data-theme="dark"] body input,html[data-theme="dark"] body select,html[data-theme="dark"] body textarea{color:#eef3f6!important}'
+        'html[data-theme="dark"] body input,html[data-theme="dark"] body select,html[data-theme="dark"] body textarea{color:#eef3f6!important}',
         'html[data-theme="light"] body .role,html[data-theme="light"] body .card,html[data-theme="light"] body .panel{background-color:#fff!important}',
         'html[data-theme="dark"] body .role,html[data-theme="dark"] body .card,html[data-theme="dark"] body .panel{background-color:#11161d!important}',
         '@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}}'
