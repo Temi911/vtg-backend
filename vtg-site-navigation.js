@@ -234,7 +234,7 @@
         'html[data-theme="dark"] .muted,html[data-theme="dark"] .subtitle,html[data-theme="dark"] .description,html[data-theme="dark"] .help-text{color:var(--vtg-auto-muted)}',
         'html[data-theme="light"] body{color-scheme:light}',
         '@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}}'
-      ].join('\\n');
+      ].join('\n');
       document.head.appendChild(style);
     }
     syncTheme();
