@@ -241,6 +241,14 @@
         'html[data-theme="dark"] body :is(.section,.page,.pageMain,.main-content,.content-section) :is(h1,h2,h3,h4,h5,h6){color:#eef3f6!important}',
         'html[data-theme="light"] body .roleHint{color:#526273!important}',
         'html[data-theme="dark"] body .roleHint{color:#b9c5ce!important}',
+        'html[data-theme="light"] body :is(h1,h2,h3,h4,h5,h6,p,li,label,small,legend,figcaption,dt,dd,summary,td,th){color:#263746!important}',
+        'html[data-theme="dark"] body :is(h1,h2,h3,h4,h5,h6,p,li,label,small,legend,figcaption,dt,dd,summary,td,th){color:#d5dfe7!important}',
+        'html[data-theme="light"] body .hero :is(h1,h2,h3,h4,h5,h6,p,li,label,small),html[data-theme="light"] body .tradeNetworkVisual :is(h1,h2,h3,h4,h5,h6,p,li,label,small),html[data-theme="light"] body .globeStage :is(h1,h2,h3,h4,h5,h6,p,li,label,small){color:#fff!important}',
+        'html[data-theme="dark"] body .hero :is(h1,h2,h3,h4,h5,h6){color:#fff!important}',
+        'html[data-theme="light"] body footer :is(h1,h2,h3,h4,h5,h6,p,li,label,small),html[data-theme="light"] body .footer :is(h1,h2,h3,h4,h5,h6,p,li,label,small){color:#344454!important}',
+        'html[data-theme="dark"] body footer :is(h1,h2,h3,h4,h5,h6,p,li,label,small),html[data-theme="dark"] body .footer :is(h1,h2,h3,h4,h5,h6,p,li,label,small){color:#b9c5ce!important}',
+        'html[data-theme="light"] body input,html[data-theme="light"] body select,html[data-theme="light"] body textarea{color:#17212b!important}',
+        'html[data-theme="dark"] body input,html[data-theme="dark"] body select,html[data-theme="dark"] body textarea{color:#eef3f6!important}'
         'html[data-theme="light"] body .role,html[data-theme="light"] body .card,html[data-theme="light"] body .panel{background-color:#fff!important}',
         'html[data-theme="dark"] body .role,html[data-theme="dark"] body .card,html[data-theme="dark"] body .panel{background-color:#11161d!important}',
         '@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}}'
