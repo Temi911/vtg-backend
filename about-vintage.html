@@ -22,7 +22,7 @@ html[data-theme=dark]{--bg:#0d1117;--surface:#11161d;--surface2:#171d24;--ink:#e
 .aboutDarkFooter .brand p,.aboutDarkFooter .bottom{color:#b9c5ce!important}
 .aboutDarkFooter .bottom{border-top:1px solid #2b3640!important}
 </style>
-<script>(function(){try{document.documentElement.dataset.theme=localStorage.getItem('vtg-theme')||'light'}catch(e){}})();</script>
+<script>(function(){try{document.documentElement.dataset.theme=((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark')}catch(e){}})();</script>
 </head>
 <body>
 <header class="top"><div class="wrap"><a class="back" href="/">← Return to Home</a></div></header>
