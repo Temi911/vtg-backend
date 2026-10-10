@@ -181,7 +181,7 @@
     function syncTheme() {
       var now = new Date();
       var hour = now.getHours(); // Browser local time, not server/Nigeria time.
-      var theme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
+      var theme = (hour >= 6 && hour < 22) ? 'light' : 'dark';
       if (theme !== lastTheme || root.getAttribute('data-theme') !== theme) {
         root.setAttribute('data-theme', theme);
         root.style.colorScheme = theme;
