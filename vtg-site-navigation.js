@@ -74,12 +74,12 @@
     'html[data-theme="light"] body :is(.card,.panel,.surface,.tile,.modal-content,.form-card,.portalCard,.stat-card,.feature-card,.step-card,.info-card,.faq-item,.callout,.routeCard,.route-card,.accessCard,.access-card,.partnership-card,.partner-card,.service-card,.content-card,.feature,.info-panel,.detail-card,.application-card,.news-card,.market-card) a:not(.primary):not(.btn-primary){color:#8f1d17}',
     'html[data-theme="dark"] body :is(.card,.panel,.surface,.tile,.modal-content,.form-card,.portalCard,.stat-card,.feature-card,.step-card,.info-card,.faq-item,.callout,.routeCard,.route-card,.accessCard,.access-card,.partnership-card,.partner-card,.service-card,.content-card,.feature,.info-panel,.detail-card,.application-card,.news-card,.market-card) a:not(.primary):not(.btn-primary){color:#ff9a91}',
     '@media(prefers-reduced-motion:reduce){html[data-theme] body *{scroll-behavior:auto}}'
-  ].join('\\n');
+  ].join('\n');
   function addStyle() {
     if (document.getElementById('vtg-site-navigation-style')) return;
     var style = document.createElement('style');
     style.id = 'vtg-site-navigation-style';
-    style.textContent = CSS + '\\n' + CONTRAST_CSS;
+    style.textContent = CSS + '\n' + CONTRAST_CSS;
     document.head.appendChild(style);
   }
   function renderFooter() {
