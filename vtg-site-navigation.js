@@ -1,4 +1,5 @@
 /* VTG navigation. The homepage footer markup and visual system are the single source of truth site-wide. */
+/* 2026-10-10: non-home pages use the simplified logo / Previous / Home header. */
 (function () {
   'use strict';
   var HOME = '/frontend-v3.html';
@@ -118,7 +119,8 @@
 
   }
   function isHomePage() {
-    var path = (window.location.pathname || '/').replace(/\\/+$/, '') || '/';
+    var path = window.location.pathname || '/';
+    while (path.length > 1 && path.charAt(path.length - 1) === '/') path = path.slice(0, -1);
     return path === '/' || path === HOME || path.endsWith('/frontend-v3.html');
   }
   function simplifyPageHeader() {
