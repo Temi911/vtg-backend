@@ -87,7 +87,44 @@ html[data-theme="light"] body .form .field :is(input,textarea)::placeholder{colo
 html[data-theme="light"] body .form .field select option{background:#ffffff!important;color:#18232d!important}
 html[data-theme="light"] body .form .fixedValue{background:#f0f3f6!important;color:#18232d!important;-webkit-text-fill-color:#18232d!important}
 </style>
-<style id="footer-page-photo-style">.footerPagePhoto{width:min(1160px,calc(100% - 40px));margin:0 auto 42px;overflow:hidden;border-radius:24px;border:1px solid rgba(120,130,140,.18);box-shadow:0 18px 48px rgba(25,25,25,.09);background:#11161d}.footerPagePhoto img{display:block;width:100%;height:clamp(210px,30vw,360px);object-fit:cover;object-position:center 48%}@media(max-width:520px){.footerPagePhoto{width:calc(100% - 28px);border-radius:17px;margin-bottom:30px}.footerPagePhoto img{height:210px}}</style></head>
+<style id="footer-page-photo-style">.footerPagePhoto{width:min(1160px,calc(100% - 40px));margin:0 auto 42px;overflow:hidden;border-radius:24px;border:1px solid rgba(120,130,140,.18);box-shadow:0 18px 48px rgba(25,25,25,.09);background:#11161d}.footerPagePhoto img{display:block;width:100%;height:clamp(210px,30vw,360px);object-fit:cover;object-position:center 48%}@media(max-width:520px){.footerPagePhoto{width:calc(100% - 28px);border-radius:17px;margin-bottom:30px}.footerPagePhoto img{height:210px}}</style>
+<style id="contact-theme-contrast-final">
+/* Final high-specificity contrast rules for all Contact VTG enquiry text in both themes. */
+html[data-theme="dark"] body #contactForm,
+html[data-theme="dark"] body #contactForm .form,
+html[data-theme="dark"] body #contactForm .introBox {
+  background:#11161d!important;border-color:#34404b!important;color:#eef3f6!important;
+}
+html[data-theme="dark"] body #contactForm .introBox *,
+html[data-theme="dark"] body #contactForm .form :is(h1,h2,h3,h4,p,label,legend,small,strong,span,div.status) {
+  color:#eef3f6!important;
+}
+html[data-theme="dark"] body #contactForm .form .field label,
+html[data-theme="dark"] body #contactForm .formNote {color:#c7d1d9!important}
+html[data-theme="dark"] body #contactForm .form :is(input,select,textarea) {
+  background:#0d1117!important;color:#eef3f6!important;border-color:#465360!important;
+  caret-color:#fff!important;-webkit-text-fill-color:#eef3f6!important;
+}
+html[data-theme="dark"] body #contactForm .form :is(input,textarea)::placeholder {color:#aab6c0!important;opacity:1!important}
+html[data-theme="dark"] body #contactForm .form select option {background:#11161d!important;color:#eef3f6!important}
+html[data-theme="dark"] body #contactForm .form .fixedValue {background:#202832!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
+html[data-theme="dark"] body #contactForm .form .status {color:#eef3f6!important}
+html[data-theme="light"] body #contactForm .introBox *,
+html[data-theme="light"] body #contactForm .form :is(h1,h2,h3,h4,p,label,legend,small,strong,span,div.status) {color:#263746!important}
+html[data-theme="light"] body #contactForm .form,
+html[data-theme="light"] body #contactForm .introBox {background:#fff!important;color:#18232d!important}
+html[data-theme="light"] body #contactForm .form :is(input,select,textarea) {
+  background:#fff!important;color:#18232d!important;border-color:#cbd3da!important;
+  caret-color:#18232d!important;-webkit-text-fill-color:#18232d!important;
+}
+html[data-theme="light"] body #contactForm .form :is(input,textarea)::placeholder {color:#687783!important;opacity:1!important}
+html[data-theme="light"] body #contactForm .form select option {background:#fff!important;color:#18232d!important}
+html[data-theme="light"] body #contactForm .form .fixedValue {background:#f0f3f6!important;color:#18232d!important;-webkit-text-fill-color:#18232d!important}
+html[data-theme="dark"] body #contactForm .eyebrow {color:#ff777d!important}
+html[data-theme="light"] body #contactForm .eyebrow {color:#b83227!important}
+</style>
+
+</head>
 <body>
 <header class="nav"><a class="logo" href="/"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><a class="navBack" href="/"><i data-lucide="arrow-left"></i> Back to VTG</a></header>
 <section class="hero"><div class="heroIn"><span class="eyebrow">VTG Support & Enquiries</span><h1>Contact Vintage Trade Global.</h1><p>Whether you need trade support, marketplace assistance, logistics coordination or help with a financial matter, tell us what you need and we’ll route your enquiry to the right place.</p><div class="heroMeta"><span>Trade support</span><span>Logistics & shipping</span><span>Finance & payments</span></div></div></section>
