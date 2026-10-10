@@ -233,6 +233,16 @@
         'html[data-theme="dark"] .card,html[data-theme="dark"] .panel,html[data-theme="dark"] .surface,html[data-theme="dark"] .tile,html[data-theme="dark"] .modal-content,html[data-theme="dark"] .form-card,html[data-theme="dark"] .portalCard,html[data-theme="dark"] .stat-card{background-color:var(--vtg-auto-surface);color:var(--vtg-auto-text);border-color:var(--vtg-auto-line)}',
         'html[data-theme="dark"] .muted,html[data-theme="dark"] .subtitle,html[data-theme="dark"] .description,html[data-theme="dark"] .help-text{color:var(--vtg-auto-muted)}',
         'html[data-theme="light"] body{color-scheme:light}',
+        'html[data-theme="light"] body :is(.section,.page,.pageMain,.main-content,.content-section,.role,.rolegrid,.cards,.card,.panel,.content-card,.feature-card,.form-card,.dashboard-card,.portCard,.portBody,.selectedHub,.faq-item,.callout,.info-card) :is(h1,h2,h3,h4,h5,h6,p,li,label,small,legend,figcaption,dt,dd){color:#263746!important}',
+        'html[data-theme="dark"] body :is(.section,.page,.pageMain,.main-content,.content-section,.role,.rolegrid,.cards,.card,.panel,.content-card,.feature-card,.form-card,.dashboard-card,.portCard,.portBody,.selectedHub,.faq-item,.callout,.info-card) :is(h1,h2,h3,h4,h5,h6,p,li,label,small,legend,figcaption,dt,dd){color:#d5dfe7!important}',
+        'html[data-theme="light"] body :is(.section,.page,.pageMain,.main-content,.content-section,.role,.rolegrid,.cards,.card,.panel,.content-card,.feature-card,.form-card,.dashboard-card,.portCard,.selectedHub,.faq-item,.callout,.info-card){border-color:#dce4eb}',
+        'html[data-theme="dark"] body :is(.section,.page,.pageMain,.main-content,.content-section,.role,.rolegrid,.cards,.card,.panel,.content-card,.feature-card,.form-card,.dashboard-card,.portCard,.selectedHub,.faq-item,.callout,.info-card){border-color:#2b3640}',
+        'html[data-theme="light"] body :is(.section,.page,.pageMain,.main-content,.content-section) :is(h1,h2,h3,h4,h5,h6){color:#17212b!important}',
+        'html[data-theme="dark"] body :is(.section,.page,.pageMain,.main-content,.content-section) :is(h1,h2,h3,h4,h5,h6){color:#eef3f6!important}',
+        'html[data-theme="light"] body .roleHint{color:#526273!important}',
+        'html[data-theme="dark"] body .roleHint{color:#b9c5ce!important}',
+        'html[data-theme="light"] body .role,html[data-theme="light"] body .card,html[data-theme="light"] body .panel{background-color:#fff!important}',
+        'html[data-theme="dark"] body .role,html[data-theme="dark"] body .card,html[data-theme="dark"] body .panel{background-color:#11161d!important}',
         '@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}}'
       ].join('\n');
       document.head.appendChild(style);
