@@ -139,20 +139,17 @@ function icons(){if(window.lucide)lucide.createIcons()}
 
 (function(){
   const root = document.documentElement;
-  const btn = document.getElementById('themeBtn');
-  let saved = 'light';
-  try { saved = localStorage.getItem('vtg-theme') || 'light'; } catch(e){}
-  root.setAttribute('data-theme', saved);
-  function setIcon(){ const ic = document.getElementById('themeIcon'); if(ic){ ic.setAttribute('data-lucide', saved==='dark'?'sun':'moon'); if(window.lucide) lucide.createIcons(); } }
+  function setIcon(){
+    const ic = document.getElementById('themeIcon');
+    if(ic){
+      ic.setAttribute('data-lucide', root.getAttribute('data-theme') === 'dark' ? 'sun' : 'moon');
+      if(window.lucide) lucide.createIcons();
+    }
+  }
   setIcon();
-  if(btn) btn.addEventListener('click', function(){
-    saved = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', saved);
-    try { localStorage.setItem('vtg-theme', saved); window.dispatchEvent(new CustomEvent('vtg-theme-change', { detail: saved })); } catch(e){}
-    setIcon();
-  });
-  window.addEventListener('storage', function(e){ if(e.key === 'vtg-theme' && e.newValue){ saved = e.newValue; root.setAttribute('data-theme', saved); setIcon(); } });
-})();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',icons,{once:true});else setTimeout(icons,0);
+  document.addEventListener('vtg:themechange', setIcon);
+  // Theme selection is automatic from the visitor's local clock; no saved preference overrides it.
+})();;if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',icons,{once:true});else setTimeout(icons,0);
 function drawer(id,on=true){$('#'+id).classList.toggle('open',on);document.body.style.overflow=on?'hidden':''}
 
 function openVTGMarketIntel(){openVTGIntel('vehicle')}  $('#newsBtn')?.addEventListener('click',()=>drawer('newsDrawer'));$('#newsOpen')?.addEventListener('click',()=>drawer('newsDrawer'));$('#heroNews')?.addEventListener('click',()=>openVTGMarketIntel());$('#mapBtn')?.addEventListener('click',()=>drawer('mapDrawer'));$$('[data-close]').forEach(b=>b.onclick=()=>drawer(b.dataset.close,false));$('#footNews').onclick=e=>{e.preventDefault();openVTGMarketIntel()};$('
