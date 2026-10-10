@@ -180,7 +180,7 @@
     var lastTheme = '';
     var preferenceKey = 'vtg-theme-preference';
     function readPreference() {
-      try { return window.localStorage.getItem(preferenceKey) || 'auto'; }
+      try { return window.localStorage.getItem(preferenceKey) || 'light'; }
       catch (error) { return 'auto'; }
     }
     function syncTheme() {
@@ -281,7 +281,7 @@
     if (document.getElementById('vtgThemePreference')) return;
     var wrap = document.createElement('div');
     wrap.id = 'vtgThemeControl';
-    wrap.innerHTML = '<label for="vtgThemePreference">Appearance</label><select id="vtgThemePreference" aria-label="Choose site appearance"><option value="auto">Automatic</option><option value="light">Light mode</option><option value="dark">Dark mode</option></select>';
+    wrap.innerHTML = '<label for="vtgThemePreference">Appearance</label><select id="vtgThemePreference" aria-label="Choose site appearance"><option value="light">Light mode</option><option value="dark">Dark mode</option><option value="auto">Automatic (local time)</option></select>';
     var style = document.createElement('style');
     style.id = 'vtg-theme-control-style';
     style.textContent = [
@@ -298,8 +298,8 @@
     document.head.appendChild(style);
     document.body.appendChild(wrap);
     var select = wrap.querySelector('select');
-    try { select.value = window.localStorage.getItem('vtg-theme-preference') || 'auto'; }
-    catch (error) { select.value = 'auto'; }
+    try { select.value = window.localStorage.getItem('vtg-theme-preference') || 'light'; }
+    catch (error) { select.value = 'light'; }
     select.addEventListener('change', function () {
       if (window.vtgSetThemePreference) window.vtgSetThemePreference(select.value);
     });
