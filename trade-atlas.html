@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101820">
+<title>Trade Atlas | Vintage Trade Global</title>
+<meta name="description" content="Explore public trade corridors, ports and logistics hubs across Africa and Asia with the VTG Trade Atlas. Private shipment details remain in authorized workspaces.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--bg:#0b1117;--panel:#121c25;--panel2:#17232e;--line:#2a3945;--text:#edf3f7;--muted:#aab8c3;--red:#d3423e;--red2:#f06a60;--blue:#52b8df;--green:#55c6a1;--radius:18px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Manrope,system-ui,sans-serif;line-height:1.55}a{color:inherit}button,input{font:inherit}button,a{ -webkit-tap-highlight-color:transparent}.shell{max-width:1240px;margin:auto;padding:0 24px}.atlasTop{padding:56px 0 26px;background:radial-gradient(ellipse at 70% 0%,rgba(48,139,174,.19),transparent 43%),radial-gradient(ellipse at 15% 0%,rgba(211,66,62,.12),transparent 35%)}.eyebrow{color:#8ed9ef;text-transform:uppercase;font-size:.73rem;letter-spacing:.15em;font-weight:800}.headline{display:flex;align-items:flex-end;justify-content:space-between;gap:24px}.headline h1{font-size:clamp(2.25rem,5vw,4.2rem);line-height:1.05;letter-spacing:-.055em;margin:12px 0 16px;max-width:760px}.headline h1 span{color:var(--red2)}.lede{color:var(--muted);max-width:750px;font-size:1rem}.headActions{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 0}.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:12px 17px;border-radius:11px;border:1px solid var(--line);background:var(--panel2);color:var(--text);text-decoration:none;font-weight:800;font-size:.88rem;cursor:pointer}.btn.primary{background:var(--red);border-color:var(--red);color:white}.btn:hover{filter:brightness(1.12)}.statusPill{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid #2b6b60;background:#12352f;color:#a4f0d5;border-radius:99px;font-size:.76rem;font-weight:800;white-space:nowrap}.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px #55c6a122}.globeStage{margin-top:28px;border:1px solid #263b49;border-radius:24px;overflow:hidden;background:radial-gradient(ellipse at center, #123044 0%,#0c1722 47%,#080d13 100%);position:relative;min-height:480px;box-shadow:0 24px 80px #0006}.stageHeader{position:absolute;z-index:3;top:18px;left:20px;right:20px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;pointer-events:none}.stageHeader>*{pointer-events:auto}.stageLabel{font-size:.78rem;color:#c5d6e0;letter-spacing:.08em;text-transform:uppercase;font-weight:800}.stageHint{font-size:.76rem;color:#9aafbd;margin-top:4px}.stageControls{display:flex;gap:8px}.roundBtn{width:40px;height:40px;border-radius:12px;border:1px solid #466071;background:#10212dcc;color:white;cursor:pointer;display:grid;place-items:center}.roundBtn:hover{background:#1b3548}.globeCanvas{height:480px;width:100%;position:relative}.globeCanvas canvas{display:block;outline:none}.globeFallback{display:none;position:absolute;inset:80px 20px 20px;align-items:center;justify-content:center;text-align:center;color:#b6c8d4;padding:24px}.globeLegend{position:absolute;z-index:3;left:20px;bottom:18px;display:flex;gap:12px;flex-wrap:wrap}.legendItem{font-size:.72rem;color:#c6d5de;display:flex;align-items:center;gap:7px;background:#08121ccc;border:1px solid #253a48;padding:7px 10px;border-radius:99px}.legendDot{width:8px;height:8px;border-radius:50%;background:var(--red2)}.legendDot.port{background:#5ec6e9}.legendDot.route{background:#64d9b0}.mapNote{font-size:.74rem;color:#91a6b5;margin:10px 2px 0}.section{padding:44px 0 8px}.sectionHead{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:20px}.sectionHead h2{font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-.04em;margin:7px 0 0}.sectionHead p{max-width:560px;color:var(--muted);font-size:.9rem;margin:0}.portGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.portCard{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;min-width:0}.portPhoto{height:165px;position:relative;background:#172b3a;overflow:hidden}.portPhoto img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}.portCard:hover .portPhoto img{transform:scale(1.035)}.portType{position:absolute;bottom:12px;left:12px;background:#09141ddd;border:1px solid #ffffff22;padding:6px 9px;border-radius:8px;font-size:.7rem;font-weight:800}.portBody{padding:17px}.portBody h3{margin:0 0 3px;font-size:1.05rem}.place{font-size:.8rem;color:#9fb2c0}.portBody p{font-size:.84rem;color:var(--muted);margin:12px 0 15px}.portMeta{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:12px;color:#d5e0e7;font-size:.74rem}.portMeta span{display:flex;gap:6px;align-items:center}.privateGrid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.privateCard,.publicCard{padding:25px;background:linear-gradient(145deg,#15232e,#101820);border:1px solid var(--line);border-radius:var(--radius)}.privateCard h3,.publicCard h3{font-size:1.2rem;margin:12px 0 8px}.privateCard p,.publicCard p{color:var(--muted);font-size:.88rem}.featureList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:18px 0}.feature{display:flex;gap:10px;align-items:flex-start;padding:11px;background:#0d161e;border:1px solid #243440;border-radius:11px;font-size:.79rem;color:#d5e0e7}.feature i{color:#7bd7c0;flex:0 0 auto}.notice{border-left:3px solid var(--blue);padding:10px 13px;background:#12242e;color:#c0d7e3;border-radius:0 9px 9px 0;font-size:.78rem;margin:16px 0}.searchRow{display:flex;gap:9px;max-width:650px;margin:16px 0}.searchRow input{min-width:0;flex:1;background:#091219;border:1px solid #334552;color:var(--text);border-radius:10px;padding:12px 14px}.searchRow input:focus{outline:2px solid #52b8df66;border-color:var(--blue)}.tiny{font-size:.75rem;color:#8fa2b0}.accessRows{display:grid;gap:10px;margin:16px 0}.accessRow{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid #2a3a46;border-radius:12px;background:#0d161e}.accessIcon{width:38px;height:38px;display:grid;place-items:center;background:#202d37;border-radius:10px;color:#9ddbf0;flex-shrink:0}.accessRow strong{display:block;font-size:.83rem}.accessRow small{color:var(--muted);font-size:.75rem}.accessRow .btn{margin-left:auto;white-space:nowrap;padding:9px 11px;font-size:.75rem}.disclaimer{padding:15px 17px;border:1px solid #4a3c29;background:#211c15;color:#e7d7bb;border-radius:12px;font-size:.78rem;margin:22px 0 0}.atlasFooterSpace{height:42px}#locationMap{height:390px;background:#101820;border-radius:15px;overflow:hidden;border:1px solid var(--line)}.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#15232e;color:#eef3f7}.leaflet-popup-content{font-family:Manrope,sans-serif;font-size:12px}.leaflet-container a{color:#78cce9}
+@media(max-width:850px){.headline,.sectionHead{align-items:flex-start;flex-direction:column}.portGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.privateGrid{grid-template-columns:1fr}.globeStage{min-height:410px}.globeCanvas{height:410px}.stageHeader{top:14px;left:14px;right:14px}.globeLegend{left:14px;bottom:13px}}
+@media(max-width:560px){.shell{padding:0 15px}.atlasTop{padding-top:34px}.headline h1{font-size:2.4rem}.portGrid{grid-template-columns:1fr}.portPhoto{height:190px}.globeStage{margin-top:20px;border-radius:16px;min-height:360px}.globeCanvas{height:360px}.stageLabel{font-size:.68rem}.stageHint{max-width:190px;font-size:.68rem}.stageControls{gap:5px}.roundBtn{width:34px;height:34px}.globeLegend{gap:6px}.legendItem{font-size:.65rem;padding:6px 8px}.featureList{grid-template-columns:1fr}.searchRow{flex-direction:column}.searchRow .btn{width:100%}.accessRow{align-items:flex-start;flex-wrap:wrap}.accessRow .btn{margin-left:50px}.portMeta{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<main>
+<section class="atlasTop">
+ <div class="shell">
+  <div class="headline"><div><span class="eyebrow">Vintage Trade Global · Phase 10</span><h1>The <span>Trade Atlas.</span><br>See trade in motion.</h1><p class="lede">Explore the public trade geography connecting Africa and Asia — ports, trade hubs and key corridors. When you sign in, the Atlas becomes your private window into shipments and transactions you are authorized to access.</p><div class="headActions"><a class="btn primary" href="#explore">Explore trade hubs</a><a class="btn" href="#workspace">Open my trade workspace</a></div></div><div class="statusPill"><span class="dot"></span> Public Atlas · No account needed</div></div>
+  <div class="globeStage" aria-label="Interactive three-dimensional globe showing selected Africa and Asia trade hubs">
+   <div class="stageHeader"><div><div class="stageLabel">Global trade network</div><div class="stageHint">Drag to rotate · Scroll or use controls to zoom · Select a hub for details</div></div><div class="stageControls"><button class="roundBtn" id="zoomIn" aria-label="Zoom in" title="Zoom in"><i data-lucide="plus"></i></button><button class="roundBtn" id="zoomOut" aria-label="Zoom out" title="Zoom out"><i data-lucide="minus"></i></button><button class="roundBtn" id="resetGlobe" aria-label="Reset globe" title="Reset view"><i data-lucide="rotate-ccw"></i></button></div></div>
+   <div id="globeViz" class="globeCanvas"></div><div class="globeFallback" id="globeFallback"><div><strong>Interactive globe could not load.</strong><p>Use the location directory below to explore public trade hubs.</p><a class="btn" href="#location-directory">Browse locations</a></div></div>
+   <div class="globeLegend"><span class="legendItem"><span class="legendDot"></span> Trade hubs</span><span class="legendItem"><span class="legendDot port"></span> Ports & logistics</span><span class="legendItem"><span class="legendDot route"></span> Illustrative corridors</span></div>
+  </div>
+  <p class="mapNote">Public geography and illustrative routes only. Routes are not live vessel positions or proof of a shipment's current location.</p>
+ </div>
+</section>
+<section class="section shell" id="explore"><div class="sectionHead"><div><span class="eyebrow">Africa ↔ Asia</span><h2>Explore the trade hubs</h2></div><p>Start with the locations that matter to VTG's core corridor. Select a hub on the globe or browse the directory below.</p></div>
+<div class="portGrid">
+<article class="portCard"><div class="portPhoto"><img loading="lazy" src="https://images.unsplash.com/photo-1578575437130-527Cedf1b8a3?auto=format&fit=crop&w=1000&q=80" alt="Container terminal and shipping containers"><span class="portType">SEA PORT · NIGERIA</span></div><div class="portBody"><h3>Tin Can Island Port</h3><div class="place">Lagos, Nigeria</div><p>A key Nigerian maritime gateway for import cargo and the destination end of VTG's Africa–Asia trade corridor.</p><div class="portMeta"><span><i data-lucide="anchor"></i> Destination gateway</span><span><i data-lucide="map-pin"></i> West Africa</span></div></div></article>
+<article class="portCard"><div class="portPhoto"><img loading="lazy" src="https://images.unsplash.com/photo-1494412519320-aa613dfb7738?auto=format&fit=crop&w=1000&q=80" alt="Cargo ship carrying containers at sea"><span class="portType">SEA PORT · CHINA</span></div><div class="portBody"><h3>Nansha Port</h3><div class="place">Guangzhou, China</div><p>A major Pearl River Delta logistics gateway supporting manufacturing, export consolidation and international shipping.</p><div class="portMeta"><span><i data-lucide="ship"></i> Origin corridor</span><span><i data-lucide="map-pin"></i> South China</span></div></div></article>
+<article class="portCard"><div class="portPhoto"><img loading="lazy" src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=1000&q=80" alt="Busy container port logistics terminal"><span class="portType">SEA PORT · SOUTH KOREA</span></div><div class="portBody"><h3>Busan Port</h3><div class="place">Busan, South Korea</div><p>A major Northeast Asian shipping hub for container cargo, transshipment and Korea-linked sourcing routes.</p><div class="portMeta"><span><i data-lucide="ship"></i> Regional hub</span><span><i data-lucide="map-pin"></i> Northeast Asia</span></div></div></article>
+</div></section>
+<section class="section shell" id="location-directory"><div class="sectionHead"><div><span class="eyebrow">Public directory</span><h2>Location map</h2></div><p>Browse the core public hubs. This directory is for general trade discovery, not private customer or supplier location data.</p></div><div id="locationMap" role="region" aria-label="Public map of selected trade hubs"></div><p class="mapNote">Map tiles © OpenStreetMap contributors. Coordinates identify public port areas approximately.</p></section>
+<section class="section shell" id="workspace"><div class="sectionHead"><div><span class="eyebrow">Two access levels</span><h2>Public discovery. Private trade operations.</h2></div><p>The public Atlas helps visitors understand the corridor. Your secure workspace is where transaction-specific details belong.</p></div>
+<div class="privateGrid">
+ <article class="publicCard"><span class="eyebrow">For everyone</span><h3>Public Trade Atlas</h3><p>Explore the trade network before creating an account. Public information never exposes another user's shipment, documents or commercial terms.</p><div class="featureList"><div class="feature"><i data-lucide="check-circle-2"></i><span>Interactive globe and public geography</span></div><div class="feature"><i data-lucide="check-circle-2"></i><span>Public ports, airports and trade hubs</span></div><div class="feature"><i data-lucide="check-circle-2"></i><span>General trade corridor explanations</span></div><div class="feature"><i data-lucide="check-circle-2"></i><span>VTG services and account entry points</span></div></div><div class="notice">Routes shown on this public page are illustrative unless explicitly labelled with a verified live data source.</div></article>
+ <article class="privateCard"><span class="eyebrow">For authorized account holders</span><h3>Your Trade Atlas Workspace</h3><p>Sign in to reach your role-based VTG workspace. The server must verify your identity, role and transaction permissions before returning private records.</p><div class="accessRows"><div class="accessRow"><div class="accessIcon"><i data-lucide="package-check"></i></div><div><strong>My shipments & milestones</strong><small>Only shipments linked to your account</small></div></div><div class="accessRow"><div class="accessIcon"><i data-lucide="file-lock-2"></i></div><div><strong>Trade documents & inspection evidence</strong><small>Visible only to permitted transaction participants</small></div></div><div class="accessRow"><div class="accessIcon"><i data-lucide="landmark"></i></div><div><strong>Finance & payment milestones</strong><small>Financial details limited by role and transaction</small></div></div><div class="accessRow"><div class="accessIcon"><i data-lucide="shield-check"></i></div><div><strong>Staff administration</strong><small>Separate, restricted staff authorization</small></div></div></div><a class="btn primary" href="/signin.html?next=%2Ftrade-os.html">Sign in securely <i data-lucide="arrow-up-right"></i></a><p class="tiny">Buyers, suppliers, financial institutions and agents see only the tools and records their approved role permits. Staff administration is not available to ordinary accounts.</p></article>
+</div>
+<div class="disclaimer"><strong>Privacy and tracking:</strong> this page does not reveal private shipment records or claim a vessel's live position. Detailed tracking, commercial documents, inspection photos and finance milestones should be served only by authenticated backend endpoints with transaction-level authorization.</div>
+</section>
+<div class="atlasFooterSpace"></div>
+</main>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+<script src="https://unpkg.com/globe.gl" defer></script>
+<script src="https://unpkg.com/lucide@latest" defer></script>
+<script>
+(function(){
+'use strict';
+const hubs=[
+ {name:'Tin Can Island Port',city:'Lagos, Nigeria',lat:6.43,lng:3.36,type:'Destination port',color:'#f06a60'},
+ {name:'Nansha Port',city:'Guangzhou, China',lat:22.70,lng:113.60,type:'Origin port',color:'#5ec6e9'},
+ {name:'Busan Port',city:'Busan, South Korea',lat:35.10,lng:129.04,type:'Regional port',color:'#5ec6e9'},
+ {name:'Apapa Port',city:'Lagos, Nigeria',lat:6.45,lng:3.37,type:'Sea port',color:'#f06a60'},
+ {name:'Guangzhou',city:'Guangdong, China',lat:23.13,lng:113.26,type:'Trade hub',color:'#64d9b0'},
+ {name:'Shanghai Port',city:'Shanghai, China',lat:31.23,lng:121.49,type:'Sea port',color:'#5ec6e9'},
+ {name:'Incheon Port',city:'Incheon, South Korea',lat:37.46,lng:126.62,type:'Sea port',color:'#5ec6e9'}
+];
+const arcs=[
+ {startLat:22.70,startLng:113.60,endLat:6.43,endLng:3.36,color:['#64d9b0','#f06a60']},
+ {startLat:35.10,startLng:129.04,endLat:6.43,endLng:3.36,color:['#64d9b0','#f06a60']},
+ {startLat:23.13,startLng:113.26,endLat:35.10,endLng:129.04,color:['#64d9b0','#5ec6e9']}
+];
+function init(){
+ if(window.lucide)window.lucide.createIcons();
+ const el=document.getElementById('globeViz');
+ let globe=null;
+ if(window.Globe){
+  try{
+   globe=window.Globe()(el)
+    .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
+    .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
+    .showAtmosphere(true).atmosphereColor('#55bfe8').atmosphereAltitude(.18)
+    .pointsData(hubs).pointLat('lat').pointLng('lng').pointColor('color').pointAltitude(.018).pointRadius(.38)
+    .pointLabel(d=>'<div style="font-family:Manrope,sans-serif;padding:5px 7px"><strong>'+d.name+'</strong><br><span>'+d.city+'</span><br><small>'+d.type+'</small></div>')
+    .arcsData(arcs).arcStartLat('startLat').arcStartLng('startLng').arcEndLat('endLat').arcEndLng('endLng')
+    .arcColor('color').arcDashLength(.55).arcDashGap(2.2).arcDashAnimateTime(2800).arcStroke(.55)
+    .onPointClick(d=>{globe.pointOfView({lat:d.lat,lng:d.lng,altitude:1.15},900);});
+   globe.width(el.clientWidth).height(el.clientHeight);
+   globe.pointOfView({lat:18,lng:55,altitude:2.25},0);
+   window.addEventListener('resize',()=>globe&&globe.width(el.clientWidth).height(el.clientHeight));
+   document.getElementById('zoomIn').addEventListener('click',()=>{const p=globe.pointOfView();globe.pointOfView({lat:p.lat,lng:p.lng,altitude:Math.max(.45,p.altitude*.78)},450)});
+   document.getElementById('zoomOut').addEventListener('click',()=>{const p=globe.pointOfView();globe.pointOfView({lat:p.lat,lng:p.lng,altitude:Math.min(4,p.altitude*1.28)},450)});
+   document.getElementById('resetGlobe').addEventListener('click',()=>globe.pointOfView({lat:18,lng:55,altitude:2.25},800));
+   const controls=globe.controls();if(controls){controls.autoRotate=true;controls.autoRotateSpeed=.28;controls.enableDamping=true;}
+   const texture='https://unpkg.com/three-globe/example/img/earth-day.jpg';
+   // Keep globe lighting aligned with the visitor's local time; texture selection is automatic.
+   const hour=new Date().getHours();if(hour>=6&&hour<18)globe.globeImageUrl(texture);
+  }catch(e){document.getElementById('globeFallback').style.display='flex';}
+ }else{document.getElementById('globeFallback').style.display='flex';}
+ if(window.L){
+  const map=L.map('locationMap',{scrollWheelZoom:false}).setView([20,55],3);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap contributors'}).addTo(map);
+  hubs.forEach(h=>L.circleMarker([h.lat,h.lng],{radius:7,color:h.color,fillColor:h.color,fillOpacity:.9,weight:2}).addTo(map).bindPopup('<strong>'+h.name+'</strong><br>'+h.city+'<br><small>'+h.type+'</small>'));
+  const group=L.featureGroup(hubs.map(h=>L.marker([h.lat,h.lng])));map.fitBounds(group.getBounds().pad(.16));
+ }
+}
+window.addEventListener('load',()=>setTimeout(init,80));
+})();
+</script>
+<script src="/vtg-site-navigation.js?v=20261015" defer></script>
+</body>
+</html>
