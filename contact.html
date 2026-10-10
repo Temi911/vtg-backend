@@ -124,6 +124,55 @@ html[data-theme="dark"] body #contactForm .eyebrow {color:#ff777d!important}
 html[data-theme="light"] body #contactForm .eyebrow {color:#b83227!important}
 </style>
 
+
+<style id="vtg-contrast-repair-20261010">
+/* Shared contrast repair: text stays readable inside panels, cards, guides and forms. */
+html[data-theme="dark"] body {
+  color:#eef3f6!important;
+}
+html[data-theme="dark"] body :is(.form,.formWrap,.applyGrid>.form,.heroPanel,.panel,.card,.detailCard,.infoItem,.faqItem,.securityCard,.trustItem,.checkItem,.evidenceCard,.quoteBox,.qtyCard,.metric,.preview,.sidebox,.rightbox,.toolPanel,.heroCard,.item,.guideCard,.guide-card,.guideItem,.guide-item,.box,.rectangle,.step,.adv,.route,.flow,.introBox,.applyIntro,.workflow,.composer,.composerBox,.feedCard,.postCard,.tableWrap,.table-container) {
+  color:#eef3f6!important;
+  border-color:#34404b;
+}
+html[data-theme="dark"] body :is(.form,.formWrap,.applyGrid>.form,.panel,.card,.detailCard,.infoItem,.faqItem,.securityCard,.trustItem,.checkItem,.evidenceCard,.quoteBox,.qtyCard,.metric,.preview,.sidebox,.rightbox,.toolPanel,.heroCard,.item,.guideCard,.guide-card,.guideItem,.guide-item,.box,.rectangle,.step,.adv,.route,.introBox,.workflow,.composer,.composerBox,.feedCard,.postCard,.tableWrap,.table-container) :is(h1,h2,h3,h4,h5,p,li,span,strong,b,small,label,td,th,dt,dd,legend,summary) {
+  color:#eef3f6!important;
+}
+html[data-theme="dark"] body :is(.form,.formWrap,.applyGrid>.form,.panel,.card,.detailCard,.infoItem,.faqItem,.securityCard,.trustItem,.checkItem,.evidenceCard,.quoteBox,.qtyCard,.metric,.preview,.sidebox,.rightbox,.toolPanel,.heroCard,.item,.guideCard,.guide-card,.guideItem,.guide-item,.box,.rectangle,.step,.adv,.route,.introBox,.workflow,.composer,.composerBox,.feedCard,.postCard,.tableWrap,.table-container) :is(p,li,small,label,.hint,.sub,.description,.muted,.lead) {
+  color:#c1cbd3!important;
+}
+html[data-theme="dark"] body :is(input,select,textarea) {
+  background:#0d1117!important;color:#eef3f6!important;border-color:#465360!important;
+  -webkit-text-fill-color:#eef3f6!important;caret-color:#fff!important;
+}
+html[data-theme="dark"] body :is(input,textarea)::placeholder {color:#aab6c0!important;opacity:1!important}
+html[data-theme="dark"] body select option {background:#11161d!important;color:#eef3f6!important}
+html[data-theme="dark"] body :is(table,thead,tbody,tr,th,td) {border-color:#34404b!important}
+html[data-theme="dark"] body :is(.tableWrap,.table-container,table) :is(th,td) {color:#eef3f6!important}
+html[data-theme="dark"] body a:not(.btn):not(.button):not(.submit):not(.primary):not(.outline) {text-underline-offset:3px}
+html[data-theme="light"] body :is(.card,.detailCard,.infoItem,.faqItem,.securityCard,.trustItem,.checkItem,.evidenceCard,.quoteBox,.qtyCard,.metric,.preview,.sidebox,.rightbox,.toolPanel,.heroCard,.item,.guideCard,.guide-card,.guideItem,.guide-item,.box,.rectangle,.step,.adv,.route,.introBox,.form,.formWrap,.tableWrap,.table-container) :is(h2,h3,h4,h5,p,li,span,strong,b,small,label,td,th,dt,dd,legend,summary) {
+  color:#243441;
+}
+html[data-theme="light"] body :is(.card,.detailCard,.infoItem,.faqItem,.securityCard,.trustItem,.checkItem,.evidenceCard,.quoteBox,.qtyCard,.metric,.preview,.sidebox,.rightbox,.toolPanel,.heroCard,.item,.guideCard,.guide-card,.guideItem,.guide-item,.box,.rectangle,.step,.adv,.route,.introBox,.form,.formWrap,.tableWrap,.table-container) :is(p,li,small,label,.hint,.sub,.description,.muted) {
+  color:#52616d;
+}
+html[data-theme="light"] body :is(input,select,textarea) {
+  background:#fff!important;color:#18232d!important;border-color:#cbd3da!important;
+  -webkit-text-fill-color:#18232d!important;caret-color:#18232d!important;
+}
+html[data-theme="light"] body :is(input,textarea)::placeholder {color:#687783!important;opacity:1!important}
+html[data-theme="light"] body select option {background:#fff!important;color:#18232d!important}
+/* Sourcing page: refine the header into a clear, balanced two-column hero. */
+html[data-theme="light"] body .hero .heroIn {align-items:center;gap:clamp(28px,5vw,64px)}
+html[data-theme="light"] body .hero .heroIn>div:first-child h1,
+html[data-theme="light"] body .hero .heroIn>div:first-child p {color:#18232d!important}
+html[data-theme="light"] body .hero .heroIn .panel :is(h2,h3,p,span,b,strong) {color:#243441!important}
+html[data-theme="dark"] body .hero .heroIn>div:first-child h1 {color:#eef3f6!important}
+html[data-theme="dark"] body .hero .heroIn>div:first-child p {color:#c1cbd3!important}
+@media(max-width:760px) {
+ html[data-theme="light"] body .hero .heroIn {gap:24px}
+}
+</style>
+
 </head>
 <body>
 <header class="nav"><a class="logo" href="/"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><a class="navBack" href="/"><i data-lucide="arrow-left"></i> Back to VTG</a></header>
