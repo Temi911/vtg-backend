@@ -18,6 +18,36 @@ main{width:min(1180px,calc(100% - 40px));margin:auto}.section{padding:82px 0}.se
 .routeSteps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.routeStep{border:1px solid var(--line);border-radius:16px;padding:20px;background:#fff}.routeStep .icon{margin-bottom:12px}.routeStep h3{font-size:16px;margin:0 0 7px}.routeStep p{font-size:12px;line-height:1.6;color:var(--muted);margin:0 0 14px}.routeStep a{font-size:12px;font-weight:800;color:var(--red);display:inline-flex;align-items:center;gap:6px}
 .footer{margin-top:20px;background:#0d1117;color:#d7dde3;padding:52px 20px 22px;border-top:1px solid #252c34}.footerIn{width:min(1180px,100%);margin:auto}.footerTop{display:grid;grid-template-columns:1.1fr 2fr;gap:60px;padding-bottom:42px;border-bottom:1px solid #252c34}.footerBrand img{width:120px;display:block}.footerBrand p{max-width:300px;color:#8f9aa6;font-size:12px;line-height:1.7;margin-top:18px}.footerLinks{display:grid;grid-template-columns:repeat(4,1fr);gap:30px}.footerLinks h4{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#fff;margin:0 0 16px}.footerLinks a{display:block;color:#8f9aa6;font-size:11px;margin:0 0 11px}.footerLinks a:hover{color:#fff}.footerBottom{display:flex;justify-content:space-between;gap:20px;padding-top:18px;color:#6f7984;font-size:10px}.footerBottom div{display:flex;gap:18px}
 @media(max-width:850px){.helpGrid{grid-template-columns:1fr 1fr}.enquiry{grid-template-columns:1fr;gap:30px}.footerTop{grid-template-columns:1fr}.footerLinks{grid-template-columns:repeat(2,1fr)}.sectionHead{display:block}.sectionHead p{margin-top:16px}}@media(max-width:600px){.nav{height:68px}.hero{min-height:500px}.heroIn{padding:70px 0 58px}.hero h1{font-size:44px}.hero p{font-size:15px}.helpGrid,.routeSteps,.fields{grid-template-columns:1fr}.field.full{grid-column:auto}.form{padding:21px}.section{padding:62px 0}.footerLinks{grid-template-columns:1fr 1fr}.footerBottom{display:block}.footerBottom div{margin-top:12px;flex-wrap:wrap}}
+
+/* Contact cards: maintain strong contrast when the site is in dark mode. */
+html[data-theme="dark"] body .helpCard,
+html[data-theme="dark"] body .routeStep{
+  background:#171d24!important;
+  border-color:#34404b!important;
+  color:#eef3f6!important;
+}
+html[data-theme="dark"] body .helpCard h3,
+html[data-theme="dark"] body .routeStep h3{
+  color:#f3f6f8!important;
+}
+html[data-theme="dark"] body .helpCard p,
+html[data-theme="dark"] body .routeStep p{
+  color:#c1cbd3!important;
+}
+html[data-theme="dark"] body .helpCard .cardLink,
+html[data-theme="dark"] body .routeStep a{
+  color:#ff777d!important;
+}
+html[data-theme="dark"] body .helpCard .icon,
+html[data-theme="dark"] body .routeStep .icon{
+  background:#302126!important;
+  color:#ff777d!important;
+}
+html[data-theme="dark"] body .helpCard:hover,
+html[data-theme="dark"] body .helpCard:focus-visible{
+  border-color:#65717c!important;
+  box-shadow:0 16px 38px rgba(0,0,0,.28)!important;
+}
 </style>
 <style id="footer-page-photo-style">.footerPagePhoto{width:min(1160px,calc(100% - 40px));margin:0 auto 42px;overflow:hidden;border-radius:24px;border:1px solid rgba(120,130,140,.18);box-shadow:0 18px 48px rgba(25,25,25,.09);background:#11161d}.footerPagePhoto img{display:block;width:100%;height:clamp(210px,30vw,360px);object-fit:cover;object-position:center 48%}@media(max-width:520px){.footerPagePhoto{width:calc(100% - 28px);border-radius:17px;margin-bottom:30px}.footerPagePhoto img{height:210px}}</style></head>
 <body>
