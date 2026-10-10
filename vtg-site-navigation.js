@@ -294,7 +294,7 @@
       'html[data-theme="dark"] #vtgThemeControl select{background:#151b22;color:#eef3f6;border-color:#46535e}',
       '@media(max-width:480px){#vtgThemeControl{left:10px;bottom:10px;padding:6px 8px;gap:6px}#vtgThemeControl label{font-size:10px}#vtgThemeControl select{min-height:30px;font-size:10px}}',
       '@media(prefers-reduced-motion:reduce){#vtgThemeControl *{transition:none!important}}'
-    ].join('\\n');
+    ].join('\n');
     document.head.appendChild(style);
     document.body.appendChild(wrap);
     var select = wrap.querySelector('select');
