@@ -112,7 +112,7 @@
     if (path.length > 1 && path.charAt(path.length - 1) === '/') path = path.slice(0, -1);
     var isHome = path === '/' || path === HOME || path.endsWith('/frontend-v3.html');
     if (!isHome) return;
-    var homeAnchors = { marketplace: '#market', atlas: '#vtgAtlasPreview' };
+    var homeAnchors = { atlas: '#vtgAtlasPreview' };
     Object.keys(homeAnchors).forEach(function (key) {
       var link = document.querySelector('#' + FOOTER_ID + ' [data-navkey="' + key + '"]');
       if (link) link.setAttribute('href', homeAnchors[key]);
