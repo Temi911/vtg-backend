@@ -31,8 +31,8 @@
     '.vtgCompactFooter .vtgFooterBottom{position:relative;width:100%;max-width:1260px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:18px;border-top:1px solid rgba(255,255,255,.07);padding:13px 24px;color:#71808b;font-size:8.5px;text-align:left}',
     '.vtgCompactFooter .vtgFooterBottom div{display:flex;gap:16px;flex-wrap:wrap}',
     '.vtgCompactFooter .vtgFooterBottom a{position:relative;color:#8c99a3;text-decoration:none;padding:1px 0}',
-    '.vtg-page-nav{position:relative;z-index:1200;display:flex;justify-content:flex-end;gap:6px;width:100%;padding:8px max(16px,calc((100vw - 1260px)/2));border-bottom:1px solid rgba(255,255,255,.10);background:#0b1016;font-family:Manrope,Arial,sans-serif;box-sizing:border-box}',
-    '.vtg-page-nav button,.vtg-page-nav a{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:35px;padding:0 11px;border:1px solid transparent;border-radius:9px;background:transparent;color:#f4f6f8;text-decoration:none;font:700 10px/1.2 Manrope,Arial,sans-serif;cursor:pointer;white-space:nowrap}',
+    '.vtg-page-nav{position:relative;z-index:1200;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:8px max(16px,calc((100vw - 1260px)/2));border-bottom:1px solid rgba(255,255,255,.10);background:#0b1016;font-family:Manrope,Arial,sans-serif;box-sizing:border-box}',
+    '.vtg-page-nav button,.vtg-page-nav a{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:35px;padding:0 11px;border:1px solid transparent;border-radius:9px;background:transparent;color:#f4f6f8;text-decoration:none;font:700 10px/1.2 Manrope,Arial,sans-serif;cursor:pointer;white-space:nowrap}.vtg-page-nav .vtg-nav-brand{display:inline-flex;align-items:center;justify-content:flex-start;min-width:0;margin-right:auto;padding:0;border:0;background:transparent}.vtg-page-nav .vtg-nav-brand img{display:block;width:auto;max-width:132px;height:auto;max-height:34px;object-fit:contain}.vtg-page-nav .vtg-nav-actions{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-left:auto}',
     '.vtg-page-nav button:hover,.vtg-page-nav a:hover,.vtg-page-nav button:focus-visible,.vtg-page-nav a:focus-visible{outline:none;background:#211a1b;border-color:#77403b;color:#ffaaa2}.vtg-page-nav button:disabled{opacity:.55;cursor:default}',
     '@media(max-width:800px){.vtgCompactFooter .vtgFooterTop{grid-template-columns:1fr;gap:25px;padding:30px 16px 22px}.vtgCompactFooter .vtgFooterLinks{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 15px}.vtgCompactFooter .vtgFooterBottom{padding:12px 16px;align-items:flex-start;flex-direction:column;gap:8px}}',
     '@media(max-width:420px){.vtgCompactFooter .vtgFooterLinks{grid-template-columns:1fr 1fr}.vtg-page-nav{padding:7px 12px}.vtg-page-nav button,.vtg-page-nav a{padding:0 9px;font-size:9px}}',
@@ -122,7 +122,7 @@
     nav.id = 'vtgPageNavigation';
     nav.className = 'vtg-page-nav';
     nav.setAttribute('aria-label', 'Page navigation');
-    nav.innerHTML = '<button type="button" id="vtgPreviousPage" aria-label="Return to previous VTG page">← Previous</button><a href="' + HOME + '" aria-label="Return to VTG homepage">Home</a>';
+    nav.innerHTML = '<a class="vtg-nav-brand" href="' + HOME + '" aria-label="Vintage Trade Global home"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><div class="vtg-nav-actions"><button type="button" id="vtgPreviousPage" aria-label="Return to previous VTG page">Previous</button><a href="' + HOME + '" aria-label="Return to VTG homepage">Home</a></div>';
     document.body.insertBefore(nav, document.body.firstChild);
     document.getElementById('vtgPreviousPage').addEventListener('click', function () {
       var canReturn = false;
