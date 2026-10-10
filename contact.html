@@ -48,6 +48,20 @@ html[data-theme="dark"] body .helpCard:focus-visible{
   border-color:#65717c!important;
   box-shadow:0 16px 38px rgba(0,0,0,.28)!important;
 }
+
+/* Contact page cards must keep strong contrast when the shared site theme is dark. */
+html[data-theme="dark"] body .helpCard,
+html[data-theme="dark"] body .routeStep{background:#11161d!important;border-color:#2b3640!important;color:#eef3f6!important}
+html[data-theme="dark"] body .helpCard h3,
+html[data-theme="dark"] body .routeStep h3{color:#eef3f6!important}
+html[data-theme="dark"] body .helpCard p,
+html[data-theme="dark"] body .routeStep p{color:#b9c5ce!important}
+html[data-theme="dark"] body .helpCard .cardLink,
+html[data-theme="dark"] body .routeStep a{color:#ff777d!important}
+html[data-theme="dark"] body .helpCard:hover,
+html[data-theme="dark"] body .helpCard:focus-visible{border-color:#53616e!important;box-shadow:0 16px 38px rgba(0,0,0,.28)}
+html[data-theme="dark"] body .helpCard .icon,
+html[data-theme="dark"] body .routeStep .icon{background:#2a171b!important;color:#ff777d!important}
 </style>
 <style id="footer-page-photo-style">.footerPagePhoto{width:min(1160px,calc(100% - 40px));margin:0 auto 42px;overflow:hidden;border-radius:24px;border:1px solid rgba(120,130,140,.18);box-shadow:0 18px 48px rgba(25,25,25,.09);background:#11161d}.footerPagePhoto img{display:block;width:100%;height:clamp(210px,30vw,360px);object-fit:cover;object-position:center 48%}@media(max-width:520px){.footerPagePhoto{width:calc(100% - 28px);border-radius:17px;margin-bottom:30px}.footerPagePhoto img{height:210px}}</style></head>
 <body>
