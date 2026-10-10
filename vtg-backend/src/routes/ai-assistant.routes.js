@@ -2,6 +2,7 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 
 const router = express.Router();
+const { requireAuth } = require('../middleware/auth');
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
@@ -33,10 +34,10 @@ router.get('/status', (req, res) => {
   res.json({ service: 'vtg-ai-assistant', configured, provider: configured ? (process.env.VTG_AI_BASE_URL ? 'compatible-api' : 'openai-compatible') : null });
 });
 
-router.post('/chat', limiter, async (req, res, next) => {
+router.post('/chat', requireAuth, limiter, async (req, res, next) => {
   try {
     const message = typeof req.body?.message === 'string' ? req.body.message.trim() : '';
-    const role = safeRole(req.body?.role);
+    const role = safeRole(req.user?.role);
     if (!message) return res.status(400).json({ error: { code: 'MESSAGE_REQUIRED', message: 'Please enter a message.' } });
     if (message.length > 6000) return res.status(413).json({ error: { code: 'MESSAGE_TOO_LONG', message: 'Please keep each message under 6,000 characters.' } });
 
