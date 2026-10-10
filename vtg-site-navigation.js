@@ -54,11 +54,32 @@
         '@media(max-width:420px){footer#vtgFooter.vtgCompactFooter .vtgFooterLinks{grid-template-columns:repeat(2,minmax(0,1fr))!important}footer#vtgFooter.vtgCompactFooter .vtgFooterBottom.copyright{font-size:8px!important}}',
     '@media(prefers-reduced-motion:reduce){.vtgCompactFooter *,.vtg-page-nav *{transition:none!important}}'
   ].join('\n');
+  var CONTRAST_CSS = [
+    /* Shared contrast baseline for all VTG pages; image overlays and branded dark sections retain their own palettes. */
+    'html[data-theme="light"] body{color:#17212b}',
+    'html[data-theme="dark"] body{background:#0d1117;color:#eef3f6}',
+    'html[data-theme="light"] body :is(.card,.panel,.surface,.tile,.modal-content,.form-card,.portalCard,.stat-card,.feature-card,.step-card,.info-card,.faq-item,.callout,.routeCard,.route-card,.accessCard,.access-card,.partnership-card,.partner-card,.service-card,.content-card,.feature,.info-panel,.detail-card,.application-card,.news-card,.market-card){color:#17212b}',
+    'html[data-theme="dark"] body :is(.card,.panel,.surface,.tile,.modal-content,.form-card,.portalCard,.stat-card,.feature-card,.step-card,.info-card,.faq-item,.callout,.routeCard,.route-card,.accessCard,.access-card,.partnership-card,.partner-card,.service-card,.content-card,.feature,.info-panel,.detail-card,.application-card,.news-card,.market-card){color:#eef3f6}',
+    'html[data-theme="light"] body :is(.card,.panel,.surface,.tile,.modal-content,.form-card,.portalCard,.stat-card,.feature-card,.step-card,.info-card,.faq-item,.callout,.routeCard,.route-card,.accessCard,.access-card,.partnership-card,.partner-card,.service-card,.content-card,.feature,.info-panel,.detail-card,.application-card,.news-card,.market-card) :is(h1,h2,h3,h4,h5,h6,p,span,small,strong,b,label,li,dt,dd,figcaption){color:inherit}',
+    'html[data-theme="dark"] body :is(.card,.panel,.surface,.tile,.modal-content,.form-card,.portalCard,.stat-card,.feature-card,.step-card,.info-card,.faq-item,.callout,.routeCard,.route-card,.accessCard,.access-card,.partnership-card,.partner-card,.service-card,.content-card,.feature,.info-panel,.detail-card,.application-card,.news-card,.market-card) :is(h1,h2,h3,h4,h5,h6,p,span,small,strong,b,label,li,dt,dd,figcaption){color:inherit}',
+    'html[data-theme="light"] body :is(.card,.panel,.surface,.tile,.modal-content,.form-card,.portalCard,.stat-card,.feature-card,.step-card,.info-card,.faq-item,.callout,.routeCard,.route-card,.accessCard,.access-card,.partnership-card,.partner-card,.service-card,.content-card,.feature,.info-panel,.detail-card,.application-card,.news-card,.market-card) :is(p,small,.muted,.subtitle,.description,.eyebrow,.meta,.caption){color:#526273}',
+    'html[data-theme="dark"] body :is(.card,.panel,.surface,.tile,.modal-content,.form-card,.portalCard,.stat-card,.feature-card,.step-card,.info-card,.faq-item,.callout,.routeCard,.route-card,.accessCard,.access-card,.partnership-card,.partner-card,.service-card,.content-card,.feature,.info-panel,.detail-card,.application-card,.news-card,.market-card) :is(p,small,.muted,.subtitle,.description,.eyebrow,.meta,.caption){color:#c2ccd5}',
+    'html[data-theme="light"] body :is(section,article,figure,.media-copy,.image-copy,.text-content,.image-content,.content-row,.feature-row,.split-content,.section-content) :is(h1,h2,h3,h4,h5,h6,p,li,figcaption){color:#17212b}',
+    'html[data-theme="dark"] body :is(section,article,figure,.media-copy,.image-copy,.text-content,.image-content,.content-row,.feature-row,.split-content,.section-content) :is(h1,h2,h3,h4,h5,h6,p,li,figcaption){color:#eef3f6}',
+    'html[data-theme="light"] body :is(input,select,textarea){background:#fff;color:#17212b;border-color:#cbd5df}',
+    'html[data-theme="dark"] body :is(input,select,textarea){background:#151b22;color:#eef3f6;border-color:#46535f}',
+    'html[data-theme="dark"] body :is(input,select,textarea)::placeholder{color:#aab6c1;opacity:1}',
+    'html[data-theme="light"] body :is(.card,.panel,.surface,.tile,.modal-content,.form-card,.portalCard,.stat-card,.feature-card,.step-card,.info-card,.faq-item,.callout,.routeCard,.route-card,.accessCard,.access-card,.partnership-card,.partner-card,.service-card,.content-card,.feature,.info-panel,.detail-card,.application-card,.news-card,.market-card){border-color:#d9e1e8}',
+    'html[data-theme="dark"] body :is(.card,.panel,.surface,.tile,.modal-content,.form-card,.portalCard,.stat-card,.feature-card,.step-card,.info-card,.faq-item,.callout,.routeCard,.route-card,.accessCard,.access-card,.partnership-card,.partner-card,.service-card,.content-card,.feature,.info-panel,.detail-card,.application-card,.news-card,.market-card){border-color:#35414c}',
+    'html[data-theme="light"] body :is(.card,.panel,.surface,.tile,.modal-content,.form-card,.portalCard,.stat-card,.feature-card,.step-card,.info-card,.faq-item,.callout,.routeCard,.route-card,.accessCard,.access-card,.partnership-card,.partner-card,.service-card,.content-card,.feature,.info-panel,.detail-card,.application-card,.news-card,.market-card) a:not(.primary):not(.btn-primary){color:#8f1d17}',
+    'html[data-theme="dark"] body :is(.card,.panel,.surface,.tile,.modal-content,.form-card,.portalCard,.stat-card,.feature-card,.step-card,.info-card,.faq-item,.callout,.routeCard,.route-card,.accessCard,.access-card,.partnership-card,.partner-card,.service-card,.content-card,.feature,.info-panel,.detail-card,.application-card,.news-card,.market-card) a:not(.primary):not(.btn-primary){color:#ff9a91}',
+    '@media(prefers-reduced-motion:reduce){html[data-theme] body *{scroll-behavior:auto}}'
+  ].join('\\n');
   function addStyle() {
     if (document.getElementById('vtg-site-navigation-style')) return;
     var style = document.createElement('style');
     style.id = 'vtg-site-navigation-style';
-    style.textContent = CSS;
+    style.textContent = CSS + '\\n' + CONTRAST_CSS;
     document.head.appendChild(style);
   }
   function renderFooter() {
