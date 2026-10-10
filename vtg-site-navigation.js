@@ -178,19 +178,35 @@
     // VTG-wide theme policy: follow each visitor's own device-local clock.
     var root = document.documentElement;
     var lastTheme = '';
+    var preferenceKey = 'vtg-theme-preference';
+    function readPreference() {
+      try { return window.localStorage.getItem(preferenceKey) || 'auto'; }
+      catch (error) { return 'auto'; }
+    }
     function syncTheme() {
       var now = new Date();
       var hour = now.getHours(); // Browser local time, not server/Nigeria time.
-      var theme = (hour >= 6 && hour < 22) ? 'light' : 'dark';
+      var preference = readPreference();
+      var theme = preference === 'light' || preference === 'dark'
+        ? preference
+        : ((hour >= 6 && hour < 22) ? 'light' : 'dark');
       if (theme !== lastTheme || root.getAttribute('data-theme') !== theme) {
         root.setAttribute('data-theme', theme);
         root.style.colorScheme = theme;
         lastTheme = theme;
         var themeMeta = document.querySelector('meta[name="theme-color"]');
         if (themeMeta) themeMeta.setAttribute('content', theme === 'dark' ? '#0d1117' : '#f5f7fa');
-        document.dispatchEvent(new CustomEvent('vtg:themechange', { detail: { theme: theme, hour: hour } }));
+        document.dispatchEvent(new CustomEvent('vtg:themechange', { detail: { theme: theme, hour: hour, preference: preference } }));
       }
+      return theme;
     }
+    window.vtgSyncTheme = syncTheme;
+    window.vtgSetThemePreference = function (preference) {
+      if (['auto', 'light', 'dark'].indexOf(preference) === -1) return;
+      try { window.localStorage.setItem(preferenceKey, preference); } catch (error) {}
+      lastTheme = '';
+      syncTheme();
+    };
     if (!document.getElementById('vtg-auto-theme-style')) {
       var style = document.createElement('style');
       style.id = 'vtg-auto-theme-style';
@@ -261,9 +277,40 @@
     window.addEventListener('focus', syncTheme);
     document.addEventListener('visibilitychange', function () { if (!document.hidden) syncTheme(); });
   }
+  function ensureThemeControl() {
+    if (document.getElementById('vtgThemePreference')) return;
+    var wrap = document.createElement('div');
+    wrap.id = 'vtgThemeControl';
+    wrap.innerHTML = '<label for="vtgThemePreference">Appearance</label><select id="vtgThemePreference" aria-label="Choose site appearance"><option value="auto">Automatic</option><option value="light">Light mode</option><option value="dark">Dark mode</option></select>';
+    var style = document.createElement('style');
+    style.id = 'vtg-theme-control-style';
+    style.textContent = [
+      '#vtgThemeControl{position:fixed;left:14px;bottom:16px;z-index:2147483000;display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid #d8e0e8;border-radius:12px;background:rgba(255,255,255,.97);color:#263746;box-shadow:0 8px 28px rgba(15,23,42,.16);font:600 12px/1.2 Manrope,Arial,sans-serif;backdrop-filter:blur(12px)}',
+      '#vtgThemeControl label{margin:0;color:#526273!important;font:700 11px/1.2 Manrope,Arial,sans-serif}',
+      '#vtgThemeControl select{max-width:130px;min-height:32px;padding:5px 24px 5px 8px;border:1px solid #cbd5df;border-radius:8px;background:#fff;color:#17212b;font:700 11px/1.2 Manrope,Arial,sans-serif;cursor:pointer}',
+      '#vtgThemeControl select:focus-visible{outline:2px solid #c0392b;outline-offset:2px}',
+      'html[data-theme="dark"] #vtgThemeControl{background:rgba(17,22,29,.97);border-color:#34404a;color:#eef3f6}',
+      'html[data-theme="dark"] #vtgThemeControl label{color:#c1cbd3!important}',
+      'html[data-theme="dark"] #vtgThemeControl select{background:#151b22;color:#eef3f6;border-color:#46535e}',
+      '@media(max-width:480px){#vtgThemeControl{left:10px;bottom:10px;padding:6px 8px;gap:6px}#vtgThemeControl label{font-size:10px}#vtgThemeControl select{min-height:30px;font-size:10px}}',
+      '@media(prefers-reduced-motion:reduce){#vtgThemeControl *{transition:none!important}}'
+    ].join('\\n');
+    document.head.appendChild(style);
+    document.body.appendChild(wrap);
+    var select = wrap.querySelector('select');
+    try { select.value = window.localStorage.getItem('vtg-theme-preference') || 'auto'; }
+    catch (error) { select.value = 'auto'; }
+    select.addEventListener('change', function () {
+      if (window.vtgSetThemePreference) window.vtgSetThemePreference(select.value);
+    });
+    document.addEventListener('vtg:themechange', function (event) {
+      wrap.setAttribute('data-current-theme', event.detail.theme);
+    });
+  }
   function init() {
     applyTimeBasedTheme();
     addStyle();
+    ensureThemeControl();
     renderFooter();
     adaptHomeAnchors();
     simplifyPageHeader();
