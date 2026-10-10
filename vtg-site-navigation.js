@@ -174,7 +174,49 @@
       else window.location.href = HOME;
     });
   }
+  function applyTimeBasedTheme() {
+    // VTG-wide theme policy: follow each visitor's own device-local clock.
+    var root = document.documentElement;
+    var lastTheme = '';
+    function syncTheme() {
+      var now = new Date();
+      var hour = now.getHours(); // Browser local time, not server/Nigeria time.
+      var theme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
+      if (theme !== lastTheme || root.getAttribute('data-theme') !== theme) {
+        root.setAttribute('data-theme', theme);
+        root.style.colorScheme = theme;
+        lastTheme = theme;
+        var themeMeta = document.querySelector('meta[name="theme-color"]');
+        if (themeMeta) themeMeta.setAttribute('content', theme === 'dark' ? '#0d1117' : '#f5f7fa');
+        document.dispatchEvent(new CustomEvent('vtg:themechange', { detail: { theme: theme, hour: hour } }));
+      }
+    }
+    if (!document.getElementById('vtg-auto-theme-style')) {
+      var style = document.createElement('style');
+      style.id = 'vtg-auto-theme-style';
+      style.textContent = [
+        ':root{color-scheme:light;--vtg-auto-bg:#f5f7fa;--vtg-auto-surface:#fff;--vtg-auto-surface-2:#f0f3f6;--vtg-auto-text:#17212b;--vtg-auto-muted:#687586;--vtg-auto-line:#dfe5eb;--vtg-auto-shadow:0 12px 34px rgba(18,32,48,.08)}',
+        'html[data-theme="dark"]{color-scheme:dark;--vtg-auto-bg:#0d1117;--vtg-auto-surface:#11161d;--vtg-auto-surface-2:#171d24;--vtg-auto-text:#eef3f6;--vtg-auto-muted:#b9c5ce;--vtg-auto-line:#2b3640;--vtg-auto-shadow:0 12px 34px rgba(0,0,0,.24)}',
+        'html[data-theme="dark"] body{background-color:var(--vtg-auto-bg);color:var(--vtg-auto-text)}',
+        'html[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),html[data-theme="dark"] select,html[data-theme="dark"] textarea{background-color:var(--vtg-auto-surface-2);color:var(--vtg-auto-text);border-color:var(--vtg-auto-line)}',
+        'html[data-theme="dark"] input::placeholder,html[data-theme="dark"] textarea::placeholder{color:#93a1ad}',
+        'html[data-theme="dark"] table,html[data-theme="dark"] th,html[data-theme="dark"] td{border-color:var(--vtg-auto-line)}',
+        'html[data-theme="dark"] dialog,html[data-theme="dark"] [role="dialog"]{background:var(--vtg-auto-surface);color:var(--vtg-auto-text);border-color:var(--vtg-auto-line)}',
+        'html[data-theme="dark"] .card,html[data-theme="dark"] .panel,html[data-theme="dark"] .surface,html[data-theme="dark"] .tile,html[data-theme="dark"] .modal-content,html[data-theme="dark"] .form-card,html[data-theme="dark"] .portalCard,html[data-theme="dark"] .stat-card{background-color:var(--vtg-auto-surface);color:var(--vtg-auto-text);border-color:var(--vtg-auto-line)}',
+        'html[data-theme="dark"] .muted,html[data-theme="dark"] .subtitle,html[data-theme="dark"] .description,html[data-theme="dark"] .help-text{color:var(--vtg-auto-muted)}',
+        'html[data-theme="light"] body{color-scheme:light}',
+        '@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}}'
+      ].join('\\n');
+      document.head.appendChild(style);
+    }
+    syncTheme();
+    // Re-check periodically so an open tab changes theme when local day/night changes.
+    window.setInterval(syncTheme, 60000);
+    window.addEventListener('focus', syncTheme);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) syncTheme(); });
+  }
   function init() {
+    applyTimeBasedTheme();
     addStyle();
     renderFooter();
     adaptHomeAnchors();
