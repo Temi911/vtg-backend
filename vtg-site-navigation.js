@@ -1,5 +1,6 @@
 /* VTG navigation. The homepage footer markup and visual system are the single source of truth site-wide. */
 /* 2026-10-10: non-home pages use the simplified logo / Previous / Home header. */
+/* 2026-10-10: keep VTG AI in the shared footer and show a clear red active-page underline. */
 (function () {
   'use strict';
   var HOME = '/frontend-v3.html';
@@ -27,8 +28,8 @@
     '.vtgCompactFooter .vtgFooterLinks h4{margin:3px 0 12px;color:#f1f4f6;font-size:10px;letter-spacing:.04em;text-transform:uppercase}',
     '.vtgCompactFooter .vtgFooterLinks a{position:relative;display:table;width:fit-content;max-width:100%;color:#9eabb5;text-decoration:none;font-size:10px;line-height:1.55;margin:0 0 8px;padding:1px 0;transition:color .18s}',
     '.vtgCompactFooter .vtgFooterLinks a:hover,.vtgCompactFooter .vtgFooterBottom a:hover{color:#fff}',
-    '.vtgCompactFooter [data-navkey][aria-current="page"]{color:#ff8b82!important;font-weight:800}',
-    '.vtgCompactFooter .vtgFooterLinks [data-navkey][aria-current="page"]:after,.vtgCompactFooter .vtgFooterBottom [data-navkey][aria-current="page"]:after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;border-radius:2px;background:#ff8b82}',
+    '#vtgFooter.vtgCompactFooter [data-navkey][aria-current="page"]{color:#ff8b82!important;font-weight:800!important}',
+    '#vtgFooter.vtgCompactFooter .vtgFooterLinks a[data-navkey][aria-current="page"]:after,#vtgFooter.vtgCompactFooter .vtgFooterBottom a[data-navkey][aria-current="page"]:after{content:""!important;display:block!important;position:absolute!important;left:0!important;right:0!important;bottom:-3px!important;height:2px!important;border-radius:2px!important;background:#ff8b82!important;opacity:1!important}
     '.vtgCompactFooter .vtgFooterBottom{position:relative;width:100%;max-width:1260px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:18px;border-top:1px solid rgba(255,255,255,.07);padding:13px 24px;color:#71808b;font-size:8.5px;text-align:left}',
     '.vtgCompactFooter .vtgFooterBottom div{display:flex;gap:16px;flex-wrap:wrap}',
     '.vtgCompactFooter .vtgFooterBottom a{position:relative;color:#8c99a3;text-decoration:none;padding:1px 0}',
@@ -82,7 +83,7 @@
       marketplace: ['/marketplace.html'],
       atlas: ['/trade-atlas.html'],
       intelligence: ['/market-intelligence.html', '/intelligence-centre.html'],
-      ai: ['/vtg-ai.html'],
+      ai: ['/vtg-ai.html', '/vtg-ai-dashboard.html'],
       'trade-feed': ['/trade-feed.html', '/account-trade-feed.html'],
       verification: ['/product-verification.html', '/inspection-request.html', '/inspection-payment-callback.html'],
       logistics: ['/logistics-shipping.html'],
