@@ -62,6 +62,30 @@ html[data-theme="dark"] body .helpCard:hover,
 html[data-theme="dark"] body .helpCard:focus-visible{border-color:#53616e!important;box-shadow:0 16px 38px rgba(0,0,0,.28)}
 html[data-theme="dark"] body .helpCard .icon,
 html[data-theme="dark"] body .routeStep .icon{background:#2a171b!important;color:#ff777d!important}
+
+/* Contact enquiry form: explicit high-contrast colours for both appearance modes. */
+html[data-theme="dark"] body .form,
+html[data-theme="dark"] body .introBox{background:#11161d!important;border-color:#2b3640!important;color:#eef3f6!important}
+html[data-theme="dark"] body .form :is(h1,h2,h3,h4,p,label,legend),
+html[data-theme="dark"] body .introBox :is(h1,h2,h3,h4,p,strong){color:#eef3f6!important}
+html[data-theme="dark"] body .form .field label{color:#d5dfe7!important}
+html[data-theme="dark"] body .formNote{color:#b9c5ce!important}
+html[data-theme="dark"] body .form .field :is(input,select,textarea){background:#0d1117!important;color:#eef3f6!important;border-color:#465360!important;caret-color:#ffffff!important;-webkit-text-fill-color:#eef3f6!important}
+html[data-theme="dark"] body .form .field :is(input,textarea)::placeholder{color:#9aa8b5!important;opacity:1!important}
+html[data-theme="dark"] body .form .field select option{background:#11161d!important;color:#eef3f6!important}
+html[data-theme="dark"] body .form .fixedValue{background:#202832!important;color:#ffffff!important;-webkit-text-fill-color:#ffffff!important}
+html[data-theme="dark"] body .form :is(input,select,textarea):focus{border-color:#ff777d!important;box-shadow:0 0 0 3px rgba(255,119,125,.18)!important}
+html[data-theme="dark"] body .form .status{color:#eef3f6!important}
+html[data-theme="light"] body .form,
+html[data-theme="light"] body .introBox{background:#ffffff!important;color:#18232d!important}
+html[data-theme="light"] body .form :is(h1,h2,h3,h4,p,label,legend),
+html[data-theme="light"] body .introBox :is(h1,h2,h3,h4,p,strong){color:#263746!important}
+html[data-theme="light"] body .form .field label{color:#465360!important}
+html[data-theme="light"] body .formNote{color:#52616d!important}
+html[data-theme="light"] body .form .field :is(input,select,textarea){background:#ffffff!important;color:#18232d!important;border-color:#cbd3da!important;caret-color:#18232d!important;-webkit-text-fill-color:#18232d!important}
+html[data-theme="light"] body .form .field :is(input,textarea)::placeholder{color:#687783!important;opacity:1!important}
+html[data-theme="light"] body .form .field select option{background:#ffffff!important;color:#18232d!important}
+html[data-theme="light"] body .form .fixedValue{background:#f0f3f6!important;color:#18232d!important;-webkit-text-fill-color:#18232d!important}
 </style>
 <style id="footer-page-photo-style">.footerPagePhoto{width:min(1160px,calc(100% - 40px));margin:0 auto 42px;overflow:hidden;border-radius:24px;border:1px solid rgba(120,130,140,.18);box-shadow:0 18px 48px rgba(25,25,25,.09);background:#11161d}.footerPagePhoto img{display:block;width:100%;height:clamp(210px,30vw,360px);object-fit:cover;object-position:center 48%}@media(max-width:520px){.footerPagePhoto{width:calc(100% - 28px);border-radius:17px;margin-bottom:30px}.footerPagePhoto img{height:210px}}</style></head>
 <body>
