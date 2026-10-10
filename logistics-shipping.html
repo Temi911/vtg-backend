@@ -31,9 +31,58 @@ footer.vtgCompactFooter .vtgFooterBottom div{display:flex;gap:16px}
 @media(max-width:760px){footer.vtgCompactFooter .vtgFooterTop{grid-template-columns:1fr;gap:25px;padding:30px 16px 22px}footer.vtgCompactFooter .vtgFooterLinks{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 15px}footer.vtgCompactFooter .vtgFooterBottom{padding:12px 16px;align-items:flex-start;flex-direction:column;gap:8px}footer.vtgCompactFooter .vtgFooterBottom div{gap:12px;flex-wrap:wrap}}
 @media(max-width:430px){footer.vtgCompactFooter .vtgFooterLinks{grid-template-columns:1fr 1fr}footer.vtgCompactFooter .vtgFooterBottom{font-size:8px}}
 </style>
+
+<style id="vtg-contrast-repair-20261010">
+/* Shared contrast repair: text stays readable inside panels, cards, guides and forms. */
+html[data-theme="dark"] body {
+  color:#eef3f6!important;
+}
+html[data-theme="dark"] body :is(.form,.formWrap,.applyGrid>.form,.heroPanel,.panel,.card,.detailCard,.infoItem,.faqItem,.securityCard,.trustItem,.checkItem,.evidenceCard,.quoteBox,.qtyCard,.metric,.preview,.sidebox,.rightbox,.toolPanel,.heroCard,.item,.guideCard,.guide-card,.guideItem,.guide-item,.box,.rectangle,.step,.adv,.route,.flow,.introBox,.applyIntro,.workflow,.composer,.composerBox,.feedCard,.postCard,.tableWrap,.table-container) {
+  color:#eef3f6!important;
+  border-color:#34404b;
+}
+html[data-theme="dark"] body :is(.form,.formWrap,.applyGrid>.form,.panel,.card,.detailCard,.infoItem,.faqItem,.securityCard,.trustItem,.checkItem,.evidenceCard,.quoteBox,.qtyCard,.metric,.preview,.sidebox,.rightbox,.toolPanel,.heroCard,.item,.guideCard,.guide-card,.guideItem,.guide-item,.box,.rectangle,.step,.adv,.route,.introBox,.workflow,.composer,.composerBox,.feedCard,.postCard,.tableWrap,.table-container) :is(h1,h2,h3,h4,h5,p,li,span,strong,b,small,label,td,th,dt,dd,legend,summary) {
+  color:#eef3f6!important;
+}
+html[data-theme="dark"] body :is(.form,.formWrap,.applyGrid>.form,.panel,.card,.detailCard,.infoItem,.faqItem,.securityCard,.trustItem,.checkItem,.evidenceCard,.quoteBox,.qtyCard,.metric,.preview,.sidebox,.rightbox,.toolPanel,.heroCard,.item,.guideCard,.guide-card,.guideItem,.guide-item,.box,.rectangle,.step,.adv,.route,.introBox,.workflow,.composer,.composerBox,.feedCard,.postCard,.tableWrap,.table-container) :is(p,li,small,label,.hint,.sub,.description,.muted,.lead) {
+  color:#c1cbd3!important;
+}
+html[data-theme="dark"] body :is(input,select,textarea) {
+  background:#0d1117!important;color:#eef3f6!important;border-color:#465360!important;
+  -webkit-text-fill-color:#eef3f6!important;caret-color:#fff!important;
+}
+html[data-theme="dark"] body :is(input,textarea)::placeholder {color:#aab6c0!important;opacity:1!important}
+html[data-theme="dark"] body select option {background:#11161d!important;color:#eef3f6!important}
+html[data-theme="dark"] body :is(table,thead,tbody,tr,th,td) {border-color:#34404b!important}
+html[data-theme="dark"] body :is(.tableWrap,.table-container,table) :is(th,td) {color:#eef3f6!important}
+html[data-theme="dark"] body a:not(.btn):not(.button):not(.submit):not(.primary):not(.outline) {text-underline-offset:3px}
+html[data-theme="light"] body :is(.card,.detailCard,.infoItem,.faqItem,.securityCard,.trustItem,.checkItem,.evidenceCard,.quoteBox,.qtyCard,.metric,.preview,.sidebox,.rightbox,.toolPanel,.heroCard,.item,.guideCard,.guide-card,.guideItem,.guide-item,.box,.rectangle,.step,.adv,.route,.introBox,.form,.formWrap,.tableWrap,.table-container) :is(h2,h3,h4,h5,p,li,span,strong,b,small,label,td,th,dt,dd,legend,summary) {
+  color:#243441;
+}
+html[data-theme="light"] body :is(.card,.detailCard,.infoItem,.faqItem,.securityCard,.trustItem,.checkItem,.evidenceCard,.quoteBox,.qtyCard,.metric,.preview,.sidebox,.rightbox,.toolPanel,.heroCard,.item,.guideCard,.guide-card,.guideItem,.guide-item,.box,.rectangle,.step,.adv,.route,.introBox,.form,.formWrap,.tableWrap,.table-container) :is(p,li,small,label,.hint,.sub,.description,.muted) {
+  color:#52616d;
+}
+html[data-theme="light"] body :is(input,select,textarea) {
+  background:#fff!important;color:#18232d!important;border-color:#cbd3da!important;
+  -webkit-text-fill-color:#18232d!important;caret-color:#18232d!important;
+}
+html[data-theme="light"] body :is(input,textarea)::placeholder {color:#687783!important;opacity:1!important}
+html[data-theme="light"] body select option {background:#fff!important;color:#18232d!important}
+/* Sourcing page: refine the header into a clear, balanced two-column hero. */
+html[data-theme="light"] body .hero .heroIn {align-items:center;gap:clamp(28px,5vw,64px)}
+html[data-theme="light"] body .hero .heroIn>div:first-child h1,
+html[data-theme="light"] body .hero .heroIn>div:first-child p {color:#18232d!important}
+html[data-theme="light"] body .hero .heroIn .panel :is(h2,h3,p,span,b,strong) {color:#243441!important}
+html[data-theme="dark"] body .hero .heroIn>div:first-child h1 {color:#eef3f6!important}
+html[data-theme="dark"] body .hero .heroIn>div:first-child p {color:#c1cbd3!important}
+@media(max-width:760px) {
+ html[data-theme="light"] body .hero .heroIn {gap:24px}
+}
+</style>
+
 </head><body><div class="top"></div><main class="wrap">
 <a class="back" href="/frontend-v3.html">← Back to VTG</a>
-<section class="hero"><div><span class="eyebrow">VTG Logistics &amp; Shipping</span><h1>Move goods across borders with a clearer journey.</h1><p>VTG brings the moving parts of cross-border trade into one clearer journey—from supplier readiness and pre-shipment checks to freight planning, port milestones, customs documentation and final delivery coordination. Built around trade between Africa, China, South Korea and wider global markets, the platform helps buyers, suppliers and logistics partners work from a more consistent shipment record.</p></div><div class="visual"><img src="https://images.unsplash.com/photo-1578575437130-52799100b8b5?auto=format&fit=crop&w=1800&q=85" alt="Container cargo moving through an international shipping terminal" loading="eager" fetchpriority="high"><span>FROM ORIGIN HANDLING TO DESTINATION DELIVERY</span></div></section>
+<section class="hero"><div><span class="eyebrow">VTG Logistics &amp; Shipping</span><h1>Move goods across borders with a clearer journey.</h1><p>VTG brings the moving parts of cross-border trade into one clearer journey—from supplier readiness and pre-shipment checks to freight planning, port milestones, customs documentation and final delivery coordination. Built around trade between Africa, China, South Korea and wider global markets, the platform helps buyers, suppliers and logistics partners work from a more consistent shipment record.</p></div><div class="visual"><img src="https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&w=1800&q=85" alt="Container cargo moving through an international shipping terminal" loading="eager" fetchpriority="high"><span>FROM ORIGIN HANDLING TO DESTINATION DELIVERY</span></div></section>
 <section class="section"><div class="head"><div><span class="eyebrow">One connected journey</span><h2>See how a shipment moves.</h2></div><p>Bring the key teams and checkpoints into a clearer workflow as shipment information becomes available.</p></div><div class="journey"><article class="stage"><span class="num">01</span><h3>Supplier dispatch</h3><p>Confirm goods, origin details and readiness for collection or export handling.</p></article><article class="stage"><span class="num">02</span><h3>Product verification</h3><p>Coordinate inspection and supporting photo or document evidence before shipment.</p></article><article class="stage"><span class="num">03</span><h3>Freight &amp; vessel</h3><p>Organize transport arrangements and record available carrier and voyage details.</p></article><article class="stage"><span class="num">04</span><h3>Port &amp; customs</h3><p>Follow relevant arrival, documentation, clearance and release milestones.</p></article><article class="stage"><span class="num">05</span><h3>Final delivery</h3><p>Coordinate inland movement and handover toward the buyer or delivery location.</p></article></div></section>
 <section class="section"><div class="head"><div><span class="eyebrow">Logistics capabilities</span><h2>Built around the real work.</h2></div><p>Plan and coordinate the parts of cross-border movement that matter to buyers, suppliers and logistics partners.</p></div><div class="caps"><article class="cap"><h3>Freight &amp; route coordination</h3><p>Bring origin, destination, mode and route information together to support shipment planning.</p></article><article class="cap"><h3>Port and clearance milestones</h3><p>Keep key port, customs-documentation and release steps visible in the shipment workflow.</p></article><article class="cap"><h3>Inspection evidence</h3><p>Link pre-shipment product checks and available evidence to the goods being moved.</p></article><article class="cap"><h3>Shipment visibility</h3><p>Present known shipment milestones and available movement updates without implying unconnected live data.</p></article><article class="cap"><h3>Partner coordination</h3><p>Support communication between suppliers, freight providers, clearing agents and buyers.</p></article><article class="cap"><h3>Buyer handover</h3><p>Bring delivery planning and the final handover into the wider trade record.</p></article></div></section>
 <section class="section"><div class="route"><div><span class="eyebrow">Example trade corridor</span><h2>Guangzhou to Lagos, connected end to end.</h2><p>An illustrative journey showing how supplier activity in China can connect through a seaport, ocean movement, Nigerian port and customs handling, then onward delivery.</p></div><div><div class="stops"><span class="stop">Guangzhou</span><span class="arrow">→</span><span class="stop">Nansha Port</span><span class="arrow">→</span><span class="stop">Ocean transit</span><span class="arrow">→</span><span class="stop">Tin Can Island</span><span class="arrow">→</span><span class="stop">Customs</span><span class="arrow">→</span><span class="stop">Buyer delivery</span></div><p class="note">Illustrative route only. Actual ports, carriers, schedules, milestones and clearance requirements depend on the shipment and confirmed service arrangements.</p></div></div></section>
@@ -54,4 +103,11 @@ footer.vtgCompactFooter .vtgFooterBottom div{display:flex;gap:16px}
 <div><h4>Business</h4><a href="/sourcing-suppliers.html">Sourcing & Suppliers</a><a href="/finance-payments.html">Finance & Payments</a><a href="/trade-guide.html">Trade Guide</a><a href="/agent.html">Become an Agent</a></div>
 <div><h4>Company</h4><a href="/about-vintage.html">About VTG</a><a href="/partnerships.html">Partnerships</a><a href="/contact.html">Contact VTG</a></div>
 </div></div><div class="copyright vtgFooterBottom"><span>© 2026 Vintage Trade Global • Powered by Folayele Global Resources Limited</span><div><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/code-of-conduct.html">Code of Conduct</a></div></div></footer></main><script src="/page-visuals.js"></script><script src="/vtg-site-navigation.js?v=20261010-auto-theme" defer></script>
+<script id="vtg-logistics-image-fallback-20261010">
+document.querySelectorAll('img[src*="images.unsplash.com"]').forEach(function(img){
+  img.addEventListener('error',function(){
+    if(!img.dataset.vtgFallback){img.dataset.vtgFallback='1';img.src='https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&w=1800&q=85';}
+  },{once:true});
+});
+</script>
 </body></html>
