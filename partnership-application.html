@@ -240,5 +240,19 @@ finally{button.disabled=false;button.textContent='Propose a partnership →'}
 </script>
 <script src="/page-visuals.js"></script>
 <script src="/vtg-site-navigation.js?v=20261010-auto-theme" defer></script>
+
+<style id="vtg-partnership-hero-final-visibility-20261012">
+/* Final page-level override: keep the actual proposal introduction readable after theme scripts load. */
+html:not([data-theme="dark"]) body main.wrap > section.hero { color:#18232d!important; opacity:1!important; visibility:visible!important; }
+html:not([data-theme="dark"]) body main.wrap > section.hero .eyebrow { color:#b83227!important; -webkit-text-fill-color:#b83227!important; opacity:1!important; visibility:visible!important; }
+html:not([data-theme="dark"]) body main.wrap > section.hero h1 { color:#111827!important; -webkit-text-fill-color:#111827!important; opacity:1!important; visibility:visible!important; }
+html:not([data-theme="dark"]) body main.wrap > section.hero p { color:#374151!important; -webkit-text-fill-color:#374151!important; opacity:1!important; visibility:visible!important; }
+html[data-theme="light"] body main.wrap > section.hero .eyebrow { color:#b83227!important; -webkit-text-fill-color:#b83227!important; }
+html[data-theme="light"] body main.wrap > section.hero h1 { color:#111827!important; -webkit-text-fill-color:#111827!important; }
+html[data-theme="light"] body main.wrap > section.hero p { color:#374151!important; -webkit-text-fill-color:#374151!important; }
+html[data-theme="dark"] body main.wrap > section.hero .eyebrow { color:#ff777d!important; -webkit-text-fill-color:#ff777d!important; opacity:1!important; visibility:visible!important; }
+html[data-theme="dark"] body main.wrap > section.hero h1 { color:#eef3f6!important; -webkit-text-fill-color:#eef3f6!important; opacity:1!important; visibility:visible!important; }
+html[data-theme="dark"] body main.wrap > section.hero p { color:#c1cbd3!important; -webkit-text-fill-color:#c1cbd3!important; opacity:1!important; visibility:visible!important; }
+</style>
 </body>
 </html>
