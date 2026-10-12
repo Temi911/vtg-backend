@@ -280,30 +280,40 @@ window.VTGOpenAuth=openAuth;window.VTGOpenMarketIntel=()=>openVTGIntel("market")
 <script src="/vtg-market-news.js" defer></script><script src="/vtg-interaction-recovery.js" defer></script><script src="/vtg-site-navigation.js?v=20261010-auto-theme" defer></script>
 
 <style id="vtg-landing-hero-theme-visibility-20261012">
-/* Keep both entry points readable in light mode without changing their actions. */
-html[data-theme="light"] body #joinBtn.headerEnterBtn,
-html[data-theme="light"] body #heroJoin {
+/* Use the default light theme unless dark mode is explicitly active. */
+html:not([data-theme="dark"]) body #joinBtn.headerEnterBtn,
+html:not([data-theme="dark"]) body #heroJoin {
   background:#a92722!important;
-  color:#ffffff!important;
-  -webkit-text-fill-color:#ffffff!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
   border:1px solid #a92722!important;
   opacity:1!important;
   visibility:visible!important;
   text-shadow:none!important;
 }
-html[data-theme="light"] body #joinBtn.headerEnterBtn :is(span,i,svg),
-html[data-theme="light"] body #heroJoin :is(span,i,svg) {
-  color:#ffffff!important;
-  -webkit-text-fill-color:#ffffff!important;
-  stroke:currentColor!important;
+html:not([data-theme="dark"]) body #joinBtn.headerEnterBtn span,
+html:not([data-theme="dark"]) body #joinBtn.headerEnterBtn i,
+html:not([data-theme="dark"]) body #heroJoin i,
+html:not([data-theme="dark"]) body #heroJoin svg {
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  stroke:#fff!important;
 }
-/* The connected-trade ecosystem copy sits on the image-led hero. Keep it bright in dark mode. */
-html[data-theme="dark"] body .heroIn > div:first-child > p {
-  color:#e2eaf0!important;
-  -webkit-text-fill-color:#e2eaf0!important;
+/* The hero title uses transparent gradient text by default; use a solid light tone in dark mode. */
+html[data-theme="dark"] body .hero h1 span {
+  background:none!important;
+  color:#ffd0cb!important;
+  -webkit-text-fill-color:#ffd0cb!important;
   opacity:1!important;
   visibility:visible!important;
-  text-shadow:0 1px 3px rgba(0,0,0,.45)!important;
+  text-shadow:0 1px 4px rgba(0,0,0,.5)!important;
+}
+html[data-theme="dark"] body .heroIn > div:first-child > p {
+  color:#e8eef3!important;
+  -webkit-text-fill-color:#e8eef3!important;
+  opacity:1!important;
+  visibility:visible!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.55)!important;
 }
 html[data-theme="dark"] body .heroIn > div:first-child > .eyebrow {
   color:#ffd0cb!important;
