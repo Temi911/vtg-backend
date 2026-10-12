@@ -135,5 +135,37 @@ html[data-theme="light"] body section.hero .heroIn > .ey {
   color:#ff6870!important; -webkit-text-fill-color:#ff6870!important;
 }
 </style>
+
+<style id="vtg-agent-hero-contrast-panel-20261012">
+/* Guarantee legibility over the hero photograph by placing the introduction on a dark panel. */
+html:not([data-theme="dark"]) body section.hero .heroIn,
+html[data-theme="light"] body section.hero .heroIn {
+  width:min(1180px,calc(100% - 40px))!important;
+  padding:42px 36px 36px!important;
+  margin:0 auto 38px!important;
+  background:rgba(8,13,19,.88)!important;
+  border:1px solid rgba(255,255,255,.18)!important;
+  border-radius:16px!important;
+  box-shadow:0 16px 42px rgba(0,0,0,.28)!important;
+  color:#fff!important;
+  isolation:isolate!important;
+}
+html:not([data-theme="dark"]) body section.hero .heroIn h1,
+html[data-theme="light"] body section.hero .heroIn h1 {
+  color:#fff!important;-webkit-text-fill-color:#fff!important;
+  opacity:1!important;visibility:visible!important;
+  text-shadow:0 2px 12px rgba(0,0,0,.45)!important;
+}
+html:not([data-theme="dark"]) body section.hero .heroIn p,
+html[data-theme="light"] body section.hero .heroIn p {
+  color:#f1f5f9!important;-webkit-text-fill-color:#f1f5f9!important;
+  opacity:1!important;visibility:visible!important;
+  text-shadow:none!important;
+}
+@media(max-width:600px){
+ html:not([data-theme="dark"]) body section.hero .heroIn,
+ html[data-theme="light"] body section.hero .heroIn {padding:30px 22px 26px!important;margin-bottom:24px!important;width:calc(100% - 28px)!important;}
+}
+</style>
 </style>
 </body></html>
