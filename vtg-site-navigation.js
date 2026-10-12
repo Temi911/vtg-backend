@@ -354,8 +354,8 @@
     document.head.appendChild(style);
     document.body.appendChild(wrap);
     var select = wrap.querySelector('select');
-    try { select.value = window.localStorage.getItem('vtg-theme-preference') || 'light'; }
-    catch (error) { select.value = 'light'; }
+    try { select.value = window.localStorage.getItem('vtg-theme-preference') || 'auto'; }
+    catch (error) { select.value = 'auto'; }
     select.addEventListener('change', function () {
       if (window.vtgSetThemePreference) window.vtgSetThemePreference(select.value);
     });
