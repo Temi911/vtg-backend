@@ -139,5 +139,57 @@ document.querySelectorAll('.item button').forEach(btn=>btn.addEventListener('cli
 lucide.createIcons();
 </script>
 <script src="/vtg-site-navigation.js?v=20261010-auto-theme" defer></script>
+
+<style id="vtg-finance-payments-contrast-fix-20261012">
+/* Finance page: keep the dark hero readable in light theme, too. */
+html[data-theme="light"] body .hero .heroIn>div:first-child .eyebrow {
+  color:#ff9b93!important;-webkit-text-fill-color:#ff9b93!important;
+}
+html[data-theme="light"] body .hero .heroIn>div:first-child h1,
+html[data-theme="light"] body .hero .heroIn>div:first-child h1 span {
+  color:#fff!important;-webkit-text-fill-color:#fff!important;
+  opacity:1!important;visibility:visible!important;
+  text-shadow:0 2px 12px rgba(0,0,0,.45)!important;
+}
+html[data-theme="light"] body .hero .heroIn>div:first-child p {
+  color:#e5edf2!important;-webkit-text-fill-color:#e5edf2!important;
+  opacity:1!important;visibility:visible!important;
+}
+html[data-theme="light"] body .hero .heroIn>div:first-child .btn.ghost {
+  color:#fff!important;-webkit-text-fill-color:#fff!important;
+  border-color:rgba(255,255,255,.3)!important;
+}
+/* Financial trade flow: clear panel, rows, step numbers and labels in light mode. */
+html[data-theme="light"] body .hero .heroPanel {
+  background:#fff!important;border:1px solid #d6dee5!important;
+  color:#1b2935!important;box-shadow:0 20px 50px rgba(0,0,0,.2)!important;
+}
+html[data-theme="light"] body .hero .heroPanel h3 {
+  color:#1b2935!important;-webkit-text-fill-color:#1b2935!important;
+}
+html[data-theme="light"] body .hero .heroPanel .flow>div {
+  background:#f4f7f9!important;border:1px solid #dce3e8!important;
+}
+html[data-theme="light"] body .hero .heroPanel .flow>div b {
+  background:#f8e9e7!important;color:#a52d23!important;
+  -webkit-text-fill-color:#a52d23!important;
+}
+html[data-theme="light"] body .hero .heroPanel .flow>div span {
+  color:#273744!important;-webkit-text-fill-color:#273744!important;
+  opacity:1!important;visibility:visible!important;
+}
+/* Number badges 01–17: override shared dark-mode rules with a strong contrast pair. */
+html[data-theme="dark"] body #guide .item button .num {
+  background:#3a2528!important;border:1px solid #75413f!important;
+  color:#ffb0a8!important;-webkit-text-fill-color:#ffb0a8!important;
+  opacity:1!important;visibility:visible!important;
+}
+html[data-theme="light"] body #guide .item button .num {
+  background:#f8e9e7!important;border:1px solid #e7c3be!important;
+  color:#a52d23!important;-webkit-text-fill-color:#a52d23!important;
+  opacity:1!important;visibility:visible!important;
+}
+</style>
+
 </body>
 </html>
