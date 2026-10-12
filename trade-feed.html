@@ -91,7 +91,6 @@ html[data-theme="dark"] body .public-feed-note,html[data-theme="dark"] body .pan
 <button class="filter" data-filter="bank"><i data-lucide="landmark"></i> Banks & finance</button>
 <button class="filter" data-filter="news"><i data-lucide="newspaper"></i> Trade news</button>
 <button class="filter" data-filter="trade_tip"><i data-lucide="lightbulb"></i> Trade insights</button>
-<button class="filter" data-filter="following"><i data-lucide="users"></i> Following</button>
 </div></section>
 <section class="panel sidebox"><h3 class="side-title">Built for real trade</h3><p class="side-note"><strong>Discover.</strong> Find offers and business updates.</p><p class="side-note"><strong>Connect.</strong> Follow buyers, suppliers and financial institutions.</p><p class="side-note"><strong>Verify.</strong> Check company and bank details independently before sending money or documents.</p></section>
 </aside>
@@ -185,4 +184,51 @@ if(!IS_ACCOUNT_FEED){const c=$('#composer');if(c){c.classList.add('readonly');co
 (async()=>{await loadFollowing();await loadFeed();renderSuggestions()})();
 </script>
 <script src="/vtg-site-navigation.js?v=20261010-auto-theme" defer></script>
+
+<style id="vtg-trade-feed-light-contrast-20261012">
+/* Light-mode contrast for feed status, category filters and supplier-advert navigation. */
+html[data-theme="light"] body .liveflag {
+  background:#fff!important;border-color:#cbd5dd!important;color:#334452!important;
+}
+html[data-theme="light"] body #feedStatus {
+  color:#263744!important;-webkit-text-fill-color:#263744!important;
+  opacity:1!important;visibility:visible!important;
+}
+html[data-theme="light"] body .liveflag i {background:#16856f!important}
+html[data-theme="light"] body .filters .filter {
+  color:#344553!important;background:#fff!important;border-color:transparent!important;
+}
+html[data-theme="light"] body .filters .filter svg {
+  color:#536777!important;stroke:currentColor!important;
+}
+html[data-theme="light"] body .filters .filter:hover,
+html[data-theme="light"] body .filters .filter.active {
+  color:#8f211b!important;background:#fff0ee!important;border-color:#e9c2bd!important;
+}
+html[data-theme="light"] body .filters .filter:hover svg,
+html[data-theme="light"] body .filters .filter.active svg {color:#a92d24!important}
+html[data-theme="light"] body .side-title {color:#435563!important}
+html[data-theme="light"] body .side-note {color:#52616d!important}
+html[data-theme="light"] body .side-note strong {color:#263744!important}
+html[data-theme="light"] body .empty {color:#52616d!important}
+html[data-theme="light"] body .feedtop h2 {color:#243441!important}
+html[data-theme="light"] body .post .postbody,
+html[data-theme="light"] body .news-source .summary {color:#344553!important;-webkit-text-fill-color:#344553!important}
+html[data-theme="light"] body .post .posttime,
+html[data-theme="light"] body .post .statsline,
+html[data-theme="light"] body .news-source .statsline {color:#586875!important}
+html[data-theme="light"] body .post .role,
+html[data-theme="light"] body .post .typepill {opacity:1!important}
+html[data-theme="light"] body .postactions button {
+  color:#435563!important;border-color:#e1e6ea!important;
+}
+html[data-theme="light"] body .postactions button:hover {
+  background:#f3f6f8!important;color:#172b38!important;
+}
+html[data-theme="light"] body .suggestion-info strong {color:#243441!important}
+html[data-theme="light"] body .suggestion-info span {color:#586875!important}
+html[data-theme="light"] body .trend strong {color:#243441!important}
+html[data-theme="light"] body .trend p {color:#586875!important}
+</style>
+
 </body></html>
