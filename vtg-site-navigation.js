@@ -199,7 +199,7 @@
     var lastTheme = '';
     var preferenceKey = 'vtg-theme-preference';
     function readPreference() {
-      try { return window.localStorage.getItem(preferenceKey) || 'light'; }
+      try { return window.localStorage.getItem(preferenceKey) || 'auto'; }
       catch (error) { return 'auto'; }
     }
     function syncTheme() {
