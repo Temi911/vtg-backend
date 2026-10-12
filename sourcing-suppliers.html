@@ -65,4 +65,84 @@ html[data-theme="light"] body .hero{background:radial-gradient(circle at 82% 20%
 <section class="sec dark"><div class="head"><div class="ey">For suppliers</div><h2>VTG is also a route into new markets.</h2><p>Suppliers can use the ecosystem to present products, receive structured buyer enquiries and build relationships with African and international buyers. Participation does not remove commercial or regulatory obligations.</p></div><div class="grid"><div class="card"><div class="icon"><i data-lucide="users"></i></div><h3>Buyer access</h3><p>Reach buyers looking for products and supply relationships across connected markets.</p></div><div class="card"><div class="icon"><i data-lucide="layout-list"></i></div><h3>Structured product information</h3><p>Present specifications, MOQ, capability and commercial information clearly.</p></div><div class="card"><div class="icon"><i data-lucide="network"></i></div><h3>Trade connections</h3><p>Connect with sourcing, logistics, inspection and other relevant trade workflows where available.</p></div></div></section>
 <section class="sec"><div class="head"><div class="ey">Frequently asked</div><h2>Questions about sourcing through VTG.</h2></div><div class="faq"><details><summary>Can VTG find a supplier if I cannot find one?</summary><p>VTG can support sourcing workflows where the relevant service is available. Provide a clear product requirement so suitable options can be assessed.</p></details><details><summary>Does a supplier profile mean the supplier is risk-free?</summary><p>No. Profile information or verification can provide useful evidence, but it is not a guarantee of future performance, product quality or commercial outcome.</p></details><details><summary>Can I request OEM, ODM or private-label products?</summary><p>Where the supplier supports it, yes. Custom sourcing should include clear specifications, sample or prototype approval, branding and packaging requirements before production.</p></details><details><summary>Should I compare several suppliers?</summary><p>For material purchases, comparing suitable alternatives can reveal differences in price, MOQ, quality, capacity, lead time and terms.</p></details><details><summary>What if my supplier stops producing?</summary><p>VTG can support a re-sourcing workflow where available. Any replacement supplier should be assessed against the requirements again.</p></details><details><summary>Does VTG guarantee the supplier?</summary><p>No. VTG may facilitate sourcing, information, verification and coordination, but supplier obligations and product outcomes remain subject to the applicable agreement and responsible parties.</p></details></div></section></main>
 <footer class="foot"><div class="fg"><div><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"><p>Connecting Africa, China and the world through intelligent trade.</p></div><div class="fl"><div><h4>Explore</h4><a href="/#market">Marketplace</a><a href="/#vtgAtlasPreview">Trade Atlas</a><a href="/#vtgIntelLaunch">Market Intelligence</a></div><div><h4>Trade</h4><a href="/trade-guide.html#how">How VTG Works</a><a href="/product-verification.html">Product Verification</a><a href="/partnerships.html#logistics">Logistics & Shipping</a><a href="/trade-workspace.html">Trade Workspace</a></div><div><h4>Business</h4><a href="/sourcing-suppliers.html">Sourcing & Suppliers</a><a href="/finance-payments.html">Finance & Payments</a><a href="/trade-guide.html">Trade Guide</a><a href="/agent.html">Become an Agent</a></div><div><h4>Company</h4><a href="/about-vintage.html">About VTG</a><a href="/partnerships.html">Partnerships</a><a href="/contact.html">Contact VTG</a></div></div></div><div class="bottom"><span>© 2026 Vintage Trade Global • Powered by Folayele Global Resources Limited</span><div><a href="/privacy.html">Privacy</a> <a href="/terms.html">Terms</a> <a href="/code-of-conduct.html">Code of Conduct</a></div></div></footer><script>lucide.createIcons();</script><script src="/vtg-site-navigation.js?v=20261010-auto-theme" defer></script>
+
+<style id="vtg-sourcing-contrast-fix-20261012">
+/* Light theme: the complete site header is white with clear navigation contrast. */
+html[data-theme="light"] body nav {
+  background:#fff!important;
+  border-bottom:1px solid #e3e7eb!important;
+  box-shadow:0 5px 20px rgba(22,34,45,.06)!important;
+}
+html[data-theme="light"] body nav .links a {
+  color:#263440!important;
+  background:#fff!important;
+  border-color:#dce2e7!important;
+}
+html[data-theme="light"] body nav .links a.on {
+  color:#fff!important;
+  background:#c0392b!important;
+  border-color:#c0392b!important;
+}
+/* Dark theme: source-request boxes, comparison cards, FAQ and risk table use dark surfaces. */
+html[data-theme="dark"] body .sec:not(.dark) .card,
+html[data-theme="dark"] body .sec:not(.dark) .box,
+html[data-theme="dark"] body .sec:not(.dark) .faq details,
+html[data-theme="dark"] body .sec:not(.dark) .risk {
+  background:#171d25!important;
+  border-color:#394652!important;
+  color:#f3f6f8!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.18)!important;
+}
+html[data-theme="dark"] body .sec:not(.dark) .card :is(h3,p,li,strong,span),
+html[data-theme="dark"] body .sec:not(.dark) .box :is(h3,p,li,strong,span),
+html[data-theme="dark"] body .sec:not(.dark) .faq details :is(summary,p),
+html[data-theme="dark"] body .sec:not(.dark) .risk .row div {
+  color:#eef3f6!important;
+  -webkit-text-fill-color:#eef3f6!important;
+  opacity:1!important;visibility:visible!important;
+}
+html[data-theme="dark"] body .sec:not(.dark) .card :is(p,li),
+html[data-theme="dark"] body .sec:not(.dark) .box :is(p,li),
+html[data-theme="dark"] body .sec:not(.dark) .faq details p,
+html[data-theme="dark"] body .sec:not(.dark) .compare .box span {
+  color:#c4ced7!important;
+  -webkit-text-fill-color:#c4ced7!important;
+}
+html[data-theme="dark"] body .sec:not(.dark) .check div {
+  color:#dce4ea!important;-webkit-text-fill-color:#dce4ea!important;
+  opacity:1!important;visibility:visible!important;
+}
+html[data-theme="dark"] body .sec:not(.dark) .check i {
+  color:#ff9188!important;-webkit-text-fill-color:#ff9188!important;
+}
+html[data-theme="dark"] body .sec:not(.dark) .compare .box strong {
+  color:#fff!important;-webkit-text-fill-color:#fff!important;
+}
+html[data-theme="dark"] body .sec:not(.dark) .risk .row {
+  border-color:#394652!important;
+}
+html[data-theme="dark"] body .sec:not(.dark) .risk .row:first-child {
+  background:#222b35!important;
+}
+html[data-theme="dark"] body .sec:not(.dark) .risk .row div {
+  border-color:#394652!important;
+}
+html[data-theme="dark"] body .sec:not(.dark) .icon {
+  background:#39282b!important;color:#ffaaa1!important;
+}
+/* Keep existing dark-background sections readable without leaving white cards with pale text. */
+html[data-theme="dark"] body .sec.dark .card,
+html[data-theme="dark"] body .sec.dark .box {
+  background:#171d25!important;border-color:#394652!important;color:#eef3f6!important;
+}
+html[data-theme="dark"] body .sec.dark .card :is(h3,p,li,span,strong),
+html[data-theme="dark"] body .sec.dark .box :is(h3,p,li,span,strong) {
+  color:#eef3f6!important;-webkit-text-fill-color:#eef3f6!important;
+}
+html[data-theme="dark"] body .sec.dark .card :is(p,li),
+html[data-theme="dark"] body .sec.dark .box :is(p,li) {
+  color:#c4ced7!important;-webkit-text-fill-color:#c4ced7!important;
+}
+</style>
+
 </body></html>
