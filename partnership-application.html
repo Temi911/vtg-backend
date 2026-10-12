@@ -131,6 +131,44 @@ html[data-theme="dark"] body .hero .heroIn>div:first-child p {color:#c1cbd3!impo
 /* Page-specific contrast and theme refinements. */
 html[data-theme="light"] body .hero p,html[data-theme="light"] body .intro p{color:#475569!important;opacity:1!important}html[data-theme="light"] body .hero h1,html[data-theme="light"] body .intro h2{color:#111827!important}html[data-theme="light"] body .field label,html[data-theme="light"] body .field{color:#243441!important}html[data-theme="dark"] body{background:#0d1117!important;color:#eef3f6!important}html[data-theme="dark"] body .hero p,html[data-theme="dark"] body .intro p{color:#c1cbd3!important}html[data-theme="dark"] body .panel,html[data-theme="dark"] body form{background:#11161d!important;border-color:#34404b!important;color:#eef3f6!important}html[data-theme="dark"] body .panel :is(h2,h3,p,span,b,strong),html[data-theme="dark"] body .field label,html[data-theme="dark"] body .back{color:#eef3f6!important}html[data-theme="dark"] body .field input,html[data-theme="dark"] body .field select,html[data-theme="dark"] body .field textarea{background:#0d1117!important;color:#eef3f6!important;border-color:#465360!important}html[data-theme="dark"] body .field input::placeholder,html[data-theme="dark"] body .field textarea::placeholder{color:#aab6c0!important;opacity:1!important}
 </style>
+<style id="vtg-partnership-hero-light-contrast-20261012">
+/* Keep the complete partnership proposal hero readable in light mode. */
+html[data-theme="light"] body .hero,
+html:not([data-theme="dark"]) body .hero {
+  color:#18232d!important;
+  opacity:1!important;
+  visibility:visible!important;
+}
+html[data-theme="light"] body .hero .eyebrow,
+html:not([data-theme="dark"]) body .hero .eyebrow {
+  display:inline-block!important;
+  color:#b83227!important;
+  opacity:1!important;
+  visibility:visible!important;
+}
+html[data-theme="light"] body .hero h1,
+html:not([data-theme="dark"]) body .hero h1 {
+  color:#111827!important;
+  opacity:1!important;
+  visibility:visible!important;
+  -webkit-text-fill-color:#111827!important;
+}
+html[data-theme="light"] body .hero p,
+html:not([data-theme="dark"]) body .hero p {
+  color:#475569!important;
+  opacity:1!important;
+  visibility:visible!important;
+  -webkit-text-fill-color:#475569!important;
+}
+html[data-theme="light"] body .hero :is(span,h1,p),
+html:not([data-theme="dark"]) body .hero :is(span,h1,p) {
+  mix-blend-mode:normal!important;
+  text-shadow:none!important;
+}
+html[data-theme="dark"] body .hero .eyebrow {color:#ff777d!important}
+html[data-theme="dark"] body .hero h1 {color:#eef3f6!important;-webkit-text-fill-color:#eef3f6!important}
+html[data-theme="dark"] body .hero p {color:#b9c5ce!important;-webkit-text-fill-color:#b9c5ce!important}
+</style>
 </head>
 <body>
 <div class="top"></div>
