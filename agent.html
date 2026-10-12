@@ -69,4 +69,24 @@ html[data-theme="dark"] body .form,html[data-theme="dark"] body #formWrap,html[d
 <script>
 const f=document.getElementById('agentForm'),s=document.getElementById('submit'),st=document.getElementById('status');f.addEventListener('submit',async e=>{e.preventDefault();st.textContent='Submitting your application…';s.disabled=true;try{for(const x of f.documents.files)if(x.size>5242880)throw Error('Each document must be 5 MB or smaller.');const r=await fetch('/api/agent/applications',{method:'POST',body:new FormData(f)}),d=await r.json();if(!r.ok)throw Error(d?.error?.message||'We could not submit your application. Please try again.');document.getElementById('formWrap').style.display='none';document.getElementById('success').style.display='block';document.getElementById('ref').textContent='Application ID: '+d.reference;lucide.createIcons()}catch(x){st.textContent=x.message;s.disabled=false}});lucide.createIcons();
 </script><script src="/vtg-site-navigation.js?v=20261010-auto-theme" defer></script>
+
+<style id="vtg-agent-light-hero-contrast-20261012">
+/* Agent hero is light in light mode, so explicitly recolor every hero label and control. */
+html:not([data-theme="dark"]) body .hero,
+html[data-theme="light"] body .hero { color:#18232d!important; }
+html:not([data-theme="dark"]) body .hero .ey,
+html[data-theme="light"] body .hero .ey { color:#b83227!important; -webkit-text-fill-color:#b83227!important; opacity:1!important; visibility:visible!important; }
+html:not([data-theme="dark"]) body .hero h1,
+html[data-theme="light"] body .hero h1 { color:#111827!important; -webkit-text-fill-color:#111827!important; opacity:1!important; visibility:visible!important; }
+html:not([data-theme="dark"]) body .hero p,
+html[data-theme="light"] body .hero p { color:#475569!important; -webkit-text-fill-color:#475569!important; opacity:1!important; visibility:visible!important; }
+html:not([data-theme="dark"]) body .hero .tags span,
+html[data-theme="light"] body .hero .tags span { color:#273444!important; -webkit-text-fill-color:#273444!important; background:#ffffff!important; border-color:#cbd5df!important; opacity:1!important; visibility:visible!important; }
+html:not([data-theme="dark"]) body .hero .ghost,
+html[data-theme="light"] body .hero .ghost { color:#18232d!important; -webkit-text-fill-color:#18232d!important; background:#ffffff!important; border-color:#cbd5df!important; opacity:1!important; visibility:visible!important; }
+html[data-theme="dark"] body .hero .ey { color:#ff6870!important; -webkit-text-fill-color:#ff6870!important; }
+html[data-theme="dark"] body .hero h1 { color:#fff!important; -webkit-text-fill-color:#fff!important; }
+html[data-theme="dark"] body .hero p { color:#dbe2e8!important; -webkit-text-fill-color:#dbe2e8!important; }
+html[data-theme="dark"] body .hero .tags span { color:#fff!important; -webkit-text-fill-color:#fff!important; background:#ffffff10!important; border-color:#ffffff55!important; }
+</style>
 </body></html>
