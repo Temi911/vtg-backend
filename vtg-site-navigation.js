@@ -323,6 +323,13 @@
         'html[data-theme="light"] body :is(.cta,.callout) :is(h1,h2,h3,p){color:#17212b!important}html[data-theme="dark"] body :is(.cta,.callout) :is(h1,h2,h3,p){color:#eef3f6!important}',
         'html[data-theme="light"] body :is(input,select,textarea,option){background-color:#fff!important;color:#17212b!important;border-color:#cbd5df!important}html[data-theme="dark"] body :is(input,select,textarea,option){background-color:#171d24!important;color:#eef3f6!important;border-color:#46535e!important}',
         'html[data-theme="light"] body input::placeholder,html[data-theme="light"] body textarea::placeholder{color:#687586!important}html[data-theme="dark"] body input::placeholder,html[data-theme="dark"] body textarea::placeholder{color:#a9b6c1!important}',
+        '/* Landing-page contrast fix: preserve Enter VTG visibility after using semantic links. */',
+        'html[data-theme="light"] body .nav a#joinBtn.headerEnterBtn,html[data-theme="light"] body .nav a#joinBtn.headerEnterBtn:visited,html[data-theme="light"] body .hero a#heroJoin,html[data-theme="light"] body .hero a#heroJoin:visited{background:#a92722!important;background-image:none!important;color:#fff!important;-webkit-text-fill-color:#fff!important;border:2px solid #a92722!important;opacity:1!important;visibility:visible!important;text-decoration:none!important}',
+        'html[data-theme="light"] body .nav a#joinBtn.headerEnterBtn *,html[data-theme="light"] body .hero a#heroJoin *{color:#fff!important;-webkit-text-fill-color:#fff!important;stroke:#fff!important;opacity:1!important;visibility:visible!important}',
+        'html[data-theme="dark"] body .nav a#joinBtn.headerEnterBtn,html[data-theme="dark"] body .nav a#joinBtn.headerEnterBtn:visited,html[data-theme="dark"] body .hero a#heroJoin,html[data-theme="dark"] body .hero a#heroJoin:visited{background:#a92722!important;background-image:none!important;color:#fff!important;-webkit-text-fill-color:#fff!important;border:2px solid #ff8178!important;opacity:1!important;visibility:visible!important;text-decoration:none!important}',
+        'html[data-theme="dark"] body .nav a#joinBtn.headerEnterBtn *,html[data-theme="dark"] body .hero a#heroJoin *{color:#fff!important;-webkit-text-fill-color:#fff!important;stroke:#fff!important;opacity:1!important;visibility:visible!important}',
+        'html[data-theme="dark"] body .heroIn>div>p{color:#f0f4f7!important;text-shadow:0 1px 3px rgba(0,0,0,.35)!important}',
+        'html[data-theme="light"] body .heroIn>div>p{color:#f7fafc!important;text-shadow:0 1px 3px rgba(0,0,0,.45)!important}',
         '@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}}'
       ].join('\n');
       document.head.appendChild(style);
