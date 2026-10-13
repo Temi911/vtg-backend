@@ -172,7 +172,7 @@ html[data-theme="dark"] .roleExperience .roleAccess:hover{background:#202b35;bor
 #joinBtn.headerEnterBtn,#heroJoin{ text-decoration:none!important; cursor:pointer; }
 #joinBtn.headerEnterBtn{ color:#fff!important; }
 </style>
-<script defer src="/visual-enhancer.js?v=14"></script>
+<script defer src="/visual-enhancer.js?v=15"></script>
 <script defer src="/vtg-cart-calculator.js?v=1"></script>
 <script defer src="/vtg-weather.js?v=1"></script>
 <style id="vtgAuthUiGuard">
@@ -284,7 +284,7 @@ document.getElementById('mapBtn')?.addEventListener('click',e=>{e.preventDefault
 document.getElementById('joinBtn')?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();window.location.href='/signin.html';});document.getElementById('atlasHeaderBtn')?.addEventListener('click',e=>{e.preventDefault();drawer('mapDrawer',true);});
 window.VTGOpenAuth=openAuth;window.VTGOpenMarketIntel=()=>openVTGIntel("market");const __vtgAuthForm=document.getElementById("authForm");if(__vtgAuthForm){__vtgAuthForm.dataset.vtgAuthBound="1";window.VTGAuthSubmit=__vtgAuthForm.onsubmit;}</script>
 <script src="/vtg-country-intelligence.js" defer></script>
-<script src="/vtg-market-news.js" defer></script><script src="/vtg-interaction-recovery.js" defer></script><script src="/vtg-site-navigation.js?v=20261013-landing-contrast-4" defer></script>
+<script src="/vtg-market-news.js" defer></script><script src="/vtg-interaction-recovery.js" defer></script><script src="/vtg-site-navigation.js?v=20261013-text-contrast-5" defer></script>
 
 
 
@@ -300,57 +300,20 @@ html body header.nav .navtools button#joinBtn.headerEnterBtn *, html body .hero 
 @media(max-width:560px) { html body header.nav .navtools button#joinBtn.headerEnterBtn { width:auto!important; min-width:92px!important; padding:0 10px!important; justify-content:center!important; gap:6px!important; } html body header.nav .navtools button#joinBtn.headerEnterBtn span { display:inline!important; visibility:visible!important; opacity:1!important; } }
 </style>
 <style id="vtg-landing-contrast-final-20261013">
-/* Explicit contrast for the two reported landing-page elements, independent of tag type. */
-html body #heroJoin,
-html body #joinBtn {
-  display:inline-flex!important; align-items:center!important; justify-content:center!important;
-  min-height:44px!important; padding:10px 16px!important; box-sizing:border-box!important;
-  background:#a92722!important; background-color:#a92722!important; background-image:none!important;
-  color:#fff!important; -webkit-text-fill-color:#fff!important; border:2px solid #a92722!important;
-  opacity:1!important; visibility:visible!important; text-decoration:none!important;
-  filter:none!important; text-shadow:none!important; mix-blend-mode:normal!important;
+/* Text sits directly over the hero photograph; no text-only background panels. */
+html body #heroJoin, html body #joinBtn {
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ min-height:44px!important;padding:10px 16px!important;box-sizing:border-box!important;
+ background:#a92722!important;background-color:#a92722!important;background-image:none!important;
+ color:#fff!important;-webkit-text-fill-color:#fff!important;border:2px solid #a92722!important;
+ opacity:1!important;visibility:visible!important;text-decoration:none!important;filter:none!important;
+ text-shadow:none!important;mix-blend-mode:normal!important;
 }
-html body #heroJoin *, html body #joinBtn * {
-  color:#fff!important; -webkit-text-fill-color:#fff!important; stroke:#fff!important;
-  opacity:1!important; visibility:visible!important;
+html body #heroJoin *,html body #joinBtn *{color:#fff!important;-webkit-text-fill-color:#fff!important;stroke:#fff!important;opacity:1!important;visibility:visible!important}
+html body section.hero .heroIn>div:first-child>p{
+ display:block!important;color:#fff!important;-webkit-text-fill-color:#fff!important;
+ opacity:1!important;visibility:visible!important;background:transparent!important;
+ border:0!important;border-radius:0!important;padding:0!important;box-shadow:none!important;
+ text-shadow:0 2px 7px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.95)!important;mix-blend-mode:normal!important;
 }
-html[data-theme="dark"] body section.hero .heroIn > div:first-child > p,
-html:not([data-theme="light"]) body section.hero .heroIn > div:first-child > p {
-  display:block!important; color:#fff!important; -webkit-text-fill-color:#fff!important;
-  opacity:1!important; visibility:visible!important; background:#101820!important;
-  border:1px solid rgba(255,255,255,.35)!important; border-radius:10px!important;
-  padding:12px 14px!important; text-shadow:none!important; box-shadow:0 4px 18px rgba(0,0,0,.3)!important;
-  mix-blend-mode:normal!important;
-}
-html[data-theme="light"] body section.hero .heroIn > div:first-child > p {
-  color:#241312!important; -webkit-text-fill-color:#241312!important;
-  background:#fff!important; border:1px solid #d7b7b4!important;
-  box-shadow:0 4px 18px rgba(40,15,12,.12)!important;
-}
-</style>
-<script id="vtg-landing-contrast-runtime-20261013">
-(function(){
-  function set(el, styles){ if(!el)return; Object.keys(styles).forEach(function(k){el.style.setProperty(k,styles[k],'important');}); }
-  function apply(){
-    var root=document.documentElement, theme=root.getAttribute('data-theme')||'light';
-    var buttonStyles={'display':'inline-flex','align-items':'center','justify-content':'center','min-height':'44px','padding':'10px 16px','box-sizing':'border-box','background':'#a92722','background-color':'#a92722','background-image':'none','color':'#fff','-webkit-text-fill-color':'#fff','border':'2px solid #a92722','opacity':'1','visibility':'visible','text-decoration':'none','filter':'none','text-shadow':'none','mix-blend-mode':'normal'};
-    ['heroJoin','joinBtn'].forEach(function(id){
-      var el=document.getElementById(id); set(el,buttonStyles);
-      if(el)el.querySelectorAll('*').forEach(function(child){set(child,{'color':'#fff','-webkit-text-fill-color':'#fff','stroke':'#fff','opacity':'1','visibility':'visible'});});
-    });
-    var p=document.querySelector('section.hero .heroIn > div:first-child > p');
-    if(theme==='light'){
-      set(p,{'display':'block','color':'#241312','-webkit-text-fill-color':'#241312','opacity':'1','visibility':'visible','background':'#fff','border':'1px solid #d7b7b4','border-radius':'10px','padding':'12px 14px','text-shadow':'none','box-shadow':'0 4px 18px rgba(40,15,12,.12)','mix-blend-mode':'normal'});
-    } else {
-      set(p,{'display':'block','color':'#fff','-webkit-text-fill-color':'#fff','opacity':'1','visibility':'visible','background':'#101820','border':'1px solid rgba(255,255,255,.35)','border-radius':'10px','padding':'12px 14px','text-shadow':'none','box-shadow':'0 4px 18px rgba(0,0,0,.3)','mix-blend-mode':'normal'});
-    }
-  }
-  function start(){
-    apply();
-    new MutationObserver(apply).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
-    window.addEventListener('pageshow',apply);
-    document.addEventListener('vtg:themechange',apply);
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-})();
-</script></body></html>
+</style></body></html>
