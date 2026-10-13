@@ -118,6 +118,6 @@ const pass=$('[name=password]');const toggle=$('#passwordToggle');if(pass&&toggl
 const send=$('#sendCode');if(send)send.addEventListener('click',async()=>{const email=$('[name=email]').value.trim(),m=$('#msg');if(!email){m.textContent='Enter your email address first.';showStep(STEPS.findIndex(s=>s.fields.includes('email')));$('[name=email]').focus();return;}send.disabled=true;const original='Send code';try{const r=await fetch(API+'/api/auth/send-verification-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,preferredLanguage:$('[name=preferredLanguage]')?.value||'en'})});const out=await r.json();if(!r.ok)throw Error(out.message||'Could not send the verification code');m.className='message ok';m.textContent='Verification code sent. Check your email inbox.';let seconds=45;send.textContent='Resend in '+seconds+'s';const timer=setInterval(()=>{seconds--;if(seconds<=0){clearInterval(timer);send.disabled=false;send.textContent=original;}else send.textContent='Resend in '+seconds+'s';},1000);}catch(err){m.className='message';m.textContent=err.message;send.disabled=false;send.textContent=original;}});
 showStep(0);
 </script>
-<script src="/page-visuals.js?v=20261013-new-signup-forms"></script>
-<script src="/vtg-site-navigation.js?v=20261013-new-signup-forms" defer></script>
+<script src="/page-visuals.js?v=20261013-registration-heading-cleanup"></script>
+<script src="/vtg-site-navigation.js?v=20261013-registration-heading-cleanup" defer></script>
 </body></html>
