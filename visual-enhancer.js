@@ -393,6 +393,27 @@
       @media(prefers-reduced-motion:reduce){#landing .heroMarketplaceBtn,.vtgMinimalAtlas #minimalAtlasBtn{transition:none}}
 
       }
+
+      /* Final landing-page contrast and scale corrections. Preserve the existing structure and carousel. */
+      #landing .heroIn>div:first-child{max-width:620px;padding:clamp(19px,2.5vw,28px);border:1px solid rgba(255,255,255,.22);border-radius:22px;background:linear-gradient(135deg,rgba(7,14,21,.82),rgba(7,14,21,.66));box-shadow:0 18px 46px rgba(0,0,0,.24);backdrop-filter:blur(13px)}
+      #landing .hero h1{font-size:clamp(34px,3.75vw,52px);line-height:1.08;letter-spacing:-.04em;max-width:600px;margin:11px 0 14px}
+      #landing .hero p{font-size:clamp(12px,1vw,14px);line-height:1.72;color:#edf2f5}
+      #landing .heroMarketplaceBtn,#landing .heroMarketplaceBtn:visited{background:#fff!important;color:#8f1d17!important;border:1px solid #f0a19a!important;text-shadow:none!important;font-weight:800!important;box-shadow:0 10px 26px rgba(0,0,0,.22)}
+      #landing .heroMarketplaceBtn .lucide{color:#8f1d17!important}
+      #landing .heroMarketplaceBtn:hover,#landing .heroMarketplaceBtn:focus-visible{background:#fff4f2!important;color:#741811!important;border-color:#fff!important}
+      #landing #joinBtn.headerEnterBtn,#landing .headerEnterBtn{background:#b92f25!important;color:#fff!important;border:1px solid #f08b82!important;text-shadow:none!important}
+      .vtgMinimalAbout .copy{background:#fff!important;border-color:#d5dee6!important}
+      .vtgMinimalAbout h2{color:#17212b!important;font-size:clamp(28px,3vw,39px)!important;line-height:1.12!important}
+      .vtgMinimalAbout p{color:#435466!important}
+      html[data-theme="dark"] .vtgMinimalAbout .copy{background:linear-gradient(145deg,#19232d,#111923)!important;border-color:#394957!important}
+      html[data-theme="dark"] .vtgMinimalAbout h2{color:#f4f7fa!important}
+      html[data-theme="dark"] .vtgMinimalAbout p{color:#d0d9e2!important}
+      .vtgMinimalAtlasInner>div:first-child{background:rgba(4,12,19,.72)!important;border-color:rgba(255,255,255,.2)!important}
+      .vtgMinimalAtlas h2{color:#fff!important}
+      .vtgMinimalAtlas p{color:#d5e0e8!important}
+      .vtgMinimalAtlas #minimalAtlasBtn{background:#c0392b!important;color:#fff!important;border-color:#f08b82!important}
+      @media(max-width:900px){#landing .heroIn>div:first-child{max-width:none;padding:24px}#landing .hero h1{font-size:clamp(34px,6vw,48px)}}
+      @media(max-width:600px){#landing .heroIn>div:first-child{padding:21px 18px;border-radius:19px}#landing .hero h1{font-size:clamp(31px,8.3vw,39px);line-height:1.09}#landing .hero p{font-size:12px}.vtgMinimalAbout h2{font-size:clamp(27px,7.2vw,33px)!important}}
     `;
     document.head.appendChild(css);
 
@@ -417,7 +438,7 @@
     about.innerHTML=`
       <div class="copy">
         <span class="kicker">WHAT VTG IS</span>
-        <h2>One connected ecosystem for <span>real trade.</span></h2>
+        <h2>Connected trade ecosystem</h2>
         <p>VTG connects buyers, verified suppliers, financial partners and logistics providers across Africa, China and South Korea — bringing sourcing, verification, finance and movement into one connected trade ecosystem.</p>
       </div>
       <div class="tradeNetworkVisual" aria-label="VTG orbital trade network connecting Africa, China and South Korea">
@@ -443,8 +464,8 @@
       <div class="vtgMinimalAtlasInner">
         <div>
           <span class="kicker">Trade Atlas</span>
-          <h2>See trade in motion.</h2>
-          <p>From major trade corridors to individual ports and business locations, explore how the world connects through trade. This preview offers a glimpse of the VTG Atlas; the full interactive experience is waiting inside the platform.</p>
+          <h2>Explore the world of trade.</h2>
+          <p>Preview the routes, ports and business locations connecting Africa and Asia. Open the VTG Trade Atlas to explore the wider trade network.</p>
           <button class="primary" type="button" id="minimalAtlasBtn" style="margin-top:10px">Open Trade Atlas <i data-lucide="globe-2"></i></button>
         </div>
         <div class="vtgGlobeFrame">
