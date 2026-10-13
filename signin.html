@@ -218,6 +218,15 @@ html:not([data-theme="dark"]) body .page .layout .formSide .formIntro .sub {
       </form>
       <div class="bottomLinks">New to VTG? <a id="signup" href="/signup.html">Create an account</a></div>
       <div class="securityNote"><span aria-hidden="true">●</span> Your account access is protected by VTG authentication.</div>
+      <div class="dashboardPreview" aria-labelledby="dashboardPreviewTitle" style="margin-top:22px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--soft)">
+        <strong id="dashboardPreviewTitle" style="display:block;font-size:13px;color:var(--ink)">Design the dashboards</strong>
+        <p style="margin:6px 0 12px;color:var(--muted);font-size:11px;line-height:1.6">Open a role-specific preview now, even before your account is ready. Preview data is simulated and does not change real trade records.</p>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px">
+          <a href="/workspace.html?preview=buyer" style="display:flex;align-items:center;justify-content:center;text-align:center;min-height:38px;padding:8px 5px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--ink);font-size:10px;font-weight:800">Buyer preview</a>
+          <a href="/workspace.html?preview=supplier" style="display:flex;align-items:center;justify-content:center;text-align:center;min-height:38px;padding:8px 5px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--ink);font-size:10px;font-weight:800">Supplier preview</a>
+          <a href="/workspace.html?preview=bank" style="display:flex;align-items:center;justify-content:center;text-align:center;min-height:38px;padding:8px 5px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--ink);font-size:10px;font-weight:800">Bank preview</a>
+        </div>
+      </div>
     </section>
   </div>
 </main>
