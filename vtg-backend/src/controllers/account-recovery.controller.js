@@ -29,7 +29,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   const email = parsed.data.email.toLowerCase();
   // Always return the same public response to avoid exposing whether an account exists.
   const { rows } = await query('SELECT id, email, full_name, role FROM users WHERE email=$1 AND is_active=TRUE LIMIT 1', [email]);
-  if (rows[0] && emailReady()) {
+  if (rows[0] && rows[0].role !== 'admin' && emailReady()) {
     const token = crypto.randomBytes(32).toString('hex');
     const tokenHash = sha(token);
     const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
