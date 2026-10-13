@@ -1,29 +1,69 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#8f1d17">
+<meta name="description" content="Create your Vintage Trade Global account. Choose the account type that matches your role in global trade.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<title>Create account — Vintage Trade Global</title>
+<title>Create your VTG account — Vintage Trade Global</title>
 <style>
-:root{--navy:#8f1d17;--deep:#4a120f;--teal:#c0392b;--cream:#f5f8f8;--white:#fff;--ink:#2f1110;--muted:#667085;--line:#e4e7ec;--soft:#f9eeee}
-html[data-theme="dark"]{--cream:#0d1117;--white:#11161d;--ink:#eef3f6;--muted:#b9c5ce;--line:#2b3640;--soft:#171d24;--navy:#d98f87;--deep:#210b09;--teal:#d94a3e}
-*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:'Manrope',sans-serif}.top{height:4px;background:linear-gradient(90deg,var(--teal),var(--navy),var(--deep))}
-.shell{min-height:calc(100vh - 4px);display:grid;place-items:center;padding:28px 18px}.card{width:min(650px,100%);background:var(--white);border:1px solid var(--line);border-radius:22px;padding:30px;box-shadow:0 18px 60px rgba(0,0,0,.12)}
-.brand{font-weight:900;color:var(--navy)}.eyebrow{display:block;color:var(--teal);font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-top:25px}h1{font-size:34px;margin:8px 0;color:var(--ink)}.sub{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:24px}.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.role{border:1px solid var(--line);background:var(--soft);border-radius:15px;padding:20px;text-align:left;text-decoration:none;color:var(--ink);transition:.2s}.role:hover{transform:translateY(-3px);border-color:var(--teal);box-shadow:0 12px 30px rgba(192,57,43,.12)}.role h2{font-size:17px;margin:0 0 7px;color:var(--navy)}.role p{font-size:11px;line-height:1.55;color:var(--muted);margin:0}.role span{display:inline-block;margin-top:14px;color:var(--teal);font-size:10px;font-weight:800}.links{display:flex;justify-content:space-between;gap:12px;margin-top:24px;padding-top:18px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}.links a{color:var(--teal);font-weight:800;text-decoration:none}@media(max-width:650px){.roles{grid-template-columns:1fr}.links{flex-direction:column}}
+:root{color-scheme:light;--bg:#f7f7f8;--panel:#fff;--ink:#20252c;--muted:#626d79;--line:#e3e5e8;--soft:#fff5f4;--red:#b9262c;--red2:#8f1d17;--shadow:0 24px 70px rgba(45,21,20,.09)}
+html[data-theme="dark"]{color-scheme:dark;--bg:#0d1117;--panel:#141a21;--ink:#f2f5f7;--muted:#b5c0ca;--line:#303944;--soft:#25191b;--red:#ed6b61;--red2:#d84d44;--shadow:0 24px 70px rgba(0,0,0,.28)}
+*{box-sizing:border-box}html{min-height:100%;background:var(--bg)}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 5% 0%,rgba(185,38,44,.08),transparent 38%),var(--bg);color:var(--ink);font-family:'Manrope',sans-serif;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}.topline{height:4px;background:linear-gradient(90deg,#681615,#bd292d,#ef776d)}
+.shell{width:min(1120px,100%);margin:0 auto;padding:26px 24px 34px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:32px}.brand{display:inline-flex;align-items:center;gap:11px;min-width:0}.brand img{display:block;width:clamp(125px,16vw,175px);height:44px;object-fit:contain;object-position:left center}.brand-word{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--muted)}.toplink{font-size:12px;font-weight:800;color:var(--muted);padding:10px 13px;border:1px solid var(--line);border-radius:11px;white-space:nowrap}.toplink:hover{border-color:var(--red);color:var(--red)}
+.layout{display:grid;grid-template-columns:.78fr 1.22fr;gap:30px;align-items:stretch}.story{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;min-height:550px;padding:34px;border-radius:24px;background:linear-gradient(150deg,#411311,#7f1d1c 54%,#b42a2d);color:#fff;box-shadow:0 22px 55px rgba(111,23,22,.18)}.story:before,.story:after{content:"";position:absolute;border:1px solid rgba(255,255,255,.13);border-radius:50%;pointer-events:none}.story:before{width:390px;height:390px;right:-220px;top:90px}.story:after{width:280px;height:280px;right:-165px;top:145px}.storyContent,.storyFoot{position:relative;z-index:1}.kicker{display:inline-flex;align-items:center;gap:8px;font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#ffd2cc}.kicker:before{content:"";width:21px;height:2px;background:#ffb1a8}.story h1{font-size:clamp(32px,3.6vw,46px);line-height:1.12;letter-spacing:-.045em;margin:22px 0 16px;color:#fff}.story p{font-size:13px;line-height:1.8;color:#f6dedd;max-width:330px;margin:0}.trustline{display:flex;align-items:center;gap:10px;margin-top:26px;font-size:11px;color:#fff}.trustmark{display:grid;place-items:center;width:30px;height:30px;border:1px solid rgba(255,255,255,.34);border-radius:10px;font-size:15px}.storyFoot{border-top:1px solid rgba(255,255,255,.2);padding-top:19px;margin-top:45px;font-size:10px;line-height:1.7;color:#f6dedd}.mainpanel{min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:clamp(23px,3vw,38px);box-shadow:var(--shadow)}.step{display:flex;align-items:center;gap:10px;color:var(--red);font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}.stepNumber{display:grid;place-items:center;width:27px;height:27px;border-radius:9px;background:var(--soft);border:1px solid color-mix(in srgb,var(--red) 22%,var(--line));font-size:11px}.heading{font-size:clamp(25px,3vw,34px);line-height:1.2;letter-spacing:-.04em;margin:16px 0 9px;color:var(--ink)}.intro{font-size:13px;line-height:1.75;color:var(--muted);margin:0 0 24px;max-width:550px}.roles{display:grid;grid-template-columns:1fr;gap:11px}.role{display:grid;grid-template-columns:48px minmax(0,1fr) 24px;align-items:center;gap:14px;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel);transition:border-color .18s,transform .18s,box-shadow .18s;min-width:0}.role:hover,.role:focus-visible{border-color:var(--red);transform:translateY(-2px);box-shadow:0 12px 28px rgba(185,38,44,.09);outline:none}.role:focus-visible{outline:3px solid color-mix(in srgb,var(--red) 30%,transparent);outline-offset:2px}.roleIcon{display:grid;place-items:center;width:46px;height:46px;border-radius:13px;background:var(--soft);color:var(--red)}.roleIcon svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.roleText{min-width:0}.role h2{font-size:14px;margin:0 0 5px;color:var(--ink)}.role p{font-size:11px;line-height:1.6;color:var(--muted);margin:0}.role .arrow{font-size:22px;color:var(--red);text-align:center}.roleNote{display:block;margin-top:6px;font-size:10px;color:var(--muted)}.bottomlinks{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:23px;padding-top:19px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}.bottomlinks a{font-weight:800;color:var(--red)}.privacy{margin-top:16px;font-size:10px;line-height:1.7;color:var(--muted)}.privacy strong{color:var(--ink)}
+@media(min-width:1000px){.roles{gap:12px}.role{padding:17px 18px}}@media(max-width:780px){.shell{padding:18px 16px 26px}.topbar{margin-bottom:20px}.layout{grid-template-columns:1fr;gap:15px}.story{min-height:auto;padding:23px 24px;border-radius:20px}.story h1{font-size:30px;max-width:500px;margin:14px 0 9px}.story p{max-width:580px}.trustline{margin-top:15px}.storyFoot{display:none}.mainpanel{padding:24px;border-radius:20px}.intro{margin-bottom:19px}}@media(max-width:430px){.shell{padding:13px 11px 20px}.topbar{margin-bottom:15px}.brand img{width:120px;height:36px}.brand-word{display:none}.toplink{font-size:11px;padding:9px 10px}.story{padding:20px}.story h1{font-size:27px}.story p{font-size:12px}.mainpanel{padding:19px 15px}.heading{font-size:25px}.role{grid-template-columns:40px minmax(0,1fr) 17px;gap:10px;padding:13px}.roleIcon{width:40px;height:40px;border-radius:11px}.role h2{font-size:13px}.role p{font-size:10px}.bottomlinks{align-items:flex-start;flex-direction:column;gap:10px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;scroll-behavior:auto!important}}
 </style>
 <script>(function(){try{document.documentElement.setAttribute('data-theme',((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark'))}catch(e){}})();</script>
-</head><body><div class="top"></div><main class="shell"><section class="card">
-<div class="brand">VINTAGE TRADE GLOBAL</div><span class="eyebrow">Create your VTG account</span>
-<h1>Choose your account type</h1><p class="sub">Select how you will use VTG. You will then be taken to the dedicated signup page for that account type.</p>
-<div class="roles">
-<a class="role" href="/buyer-signup.html"><h2>Buyer</h2><p>For buyers and importers sourcing products and managing trade activity.</p><span>Continue as Buyer →</span></a>
-<a class="role" href="/supplier-signup.html"><h2>Supplier</h2><p>For suppliers and trading companies building verified business profiles.</p><span>Continue as Supplier →</span></a>
-<a class="role" href="/bank-signup.html"><h2>Bank</h2><p>For banks and financial institutions supporting trade finance and settlement.</p><span>Continue as Bank →</span></a>
+</head>
+<body>
+<div class="topline"></div>
+<main class="shell">
+<header class="topbar">
+<a class="brand" href="/" aria-label="Vintage Trade Global home"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global logo"><span class="brand-word">GLOBAL TRADE NETWORK</span></a>
+<a class="toplink" href="/signin.html">Already registered? Sign in</a>
+</header>
+<div class="layout">
+<aside class="story">
+<div class="storyContent">
+<span class="kicker">Your next trade connection</span>
+<h1>Build your next chapter in global trade.</h1>
+<p>One trusted workspace for sourcing, verified business relationships and cross-border trade across Africa, China, South Korea and beyond.</p>
+<div class="trustline"><span class="trustmark" aria-hidden="true">✓</span><span>Role-specific access. A clearer start.</span></div>
 </div>
-<div class="links"><a href="/signin.html">Already have an account? Sign in</a><a href="/">Back to VTG home</a></div>
-</section></main>
+<div class="storyFoot">Vintage Trade Global connects the people and services behind international commerce.</div>
+</aside>
+<section class="mainpanel" aria-labelledby="page-title">
+<div class="step"><span class="stepNumber">01</span><span>Step 1 of 2 · Choose your account</span></div>
+<h2 class="heading" id="page-title">How will you use VTG?</h2>
+<p class="intro">Choose the option that best matches your role. We’ll take you to a dedicated signup form, so you only see the details relevant to your account.</p>
+<div class="roles">
+<a class="role" href="/buyer-signup.html">
+<span class="roleIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 7.5 12 3l9 4.5-9 4.5-9-4.5Z"/><path d="M3 12l9 4.5 9-4.5M3 16.5 12 21l9-4.5"/></svg></span>
+<span class="roleText"><h2>Buyer / Importer</h2><p>Discover products, connect with suppliers and manage your sourcing journey.</p><span class="roleNote">For eligible African countries</span></span>
+<span class="arrow" aria-hidden="true">›</span>
+</a>
+<a class="role" href="/supplier-signup.html">
+<span class="roleIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21V7l9-4 9 4v14"/><path d="M8 21v-5h8v5M7 9h2m6 0h2M7 12h2m6 0h2"/></svg></span>
+<span class="roleText"><h2>Supplier / Trading Company</h2><p>Present your business, provide verification details and reach trade buyers.</p><span class="roleNote">For businesses based in China or South Korea</span></span>
+<span class="arrow" aria-hidden="true">›</span>
+</a>
+<a class="role" href="/bank-signup.html">
+<span class="roleIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 9 9-6 9 6H3Z"/><path d="M5 10v8m4-8v8m6-8v8m4-8v8M3 21h18M2 18h20"/></svg></span>
+<span class="roleText"><h2>Bank / Financial Institution</h2><p>Establish an institutional profile for trade finance and settlement services.</p><span class="roleNote">For Africa, China or South Korea</span></span>
+<span class="arrow" aria-hidden="true">›</span>
+</a>
+</div>
+<div class="bottomlinks"><span>Already have a VTG account? <a href="/signin.html">Sign in</a></span><a href="/">Return to VTG home</a></div>
+<p class="privacy"><strong>Security first.</strong> Your signup details are used to create your VTG account and support the applicable verification process. Review the Privacy Policy and required agreements during registration.</p>
+</section>
+</div>
+</main>
 <script src="/page-visuals.js"></script>
 <script src="/vtg-site-navigation.js?v=20261012-theme-fix-2" defer></script>
-</body></html>
+</body>
+</html>
