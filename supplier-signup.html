@@ -26,6 +26,12 @@ html[data-theme="dark"]{color-scheme:dark;--bg:#0c1117;--panel:#141a21;--ink:#f1
 .actions{display:flex;justify-content:space-between;gap:10px;margin-top:24px}.actionButton{min-height:46px;padding:12px 18px;border:1px solid var(--line);border-radius:11px;background:var(--panel);color:var(--ink);font-size:12px;font-weight:800;cursor:pointer}.actionButton:disabled{opacity:.45;cursor:not-allowed}.actionButton.primary{margin-left:auto;background:var(--red);border-color:var(--red);color:#fff}.actionButton.primary:hover{background:var(--red-dark)}.message{min-height:20px;margin-top:14px;color:var(--red);font-size:12px;line-height:1.6}.message.ok{color:var(--ok)}.bottomLinks{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:18px;padding-top:17px;border-top:1px solid var(--line);color:var(--muted);font-size:11px}.bottomLinks a{color:var(--red);font-weight:800}.footnote{margin:15px 0 0;color:var(--muted);font-size:10px;line-height:1.7}
 :focus-visible{outline:3px solid color-mix(in srgb,var(--red) 45%,transparent);outline-offset:3px}
 #vtgPageNavigation{display:none!important}
+/* Force readable contrast for the story panel in light and dark themes. */
+.story,.story *{color:#fff!important;opacity:1!important}
+.story{background:linear-gradient(150deg,#311113,#761b20 54%,#b9252b)!important}
+.story .eyebrow{color:#ffe7e4!important}
+.story p,.story .benefit,.story .storyFoot{color:#fff!important}
+.story .check{color:#fff!important;border-color:rgba(255,255,255,.5)!important}
 @media(max-width:850px){.layout{grid-template-columns:1fr;max-width:720px;margin:0 auto}.story{min-height:0;padding:24px}.story .storyFoot{margin-top:24px}.story h1{max-width:560px}.benefits{grid-template-columns:repeat(2,minmax(0,1fr))}.formPanel{padding:26px}}
 @media(max-width:520px){.page{padding:13px 10px 24px}.layout{gap:13px}.story{padding:20px;border-radius:18px}.brandBox{min-height:56px;width:215px}.brandBox img{height:44px}.story h1{font-size:30px}.story p{font-size:12px}.benefits{grid-template-columns:1fr;gap:9px;margin-top:18px}.benefit{font-size:11px}.storyFoot{font-size:9px}.formPanel{padding:19px 15px;border-radius:18px}.formTop{align-items:flex-start}.secureTag{font-size:9px}.fields{grid-template-columns:1fr;gap:13px}.field.full{grid-column:auto}.phoneRow{grid-template-columns:minmax(100px,.78fr) minmax(0,1.22fr)}.actions .actionButton{flex:1;padding:11px 12px}.bottomLinks{font-size:10px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important}}
@@ -41,9 +47,8 @@ html[data-theme="dark"]{color-scheme:dark;--bg:#0c1117;--panel:#141a21;--ink:#f1
 <div class="benefits"><div class="benefit"><span class="check">✓</span><span>Dedicated supplier workspace and relevant tools</span></div><div class="benefit"><span class="check">✓</span><span>Secure email verification during registration</span></div><div class="benefit"><span class="check">✓</span><span>Verification steps for trusted trade relationships</span></div></div></div>
 <div class="storyFoot">Vintage Trade Global · Connecting Africa, China, South Korea and the world.</div>
 </aside>
-<section class="formPanel" aria-labelledby="page-title">
+<section class="formPanel" aria-label="Supplier registration form">
 <div class="formTop"><span class="roleTag">Supplier / Trading Company</span><span class="secureTag"><span class="secureDot"></span> Secure registration</span></div>
-<h2 id="page-title">Create your supplier account</h2>
 <p class="intro">Tell us about your company, authorised representative and products. Verification documents are handled in the next stage.</p>
 <div class="stepMeta"><span><strong id="stepName"></strong></span><span id="stepCount">Step 1 of 4</span></div><div class="track" role="progressbar" aria-label="Registration progress" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" id="progressTrack"><span id="progressBar"></span></div>
 <form id="signupForm" novalidate><div class="fieldsRoot">
