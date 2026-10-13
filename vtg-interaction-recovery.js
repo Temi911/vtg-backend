@@ -86,10 +86,27 @@
 
   function bind(){
     const intelTools=document.querySelector('.vtgIntelTools');
-    if(intelTools){intelTools.style.right='19px';intelTools.style.bottom='16px';}
+    if(intelTools){intelTools.style.right='19px';intelTools.style.bottom='88px';}
     const intel=document.getElementById('vtgIntelLaunch');
     if(intel){
-      intel.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();openIntel('overview');},{capture:true});
+      intel.setAttribute('aria-label','Open VTG Market Intelligence');
+      intel.setAttribute('title','Open VTG Market Intelligence');
+      intel.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();window.location.href='/market-intelligence.html';},{capture:true});
+    }
+
+    // The landing-page AI launcher is a public entry point, not the private AI workspace.
+    // Keep it below Market Intelligence and send visitors to the explanatory VTG AI page.
+    if(!document.getElementById('vtgAiPublicLaunch')){
+      const ai=document.createElement('a');
+      ai.id='vtgAiPublicLaunch';
+      ai.className='aiLaunch';
+      ai.href='/vtg-ai.html';
+      ai.setAttribute('aria-label','Explore VTG AI');
+      ai.setAttribute('title','Explore VTG AI');
+      ai.innerHTML='<i data-lucide="sparkles" aria-hidden="true"></i><span>VTG AI</span>';
+      ai.style.cssText='position:fixed!important;right:22px!important;bottom:22px!important;z-index:1999!important;width:52px!important;height:52px!important;min-width:52px!important;border-radius:16px!important;display:grid!important;place-items:center!important;background:#151316!important;color:#fff!important;border:1px solid rgba(192,57,43,.55)!important;box-shadow:0 14px 34px rgba(0,0,0,.3)!important;text-decoration:none!important;';
+      document.body.appendChild(ai);
+      if(window.lucide) window.lucide.createIcons();
     }
 
     const intelClose=document.getElementById('vtgIntelClose');
