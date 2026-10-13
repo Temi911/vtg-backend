@@ -27,6 +27,36 @@ label{display:block;font-size:11px;font-weight:800;color:var(--ink);margin:15px 
 @media(max-width:760px){.page{padding:12px;display:block}.layout{width:100%;min-height:calc(100vh - 28px);grid-template-columns:1fr;border-radius:20px}.story{min-height:245px;padding:20px 22px 22px;background-position:center 48%}.logoWrap{width:42px;height:42px;border-radius:11px}.brandName{font-size:10px}.storyCopy{padding:28px 0 8px}.story h1{font-size:clamp(28px,7vw,38px);margin:10px 0}.storyCopy p{font-size:11px;line-height:1.6;max-width:500px}.pillRow{margin-top:14px;gap:6px}.pill{font-size:8px;padding:7px 9px}.storyFoot{display:none}.formSide{padding:25px 22px 27px}.topActions{top:14px;right:15px}.formIntro{margin-top:29px}.formIntro h2{font-size:29px}.sub{margin-bottom:19px}.roles{margin-bottom:18px}}
 @media(max-width:380px){.page{padding:0}.layout{border-radius:0;border-left:0;border-right:0;min-height:100vh}.story{min-height:220px;padding:17px}.story h1{font-size:27px}.formSide{padding:22px 17px}.homeLink{display:none}.roles button{font-size:10px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+
+/* Contrast hardening: the photo panel intentionally stays dark in either theme so its white overlay copy remains readable. */
+.story{color:#fff!important;background-color:#171d24!important}
+.story:before{background:linear-gradient(145deg,rgba(7,12,18,.91),rgba(12,18,25,.76) 54%,rgba(91,16,21,.82))!important}
+.story .brandName,.story .brandName small,.story .storyCopy p,.story .storyFoot,.story .storyFoot span{color:#f1f5f7!important}
+.story .story h1,.story h1,.story h1 em{color:#fff!important}
+.story .story h1 em,.story h1 em{color:#ffaaa1!important}
+.story .kicker{color:#ffc0b7!important}
+.story .pill{color:#fff!important;background:rgba(7,12,18,.68)!important;border-color:rgba(255,255,255,.38)!important}
+.story .storyFoot b{color:#fff!important}
+.logoWrap{background:#fff!important}
+.logoWrap img{filter:none!important}
+html[data-theme="light"] .formSide,html[data-theme="light"] .layout{color:#20252c}
+html[data-theme="dark"] .formSide,html[data-theme="dark"] .layout{color:#f2f5f7}
+.formSide .formIntro h2,.formSide label{color:var(--ink)!important}
+.formSide .sub,.formSide .remember,.formSide .securityNote,.formSide .bottomLinks{color:var(--muted)!important}
+.formSide input{color:var(--ink)!important;background:var(--panel)!important;border-color:var(--line)!important;opacity:1}
+.formSide input::placeholder{color:var(--muted)!important;opacity:1!important}
+.formSide input:-webkit-autofill,.formSide input:-webkit-autofill:hover,.formSide input:-webkit-autofill:focus{-webkit-text-fill-color:var(--ink)!important;box-shadow:0 0 0 1000px var(--panel) inset!important;caret-color:var(--ink)}
+.formSide .roles button{color:var(--muted)!important;background:var(--panel)!important;border-color:var(--line)!important}
+.formSide .roles button.active{color:var(--red)!important;background:var(--soft)!important;border-color:var(--red)!important}
+.formSide .toggle{color:var(--red)!important;background:var(--soft)!important}
+.formSide .forgot,.formSide .bottomLinks a{color:var(--red)!important}
+.formSide .msg{color:var(--red)!important}
+.formSide .msg.ok{color:#16835d!important}
+html[data-theme="dark"] .formSide .msg.ok{color:#65d6a9!important}
+.formSide .securityNote span{color:#16835d!important}
+html[data-theme="dark"] .formSide .securityNote span{color:#65d6a9!important}
+
 </style>
 <script>(function(){try{document.documentElement.setAttribute('data-theme',((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark'))}catch(e){}})();</script></head>
 <body><div class="topline"></div>
