@@ -300,46 +300,57 @@ html body header.nav .navtools button#joinBtn.headerEnterBtn *, html body .hero 
 @media(max-width:560px) { html body header.nav .navtools button#joinBtn.headerEnterBtn { width:auto!important; min-width:92px!important; padding:0 10px!important; justify-content:center!important; gap:6px!important; } html body header.nav .navtools button#joinBtn.headerEnterBtn span { display:inline!important; visibility:visible!important; opacity:1!important; } }
 </style>
 <style id="vtg-landing-contrast-final-20261013">
-/* High-contrast fallback; the script below also applies these colors inline after theme changes. */
-html[data-theme="light"] body a#heroJoin,
-html[data-theme="light"] body a#joinBtn {
+/* Explicit contrast for the two reported landing-page elements, independent of tag type. */
+html body #heroJoin,
+html body #joinBtn {
   display:inline-flex!important; align-items:center!important; justify-content:center!important;
-  min-height:42px!important; background:#a92722!important; background-image:none!important;
+  min-height:44px!important; padding:10px 16px!important; box-sizing:border-box!important;
+  background:#a92722!important; background-color:#a92722!important; background-image:none!important;
   color:#fff!important; -webkit-text-fill-color:#fff!important; border:2px solid #a92722!important;
   opacity:1!important; visibility:visible!important; text-decoration:none!important;
   filter:none!important; text-shadow:none!important; mix-blend-mode:normal!important;
 }
-html[data-theme="light"] body a#heroJoin *,
-html[data-theme="light"] body a#joinBtn * {
+html body #heroJoin *, html body #joinBtn * {
   color:#fff!important; -webkit-text-fill-color:#fff!important; stroke:#fff!important;
   opacity:1!important; visibility:visible!important;
 }
-html[data-theme="dark"] body .hero .heroIn > div:first-child > p {
+html[data-theme="dark"] body section.hero .heroIn > div:first-child > p,
+html:not([data-theme="light"]) body section.hero .heroIn > div:first-child > p {
   display:block!important; color:#fff!important; -webkit-text-fill-color:#fff!important;
-  opacity:1!important; visibility:visible!important; background:rgba(5,12,18,.92)!important;
-  border:1px solid rgba(255,255,255,.28)!important; border-radius:10px!important;
+  opacity:1!important; visibility:visible!important; background:#101820!important;
+  border:1px solid rgba(255,255,255,.35)!important; border-radius:10px!important;
   padding:12px 14px!important; text-shadow:none!important; box-shadow:0 4px 18px rgba(0,0,0,.3)!important;
   mix-blend-mode:normal!important;
+}
+html[data-theme="light"] body section.hero .heroIn > div:first-child > p {
+  color:#241312!important; -webkit-text-fill-color:#241312!important;
+  background:#fff!important; border:1px solid #d7b7b4!important;
+  box-shadow:0 4px 18px rgba(40,15,12,.12)!important;
 }
 </style>
 <script id="vtg-landing-contrast-runtime-20261013">
 (function(){
-  function force(el, styles){ if(!el)return; Object.keys(styles).forEach(function(k){el.style.setProperty(k,styles[k],'important');}); }
+  function set(el, styles){ if(!el)return; Object.keys(styles).forEach(function(k){el.style.setProperty(k,styles[k],'important');}); }
   function apply(){
-    var theme=document.documentElement.getAttribute('data-theme')||'light';
+    var root=document.documentElement, theme=root.getAttribute('data-theme')||'light';
+    var buttonStyles={'display':'inline-flex','align-items':'center','justify-content':'center','min-height':'44px','padding':'10px 16px','box-sizing':'border-box','background':'#a92722','background-color':'#a92722','background-image':'none','color':'#fff','-webkit-text-fill-color':'#fff','border':'2px solid #a92722','opacity':'1','visibility':'visible','text-decoration':'none','filter':'none','text-shadow':'none','mix-blend-mode':'normal'};
+    ['heroJoin','joinBtn'].forEach(function(id){
+      var el=document.getElementById(id); set(el,buttonStyles);
+      if(el)el.querySelectorAll('*').forEach(function(child){set(child,{'color':'#fff','-webkit-text-fill-color':'#fff','stroke':'#fff','opacity':'1','visibility':'visible'});});
+    });
+    var p=document.querySelector('section.hero .heroIn > div:first-child > p');
     if(theme==='light'){
-      ['heroJoin','joinBtn'].forEach(function(id){
-        var el=document.getElementById(id);
-        force(el,{'display':'inline-flex','align-items':'center','justify-content':'center','min-height':'42px','background':'#a92722','background-image':'none','color':'#fff','-webkit-text-fill-color':'#fff','border':'2px solid #a92722','opacity':'1','visibility':'visible','text-decoration':'none','filter':'none','text-shadow':'none','mix-blend-mode':'normal'});
-        if(el) el.querySelectorAll('*').forEach(function(child){force(child,{'color':'#fff','-webkit-text-fill-color':'#fff','stroke':'#fff','opacity':'1','visibility':'visible'});});
-      });
+      set(p,{'display':'block','color':'#241312','-webkit-text-fill-color':'#241312','opacity':'1','visibility':'visible','background':'#fff','border':'1px solid #d7b7b4','border-radius':'10px','padding':'12px 14px','text-shadow':'none','box-shadow':'0 4px 18px rgba(40,15,12,.12)','mix-blend-mode':'normal'});
     } else {
-      var p=document.querySelector('.hero .heroIn > div:first-child > p');
-      force(p,{'display':'block','color':'#fff','-webkit-text-fill-color':'#fff','opacity':'1','visibility':'visible','background':'rgba(5,12,18,.92)','border':'1px solid rgba(255,255,255,.28)','border-radius':'10px','padding':'12px 14px','text-shadow':'none','box-shadow':'0 4px 18px rgba(0,0,0,.3)','mix-blend-mode':'normal'});
+      set(p,{'display':'block','color':'#fff','-webkit-text-fill-color':'#fff','opacity':'1','visibility':'visible','background':'#101820','border':'1px solid rgba(255,255,255,.35)','border-radius':'10px','padding':'12px 14px','text-shadow':'none','box-shadow':'0 4px 18px rgba(0,0,0,.3)','mix-blend-mode':'normal'});
     }
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',apply,{once:true}); else apply();
-  document.addEventListener('vtg:themechange',apply);
-  window.addEventListener('pageshow',apply);
+  function start(){
+    apply();
+    new MutationObserver(apply).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+    window.addEventListener('pageshow',apply);
+    document.addEventListener('vtg:themechange',apply);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
 </script></body></html>
