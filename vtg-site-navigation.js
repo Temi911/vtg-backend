@@ -136,7 +136,7 @@
     if (path.length > 1 && path.charAt(path.length - 1) === '/') path = path.slice(0, -1);
     var isHome = path === '/' || path === HOME || path.endsWith('/frontend-v3.html');
     if (!isHome) return;
-    var homeAnchors = { atlas: '#vtgAtlasPreview' };
+    var homeAnchors = { atlas: '/trade-atlas.html' };
     Object.keys(homeAnchors).forEach(function (key) {
       var link = document.querySelector('#' + FOOTER_ID + ' [data-navkey="' + key + '"]');
       if (link) link.setAttribute('href', homeAnchors[key]);
@@ -362,18 +362,20 @@
     var style = document.createElement('style');
     style.id = 'vtg-theme-control-style';
     style.textContent = [
-      '#vtgThemeControl{position:fixed;left:14px;bottom:16px;z-index:2147483000;display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid #d8e0e8;border-radius:12px;background:rgba(255,255,255,.97);color:#263746;box-shadow:0 8px 28px rgba(15,23,42,.16);font:600 12px/1.2 Manrope,Arial,sans-serif;backdrop-filter:blur(12px)}',
+      '#vtgThemeControl{position:static;z-index:auto;display:flex;align-items:center;gap:8px;padding:0;margin:0 0 0 auto;border:0;border-radius:0;background:transparent;color:#263746;box-shadow:none;font:600 12px/1.2 Manrope,Arial,sans-serif;backdrop-filter:none;white-space:nowrap}',
       '#vtgThemeControl label{margin:0;color:#526273!important;font:700 11px/1.2 Manrope,Arial,sans-serif}',
       '#vtgThemeControl select{max-width:130px;min-height:32px;padding:5px 24px 5px 8px;border:1px solid #cbd5df;border-radius:8px;background:#fff;color:#17212b;font:700 11px/1.2 Manrope,Arial,sans-serif;cursor:pointer}',
       '#vtgThemeControl select:focus-visible{outline:2px solid #c0392b;outline-offset:2px}',
-      'html[data-theme="dark"] #vtgThemeControl{background:rgba(17,22,29,.97);border-color:#34404a;color:#eef3f6}',
+      'html[data-theme="dark"] #vtgThemeControl{background:transparent;border-color:transparent;color:#eef3f6}',
       'html[data-theme="dark"] #vtgThemeControl label{color:#c1cbd3!important}',
       'html[data-theme="dark"] #vtgThemeControl select{background:#151b22;color:#eef3f6;border-color:#46535e}',
-      '@media(max-width:480px){#vtgThemeControl{left:10px;bottom:10px;padding:6px 8px;gap:6px}#vtgThemeControl label{font-size:10px}#vtgThemeControl select{min-height:30px;font-size:10px}}',
+      '@media(max-width:800px){#vtgThemeControl{margin:4px 0 0;white-space:normal}footer#vtgFooter .vtgFooterBottom.copyright{flex-wrap:wrap!important}}@media(max-width:480px){#vtgThemeControl{padding:0;gap:6px}#vtgThemeControl label{font-size:10px}#vtgThemeControl select{min-height:30px;font-size:10px;max-width:145px}}',
       '@media(prefers-reduced-motion:reduce){#vtgThemeControl *{transition:none!important}}'
     ].join('\n');
     document.head.appendChild(style);
-    document.body.appendChild(wrap);
+    var footerHost = document.querySelector('#vtgFooter .vtgFooterBottom');
+    if (footerHost) footerHost.appendChild(wrap);
+    else document.body.appendChild(wrap);
     var select = wrap.querySelector('select');
     try { select.value = window.localStorage.getItem('vtg-theme-preference') || 'auto'; }
     catch (error) { select.value = 'auto'; }
@@ -387,8 +389,8 @@
   function init() {
     applyTimeBasedTheme();
     addStyle();
-    ensureThemeControl();
     renderFooter();
+    ensureThemeControl();
     adaptHomeAnchors();
     simplifyPageHeader();
     addPageNavigation();
