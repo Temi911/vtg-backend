@@ -300,13 +300,9 @@ html body header.nav .navtools button#joinBtn.headerEnterBtn *, html body .hero 
 @media(max-width:560px) { html body header.nav .navtools button#joinBtn.headerEnterBtn { width:auto!important; min-width:92px!important; padding:0 10px!important; justify-content:center!important; gap:6px!important; } html body header.nav .navtools button#joinBtn.headerEnterBtn span { display:inline!important; visibility:visible!important; opacity:1!important; } }
 </style>
 <style id="vtg-landing-contrast-final-20261013">
-/* Landing-page contrast fix: use direct, high-specificity selectors and avoid depending on the #landing wrapper. */
+/* High-contrast fallback; the script below also applies these colors inline after theme changes. */
 html[data-theme="light"] body a#heroJoin,
-html[data-theme="light"] body a#heroJoin:link,
-html[data-theme="light"] body a#heroJoin:visited,
-html[data-theme="light"] body a#joinBtn,
-html[data-theme="light"] body a#joinBtn:link,
-html[data-theme="light"] body a#joinBtn:visited {
+html[data-theme="light"] body a#joinBtn {
   display:inline-flex!important; align-items:center!important; justify-content:center!important;
   min-height:42px!important; background:#a92722!important; background-image:none!important;
   color:#fff!important; -webkit-text-fill-color:#fff!important; border:2px solid #a92722!important;
@@ -318,12 +314,32 @@ html[data-theme="light"] body a#joinBtn * {
   color:#fff!important; -webkit-text-fill-color:#fff!important; stroke:#fff!important;
   opacity:1!important; visibility:visible!important;
 }
-html[data-theme="dark"] body .hero .heroIn > div:first-child > p,
-html[data-theme="dark"] body .hero .heroIn p {
+html[data-theme="dark"] body .hero .heroIn > div:first-child > p {
   display:block!important; color:#fff!important; -webkit-text-fill-color:#fff!important;
   opacity:1!important; visibility:visible!important; background:rgba(5,12,18,.92)!important;
   border:1px solid rgba(255,255,255,.28)!important; border-radius:10px!important;
   padding:12px 14px!important; text-shadow:none!important; box-shadow:0 4px 18px rgba(0,0,0,.3)!important;
   mix-blend-mode:normal!important;
 }
-</style></body></html>
+</style>
+<script id="vtg-landing-contrast-runtime-20261013">
+(function(){
+  function force(el, styles){ if(!el)return; Object.keys(styles).forEach(function(k){el.style.setProperty(k,styles[k],'important');}); }
+  function apply(){
+    var theme=document.documentElement.getAttribute('data-theme')||'light';
+    if(theme==='light'){
+      ['heroJoin','joinBtn'].forEach(function(id){
+        var el=document.getElementById(id);
+        force(el,{'display':'inline-flex','align-items':'center','justify-content':'center','min-height':'42px','background':'#a92722','background-image':'none','color':'#fff','-webkit-text-fill-color':'#fff','border':'2px solid #a92722','opacity':'1','visibility':'visible','text-decoration':'none','filter':'none','text-shadow':'none','mix-blend-mode':'normal'});
+        if(el) el.querySelectorAll('*').forEach(function(child){force(child,{'color':'#fff','-webkit-text-fill-color':'#fff','stroke':'#fff','opacity':'1','visibility':'visible'});});
+      });
+    } else {
+      var p=document.querySelector('.hero .heroIn > div:first-child > p');
+      force(p,{'display':'block','color':'#fff','-webkit-text-fill-color':'#fff','opacity':'1','visibility':'visible','background':'rgba(5,12,18,.92)','border':'1px solid rgba(255,255,255,.28)','border-radius':'10px','padding':'12px 14px','text-shadow':'none','box-shadow':'0 4px 18px rgba(0,0,0,.3)','mix-blend-mode':'normal'});
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',apply,{once:true}); else apply();
+  document.addEventListener('vtg:themechange',apply);
+  window.addEventListener('pageshow',apply);
+})();
+</script></body></html>
