@@ -8,6 +8,7 @@ router.post('/signup/bank', ctrl.registerBank);
 router.post('/signup/agent', ctrl.registerAgent);
 router.post('/send-verification-code', ctrl.sendVerificationCode);
 router.post('/forgot-password', require('../controllers/account-recovery.controller').forgotPassword);
+router.post('/account-support', require('../controllers/account-support.controller').submitAccountSupport);
 router.post('/reset-password', require('../controllers/account-recovery.controller').resetPassword);
 router.post('/verify-email-code', ctrl.verifyEmailCode);
 router.post('/login', ctrl.login);
