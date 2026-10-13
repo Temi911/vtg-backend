@@ -342,17 +342,14 @@
     document.head.appendChild(css);
 
 
+    // Preserve the source HTML as the single source of truth for hero copy and actions.
+    // This enhancer previously replaced the approved headline and recreated an unwanted Enter VTG button.
     const heroContent=heroIn.querySelector(':scope>div:first-child');
     if(heroContent){
-      heroContent.innerHTML=`
-        <span class="eyebrow">Africa • China • World</span>
-        <h1>Trade without borders.</h1>
-        <p>One intelligent place to discover products, connect with trusted trade partners and move business across borders.</p>
-        <div class="heroActions">
-          <a class="primary" href="#market">Explore the marketplace <i data-lucide="arrow-up-right"></i></a>
-          <button class="outline" type="button" id="minimalEnterVtg">Enter VTG <i data-lucide="log-in"></i></button>
-        </div>
-      `;
+      const heroHeading=heroContent.querySelector('h1');
+      if(heroHeading) heroHeading.textContent='One intelligent place for trade across borders.';
+      heroContent.querySelector('#heroJoin')?.remove();
+      heroContent.querySelector('#minimalEnterVtg')?.remove();
     }
 
     market.querySelector('.sectionHead h2').textContent='Discover what moves through VTG.';
