@@ -117,6 +117,12 @@
       #vtgProductCarousel .vtgSlide.active{opacity:1;visibility:visible}
       #vtgProductCarousel .vtgSlide img{width:100%;height:100%;object-fit:cover;display:block}
       #vtgProductCarousel .vtgShade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.02) 35%,rgba(0,0,0,.82));pointer-events:none}
+      /* Dark mode: use a softer graphite overlay so the category photography remains the focus. */
+      html[data-theme="dark"] #vtgProductCarousel .vtgStage{background:#171d24;box-shadow:0 18px 45px rgba(0,0,0,.3)}
+      html[data-theme="dark"] #vtgProductCarousel .vtgShade{background:linear-gradient(180deg,rgba(13,17,23,.02) 22%,rgba(18,24,32,.48) 58%,rgba(18,24,32,.86) 100%)}
+      html[data-theme="dark"] #vtgProductCarousel .vtgPrev,html[data-theme="dark"] #vtgProductCarousel .vtgNext{background:rgba(22,29,38,.76);border-color:rgba(230,237,243,.3)}
+      html[data-theme="dark"] #vtgProductCarousel .vtgDot{background:#65717e}
+      html[data-theme="dark"] #vtgProductCarousel .vtgDot.active{background:#e05a4f}
       #vtgProductCarousel .vtgInfo{position:absolute;left:26px;bottom:25px;right:70px;color:#fff;z-index:3}
       #vtgProductCarousel .vtgInfo small{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.8;margin-bottom:5px}
       #vtgProductCarousel .vtgInfo strong{display:block;font-size:clamp(22px,3vw,34px);line-height:1.1}
