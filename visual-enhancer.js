@@ -414,6 +414,22 @@
       .vtgMinimalAtlas #minimalAtlasBtn{background:#c0392b!important;color:#fff!important;border-color:#f08b82!important}
       @media(max-width:900px){#landing .heroIn>div:first-child{max-width:none;padding:0;border:0;background:transparent;box-shadow:none}#landing .hero h1{font-size:clamp(34px,6vw,48px)}}
       @media(max-width:600px){#landing .heroIn>div:first-child{padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}#landing .hero h1{font-size:clamp(31px,8.3vw,39px);line-height:1.09}#landing .hero p{font-size:12px}.vtgMinimalAbout h2{font-size:clamp(27px,7.2vw,33px)!important}.vtgMinimalAtlasInner>div:first-child{padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important}}
+      /* Final correction: the entire WHAT VTG IS section and its copy must not render as a colored card. */
+      .vtgMinimalAbout,.vtgMinimalAbout .copy,html[data-theme="dark"] .vtgMinimalAbout,html[data-theme="dark"] .vtgMinimalAbout .copy,html[data-theme="light"] .vtgMinimalAbout,html[data-theme="light"] .vtgMinimalAbout .copy{
+        background:transparent!important;background-color:transparent!important;background-image:none!important;
+        border:0!important;border-color:transparent!important;border-radius:0!important;box-shadow:none!important;
+        outline:0!important;backdrop-filter:none!important;
+      }
+      .vtgMinimalAbout{color:#17212b!important}
+      .vtgMinimalAbout .kicker{color:#9f241d!important;-webkit-text-fill-color:#9f241d!important}
+      .vtgMinimalAbout h2,.vtgMinimalAbout p{background:transparent!important;background-color:transparent!important;border:0!important;box-shadow:none!important}
+      .vtgMinimalAbout h2{color:#17212b!important;-webkit-text-fill-color:#17212b!important;text-shadow:none!important}
+      .vtgMinimalAbout p{color:#405366!important;-webkit-text-fill-color:#405366!important;text-shadow:none!important}
+      html[data-theme="dark"] .vtgMinimalAbout{color:#f4f7fa!important}
+      html[data-theme="dark"] .vtgMinimalAbout .kicker{color:#ffaaa2!important;-webkit-text-fill-color:#ffaaa2!important}
+      html[data-theme="dark"] .vtgMinimalAbout h2{color:#f4f7fa!important;-webkit-text-fill-color:#f4f7fa!important;text-shadow:0 1px 5px rgba(0,0,0,.55)!important}
+      html[data-theme="dark"] .vtgMinimalAbout p{color:#d5dee7!important;-webkit-text-fill-color:#d5dee7!important;text-shadow:0 1px 4px rgba(0,0,0,.45)!important}
+
     `;
     document.head.appendChild(css);
 
