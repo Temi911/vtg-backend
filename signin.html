@@ -7,43 +7,75 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <title>Sign in — Vintage Trade Global</title>
 <style>
-:root{--navy:#8f1d17;--deep:#4a120f;--teal:#c0392b;--cyan:#e05a4f;--cream:#f5f8f8;--white:#fff;--ink:#2f1110;--muted:#667085;--line:#e4e7ec;--soft:#f9eeee;--shadow:0 18px 55px rgba(7,31,48,.13);--red:#9b2c24}html[data-theme="dark"]{--cream:#0d1117;--white:#11161d;--ink:#eef3f6;--muted:#b9c5ce;--line:#2b3640;--soft:#171d24;--navy:#d98f87;--deep:#210b09;--teal:#d94a3e;--cyan:#ef776d;--red:#d95a4e}
-*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:'Manrope',sans-serif;transition:background .2s,color .2s}html[data-theme="dark"] body{background:var(--cream);color:var(--ink)}
-a{text-decoration:none;color:inherit}.top{height:4px;background:linear-gradient(90deg,var(--red),var(--teal),var(--navy))}
-.shell{min-height:calc(100vh - 4px);display:grid;place-items:center;padding:28px 18px}
-.card{width:min(560px,100%);background:var(--white);border:1px solid var(--line);border-radius:22px;box-shadow:0 18px 60px rgba(0,0,0,.12);padding:30px}
-.brand{font-weight:900;color:var(--navy);letter-spacing:.02em}.eyebrow{display:block;color:var(--teal);font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-top:25px}
-h1{font-size:34px;line-height:1.08;margin:8px 0;color:var(--navy)}.sub{color:var(--muted);font-size:13px;line-height:1.6;margin:0 0 22px}
-.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}.roles button{border:1px solid var(--line);background:var(--soft);border-radius:11px;padding:11px 8px;font-weight:800;color:var(--navy);cursor:pointer}.roles button.active{background:var(--teal);border-color:var(--teal);color:#fff}
-label{display:block;font-size:11px;font-weight:800;color:var(--ink);margin:13px 0 6px}input{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 13px;font:inherit;background:var(--white);color:var(--ink)}
-.password{position:relative}.password input{padding-right:72px}.toggle{position:absolute;right:7px;top:7px;border:0;background:var(--soft);border-radius:8px;padding:7px 9px;font-size:10px;font-weight:800;color:var(--navy);cursor:pointer}
-.primary{width:100%;border:0;border-radius:11px;padding:13px;background:var(--teal);color:#fff;font-weight:900;margin-top:20px;cursor:pointer}.primary:hover{background:#0d2f46}
-.msg{min-height:20px;margin-top:12px;font-size:11px;color:var(--red)}.msg.ok{color:#087c65}
-.links{display:flex;justify-content:space-between;gap:12px;margin-top:18px;padding-top:18px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}.links a:hover{color:var(--teal)}
-@media(max-width:520px){.card{padding:23px}.roles{grid-template-columns:1fr}.links{flex-direction:column}}
+:root{color-scheme:light;--bg:#f4f6f8;--panel:#fff;--ink:#20252c;--muted:#66717e;--line:#dfe4e9;--soft:#f8eeee;--red:#bd292d;--red-dark:#992126;--accent:#f5b8ad;--shadow:0 24px 70px rgba(24,32,42,.13)}
+html[data-theme="dark"]{color-scheme:dark;--bg:#0d1117;--panel:#141a21;--ink:#f2f5f7;--muted:#b3bec8;--line:#303944;--soft:#25191b;--red:#e05a4f;--red-dark:#bd3b35;--accent:#ff9b91;--shadow:0 24px 70px rgba(0,0,0,.3)}
+*{box-sizing:border-box}html{min-height:100%;background:var(--bg)}body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Manrope',sans-serif;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}a{color:inherit;text-decoration:none}button,input{font:inherit}.topline{height:4px;background:linear-gradient(90deg,#741a1b,#bd292d,#ef776d)}
+.page{min-height:calc(100vh - 4px);padding:22px;display:grid;place-items:center}.layout{width:min(1120px,100%);min-height:min(720px,calc(100vh - 48px));display:grid;grid-template-columns:1.04fr .96fr;background:var(--panel);border:1px solid var(--line);border-radius:28px;overflow:hidden;box-shadow:var(--shadow)}
+.story{position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:34px;color:#fff;background:#171d24 url('https://images.pexels.com/photos/11825324/pexels-photo-11825324.jpeg?auto=compress&cs=tinysrgb&w=1800') center/cover no-repeat}
+.story:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(145deg,rgba(14,19,25,.84),rgba(22,25,32,.53) 54%,rgba(112,22,25,.68))}
+.story:after{content:"";position:absolute;z-index:-1;width:340px;height:340px;border:1px solid rgba(255,255,255,.18);border-radius:50%;right:-150px;bottom:-125px;box-shadow:0 0 0 36px rgba(255,255,255,.035),0 0 0 72px rgba(255,255,255,.025)}
+.brandline{display:flex;align-items:center;gap:12px;position:relative;z-index:1}.logoWrap{width:52px;height:52px;background:#fff;border-radius:13px;padding:7px;display:grid;place-items:center;flex:none}.logoWrap img{display:block;width:100%;height:100%;object-fit:contain}.brandName{font-size:12px;font-weight:800;letter-spacing:.09em;line-height:1.45}.brandName small{display:block;font-size:9px;font-weight:600;letter-spacing:.04em;color:#d8e0e6;margin-top:3px}
+.storyCopy{position:relative;z-index:1;padding:52px 0 46px;max-width:470px}.kicker{display:inline-flex;align-items:center;gap:9px;color:#ffb0a7;text-transform:uppercase;font-size:10px;font-weight:800;letter-spacing:.16em}.kicker:before{content:"";width:22px;height:2px;background:#e05a4f}.story h1{font-size:clamp(34px,4.1vw,55px);line-height:1.06;letter-spacing:-.045em;margin:18px 0 17px;color:#fff}.story h1 em{font-style:normal;color:#ff9389}.storyCopy p{max-width:410px;margin:0;color:#e0e5e9;font-size:13px;line-height:1.85}.pillRow{display:flex;flex-wrap:wrap;gap:8px;margin-top:25px}.pill{display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.24);background:rgba(14,18,24,.32);border-radius:999px;padding:9px 11px;font-size:9px;font-weight:700;color:#f5f7f8;backdrop-filter:blur(8px)}.pill i{width:6px;height:6px;border-radius:50%;background:#ff8a80}.storyFoot{position:relative;z-index:1;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#d5dce1;font-size:9px}.storyFoot span{display:flex;align-items:center;gap:7px}.storyFoot b{color:#fff}
+.formSide{position:relative;display:flex;flex-direction:column;justify-content:center;padding:clamp(28px,4vw,58px);background:var(--panel)}.topActions{position:absolute;top:22px;right:24px;display:flex;align-items:center;gap:8px}.themeToggle{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:10px;padding:8px 10px;font-size:10px;font-weight:800;cursor:pointer}.homeLink{font-size:10px;color:var(--muted);font-weight:700;padding:8px}.homeLink:hover{color:var(--red)}
+.formIntro{margin-top:28px}.eyebrow{color:var(--red);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.14em}.formIntro h2{font-size:clamp(28px,3vw,37px);letter-spacing:-.045em;line-height:1.15;margin:10px 0 9px;color:var(--ink)}.sub{font-size:12px;line-height:1.7;color:var(--muted);margin:0 0 24px}
+.roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 22px}.roles button{min-height:43px;border:1px solid var(--line);background:var(--panel);border-radius:11px;padding:10px 6px;font-size:11px;font-weight:800;color:var(--muted);cursor:pointer;transition:background .18s,border-color .18s,color .18s}.roles button:hover{border-color:var(--red)}.roles button.active{background:var(--soft);border-color:var(--red);color:var(--red)}
+label{display:block;font-size:11px;font-weight:800;color:var(--ink);margin:15px 0 7px}.field{position:relative}.fieldIcon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);pointer-events:none}.field input{display:block;width:100%;min-height:48px;border:1px solid var(--line);border-radius:12px;padding:12px 75px 12px 40px;background:var(--panel);color:var(--ink);outline:none;font-size:12px;transition:border-color .18s,box-shadow .18s}.field input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(189,41,45,.12)}.field input::placeholder{color:var(--muted);opacity:.8}.toggle{position:absolute;right:7px;top:7px;min-width:54px;min-height:34px;border:0;background:var(--soft);border-radius:8px;padding:6px 9px;font-size:10px;font-weight:800;color:var(--red);cursor:pointer}
+.formMeta{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:15px;font-size:10px}.remember{display:flex;align-items:center;gap:7px;color:var(--muted);cursor:pointer}.remember input{accent-color:var(--red);width:14px;height:14px;margin:0}.forgot{color:var(--red);font-weight:800}.forgot:hover,.bottomLinks a:hover{text-decoration:underline}
+.primary{width:100%;min-height:49px;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:22px;border:0;border-radius:12px;background:var(--red);color:#fff;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 10px 22px rgba(189,41,45,.18);transition:transform .18s,background .18s}.primary:hover{background:var(--red-dark);transform:translateY(-1px)}.primary:focus-visible,.roles button:focus-visible,.themeToggle:focus-visible{outline:3px solid rgba(189,41,45,.35);outline-offset:2px}
+.msg{min-height:18px;margin:10px 0 -7px;font-size:10px;line-height:1.55;color:var(--red)}.msg.ok{color:#16835d}.bottomLinks{border-top:1px solid var(--line);margin-top:22px;padding-top:20px;text-align:center;color:var(--muted);font-size:11px}.bottomLinks a{color:var(--red);font-weight:800}.securityNote{display:flex;align-items:center;justify-content:center;gap:7px;color:var(--muted);font-size:9px;margin-top:22px}.securityNote span{color:#26956d}
+@media(min-width:1200px){.layout{min-height:690px}}
+@media(max-width:760px){.page{padding:12px;display:block}.layout{width:100%;min-height:calc(100vh - 28px);grid-template-columns:1fr;border-radius:20px}.story{min-height:245px;padding:20px 22px 22px;background-position:center 48%}.logoWrap{width:42px;height:42px;border-radius:11px}.brandName{font-size:10px}.storyCopy{padding:28px 0 8px}.story h1{font-size:clamp(28px,7vw,38px);margin:10px 0}.storyCopy p{font-size:11px;line-height:1.6;max-width:500px}.pillRow{margin-top:14px;gap:6px}.pill{font-size:8px;padding:7px 9px}.storyFoot{display:none}.formSide{padding:25px 22px 27px}.topActions{top:14px;right:15px}.formIntro{margin-top:29px}.formIntro h2{font-size:29px}.sub{margin-bottom:19px}.roles{margin-bottom:18px}}
+@media(max-width:380px){.page{padding:0}.layout{border-radius:0;border-left:0;border-right:0;min-height:100vh}.story{min-height:220px;padding:17px}.story h1{font-size:27px}.formSide{padding:22px 17px}.homeLink{display:none}.roles button{font-size:10px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 </style>
 <script>(function(){try{document.documentElement.setAttribute('data-theme',((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark'))}catch(e){}})();</script></head>
-<body><div class="top"></div>
-<main class="shell"><section class="card">
-<div class="brand">VINTAGE TRADE GLOBAL</div>
-<span class="eyebrow">Secure account access</span>
-<h1>Sign in to VTG</h1>
-<p class="sub">Choose your account type, then sign in to your dedicated VTG workspace.</p>
-<div class="roles" aria-label="Choose account type">
-<button type="button" data-role="buyer" class="active">Buyer</button>
-<button type="button" data-role="supplier">Supplier</button>
-<button type="button" data-role="bank">Bank</button>
-</div>
-<form id="form">
-<label>Email address *</label><input name="email" type="email" autocomplete="email" required>
-<label>Password *</label><div class="password"><input id="password" name="password" type="password" minlength="8" autocomplete="current-password" required><button class="toggle" id="toggle" type="button">Show</button></div>
-<div id="msg" class="msg"></div>
-<button class="primary" type="submit">Sign in</button>
-</form>
-<div class="links"><a id="signup" href="/signup.html">Create account</a><a href="/">Back to VTG home</a></div>
-</section></main>
+<body><div class="topline"></div>
+<main class="page">
+  <div class="layout">
+    <section class="story" aria-label="VTG international trade">
+      <div class="brandline">
+        <div class="logoWrap"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global logo"></div>
+        <div class="brandName">VINTAGE TRADE GLOBAL<small>Africa · China · South Korea · World</small></div>
+      </div>
+      <div class="storyCopy">
+        <span class="kicker">Your trade workspace</span>
+        <h1>Trade beyond<br><em>borders.</em></h1>
+        <p>Connect sourcing, verified suppliers, logistics and trade finance in one workspace built for cross-border business.</p>
+        <div class="pillRow"><span class="pill"><i></i> Supplier connections</span><span class="pill"><i></i> Shipment visibility</span><span class="pill"><i></i> Trade finance</span></div>
+      </div>
+      <div class="storyFoot"><span>Built for global trade <b>·</b> Designed for connection</span><span>VTG · Secure workspace</span></div>
+    </section>
+    <section class="formSide" aria-labelledby="signin-title">
+      <div class="topActions"><button class="themeToggle" id="themeToggle" type="button" aria-label="Switch color theme">☼ / ◐ Theme</button><a class="homeLink" href="/">← VTG home</a></div>
+      <div class="formIntro">
+        <span class="eyebrow">Secure account access</span>
+        <h2 id="signin-title">Welcome back.</h2>
+        <p class="sub">Sign in to continue to your VTG workspace.</p>
+      </div>
+      <div class="roles" aria-label="Choose account type">
+        <button type="button" data-role="buyer" class="active">Buyer</button>
+        <button type="button" data-role="supplier">Supplier</button>
+        <button type="button" data-role="bank">Bank</button>
+      </div>
+      <form id="form">
+        <label for="email">Email address</label>
+        <div class="field"><span class="fieldIcon" aria-hidden="true">✉</span><input id="email" name="email" type="email" autocomplete="email" placeholder="Enter your registered email" required></div>
+        <label for="password">Password</label>
+        <div class="field"><span class="fieldIcon" aria-hidden="true">⌑</span><input id="password" name="password" type="password" minlength="8" autocomplete="current-password" placeholder="Enter your password" required><button class="toggle" id="toggle" type="button" aria-label="Show password">Show</button></div>
+        <div class="formMeta"><label class="remember" for="remember"><input id="remember" type="checkbox" name="remember"> Remember me</label><a class="forgot" href="/forgot-password.html">Forgot password?</a></div>
+        <div id="msg" class="msg" role="status" aria-live="polite"></div>
+        <button class="primary" type="submit"><span>Sign in to VTG</span><span aria-hidden="true">→</span></button>
+      </form>
+      <div class="bottomLinks">New to VTG? <a id="signup" href="/signup.html">Create an account</a></div>
+      <div class="securityNote"><span aria-hidden="true">●</span> Your account access is protected by VTG authentication.</div>
+    </section>
+  </div>
+</main>
 <script>
-const API=window.VTG_API_BASE||'';let role='buyer';const nextPath=new URLSearchParams(location.search).get('next');const safeNext=nextPath==='/intelligence-centre.html'?nextPath:'';
+const API=window.VTG_API_BASE||'';
+document.getElementById('themeToggle').onclick=()=>{const root=document.documentElement;const next=root.getAttribute('data-theme')==='dark'?'light':'dark';root.setAttribute('data-theme',next);try{localStorage.setItem('vtg-theme',next);localStorage.setItem('vtg-theme-mode','manual')}catch(e){}};
+try{const saved=localStorage.getItem('vtg-theme');if(saved==='dark'||saved==='light')document.documentElement.setAttribute('data-theme',saved)}catch(e){}
+let role='buyer';const nextPath=new URLSearchParams(location.search).get('next');const safeNext=nextPath==='/intelligence-centre.html'?nextPath:'';
 const signup=document.getElementById('signup'),msg=document.getElementById('msg');
 document.querySelectorAll('[data-role]').forEach(b=>b.onclick=()=>{role=b.dataset.role;document.querySelectorAll('[data-role]').forEach(x=>x.classList.toggle('active',x===b));signup.href='/signup.html';signup.textContent='Create account';msg.textContent=''});
 document.getElementById('toggle').onclick=()=>{const p=document.getElementById('password'),b=document.getElementById('toggle');p.type=p.type==='password'?'text':'password';b.textContent=p.type==='password'?'Show':'Hide'};
