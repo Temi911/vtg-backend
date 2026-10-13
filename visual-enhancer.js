@@ -337,8 +337,8 @@
         .vtgOrbitNode span{font-size:5.5px}
 
       /* VTG landing-page polish: balanced hero, theme-safe ecosystem copy, and cleaner Atlas intro. */
-      #landing .heroIn>div:first-child{position:relative;isolation:isolate;padding:clamp(22px,3vw,38px);border:1px solid rgba(255,255,255,.17);border-radius:26px;background:linear-gradient(135deg,rgba(8,15,22,.76),rgba(8,15,22,.48));box-shadow:0 22px 58px rgba(0,0,0,.22);backdrop-filter:blur(12px)}
-      #landing .heroIn>div:first-child:before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background:radial-gradient(circle at 0 0,rgba(192,57,43,.15),transparent 48%)}
+      #landing .heroIn>div:first-child{position:relative;isolation:auto;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;backdrop-filter:none}
+      #landing .heroIn>div:first-child:before{content:none!important;display:none!important}
       #landing .hero h1{font-size:clamp(38px,4.25vw,60px);line-height:1.06;letter-spacing:-.045em;max-width:690px;margin:13px 0 16px;text-wrap:balance}
       #landing .hero p{font-size:clamp(13px,1.1vw,15px);line-height:1.75;max-width:620px;color:#e7eef2}
       #landing .heroMarketplaceBtn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:46px;padding:0 19px!important;border:1px solid #f1a29a!important;border-radius:12px!important;background:#fff!important;color:#8f1d17!important;font-size:11px!important;font-weight:800!important;box-shadow:0 10px 26px rgba(0,0,0,.18);transition:transform .2s ease,box-shadow .2s ease,background .2s ease}
@@ -354,7 +354,7 @@
       .vtgMinimalAtlas{background:linear-gradient(135deg,#0b1721 0%,#102332 55%,#0a121b 100%);position:relative;overflow:hidden}
       .vtgMinimalAtlas:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 12% 20%,rgba(192,57,43,.15),transparent 38%),radial-gradient(ellipse at 85% 85%,rgba(108,196,201,.10),transparent 38%)}
       .vtgMinimalAtlasInner{position:relative;z-index:1;padding-top:clamp(65px,7vw,94px);padding-bottom:clamp(65px,7vw,94px);gap:clamp(32px,5vw,65px)}
-      .vtgMinimalAtlasInner>div:first-child{max-width:560px;padding:clamp(22px,3vw,34px);border:1px solid rgba(255,255,255,.13);border-radius:24px;background:rgba(4,12,19,.46);box-shadow:0 20px 55px rgba(0,0,0,.18)}
+      .vtgMinimalAtlasInner>div:first-child{max-width:560px;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
       .vtgMinimalAtlas .kicker{display:inline-flex;align-items:center;gap:9px;font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#ff9b91}
       .vtgMinimalAtlas .kicker:before{content:"";width:20px;height:1px;background:currentColor}
       .vtgMinimalAtlas h2{font-size:clamp(31px,3.7vw,48px);line-height:1.08;letter-spacing:-.04em;margin:14px 0 17px;color:#fff;text-wrap:balance}
@@ -388,32 +388,32 @@
       html[data-theme="dark"] .vtgMinimalAbout h2 span{color:#ff8e84}
       html[data-theme="dark"] .vtgMinimalAbout p{color:#c4ced8}
       html[data-theme="dark"] .vtgMinimalAtlas{background:linear-gradient(135deg,#080e14 0%,#111c27 55%,#080e14 100%)}
-      html[data-theme="dark"] .vtgMinimalAtlasInner>div:first-child{background:rgba(8,14,21,.62);border-color:#344351}
+      html[data-theme="dark"] .vtgMinimalAtlasInner>div:first-child{background:transparent;border:0;box-shadow:none}
       html[data-theme="dark"] .vtgMinimalAtlas p{color:#c6d2dc}
       @media(prefers-reduced-motion:reduce){#landing .heroMarketplaceBtn,.vtgMinimalAtlas #minimalAtlasBtn{transition:none}}
 
       }
 
       /* Final landing-page contrast and scale corrections. Preserve the existing structure and carousel. */
-      #landing .heroIn>div:first-child{max-width:620px;padding:clamp(19px,2.5vw,28px);border:1px solid rgba(255,255,255,.22);border-radius:22px;background:linear-gradient(135deg,rgba(7,14,21,.82),rgba(7,14,21,.66));box-shadow:0 18px 46px rgba(0,0,0,.24);backdrop-filter:blur(13px)}
+      #landing .heroIn>div:first-child{max-width:700px;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;backdrop-filter:none}
       #landing .hero h1{font-size:clamp(34px,3.75vw,52px);line-height:1.08;letter-spacing:-.04em;max-width:600px;margin:11px 0 14px}
-      #landing .hero p{font-size:clamp(12px,1vw,14px);line-height:1.72;color:#edf2f5}
+      #landing .hero p{font-size:clamp(12px,1vw,14px);line-height:1.72;color:#fff!important;-webkit-text-fill-color:#fff!important;text-shadow:0 2px 7px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.95)!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important}
       #landing .heroMarketplaceBtn,#landing .heroMarketplaceBtn:visited{background:#fff!important;color:#8f1d17!important;border:1px solid #f0a19a!important;text-shadow:none!important;font-weight:800!important;box-shadow:0 10px 26px rgba(0,0,0,.22)}
       #landing .heroMarketplaceBtn .lucide{color:#8f1d17!important}
       #landing .heroMarketplaceBtn:hover,#landing .heroMarketplaceBtn:focus-visible{background:#fff4f2!important;color:#741811!important;border-color:#fff!important}
       #landing #joinBtn.headerEnterBtn,#landing .headerEnterBtn{background:#b92f25!important;color:#fff!important;border:1px solid #f08b82!important;text-shadow:none!important}
-      .vtgMinimalAbout .copy{background:#fff!important;border-color:#d5dee6!important}
-      .vtgMinimalAbout h2{color:#17212b!important;font-size:clamp(28px,3vw,39px)!important;line-height:1.12!important}
+      .vtgMinimalAbout .copy{padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+      .vtgMinimalAbout h2{color:#17212b!important;-webkit-text-fill-color:#17212b!important;text-shadow:none!important;font-size:clamp(28px,3vw,39px)!important;line-height:1.12!important}
       .vtgMinimalAbout p{color:#435466!important}
       html[data-theme="dark"] .vtgMinimalAbout .copy{background:linear-gradient(145deg,#19232d,#111923)!important;border-color:#394957!important}
-      html[data-theme="dark"] .vtgMinimalAbout h2{color:#f4f7fa!important}
+      html[data-theme="dark"] .vtgMinimalAbout h2{color:#f4f7fa!important;-webkit-text-fill-color:#f4f7fa!important;text-shadow:0 1px 8px rgba(0,0,0,.35)!important}
       html[data-theme="dark"] .vtgMinimalAbout p{color:#d0d9e2!important}
-      .vtgMinimalAtlasInner>div:first-child{background:rgba(4,12,19,.72)!important;border-color:rgba(255,255,255,.2)!important}
+      .vtgMinimalAtlasInner>div:first-child{padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
       .vtgMinimalAtlas h2{color:#fff!important}
       .vtgMinimalAtlas p{color:#d5e0e8!important}
       .vtgMinimalAtlas #minimalAtlasBtn{background:#c0392b!important;color:#fff!important;border-color:#f08b82!important}
-      @media(max-width:900px){#landing .heroIn>div:first-child{max-width:none;padding:24px}#landing .hero h1{font-size:clamp(34px,6vw,48px)}}
-      @media(max-width:600px){#landing .heroIn>div:first-child{padding:21px 18px;border-radius:19px}#landing .hero h1{font-size:clamp(31px,8.3vw,39px);line-height:1.09}#landing .hero p{font-size:12px}.vtgMinimalAbout h2{font-size:clamp(27px,7.2vw,33px)!important}}
+      @media(max-width:900px){#landing .heroIn>div:first-child{max-width:none;padding:0;border:0;background:transparent;box-shadow:none}#landing .hero h1{font-size:clamp(34px,6vw,48px)}}
+      @media(max-width:600px){#landing .heroIn>div:first-child{padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}#landing .hero h1{font-size:clamp(31px,8.3vw,39px);line-height:1.09}#landing .hero p{font-size:12px}.vtgMinimalAbout h2{font-size:clamp(27px,7.2vw,33px)!important}.vtgMinimalAtlasInner>div:first-child{padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important}}
     `;
     document.head.appendChild(css);
 
