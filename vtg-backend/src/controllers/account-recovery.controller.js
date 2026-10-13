@@ -35,7 +35,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
     const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
     await query('UPDATE account_recovery_tokens SET used_at=NOW() WHERE user_id=$1 AND used_at IS NULL', [rows[0].id]);
     await query('INSERT INTO account_recovery_tokens (user_id, token_hash, expires_at) VALUES ($1,$2,$3)', [rows[0].id, tokenHash, expiresAt]);
-    const link = baseUrl() + '/account-help.html?mode=reset&token=' + encodeURIComponent(token);
+    const link = baseUrl() + '/account-help.html?mode=reset&role=' + encodeURIComponent(rows[0].role || 'buyer') + '&token=' + encodeURIComponent(token);
     try {
       await mailer().sendMail({
         from: process.env.SMTP_FROM, to: rows[0].email,
