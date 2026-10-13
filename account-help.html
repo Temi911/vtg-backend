@@ -107,12 +107,12 @@ else if(issue==='business'){openMode('contact');setMessage('Business or institut
 else {openMode('contact');setMessage('Please prepare a support request with the issue details below.');}
 return;
 }else if(mode==='contact'){
-if(!data.email||!/^\S+@\S+\.\S+$/.test(data.email))throw Error('Enter a valid contact email.');
+if(!data.email||!/^\\S+@\\S+\\.\\S+$/.test(data.email))throw Error('Enter a valid contact email.');
 if(!data.issue||!data.description?.trim())throw Error('Choose an issue and describe what happened.');
-const subject=encodeURIComponent('[VTG Account Support] '+roleCopy[role].title+' — '+data.issue);
-const body=encodeURIComponent('VTG Account Help Request\nAccount type: '+role+'\nIssue: '+data.issue+'\nEmail: '+data.email+'\n\nDescription:\n'+data.description+'\n\nNo password or verification code included.');
-location.href='mailto:vintageafricatrade@gmail.com?subject='+subject+'&body='+body;
-setMessage('Your email app should open with a prepared support request. Please send it to complete the request. If no email app opens, write to vintageafricatrade@gmail.com.','ok');
+const r=await fetch('/api/auth/account-support',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role,email:data.email,issue:data.issue,description:data.description})});
+const d=await r.json().catch(()=>({}));
+if(!r.ok)throw Error(d.message||'VTG could not send your support request. Please email vintageafricatrade@gmail.com directly.');
+setMessage(d.message||'Your support request was sent to VTG.','ok');
 }
 }catch(err){setMessage(err.message||'Something went wrong. Please try again or contact VTG Support.','error');}
 finally{if(mode!=='reset'||!$('#message').classList.contains('ok')){btn.disabled=false;btn.textContent=modes[mode]?.button||'Continue';}}
