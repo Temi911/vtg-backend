@@ -155,6 +155,28 @@ html[data-theme="dark"] body .page .layout .formSide .formIntro .sub {
   opacity: 1 !important;
 }
 
+
+/* Light is the default when no data-theme attribute exists; cover that state too. */
+html:not([data-theme="dark"]) body .page .layout .formSide .formIntro .eyebrow {
+  color: #a52228 !important;
+  -webkit-text-fill-color: #a52228 !important;
+  opacity: 1 !important;
+}
+html:not([data-theme="dark"]) body .page .layout .formSide .formIntro #signin-title {
+  color: #17212b !important;
+  -webkit-text-fill-color: #17212b !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+  visibility: visible !important;
+}
+html:not([data-theme="dark"]) body .page .layout .formSide .formIntro .sub {
+  color: #435365 !important;
+  -webkit-text-fill-color: #435365 !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+  visibility: visible !important;
+}
+
 </style>
 <script>(function(){try{document.documentElement.setAttribute('data-theme',((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark'))}catch(e){}})();</script></head>
 <body><div class="topline"></div>
