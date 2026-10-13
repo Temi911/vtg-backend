@@ -120,6 +120,41 @@ html[data-theme="light"] body .page .layout .formSide .bottomLinks{
   color:#526273!important;-webkit-text-fill-color:#526273!important;
 }
 
+
+/* Final sign-in intro contrast guard: readable in light mode and dark mode. */
+html[data-theme="light"] body .page .layout .formSide .formIntro .eyebrow {
+  color: #a52228 !important;
+  -webkit-text-fill-color: #a52228 !important;
+  opacity: 1 !important;
+}
+html[data-theme="light"] body .page .layout .formSide .formIntro #signin-title {
+  color: #17212b !important;
+  -webkit-text-fill-color: #17212b !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+html[data-theme="light"] body .page .layout .formSide .formIntro .sub {
+  color: #435365 !important;
+  -webkit-text-fill-color: #435365 !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+html[data-theme="dark"] body .page .layout .formSide .formIntro .eyebrow {
+  color: #ffaaa1 !important;
+  -webkit-text-fill-color: #ffaaa1 !important;
+  opacity: 1 !important;
+}
+html[data-theme="dark"] body .page .layout .formSide .formIntro #signin-title {
+  color: #f7f9fb !important;
+  -webkit-text-fill-color: #f7f9fb !important;
+  opacity: 1 !important;
+}
+html[data-theme="dark"] body .page .layout .formSide .formIntro .sub {
+  color: #c2ccd5 !important;
+  -webkit-text-fill-color: #c2ccd5 !important;
+  opacity: 1 !important;
+}
+
 </style>
 <script>(function(){try{document.documentElement.setAttribute('data-theme',((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark'))}catch(e){}})();</script></head>
 <body><div class="topline"></div>
@@ -141,9 +176,9 @@ html[data-theme="light"] body .page .layout .formSide .bottomLinks{
     <section class="formSide" aria-labelledby="signin-title">
       <div class="topActions"><button class="themeToggle" id="themeToggle" type="button" aria-label="Switch color theme">☼ / ◐ Theme</button><a class="homeLink" href="/">← VTG home</a></div>
       <div class="formIntro">
-        <span class="eyebrow">Secure account access</span>
-        <h2 id="signin-title">Welcome back.</h2>
-        <p class="sub">Sign in to continue to your VTG workspace.</p>
+        <span class="eyebrow">Secure access</span>
+        <h2 id="signin-title">Welcome back to global trade.</h2>
+        <p class="sub">Secure access to your VTG workspace.</p>
       </div>
       <div class="roles" aria-label="Choose account type">
         <button type="button" data-role="buyer" class="active">Buyer</button>
