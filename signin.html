@@ -57,6 +57,69 @@ html[data-theme="dark"] .formSide .msg.ok{color:#65d6a9!important}
 .formSide .securityNote span{color:#16835d!important}
 html[data-theme="dark"] .formSide .securityNote span{color:#65d6a9!important}
 
+
+
+/* Explicit light-mode fixes for the exact sign-in copy reported as unreadable. */
+html[data-theme="light"] body .page .layout .story,
+html[data-theme="light"] body .page .layout .story *{
+  color:#fff!important;
+  -webkit-text-fill-color:currentColor!important;
+}
+html[data-theme="light"] body .page .layout .story{
+  background-color:#151b22!important;
+  background-blend-mode:normal!important;
+}
+html[data-theme="light"] body .page .layout .story:before{
+  background:linear-gradient(145deg,rgba(5,10,16,.94),rgba(8,14,21,.86) 54%,rgba(91,16,21,.88))!important;
+}
+html[data-theme="light"] body .page .layout .story .brandName,
+html[data-theme="light"] body .page .layout .story .brandName small,
+html[data-theme="light"] body .page .layout .story .kicker,
+html[data-theme="light"] body .page .layout .story .storyCopy p,
+html[data-theme="light"] body .page .layout .story .storyFoot,
+html[data-theme="light"] body .page .layout .story .storyFoot span{
+  color:#f5f7f9!important;
+  -webkit-text-fill-color:#f5f7f9!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.5)!important;
+}
+html[data-theme="light"] body .page .layout .story h1,
+html[data-theme="light"] body .page .layout .story h1 em,
+html[data-theme="light"] body .page .layout .story .storyFoot b{
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  text-shadow:0 2px 5px rgba(0,0,0,.55)!important;
+}
+html[data-theme="light"] body .page .layout .story h1 em{color:#ffaaa1!important;-webkit-text-fill-color:#ffaaa1!important}
+html[data-theme="light"] body .page .layout .story .pill{
+  color:#fff!important;-webkit-text-fill-color:#fff!important;
+  background:rgba(5,10,16,.82)!important;border-color:rgba(255,255,255,.48)!important;
+}
+html[data-theme="light"] body .page .layout .formSide,
+html[data-theme="light"] body .page .layout .formSide *{
+  -webkit-text-fill-color:currentColor;
+}
+html[data-theme="light"] body .page .layout .formSide .formIntro h1,
+html[data-theme="light"] body .page .layout .formSide .formIntro h2,
+html[data-theme="light"] body .page .layout .formSide h1,
+html[data-theme="light"] body .page .layout .formSide h2{
+  color:#17212b!important;-webkit-text-fill-color:#17212b!important;
+}
+html[data-theme="light"] body .page .layout .formSide .eyebrow,
+html[data-theme="light"] body .page .layout .formSide .formIntro .eyebrow{
+  color:#a52228!important;-webkit-text-fill-color:#a52228!important;
+}
+html[data-theme="light"] body .page .layout .formSide .sub{
+  color:#526273!important;-webkit-text-fill-color:#526273!important;
+}
+html[data-theme="light"] body .page .layout .formSide label,
+html[data-theme="light"] body .page .layout .formSide .remember{
+  color:#263442!important;-webkit-text-fill-color:#263442!important;
+}
+html[data-theme="light"] body .page .layout .formSide .securityNote,
+html[data-theme="light"] body .page .layout .formSide .bottomLinks{
+  color:#526273!important;-webkit-text-fill-color:#526273!important;
+}
+
 </style>
 <script>(function(){try{document.documentElement.setAttribute('data-theme',((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark'))}catch(e){}})();</script></head>
 <body><div class="topline"></div>
