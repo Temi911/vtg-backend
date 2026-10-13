@@ -329,7 +329,16 @@
         'html[data-theme="dark"] body .nav a#joinBtn.headerEnterBtn,html[data-theme="dark"] body .nav a#joinBtn.headerEnterBtn:visited,html[data-theme="dark"] body .hero a#heroJoin,html[data-theme="dark"] body .hero a#heroJoin:visited{background:#a92722!important;background-image:none!important;color:#fff!important;-webkit-text-fill-color:#fff!important;border:2px solid #ff8178!important;opacity:1!important;visibility:visible!important;text-decoration:none!important}',
         'html[data-theme="dark"] body .nav a#joinBtn.headerEnterBtn *,html[data-theme="dark"] body .hero a#heroJoin *{color:#fff!important;-webkit-text-fill-color:#fff!important;stroke:#fff!important;opacity:1!important;visibility:visible!important}',
         'html[data-theme="dark"] body .heroIn>div>p{color:#f0f4f7!important;text-shadow:0 1px 3px rgba(0,0,0,.35)!important}',
-        'html[data-theme="light"] body .heroIn>div>p{color:#f7fafc!important;text-shadow:0 1px 3px rgba(0,0,0,.45)!important}',
+        'html[data-theme="light"] body .heroIn>div>p{color:#f7fafc!important;-webkit-text-fill-color:#f7fafc!important;text-shadow:0 1px 3px rgba(0,0,0,.65)!important;opacity:1!important;visibility:visible!important}',
+        '/* Landing page: explicit contrast for the four reported visibility issues. */',
+        'html[data-theme="light"] body header.nav #atlasHeaderBtn,html[data-theme="light"] body header.nav #atlasHeaderBtn span,html[data-theme="light"] body header.nav #atlasHeaderBtn .lucide{color:#fff!important;-webkit-text-fill-color:#fff!important;stroke:currentColor!important;opacity:1!important;visibility:visible!important}',
+        'html[data-theme="light"] body header.nav #atlasHeaderBtn{background:#171d24!important;border-color:#46535e!important}',
+        'html[data-theme="light"] body .hero .heroActions a#heroJoin,html[data-theme="light"] body .hero .heroActions a#heroJoin:visited,html[data-theme="light"] body .hero .heroActions a#heroJoin *{background-color:#a92722!important;background-image:none!important;color:#fff!important;-webkit-text-fill-color:#fff!important;stroke:#fff!important;border-color:#a92722!important;opacity:1!important;visibility:visible!important;text-decoration:none!important}',
+        'html[data-theme="light"] body #vtgAtlasPreview h2,html[data-theme="light"] body #vtgAtlasPreview .kicker{color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important;visibility:visible!important;text-shadow:0 1px 4px rgba(0,0,0,.45)!important}',
+        'html[data-theme="light"] body #vtgAtlasPreview p{color:#e4edf2!important;-webkit-text-fill-color:#e4edf2!important;opacity:1!important;visibility:visible!important;text-shadow:0 1px 3px rgba(0,0,0,.55)!important}',
+        'html[data-theme="dark"] body #vtgAtlasPreview h2,html[data-theme="dark"] body #vtgAtlasPreview .kicker{color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important;visibility:visible!important}',
+        'html[data-theme="dark"] body #vtgAtlasPreview p{color:#dce6ec!important;-webkit-text-fill-color:#dce6ec!important;opacity:1!important;visibility:visible!important}',
+        'html[data-theme="dark"] body .hero .heroIn > div:first-child > p{color:#f3f6f8!important;-webkit-text-fill-color:#f3f6f8!important;opacity:1!important;visibility:visible!important;text-shadow:0 1px 4px rgba(0,0,0,.7)!important}',
         '@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}}'
       ].join('\n');
       document.head.appendChild(style);
