@@ -337,6 +337,63 @@
         .vtgOrbitNode .icon{width:25px;height:25px}
         .vtgOrbitNode strong{font-size:7px}
         .vtgOrbitNode span{font-size:5.5px}
+
+      /* VTG landing-page polish: balanced hero, theme-safe ecosystem copy, and cleaner Atlas intro. */
+      #landing .heroIn>div:first-child{position:relative;isolation:isolate;padding:clamp(22px,3vw,38px);border:1px solid rgba(255,255,255,.17);border-radius:26px;background:linear-gradient(135deg,rgba(8,15,22,.76),rgba(8,15,22,.48));box-shadow:0 22px 58px rgba(0,0,0,.22);backdrop-filter:blur(12px)}
+      #landing .heroIn>div:first-child:before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background:radial-gradient(circle at 0 0,rgba(192,57,43,.15),transparent 48%)}
+      #landing .hero h1{font-size:clamp(38px,4.25vw,60px);line-height:1.06;letter-spacing:-.045em;max-width:690px;margin:13px 0 16px;text-wrap:balance}
+      #landing .hero p{font-size:clamp(13px,1.1vw,15px);line-height:1.75;max-width:620px;color:#e7eef2}
+      #landing .heroMarketplaceBtn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:46px;padding:0 19px!important;border:1px solid #f1a29a!important;border-radius:12px!important;background:#fff!important;color:#8f1d17!important;font-size:11px!important;font-weight:800!important;box-shadow:0 10px 26px rgba(0,0,0,.18);transition:transform .2s ease,box-shadow .2s ease,background .2s ease}
+      #landing .heroMarketplaceBtn:hover,#landing .heroMarketplaceBtn:focus-visible{background:#fff4f2!important;color:#741811!important;border-color:#fff!important;transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,0,0,.24);outline:3px solid rgba(255,255,255,.22);outline-offset:2px}
+      #landing .heroMarketplaceBtn .lucide{width:16px;height:16px;color:inherit}
+      .vtgMinimalAbout{background:radial-gradient(ellipse at 14% 0%,rgba(192,57,43,.08),transparent 42%),linear-gradient(145deg,#fbfcfd 0%,#f0f3f6 100%);padding-top:clamp(64px,7vw,94px);padding-bottom:clamp(64px,7vw,94px)}
+      .vtgMinimalAbout .copy{padding:clamp(22px,3vw,34px);border:1px solid #dce3e9;border-radius:24px;background:rgba(255,255,255,.86);box-shadow:0 20px 50px rgba(20,35,48,.08)}
+      .vtgMinimalAbout .kicker{font-size:10px;letter-spacing:.16em;color:#a32922}
+      .vtgMinimalAbout h2{font-size:clamp(29px,3.25vw,43px);line-height:1.12;letter-spacing:-.035em;margin:14px 0 16px;color:#17212b}
+      .vtgMinimalAbout h2 span{display:inline;color:#a32922}
+      .vtgMinimalAbout p{font-size:13px;line-height:1.85;color:#526273;margin-bottom:0}
+      .vtgMinimalAbout .tradeNetworkVisual{border-radius:25px;box-shadow:0 24px 65px rgba(0,0,0,.23)}
+      .vtgMinimalAtlas{background:linear-gradient(135deg,#0b1721 0%,#102332 55%,#0a121b 100%);position:relative;overflow:hidden}
+      .vtgMinimalAtlas:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 12% 20%,rgba(192,57,43,.15),transparent 38%),radial-gradient(ellipse at 85% 85%,rgba(108,196,201,.10),transparent 38%)}
+      .vtgMinimalAtlasInner{position:relative;z-index:1;padding-top:clamp(65px,7vw,94px);padding-bottom:clamp(65px,7vw,94px);gap:clamp(32px,5vw,65px)}
+      .vtgMinimalAtlasInner>div:first-child{max-width:560px;padding:clamp(22px,3vw,34px);border:1px solid rgba(255,255,255,.13);border-radius:24px;background:rgba(4,12,19,.46);box-shadow:0 20px 55px rgba(0,0,0,.18)}
+      .vtgMinimalAtlas .kicker{display:inline-flex;align-items:center;gap:9px;font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#ff9b91}
+      .vtgMinimalAtlas .kicker:before{content:"";width:20px;height:1px;background:currentColor}
+      .vtgMinimalAtlas h2{font-size:clamp(31px,3.7vw,48px);line-height:1.08;letter-spacing:-.04em;margin:14px 0 17px;color:#fff;text-wrap:balance}
+      .vtgMinimalAtlas p{font-size:13px;line-height:1.85;color:#c6d2dc;max-width:490px;margin:0 0 20px}
+      .vtgMinimalAtlas #minimalAtlasBtn{display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:0 18px;background:#c0392b;color:#fff;border:1px solid #e06b61;border-radius:12px;font-size:11px;font-weight:800;box-shadow:0 10px 26px rgba(0,0,0,.18)}
+      .vtgMinimalAtlas #minimalAtlasBtn:hover{background:#a93226;transform:translateY(-1px)}
+      .vtgGlobeFrame{height:clamp(300px,32vw,410px);border-radius:25px;border-color:rgba(255,255,255,.14)}
+      @media(max-width:900px){
+        #landing .heroIn>div:first-child{padding:26px;border-radius:22px}
+        #landing .hero h1{font-size:clamp(38px,6.4vw,54px);max-width:640px}
+        .vtgMinimalAbout .copy{padding:25px}
+        .vtgMinimalAtlasInner>div:first-child{max-width:none}
+      }
+      @media(max-width:600px){
+        #landing .heroIn{padding:105px 18px 70px}
+        #landing .heroIn>div:first-child{padding:23px 20px;border-radius:20px}
+        #landing .hero h1{font-size:clamp(34px,9vw,43px);line-height:1.08;letter-spacing:-.04em;margin:12px 0 14px}
+        #landing .hero p{font-size:12px;line-height:1.75}
+        #landing .heroMarketplaceBtn{min-height:44px;padding:0 15px!important}
+        .vtgMinimalAbout .copy{padding:22px 20px;border-radius:20px}
+        .vtgMinimalAbout h2{font-size:clamp(28px,7.8vw,35px)}
+        .vtgMinimalAbout p{font-size:12px}
+        .vtgMinimalAtlasInner>div:first-child{padding:22px 20px;border-radius:20px}
+        .vtgMinimalAtlas h2{font-size:clamp(29px,8vw,36px)}
+        .vtgMinimalAtlas p{font-size:12px}
+      }
+      html[data-theme="dark"] .vtgMinimalAbout{background:radial-gradient(ellipse at 12% 0%,rgba(192,57,43,.12),transparent 44%),linear-gradient(145deg,#101720 0%,#0b1118 100%);border-color:#293540}
+      html[data-theme="dark"] .vtgMinimalAbout .copy{background:linear-gradient(145deg,rgba(25,34,44,.97),rgba(17,24,32,.97));border-color:#354452;box-shadow:0 22px 54px rgba(0,0,0,.28)}
+      html[data-theme="dark"] .vtgMinimalAbout .kicker{color:#ff9b91}
+      html[data-theme="dark"] .vtgMinimalAbout h2{color:#f5f7fa}
+      html[data-theme="dark"] .vtgMinimalAbout h2 span{color:#ff8e84}
+      html[data-theme="dark"] .vtgMinimalAbout p{color:#c4ced8}
+      html[data-theme="dark"] .vtgMinimalAtlas{background:linear-gradient(135deg,#080e14 0%,#111c27 55%,#080e14 100%)}
+      html[data-theme="dark"] .vtgMinimalAtlasInner>div:first-child{background:rgba(8,14,21,.62);border-color:#344351}
+      html[data-theme="dark"] .vtgMinimalAtlas p{color:#c6d2dc}
+      @media(prefers-reduced-motion:reduce){#landing .heroMarketplaceBtn,.vtgMinimalAtlas #minimalAtlasBtn{transition:none}}
+
       }
     `;
     document.head.appendChild(css);
@@ -389,7 +446,7 @@
         <div>
           <span class="kicker">Trade Atlas</span>
           <h2>See trade in motion.</h2>
-          <p>Explore the world from the major trade corridors to individual ports and business locations. The full VTG Atlas remains inside the platform, while the landing page gives visitors just enough to want to explore.</p>
+          <p>From major trade corridors to individual ports and business locations, explore how the world connects through trade. This preview offers a glimpse of the VTG Atlas; the full interactive experience is waiting inside the platform.</p>
           <button class="primary" type="button" id="minimalAtlasBtn" style="margin-top:10px">Open Trade Atlas <i data-lucide="globe-2"></i></button>
         </div>
         <div class="vtgGlobeFrame">
