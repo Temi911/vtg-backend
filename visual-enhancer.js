@@ -225,9 +225,7 @@
     css.textContent=`
       #landing,#landing *{font-family:'Manrope',sans-serif}\n      #landing .hero{
         min-height:0;
-        background:
-          linear-gradient(90deg,rgba(7,18,27,.84) 0%,rgba(7,18,27,.60) 48%,rgba(7,18,27,.20) 100%),
-          url('https://images.pexels.com/photos/11825324/pexels-photo-11825324.jpeg?auto=compress&cs=tinysrgb&w=2200') center/cover no-repeat;
+        /* Hero background is controlled only by frontend-v3.html. */
       }
       #landing .hero:before{display:none}
       #landing .heroIn{display:block;max-width:1320px;min-height:680px;padding:150px 30px 105px}
