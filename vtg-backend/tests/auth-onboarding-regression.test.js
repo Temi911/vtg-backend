@@ -2,10 +2,12 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const { spawnSync } = require('node:child_process');
 
 const controllerPath = path.join(__dirname, '..', 'src', 'controllers', 'auth.controller.js');
 const middlewarePath = path.join(__dirname, '..', 'src', 'middleware', 'auth.js');
 const signinPath = path.join(__dirname, '..', '..', 'signin.html');
+const marketplaceControllerPath = path.join(__dirname, '..', 'src', 'controllers', 'marketplace.controller.js');
 const controller = fs.readFileSync(controllerPath, 'utf8');
 const middleware = fs.readFileSync(middlewarePath, 'utf8');
 const signin = fs.readFileSync(signinPath, 'utf8');
@@ -36,4 +38,9 @@ test('sign-in exposes agent access and routes each role to the appropriate works
   assert.match(signin, /location\.href='\/agent-dashboard\.html'/);
   assert.match(signin, /location\.href='\/verification\.html'/);
   assert.match(signin, /role==='agent'\?'\/agent\.html'/);
+});
+
+test('marketplace controller parses successfully so the API can boot', () => {
+  const result = spawnSync(process.execPath, ['--check', marketplaceControllerPath], { encoding: 'utf8' });
+  assert.equal(result.status, 0, result.stderr || result.stdout || 'marketplace controller syntax check failed');
 });
