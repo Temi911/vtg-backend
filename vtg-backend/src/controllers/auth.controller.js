@@ -214,7 +214,7 @@ const VTG_BANK_COUNTRIES = [...VTG_AFRICA_COUNTRIES, ...VTG_SUPPLIER_COUNTRIES];
 const allowedCountry = (list, label) => z.string().min(2).max(80).refine(value => list.includes(value), label);
 
 const baseSignup = z.object({
-  email: z.string().email(),
+  email: z.string().email().transform(normalizeEmail),
   password: z.string().min(8).regex(/[A-Z]/, 'Needs an uppercase letter').regex(/[0-9]/, 'Needs a number'),
   fullName: z.string().min(2),
   phone: z.string().min(7).optional(),
@@ -422,7 +422,7 @@ const registerAgent = asyncHandler(async (req,res) => {
   const result=await withTransaction(async(client)=>{
     const existing=await client.query('SELECT id FROM users WHERE email=$1',[data.email]);
     if(existing.rows[0]) throw new AppError('An account with this email already exists',409,'EMAIL_TAKEN');
-    const userRes=await client.query(`INSERT INTO users(email,phone,password_hash,role,full_name,preferred_language,is_verified) VALUES($1,$2,$3,'agent',$4,$5,TRUE,$6,$7,$8) RETURNING *`,[data.email,data.phone||null,passwordHash,data.fullName,data.preferredLanguage,createVtgUserId(data.country,'agent'),Boolean(data.marketingSubscribed),createUnsubscribeToken()]);
+    const userRes=await client.query(`INSERT INTO users (email, phone, password_hash, role, full_name, preferred_language, is_verified, vtg_user_id, marketing_subscribed, marketing_unsubscribe_token) VALUES ($1,$2,$3,'agent',$4,$5,TRUE,$6,$7,$8) RETURNING *`,[data.email,data.phone||null,passwordHash,data.fullName,data.preferredLanguage,createVtgUserId(data.country,'agent'),Boolean(data.marketingSubscribed),createUnsubscribeToken()]);
     const user=userRes.rows[0];
     await client.query(`INSERT INTO agent_profiles(user_id,country,city,regions_served,experience_years,categories,languages,bio,payout_method) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)`,[user.id,data.country,data.city,data.regionsServed,data.experienceYears,data.categories,data.languages,data.bio||null,data.payoutMethod||null]);
     return user;
@@ -469,7 +469,7 @@ const registerBank = asyncHandler(async (req, res) => {
 });
 
 const sendVerificationCode = asyncHandler(async (req, res) => {
-  const schema = z.object({ email: z.string().email(), preferredLanguage: z.string().optional() });
+  const schema = z.object({ email: z.string().email().transform(normalizeEmail), preferredLanguage: z.string().optional() });
   const { email, preferredLanguage } = schema.parse(req.body);
   const verification = await issueEmailVerificationCode(email, preferredLanguage);
   res.json({
@@ -480,7 +480,7 @@ const sendVerificationCode = asyncHandler(async (req, res) => {
 });
 
 const verifyEmailCode = asyncHandler(async (req, res) => {
-  const schema = z.object({ email: z.string().email(), code: z.string().min(6).max(6) });
+  const schema = z.object({ email: z.string().email().transform(normalizeEmail), code: z.string().min(6).max(6) });
   const { email, code } = schema.parse(req.body);
   if (!(await hasValidEmailVerificationCode(email, code))) {
     throw new AppError('The verification code is invalid or has expired', 401, 'INVALID_VERIFICATION_CODE');
@@ -489,7 +489,7 @@ const verifyEmailCode = asyncHandler(async (req, res) => {
 });
 
 const login = asyncHandler(async (req, res) => {
-  const schema = z.object({ email: z.string().email(), password: z.string().min(1) });
+  const schema = z.object({ email: z.string().email().transform(normalizeEmail), password: z.string().min(1) });
   const { email, password } = schema.parse(req.body);
 
   const demoAccount = getDemoAccount(email, password);
