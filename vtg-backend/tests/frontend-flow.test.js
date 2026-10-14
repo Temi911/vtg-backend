@@ -2,25 +2,28 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+process.env.NODE_ENV = 'test';
+process.env.ALLOW_LOCAL_EMAIL_VERIFICATION = 'true';
 const app = require('../src/server');
 
 const htmlPath = path.join(__dirname, '..', '..', 'frontend-v3.html');
 const html = fs.readFileSync(htmlPath, 'utf8');
 
 test('current VTG frontend exposes the core trade interface', () => {
-  assert.match(html, /id="newsBtn"/);
-  assert.match(html, /id="mapBtn"/);
+  assert.match(html, /id="newsDrawer"/);
+  assert.match(html, /id="mapDrawer"/);
+  assert.match(html, /id="atlasHeaderBtn"/);
   assert.match(html, /id="authForm"/);
-  assert.match(html, /data-role="buyer"/);
-  assert.match(html, /data-role="supplier"/);
-  assert.match(html, /data-role="bank"/);
+  assert.match(html, /data-auth-role="buyer"/);
+  assert.match(html, /data-auth-role="supplier"/);
+  assert.match(html, /data-auth-role="bank"/);
 });
 
 test('frontend includes trade calculator, cart and currency conversion hooks', () => {
-  assert.match(html, /vtg-commerce\.js/);
+  assert.match(html, /vtg-cart-calculator\.js/);
   assert.match(html, /api\/auth\/send-verification-code/);
   assert.match(html, /vtg-market-news\.js/);
-  assert.match(html, /map-enhancer\.js/);
+  assert.match(html, /vtg-site-navigation\.js/);
 });
 
 test('verification-code endpoint returns a clear delivery status payload', async () => {
@@ -54,6 +57,9 @@ test('verification code helper switches to SMTP delivery when configured', async
   process.env.SMTP_PASS = 'secret';
   process.env.SMTP_FROM = 'vtg@example.com';
 
+  const nodemailer = require('nodemailer');
+  const originalCreateTransport = nodemailer.createTransport;
+  nodemailer.createTransport = () => ({ sendMail: async () => ({ messageId: 'test-message' }) });
   const authControllerPath = require.resolve('../src/controllers/auth.controller');
   delete require.cache[authControllerPath];
   const authController = require('../src/controllers/auth.controller');
@@ -64,5 +70,6 @@ test('verification code helper switches to SMTP delivery when configured', async
     assert.equal(result.code.length, 6);
   } finally {
     delete require.cache[authControllerPath];
+    nodemailer.createTransport = originalCreateTransport;
   }
 });
