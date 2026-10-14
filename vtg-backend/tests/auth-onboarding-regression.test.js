@@ -5,8 +5,10 @@ const path = require('node:path');
 
 const controllerPath = path.join(__dirname, '..', 'src', 'controllers', 'auth.controller.js');
 const middlewarePath = path.join(__dirname, '..', 'src', 'middleware', 'auth.js');
+const signinPath = path.join(__dirname, '..', '..', 'signin.html');
 const controller = fs.readFileSync(controllerPath, 'utf8');
 const middleware = fs.readFileSync(middlewarePath, 'utf8');
+const signin = fs.readFileSync(signinPath, 'utf8');
 
 test('agent signup persists the generated VTG ID and marketing preferences', () => {
   assert.match(controller, /INSERT INTO users \(email, phone, password_hash, role, full_name, preferred_language, is_verified, vtg_user_id, marketing_subscribed, marketing_unsubscribe_token\)/);
@@ -27,4 +29,11 @@ test('supplier and buyer registration retain server-side geographic restrictions
 test('protected workspace routes require acceptance of the current agreement', () => {
   assert.match(middleware, /user_agreements WHERE user_id=\$1 AND agreement_version=\$2/);
   assert.match(middleware, /AGREEMENT_REQUIRED/);
+});
+
+test('sign-in exposes agent access and routes each role to the appropriate workspace', () => {
+  assert.match(signin, /data-role="agent"/);
+  assert.match(signin, /location\.href='\/agent-dashboard\.html'/);
+  assert.match(signin, /location\.href='\/verification\.html'/);
+  assert.match(signin, /role==='agent'\?'\/agent\.html'/);
 });
