@@ -31,7 +31,7 @@ Status: CI green (14/14 tests); awaiting staging integration and rendered-browse
 
 ## Validation status
 
-GitHub Actions completed successfully on the Phase 2 branch: **14 tests passed, 0 failed**. The tests include the agent SQL regression, email normalization, geographic restrictions, agreement gating, role-aware sign-in routes, marketplace-controller syntax, demo login, current landing-page hooks, local-only verification fallback, and SMTP helper behavior. No successful live registration, email delivery, password reset, or role-login session has been claimed.
+GitHub Actions completed successfully on the Phase 2 branch: **14 tests passed, 0 failed**. The latest Vercel preview is READY; all 10 auth/onboarding pages tested returned HTTP 200, non-empty HTML, and the shared navigation script. This was an HTTP/source smoke test, not a rendered-browser visual test. The tests include the agent SQL regression, email normalization, geographic restrictions, agreement gating, role-aware sign-in routes, marketplace-controller syntax, demo login, current landing-page hooks, local-only verification fallback, and SMTP helper behavior. No successful live registration, email delivery, password reset, or role-login session has been claimed.
 
 Remaining acceptance gates:
 1. Test buyer, supplier, bank, and agent signup against staging, including wrong-country rejection, duplicate email, expired/incorrect code, and missing required fields.
