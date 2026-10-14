@@ -99,6 +99,13 @@ body :is(button,.btn,.cardLink):focus-visible,body :is(a,input,select,textarea):
 html[data-theme="dark"] body :is(.nav,header){background:rgba(13,17,23,.96)!important}
 html[data-theme="dark"] body :is(.helpCard,.introBox,.contactMini,.enquiry,.form){background-color:var(--vtg-card-bg)!important;color:var(--vtg-text)!important}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*::before,*::after{transition:none!important;animation:none!important}}
+
+/* Keep the photographic hero's foreground palette independent of page theme tokens. */
+.heroIn h1{color:#fff!important}
+.heroIn p{color:#d9e0e7!important}
+.heroIn .eyebrow{color:#ff6a70!important}
+.heroIn .heroMeta span{color:#eef2f5!important}
+
 </style>
 <style id="footer-page-photo-style">.footerPagePhoto{width:min(1160px,calc(100% - 40px));margin:0 auto 42px;overflow:hidden;border-radius:24px;border:1px solid rgba(120,130,140,.18);box-shadow:0 18px 48px rgba(25,25,25,.09);background:#11161d}.footerPagePhoto img{display:block;width:100%;height:clamp(210px,30vw,360px);object-fit:cover;object-position:center 48%}@media(max-width:520px){.footerPagePhoto{width:calc(100% - 28px);border-radius:17px;margin-bottom:30px}.footerPagePhoto img{height:210px}}</style>
 <style id="contact-theme-contrast-final">
