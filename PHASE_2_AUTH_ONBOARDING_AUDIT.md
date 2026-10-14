@@ -6,6 +6,7 @@ Status: implementation pass started; not production-certified.
 
 ## Work implemented
 
+- Fixed a production backend boot blocker found in Railway logs: `marketplace.controller.js` had a corrupted duplicate tail after `module.exports`, producing `SyntaxError: Unexpected token ')'` and failing the `/health` deployment check. Removed the stray duplicate tail while preserving the complete exports and primary implementations.
 - Fixed the agent account registration INSERT. It previously listed six user columns but supplied eight values, which would make agent signup fail at the database layer. The insert now persists the generated VTG user ID, marketing opt-in, and unsubscribe token consistently with the other registration roles.
 - Normalized email addresses to trimmed lowercase during signup validation, email-code send/verify, and login validation. This aligns account creation and login with the verification service's existing email normalization.
 - Added an Agent role to the sign-in role selector so agent accounts can sign in without being incorrectly treated as buyers.
@@ -25,7 +26,7 @@ Status: implementation pass started; not production-certified.
 
 ## Validation status
 
-Source-level checks were added but **have not yet been executed in a local Node runtime in this environment**. No successful live registration, email delivery, password reset, or role-login session has been claimed.
+Source-level JavaScript parsing passed for the edited marketplace controller, auth controller, regression test file, and both inline sign-in scripts. The regression test suite itself **has not yet been executed in a local Node runtime in this environment**. No successful live registration, email delivery, password reset, or role-login session has been claimed.
 
 Before marking Phase 2 complete:
 1. Run `npm test` in `vtg-backend/` and resolve all failures.
@@ -33,7 +34,7 @@ Before marking Phase 2 complete:
 3. Verify SMTP delivery, code expiry/one-time use, password recovery, agreement acceptance, and refresh-token behavior.
 4. Test logged-out and cross-role workspace/API access, including record ownership checks.
 5. Run desktop and mobile browser tests in light and dark themes for sign-in, signup, verification, account help, and agreement pages.
-6. Confirm Railway API health and the exact Vercel preview deployment before merging.
+6. Deploy the repaired backend only to a safe staging environment first, then confirm Railway API health and the exact Vercel preview deployment before merging. The current Railway production environment still points at `main`; its latest deployment failed, while an older deployment is still marked online. The Phase 2 branch fix has not been deployed to Railway.
 
 ## Important deployment boundary
 
