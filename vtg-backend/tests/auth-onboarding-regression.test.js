@@ -9,6 +9,7 @@ const middlewarePath = path.join(__dirname, '..', 'src', 'middleware', 'auth.js'
 const signinPath = path.join(__dirname, '..', '..', 'signin.html');
 const marketplaceControllerPath = path.join(__dirname, '..', 'src', 'controllers', 'marketplace.controller.js');
 const accountSupportPath = path.join(__dirname, '..', 'src', 'controllers', 'account-support.controller.js');
+const readSource = relativePath => fs.readFileSync(path.join(__dirname, '..', relativePath), 'utf8');
 const controller = fs.readFileSync(controllerPath, 'utf8');
 const middleware = fs.readFileSync(middlewarePath, 'utf8');
 const signin = fs.readFileSync(signinPath, 'utf8');
@@ -51,4 +52,33 @@ test('account support accepts the agent role and normalizes the reply-to email',
   const supportController = fs.readFileSync(accountSupportPath, 'utf8');
   assert.match(supportController, /z\.enum\(\['buyer','supplier','bank','agent','admin'\]\)/);
   assert.match(supportController, /const email = parsed\.data\.email\.toLowerCase\(\)/);
+});
+
+
+test('admin and agent API routes enforce server-side role guards', () => {
+  const adminRoutes = readSource('src/routes/admin.routes.js');
+  const agentRoutes = readSource('src/routes/agent.routes.js');
+  assert.match(adminRoutes, /router\.use\(requireAuth,\s*requireRole\('admin'\)\)/);
+  assert.match(agentRoutes, /requireRole\('agent'\)/);
+  assert.match(agentRoutes, /requireRole\('admin'\)/);
+});
+
+test('document and conversation APIs enforce authentication and record-level access', () => {
+  const documentRoutes = readSource('src/routes/documents.routes.js');
+  const documentController = readSource('src/controllers/documents.controller.js');
+  const messageRoutes = readSource('src/routes/messages.routes.js');
+  const messageController = readSource('src/controllers/messages.controller.js');
+  assert.match(documentRoutes, /router\.get\('\/:id\/download',\s*requireAuth/);
+  assert.match(documentController, /getDocumentAccess/);
+  assert.match(documentController, /You do not have access to this document/);
+  assert.match(messageRoutes, /router\.post\('\/:conversationId\/messages',\s*requireAuth/);
+  assert.match(messageController, /assertParticipant\(req\.params\.conversationId, req\.user\.id\)/);
+});
+
+test('order and product mutations check participant or supplier ownership', () => {
+  const orderController = readSource('src/controllers/orders.controller.js');
+  const productController = readSource('src/controllers/products.controller.js');
+  assert.match(orderController, /You do not have access to this order/);
+  assert.match(orderController, /Only the supplier can advance this order to this milestone/);
+  assert.match(productController, /existing\.rows\[0\]\.supplier_id !== req\.user\.id/);
 });
