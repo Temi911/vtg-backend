@@ -133,10 +133,17 @@ async function issueEmailVerificationCode(email, language='en') {
   await query(`INSERT INTO email_verifications (email, code_hash, expires_at) VALUES ($1,$2,$3) ON CONFLICT (email) DO UPDATE SET code_hash=EXCLUDED.code_hash, expires_at=EXCLUDED.expires_at, created_at=NOW()`, [normalizedEmail, codeHash, expiresAt]);
   const sent = await dispatchVerificationEmail(normalizedEmail, code, language);
   if (!sent) {
+    const localFallbackAllowed =
+      String(process.env.ALLOW_LOCAL_EMAIL_VERIFICATION || '').toLowerCase() === 'true' &&
+      !['production', 'staging'].includes(String(process.env.NODE_ENV || '').toLowerCase());
+    if (localFallbackAllowed) {
+      console.info(`[VTG local verification] ${normalizedEmail}: ${code}`);
+      return { sent: true, code, deliveryMode: 'local-log' };
+    }
     await query('DELETE FROM email_verifications WHERE email = $1', [normalizedEmail]);
     throw new AppError('We could not deliver the verification email. Please try again later.', 502, 'EMAIL_DELIVERY_FAILED');
   }
-  return { sent: true };
+  return { sent: true, code, deliveryMode: 'smtp' };
 }
 
 async function consumeEmailVerificationCode(email, code) {
@@ -476,6 +483,8 @@ const sendVerificationCode = asyncHandler(async (req, res) => {
     ok: true,
     message: 'A verification code has been sent to your email address.',
     email,
+    deliveryMode: verification.deliveryMode,
+    ...(verification.deliveryMode === 'local-log' ? { code: verification.code } : {}),
   });
 });
 
