@@ -90,6 +90,30 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--lux-gold);outline-o
 .vtg-chart text{font-family:Manrope,Arial,sans-serif}
 @media(prefers-reduced-motion:reduce){button,a,.tile,.actionTile{transition:none!important}.heroGlobe{animation:none!important}}
 
+
+/* Layout and navigation hardening: keep each workspace view isolated. */
+.page:not(.active){display:none!important}
+.page.active{display:block!important;min-width:0}
+#page-overview .commandHero{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);min-width:0}
+#page-overview .commandCopy,#page-overview .globeStage{min-width:0}
+#page-overview .vtg-real-earth{width:min(100%,360px);flex:0 1 360px;aspect-ratio:1}
+#page-overview .vtg-premium-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);min-width:0}
+#page-overview .vtg-chart{display:block;width:100%;height:auto}
+@media(max-width:900px){
+ #page-overview .commandHero{grid-template-columns:minmax(0,1fr)}
+ #page-overview .commandCopy{padding:clamp(22px,5vw,36px)}
+ #page-overview .globeStage{min-height:320px;padding:10px 12px 70px}
+ #page-overview .vtg-real-earth{width:min(78vw,330px)}
+ #page-overview .vtg-premium-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:520px){
+ #page-overview .commandCopy h1{font-size:clamp(27px,8vw,34px);overflow-wrap:normal}
+ #page-overview .heroButtons .btn{max-width:100%;white-space:normal}
+ #page-overview .globeStage{min-height:290px}
+ #page-overview .vtg-earth-pin{font-size:9px;padding:6px 7px}
+ #page-overview .vtg-premium-card{padding:16px}
+ #page-overview .vtg-kpi-row{grid-template-columns:minmax(0,1fr)}
+}
 </style></head><body><div class="topline"></div><div class="app">
 <aside class="sidebar" id="sidebar"><a class="brand" href="/frontend-v3.html"><img class="logo" src="/assets/vtg-logo.svg" alt="VTG"><span><strong>VINTAGE TRADE GLOBAL</strong><small>BUYER WORKSPACE</small></span></a><div class="label" data-i18n="workspace">Workspace</div><nav>
 <div><button class="groupBtn" data-group="work" aria-expanded="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="overview">Overview</span><span class="chev">⌄</span></button><div class="items" data-items="work"><a href="#overview" data-view="overview" class="active">▦ <span data-i18n="dashboard">Dashboard</span></a></div></div>
@@ -107,6 +131,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--lux-gold);outline-o
     <div class="globeTag tagTop"><span class="tagDot"></span> AFRICA · CHINA · KOREA</div>
     <div class="globeFoot"><span><b>Trade Atlas</b><small>Earth view · trade corridors</small></span><button data-view="atlas" aria-label="Open Trade Atlas">Explore atlas <span>↗</span></button></div>
   </div>
+</div>
   <div class="vtg-premium-grid">
     <section class="vtg-premium-card"><div class="vtg-lux-heading"><span class="vtg-lux-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19H21"/><path d="M8 16v-4M13 16V7M18 16v-7"/></svg></span><div><span class="vtg-card-kicker">Buyer intelligence</span><h2 style="margin-top:5px">Monthly transaction overview</h2></div></div>
       <p>Visual summary of your recorded transactions. Live totals will appear when your buyer account is connected.</p>
@@ -118,42 +143,6 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--lux-gold);outline-o
       <p class="vtg-map-note">These are status examples only. Official approval states require verified document or bank workflows.</p><button class="btn ghost" data-view="documents">Open trade documents ↗</button>
     </section>
   </div>
-    <div class="globeTag tagTop"><span class="tagDot"></span> AFRICA · CHINA · KOREA</div>
-    <svg class="heroGlobe" viewBox="0 0 480 440" role="img" aria-label="Stylised globe with trade routes between Africa and Asia">
-      <defs><radialGradient id="ocean" cx="33%" cy="28%" r="75%"><stop offset="0" stop-color="#285f78"/><stop offset=".54" stop-color="#143448"/><stop offset="1" stop-color="#071622"/></radialGradient><linearGradient id="land" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#efbca0"/><stop offset="1" stop-color="#a84443"/></linearGradient><clipPath id="sphere"><circle cx="240" cy="220" r="157"/></clipPath><filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-      <ellipse cx="240" cy="220" rx="204" ry="66" transform="rotate(-19 240 220)" fill="none" stroke="#d98277" stroke-opacity=".42" stroke-width="1.3"/><ellipse cx="240" cy="220" rx="187" ry="91" transform="rotate(32 240 220)" fill="none" stroke="#74b9c7" stroke-opacity=".38" stroke-width="1.2"/>
-      <circle cx="240" cy="220" r="157" fill="url(#ocean)" stroke="#79b5c7" stroke-opacity=".6" stroke-width="1.4"/>
-      <g clip-path="url(#sphere)" fill="none" stroke="#6ca0b0" stroke-opacity=".24"><ellipse cx="240" cy="220" rx="156" ry="48"/><ellipse cx="240" cy="220" rx="156" ry="96"/><ellipse cx="240" cy="220" rx="58" ry="157"/><ellipse cx="240" cy="220" rx="110" ry="157"/><path d="M82 220h316M99 151h282M99 289h282"/></g>
-      <g clip-path="url(#sphere)" fill="url(#land)" stroke="#f3c7ae" stroke-opacity=".28" stroke-width="1.2">
-        <path d="M114 139l14-22 31-11 20 12 5 18 27 4 16 19-11 17-22 6-9 24-18 13-5 29-15 24-12-4-4-28-14-23-1-25-14-14-2-22 12-17z"/>
-        <path d="M160 249l20 7 18 24 5 34-12 34-17 28-13-9-5-28-12-20 3-31z"/>
-        <path d="M222 118l26-19 38 6 13 15 32 2 23 20-4 17-25 6-17 24-26-2-16 17-24-8-4-21-17-11-14-24z"/>
-        <path d="M272 191l20 8 12 25-8 20-10 27-15 10-8-18-10-22 4-25z"/>
-        <path d="M329 139l27-11 23 10 12 20-14 14-18-6-12 13-14-10z"/>
-        <path d="M356 183l22 8 10 19-11 15-18-7-11-19z"/>
-        <path d="M386 145l16 7 8 18-11 14-14-10z"/>
-      </g>
-      <g fill="none" stroke="#ffb1a4" stroke-width="2.2" stroke-linecap="round" filter="url(#glow)"><path d="M173 238Q237 132 345 151"/><path d="M173 238Q244 282 294 231"/></g>
-      <g fill="#fff" stroke="#ff9c8e" stroke-width="3"><circle cx="173" cy="238" r="5"/><circle cx="345" cy="151" r="5"/><circle cx="294" cy="231" r="5"/></g>
-      <g font-family="Manrope,Arial,sans-serif" font-size="10" font-weight="800" fill="#fff"><text x="118" y="261">LAGOS</text><text x="351" y="143">CHINA</text><text x="300" y="247">S. KOREA</text></g>
-      <circle cx="240" cy="220" r="166" fill="none" stroke="#8bbec9" stroke-opacity=".18" stroke-width="1"/>
-    </svg>
-    <div class="globeFoot"><span><b>Trade Atlas</b><small>Connected corridors across continents</small></span><button data-view="atlas" aria-label="Open Trade Atlas">Explore atlas <span>↗</span></button></div>
-    <div class="globePin pinOne"><span></span><b>West Africa</b><small>Destination markets</small></div><div class="globePin pinTwo"><span></span><b>East Asia</b><small>Supplier regions</small></div>
-  </div>
-  <aside class="marketMini" aria-label="Market overview">
-    <h3>Market Overview <span style="float:right;color:#57d6a0;font-size:9px">● LIVE VIEW</span></h3>
-    <p class="marketSub">Trade corridors and indicative freight context for planning.</p>
-    <div class="marketTabs"><button class="active" type="button">Top routes</button><button type="button" data-view="intelligence">Freight</button><button type="button" data-view="finance">Currency</button></div>
-    <div class="marketRows">
-      <div class="marketRow"><span>China → Nigeria</span><b>Compare</b><em>↗</em></div>
-      <div class="marketRow"><span>China → Europe</span><b>Compare</b><em>↗</em></div>
-      <div class="marketRow"><span>South Korea → Nigeria</span><b>Compare</b><em>↗</em></div>
-      <div class="marketRow"><span>West Africa ports</span><b>Explore</b><em>↗</em></div>
-    </div>
-    <button class="btn" data-view="intelligence">View market intelligence →</button>
-  </aside>
-</div>
 <div class="overviewHeading"><div><span class="eyebrow">YOUR OPERATIONS</span><h2>Trade at a glance</h2><p>Keep the next decision and the next milestone close at hand.</p></div><button class="textAction" data-view="orders">View trade journey <span>→</span></button></div>
 <div class="stats redesignedStats"><article class="stat"><span class="statIcon">↗</span><small>RFQ drafts</small><strong id="statRfqs">0</strong><p>Prepared on this device</p></article><article class="stat"><span class="statIcon">▣</span><small>Cart items</small><strong id="statCart">0</strong><p>Items in your working cart</p></article><article class="stat"><span class="statIcon">▤</span><small>Trade updates</small><strong id="statFeed">0</strong><p>Your saved feed drafts</p></article><article class="stat"><span class="statIcon">✓</span><small>Checks to review</small><strong id="statVerify">0</strong><p>Product checks in progress</p></article></div>
 <div class="journeyCard">
