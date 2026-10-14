@@ -18,6 +18,7 @@ Status: CI green (14/14 tests); awaiting staging integration and rendered-browse
 - Added a GitHub Actions workflow to run `npm ci` and `npm test` for Phase 2 and relevant pull requests. The lockfile was synchronized with the declared dependency tree.
 - Added an opt-in local verification-code fallback for development/testing only. It requires `ALLOW_LOCAL_EMAIL_VERIFICATION=true`, is disabled in production/staging, and returns the code only in `local-log` mode. Added the verification table and auth identity/marketing fields to the local fallback schema.
 - Updated legacy tests to match the current landing page, explicitly configure demo credentials in the demo test, and mock SMTP rather than attempting a real network delivery.
+- Follow-up auth support check found that the account-help API rejected `agent` as a role. Added `agent` to the accepted support-role list and normalized the contact email used for replies. Added a regression test for both behaviors.
 
 ## Auth and onboarding controls reviewed
 
@@ -31,7 +32,7 @@ Status: CI green (14/14 tests); awaiting staging integration and rendered-browse
 
 ## Validation status
 
-GitHub Actions completed successfully on the Phase 2 branch: **14 tests passed, 0 failed**. The latest Vercel preview is READY; all 10 auth/onboarding pages tested returned HTTP 200, non-empty HTML, and the shared navigation script. This was an HTTP/source smoke test, not a rendered-browser visual test. The tests include the agent SQL regression, email normalization, geographic restrictions, agreement gating, role-aware sign-in routes, marketplace-controller syntax, demo login, current landing-page hooks, local-only verification fallback, and SMTP helper behavior. No successful live registration, email delivery, password reset, or role-login session has been claimed.
+GitHub Actions completed successfully on the Phase 2 branch: **15 tests passed, 0 failed**. The latest Vercel preview is READY; all 10 auth/onboarding pages tested returned HTTP 200, non-empty HTML, and the shared navigation script. This was an HTTP/source smoke test, not a rendered-browser visual test. The tests include the agent SQL and support-role regressions, email normalization, geographic restrictions, agreement gating, role-aware sign-in routes, marketplace-controller syntax, demo login, current landing-page hooks, local-only verification fallback, and SMTP helper behavior. No successful live registration, email delivery, password reset, or role-login session has been claimed.
 
 Remaining acceptance gates:
 1. Test buyer, supplier, bank, and agent signup against staging, including wrong-country rejection, duplicate email, expired/incorrect code, and missing required fields.
