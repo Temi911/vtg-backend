@@ -2,7 +2,7 @@
 
 Branch: `phase-2-auth-onboarding`  
 Base: `phase-1-site-stability`  
-Status: CI green (14/14 tests); awaiting staging integration and rendered-browser validation.
+Status: CI green (19/19 tests); awaiting staging integration and rendered-browser validation.
 
 ## Work implemented
 
@@ -21,6 +21,7 @@ Status: CI green (14/14 tests); awaiting staging integration and rendered-browse
 - Follow-up auth support check found that the account-help API rejected `agent` as a role. Added `agent` to the accepted support-role list and normalized the contact email used for replies.
 - Completed the public Account Help experience for Trade Agents: added the Agent role selector, locked role handling, role-specific password-reset/verification/support guidance, and agent issue choices. This fixes a front-end gap where `?role=agent` could leave the help page without matching role content.
 - Added regression coverage for the Account Help Agent path.
+- Added local-time/manual theme initialization and dark-theme contrast rules to `signup-agreement.html`, `privacy.html`, `terms.html`, and `agent-dashboard.html` after source checks found those pages did not consistently inherit VTG's shared theme preference.
 - Added static authorization regression checks confirming that admin and agent routes use server-side role guards, document and conversation endpoints check record-level access, and order/product mutations enforce participant or supplier ownership. These are source-level regressions, not substitutes for live cross-role API tests.
 
 ## Auth and onboarding controls reviewed
@@ -35,14 +36,14 @@ Status: CI green (14/14 tests); awaiting staging integration and rendered-browse
 
 ## Validation status
 
-GitHub Actions completed successfully on the Phase 2 branch: **19 tests passed, 0 failed**. The latest Vercel preview is READY; all 10 auth/onboarding pages tested returned HTTP 200, non-empty HTML, and the shared navigation script. This was an HTTP/source smoke test, not a rendered-browser visual test. The tests include agent SQL and support-role regressions, email normalization, geographic restrictions, agreement gating, role-aware sign-in routes, Agent Account Help, marketplace-controller syntax, demo login, current landing-page hooks, local-only verification fallback, SMTP helper behavior, and static authorization checks for admin/agent routes, document/message access, and order/product ownership. No successful live registration, email delivery, password reset, or role-login session has been claimed.
+GitHub Actions completed successfully on the Phase 2 branch: **19 tests passed, 0 failed**. The latest Vercel preview is READY. Ten auth/onboarding pages returned HTTP 200 with non-empty HTML and the shared navigation script. After the follow-up theme fixes, `privacy.html`, `terms.html`, `signup-agreement.html`, `agent-dashboard.html`, `signin.html`, and `signup.html` were rechecked on the latest preview and returned HTTP 200; the first four now contain explicit local-time/manual theme initialization and dark-theme CSS. These remain HTTP/source checks, not rendered-browser visual tests. GitHub Actions run `38615636072` completed successfully after the theme work. The tests include agent SQL and support-role regressions, email normalization, geographic restrictions, agreement gating, role-aware sign-in routes, Agent Account Help, marketplace-controller syntax, demo login, current landing-page hooks, local-only verification fallback, SMTP helper behavior, and static authorization checks for admin/agent routes, document/message access, and order/product ownership. No successful live registration, email delivery, password reset, or role-login session has been claimed.
 
 Remaining acceptance gates:
 1. Test buyer, supplier, bank, and agent signup against staging, including wrong-country rejection, duplicate email, expired/incorrect code, and missing required fields.
 2. Verify real SMTP delivery, code expiry/one-time use, password recovery, agreement acceptance, and refresh-token behavior.
 3. Test logged-out and cross-role workspace/API access, including record ownership checks.
-4. Run desktop and mobile rendered-browser tests in light and dark themes for sign-in, signup, verification, account help, and agreement pages. HTTP smoke checks alone do not prove visual contrast or interaction correctness.
-5. Deploy the repaired backend only to a safe staging environment first, then confirm Railway API health before merging. The current Railway production environment still points at `main`; its latest deployment failed, while an older deployment is still marked online. The Phase 2 branch fix has not been deployed to Railway.
+4. Run desktop and mobile rendered-browser tests in light and dark themes for sign-in, signup, verification, account help, agreement, privacy, terms, and agent dashboard pages. HTTP smoke checks alone do not prove visual contrast or interaction correctness.
+5. When Railway work resumes, deploy the repaired backend to a safe staging environment first and confirm API health before any production promotion. Railway work is intentionally paused for now; the Phase 2 branch fix has not been deployed to Railway.
 
 ## Important deployment boundary
 
