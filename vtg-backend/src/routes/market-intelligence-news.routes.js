@@ -19,7 +19,7 @@ router.get('/news', async (req, res, next) => {
        ORDER BY COALESCE(published_at, discovered_at) DESC LIMIT $1`, params);
     res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
     let lastSync = null;
-    try { const sync = await query(\"SELECT value FROM app_settings WHERE key = 'market_news_last_sync' LIMIT 1\"); lastSync = sync.rows[0]?.value || null; } catch (_) {}
+    try { const sync = await query("SELECT value FROM app_settings WHERE key = 'market_news_last_sync' LIMIT 1"); lastSync = sync.rows[0]?.value || null; } catch (_) {}
     res.json({ items: result.rows, count: result.rowCount, generatedAt: new Date().toISOString(), lastSync });
   } catch (err) { next(err); }
 });
