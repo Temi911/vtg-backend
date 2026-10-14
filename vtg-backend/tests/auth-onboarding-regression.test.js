@@ -7,6 +7,7 @@ const { spawnSync } = require('node:child_process');
 const controllerPath = path.join(__dirname, '..', 'src', 'controllers', 'auth.controller.js');
 const middlewarePath = path.join(__dirname, '..', 'src', 'middleware', 'auth.js');
 const signinPath = path.join(__dirname, '..', '..', 'signin.html');
+const accountHelpPath = path.join(__dirname, '..', '..', 'account-help.html');
 const marketplaceControllerPath = path.join(__dirname, '..', 'src', 'controllers', 'marketplace.controller.js');
 const accountSupportPath = path.join(__dirname, '..', 'src', 'controllers', 'account-support.controller.js');
 const readSource = relativePath => fs.readFileSync(path.join(__dirname, '..', relativePath), 'utf8');
@@ -81,4 +82,14 @@ test('order and product mutations check participant or supplier ownership', () =
   assert.match(orderController, /You do not have access to this order/);
   assert.match(orderController, /Only the supplier can advance this order to this milestone/);
   assert.match(productController, /existing\.rows\[0\]\.supplier_id !== req\.user\.id/);
+});
+
+
+test('account help supports the Trade Agent role for password, verification, and support flows', () => {
+  const accountHelp = fs.readFileSync(accountHelpPath, 'utf8');
+  assert.match(accountHelp, /data-role="agent"/);
+  assert.match(accountHelp, /\['buyer','supplier','bank','agent','admin'\]/);
+  assert.match(accountHelp, /agent:\{title:'Trade agent account support'/);
+  assert.match(accountHelp, /agent:\['Forgot agent password'/);
+  assert.match(accountHelp, /Agent email or password is not accepted/);
 });
