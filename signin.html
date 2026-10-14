@@ -223,9 +223,9 @@ html:not([data-theme="dark"]) body .page .layout .formSide .formIntro .sub {
 </main>
 <script>
 const API=window.VTG_API_BASE||'';
-document.getElementById('themeToggle').onclick=()=>{const root=document.documentElement;const next=root.getAttribute('data-theme')==='dark'?'light':'dark';root.setAttribute('data-theme',next);try{localStorage.setItem('vtg-theme',next);localStorage.setItem('vtg-theme-mode','manual')}catch(e){}};
-try{const saved=localStorage.getItem('vtg-theme');if(saved==='dark'||saved==='light')document.documentElement.setAttribute('data-theme',saved)}catch(e){}
-let role=['buyer','supplier','bank'].includes(new URLSearchParams(location.search).get('role'))?new URLSearchParams(location.search).get('role'):'buyer';const nextPath=new URLSearchParams(location.search).get('next');const safeNext=nextPath==='/intelligence-centre.html'?nextPath:'';
+document.getElementById('themeToggle').onclick=()=>{const root=document.documentElement;const next=root.getAttribute('data-theme')==='dark'?'light':'dark';if(window.vtgSetThemePreference){window.vtgSetThemePreference(next)}else{root.setAttribute('data-theme',next);try{localStorage.setItem('vtg-theme-preference',next)}catch(e){}}const picker=document.getElementById('vtgThemePreference');if(picker)picker.value=next;};
+try{if(!localStorage.getItem('vtg-theme-preference')){const saved=localStorage.getItem('vtg-theme');const mode=localStorage.getItem('vtg-theme-mode');if((saved==='dark'||saved==='light')&&mode==='manual')localStorage.setItem('vtg-theme-preference',saved)}}catch(e){}
+let role=['buyer','supplier','bank'].includes(new URLSearchParams(location.search).get('role'))?new URLSearchParams(location.search).get('role'):'buyer';const nextPath=new URLSearchParams(location.search).get('next');const safeNext=['/intelligence-centre.html','/vtg-ai-dashboard.html'].includes(nextPath)?nextPath:'';
 const signup=document.getElementById('signup'),msg=document.getElementById('msg'),accountHelpLink=document.getElementById('accountHelpLink');
 function syncRole(){document.querySelectorAll('[data-role]').forEach(x=>x.classList.toggle('active',x.dataset.role===role));accountHelpLink.href='/account-help.html?role='+encodeURIComponent(role);}
 document.querySelectorAll('[data-role]').forEach(b=>b.onclick=()=>{role=b.dataset.role;syncRole();signup.href='/signup.html';signup.textContent='Create account';msg.textContent='';});
