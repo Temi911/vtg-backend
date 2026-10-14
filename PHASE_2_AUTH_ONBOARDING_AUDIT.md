@@ -12,7 +12,8 @@ Status: implementation pass started; not production-certified.
 - Added an Agent role to the sign-in role selector so agent accounts can sign in without being incorrectly treated as buyers.
 - Made the sign-in page's role selector responsive: four choices on desktop and two columns on mobile.
 - Corrected post-login routing: buyers go to the buyer dashboard; suppliers and banks go to the existing verification entry page; agents go to the agent dashboard. The agent role's sign-up link directs users to the public agent application page.
-- Added regression checks for the agent SQL shape, email normalization, geographic signup restrictions, agreement gating, and role-aware sign-in routes.
+- Added regression checks for the agent SQL shape, email normalization, geographic signup restrictions, agreement gating, role-aware sign-in routes, and a Node syntax check for the marketplace controller.
+- Added a GitHub Actions workflow to run `npm ci` and `npm test` for the backend on the Phase 1/2 branches and relevant pull requests.
 
 ## Auth and onboarding controls reviewed
 
@@ -26,7 +27,7 @@ Status: implementation pass started; not production-certified.
 
 ## Validation status
 
-Source-level JavaScript parsing passed for the edited marketplace controller, auth controller, regression test file, and both inline sign-in scripts. The regression test suite itself **has not yet been executed in a local Node runtime in this environment**. No successful live registration, email delivery, password reset, or role-login session has been claimed.
+Source-level JavaScript parsing passed for the edited marketplace controller, auth controller, regression test file, and both inline sign-in scripts. The regression test suite itself **has not yet completed in CI or been executed in a local Node runtime in this environment**; no GitHub Actions run was visible at the last check. No successful live registration, email delivery, password reset, or role-login session has been claimed.
 
 Before marking Phase 2 complete:
 1. Run `npm test` in `vtg-backend/` and resolve all failures.
