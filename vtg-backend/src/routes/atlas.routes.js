@@ -1,6 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { locations } = require('../../api/atlas-locations');
+const fs = require('fs');
+const path = require('path');
+const atlasLocationsPath = [
+  path.resolve(__dirname, '../../api/atlas-locations'),
+  path.resolve(__dirname, '../../../api/atlas-locations'),
+].find(candidate => fs.existsSync(candidate + '.js'));
+if (!atlasLocationsPath) throw new Error('VTG Atlas locations module could not be found.');
+const { locations } = require(atlasLocationsPath);
 
 const corridors = [
   {id:'NGTIN-CNSHA',name:'Tin Can Island → Shanghai',mode:'sea',from:'Tin Can Island Port',to:'Port of Shanghai',fromLng:3.3371,fromLat:6.4479,toLng:122.0647,toLat:30.6265},
