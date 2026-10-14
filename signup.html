@@ -32,7 +32,7 @@ html[data-theme="dark"] body .layout .story .trustline{color:#fff!important;-web
 html:not([data-theme="dark"]) body .layout .story .storyFoot,
 html[data-theme="dark"] body .layout .story .storyFoot{color:#fff1ef!important;-webkit-text-fill-color:#fff1ef!important;opacity:1!important;visibility:visible!important}
 </style>
-<script>(function(){try{document.documentElement.setAttribute('data-theme',((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark'))}catch(e){}})();</script>
+<script>(function(){try{var p=localStorage.getItem('vtg-theme-preference')||'auto';var h=new Date().getHours();document.documentElement.setAttribute('data-theme',p==='light'||p==='dark'?p:(h>=6&&h<18?'light':'dark'));}catch(e){}})();</script>
 </head>
 <body>
 <div class="topline"></div>
