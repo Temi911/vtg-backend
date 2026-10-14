@@ -18,7 +18,7 @@ function mailer() {
 }
 const submitAccountSupport = asyncHandler(async (req, res) => {
   const schema = z.object({
-    role: z.enum(['buyer','supplier','bank','admin']),
+    role: z.enum(['buyer','supplier','bank','agent','admin']),
     email: z.string().trim().email().max(254),
     issue: z.string().trim().min(3).max(120),
     description: z.string().trim().min(10).max(2000)
@@ -26,7 +26,8 @@ const submitAccountSupport = asyncHandler(async (req, res) => {
   const parsed = schema.safeParse(req.body);
   if (!parsed.success) throw new AppError(parsed.error.issues[0]?.message || 'Check the support form and try again.', 400, 'VALIDATION_ERROR');
   if (!emailReady()) throw new AppError('VTG support email delivery is temporarily unavailable. Please email vintageafricatrade@gmail.com directly.', 503, 'SUPPORT_EMAIL_UNAVAILABLE');
-  const { role, email, issue, description } = parsed.data;
+  const { role, issue, description } = parsed.data;
+  const email = parsed.data.email.toLowerCase();
   if (/password|verification code|one.time code|otp\s*[:=]/i.test(description)) {
     throw new AppError('For your security, do not include passwords or verification codes. Remove them and submit the request again.', 400, 'SENSITIVE_CONTENT');
   }

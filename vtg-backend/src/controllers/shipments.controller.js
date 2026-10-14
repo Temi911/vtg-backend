@@ -2,7 +2,14 @@ const { z } = require('zod');
 const { query, withTransaction } = require('../config/db');
 const { AppError } = require('../utils/AppError');
 const { asyncHandler } = require('../utils/asyncHandler');
-const { locations: atlasLocations } = require('../../api/atlas-locations');
+const fs = require('fs');
+const path = require('path');
+const atlasLocationsPath = [
+  path.resolve(__dirname, '../../api/atlas-locations'),
+  path.resolve(__dirname, '../../../api/atlas-locations'),
+].find(candidate => fs.existsSync(candidate + '.js'));
+if (!atlasLocationsPath) throw new Error('VTG Atlas locations module could not be found.');
+const { locations: atlasLocations } = require(atlasLocationsPath);
 const { getLiveVesselPosition } = require('../services/vessel-tracking.service');
 
 function resolveAtlasLocation(text) {
