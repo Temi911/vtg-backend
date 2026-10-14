@@ -19,7 +19,7 @@
 const API='';
 const auth=JSON.parse(localStorage.getItem('vtg-auth')||'{}'); const token=localStorage.getItem('vtg_access_token')||auth.accessToken||'';
 const app=document.getElementById('app');
-function nextForRole(role){if(role==='supplier'||role==='bank')return '/verification.html';if(role==='agent')return '/agent-dashboard.html';return '/trade-os.html'}
+function nextForRole(role){if(role==='supplier'||role==='bank')return '/verification.html';if(role==='agent')return '/agent-dashboard.html';return '/buyer-dashboard.html'}
 async function api(path,options={}){return fetch(API+path,{...options,headers:{'Content-Type':'application/json',Authorization:'Bearer '+token,...(options.headers||{})})}
 async function load(){
  if(!token){location.href='/';return}
