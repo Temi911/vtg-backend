@@ -15,7 +15,7 @@ function lcReference() {
 const requestSchema = z.object({
   orderId: z.string().uuid(),
   amountUsd: z.number().positive(),
-  issuingBankName: z.string().min(2),
+  issuingBankName: z.string().trim().min(2).max(200),
   expiryDate: z.string().optional(),
 });
 
@@ -27,6 +27,26 @@ const request = asyncHandler(async (req, res) => {
   if (order.buyer_id !== req.user.id) throw new AppError('Not your order', 403, 'FORBIDDEN');
   if (['cancelled', 'delivered'].includes(order.status)) throw new AppError('An LC cannot be requested for a cancelled or completed order', 409, 'ORDER_NOT_ELIGIBLE');
   if (Number(data.amountUsd) > Number(order.total_amount_usd)) throw new AppError('LC amount cannot exceed the order total', 422, 'AMOUNT_EXCEEDS_ORDER');
+  const { rows: matchingBanks } = await query(
+    `SELECT u.id, bp.bank_name
+       FROM users u
+       JOIN bank_profiles bp ON bp.user_id = u.id
+      WHERE u.role = 'bank'
+        AND u.is_verified = TRUE
+        AND u.business_verification_status = 'verified'
+        AND lower(trim(bp.bank_name)) = lower(trim($1))
+      ORDER BY u.id
+      LIMIT 2`,
+    [data.issuingBankName]
+  );
+  if (!matchingBanks.length) {
+    throw new AppError('No verified VTG bank account matches this issuing bank name.', 422, 'ISSUING_BANK_NOT_AVAILABLE');
+  }
+  if (matchingBanks.length > 1) {
+    throw new AppError('More than one verified VTG bank account matches this name. Contact VTG support to resolve the institution assignment.', 409, 'ISSUING_BANK_AMBIGUOUS');
+  }
+  const issuingBank = matchingBanks[0];
+
   const { rows: activeLcs } = await query(
     "SELECT id FROM letters_of_credit WHERE order_id = $1 AND status IN ('requested','issued','docs_presented') LIMIT 1",
     [order.id]
@@ -35,9 +55,9 @@ const request = asyncHandler(async (req, res) => {
 
   const reference = lcReference();
   const { rows } = await query(
-    `INSERT INTO letters_of_credit (reference, order_id, buyer_id, supplier_id, issuing_bank_name, amount_usd, expiry_date, status)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,'requested') RETURNING *`,
-    [reference, order.id, order.buyer_id, order.supplier_id, data.issuingBankName, data.amountUsd, data.expiryDate || null]
+    `INSERT INTO letters_of_credit (reference, order_id, buyer_id, supplier_id, issuing_bank_id, issuing_bank_name, amount_usd, expiry_date, status)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,'requested') RETURNING *`,
+    [reference, order.id, order.buyer_id, order.supplier_id, issuingBank.id, issuingBank.bank_name, data.amountUsd, data.expiryDate || null]
   );
 
   await audit.log(req.user.id, 'LC Requested', `${reference} — $${data.amountUsd} via ${data.issuingBankName}`, req.ip);
@@ -54,7 +74,7 @@ const listMine = asyncHandler(async (req, res) => {
     where = 'lc.supplier_id = $1';
     params = [req.user.id];
   } else if (req.user.role === 'bank') {
-    where = '(lc.issuing_bank_id = $1 OR (lc.issuing_bank_id IS NULL AND o.bank_id = $1))';
+    where = 'lc.issuing_bank_id = $1';
     params = [req.user.id];
   } else {
     throw new AppError('You do not have access to LCs', 403, 'FORBIDDEN');
@@ -85,7 +105,7 @@ const getOne = asyncHandler(async (req, res) => {
   const allowed =
     (req.user.role === 'buyer' && lc.buyer_id === req.user.id) ||
     (req.user.role === 'supplier' && lc.supplier_id === req.user.id) ||
-    (req.user.role === 'bank' && (lc.issuing_bank_id === req.user.id || (lc.issuing_bank_id == null && lc.order_bank_id === req.user.id)));
+    (req.user.role === 'bank' && lc.issuing_bank_id === req.user.id);
 
   if (!allowed) throw new AppError('You do not have access to this LC', 403, 'FORBIDDEN');
 
@@ -94,17 +114,13 @@ const getOne = asyncHandler(async (req, res) => {
 
 const issue = asyncHandler(async (req, res) => {
   const { rows: existingRows } = await query(
-    `SELECT lc.*, o.bank_id AS order_bank_id
-       FROM letters_of_credit lc
-       JOIN orders o ON o.id = lc.order_id
-      WHERE lc.id = $1`,
+    `SELECT * FROM letters_of_credit WHERE id = $1`,
     [req.params.id]
   );
   const lc = existingRows[0];
   if (!lc) throw new AppError('LC not found', 404);
 
-  const bankCanIssue = lc.issuing_bank_id === req.user.id ||
-    (lc.issuing_bank_id == null && (lc.order_bank_id === req.user.id || lc.order_bank_id == null));
+  const bankCanIssue = lc.issuing_bank_id === req.user.id;
   if (!bankCanIssue) throw new AppError('You are not authorized to issue this LC', 403, 'FORBIDDEN');
   if (lc.status !== 'requested') throw new AppError(`LC cannot be issued from status "${lc.status}"`, 409, 'INVALID_STATE');
 
