@@ -8,6 +8,7 @@ const controllerPath = path.join(__dirname, '..', 'src', 'controllers', 'auth.co
 const middlewarePath = path.join(__dirname, '..', 'src', 'middleware', 'auth.js');
 const signinPath = path.join(__dirname, '..', '..', 'signin.html');
 const marketplaceControllerPath = path.join(__dirname, '..', 'src', 'controllers', 'marketplace.controller.js');
+const accountSupportPath = path.join(__dirname, '..', 'src', 'controllers', 'account-support.controller.js');
 const controller = fs.readFileSync(controllerPath, 'utf8');
 const middleware = fs.readFileSync(middlewarePath, 'utf8');
 const signin = fs.readFileSync(signinPath, 'utf8');
@@ -43,4 +44,11 @@ test('sign-in exposes agent access and routes each role to the appropriate works
 test('marketplace controller parses successfully so the API can boot', () => {
   const result = spawnSync(process.execPath, ['--check', marketplaceControllerPath], { encoding: 'utf8' });
   assert.equal(result.status, 0, result.stderr || result.stdout || 'marketplace controller syntax check failed');
+});
+
+
+test('account support accepts the agent role and normalizes the reply-to email', () => {
+  const supportController = fs.readFileSync(accountSupportPath, 'utf8');
+  assert.match(supportController, /z\.enum\(\['buyer','supplier','bank','agent','admin'\]\)/);
+  assert.match(supportController, /const email = parsed\.data\.email\.toLowerCase\(\)/);
 });
