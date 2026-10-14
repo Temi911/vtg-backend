@@ -117,7 +117,7 @@ else if(issue==='business'){openMode('contact');setMessage('Business or institut
 else {openMode('contact');setMessage('Please prepare a support request with the issue details below.');}
 return;
 }else if(mode==='contact'){
-if(!data.email||!/^\\S+@\\S+\\.\\S+$/.test(data.email))throw Error('Enter a valid contact email.');
+if(!data.email||!/^\S+@\S+\.\S+$/.test(data.email))throw Error('Enter a valid contact email.');
 if(!data.issue||!data.description?.trim())throw Error('Choose an issue and describe what happened.');
 const r=await fetch('/api/auth/account-support',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role,email:data.email,issue:data.issue,description:data.description})});
 const d=await r.json().catch(()=>({}));
