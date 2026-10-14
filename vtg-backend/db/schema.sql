@@ -6,7 +6,7 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto"; -- for gen_random_uuid()
 
 -- ── ENUMS ──────────────────────────────────────────────────
-CREATE TYPE user_role       AS ENUM ('buyer','supplier','bank','admin');
+CREATE TYPE user_role       AS ENUM ('buyer','supplier','bank','agent','admin');
 CREATE TYPE buyer_type      AS ENUM ('individual','business','dealer','ngo');
 CREATE TYPE order_status    AS ENUM ('pending','confirmed','lc_issued','shipped','in_transit','arrived','customs','delivered','cancelled','disputed');
 CREATE TYPE lc_status       AS ENUM ('requested','issued','shipped','docs_presented','docs_verified','paid','rejected','expired');
@@ -32,8 +32,19 @@ CREATE TABLE users (
   location_lng      NUMERIC(9,6),
   is_verified       BOOLEAN NOT NULL DEFAULT FALSE,
   is_active         BOOLEAN NOT NULL DEFAULT TRUE,
+  vtg_user_id       TEXT UNIQUE,
+  business_verification_status TEXT NOT NULL DEFAULT 'not_required',
+  marketing_subscribed BOOLEAN NOT NULL DEFAULT FALSE,
+  marketing_unsubscribe_token TEXT UNIQUE,
   created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at        TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE email_verifications (
+  email       TEXT PRIMARY KEY,
+  code_hash   TEXT NOT NULL,
+  expires_at  TIMESTAMPTZ NOT NULL,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE TABLE buyer_profiles (
