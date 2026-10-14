@@ -15,7 +15,7 @@ Code baseline: `c25e7f0bb2f6d234674d63594663fbefd0f2ce8f`
 
 ## Repository and deployment evidence
 
-- GitHub reports `main` at `c25e7f0bb2f6d234674d63594663fbefd0f2ce8f`.
+- The frontend fix is committed as `c25e7f0bb2f6d234674d63594663fbefd0f2ce8f`; the audit report refresh is a subsequent documentation-only commit on `main`.
 - Vercel deployment `dpl_H6MZEQBjEsUm3obz4fPcYVjifJ7h`, for that exact commit, reached **READY** with target `production`; the `vtg-staging.vercel.app` alias is attached.
 - After that deployment became READY, HTTP fetches of the 11 paths below each returned **200 OK** and `text/html; charset=utf-8`: `/`, `/signin.html`, `/account-help.html`, `/contact.html`, `/privacy.html`, `/terms.html`, `/marketplace.html`, `/admin-os.html`, `/buyer-dashboard.html`, `/supplier.html`, and `/trade-atlas.html`.
 - The live `/account-help.html` response contains the corrected email pattern. This confirms deployed source delivery, not a submitted support request or end-to-end backend delivery.
