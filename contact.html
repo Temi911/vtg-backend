@@ -86,6 +86,19 @@ html[data-theme="light"] body .form .field :is(input,select,textarea){background
 html[data-theme="light"] body .form .field :is(input,textarea)::placeholder{color:#687783!important;opacity:1!important}
 html[data-theme="light"] body .form .field select option{background:#ffffff!important;color:#18232d!important}
 html[data-theme="light"] body .form .fixedValue{background:#f0f3f6!important;color:#18232d!important;-webkit-text-fill-color:#18232d!important}
+/* Phase 2 contrast hardening: use the same theme tokens for every contact-page surface. */
+:root{--vtg-page-bg:#f7f8fa;--vtg-card-bg:#fff;--vtg-text:#20252c;--vtg-muted:#596574;--vtg-border:#dce2e8;--vtg-soft:#f3f5f7}
+html[data-theme="dark"]{--vtg-page-bg:#0d1117;--vtg-card-bg:#151b22;--vtg-text:#eef3f6;--vtg-muted:#bdc7d1;--vtg-border:#35414c;--vtg-soft:#1b242d}
+body{background:var(--vtg-page-bg)!important;color:var(--vtg-text)!important}
+body :is(h1,h2,h3,h4,h5,h6,label,strong,legend,.nav,.hero,.sectionHead,.helpCard,.introBox,.contactMini,.enquiry,.form,.field){color:var(--vtg-text)}
+body :is(p,small,.muted,.hero p,.sectionHead p,.helpCard p,.introBox p,.contactMini p){color:var(--vtg-muted)}
+body :is(.nav,header,.helpCard,.introBox,.contactMini,.enquiry,.form,.field,fieldset){border-color:var(--vtg-border)}
+body :is(.helpCard,.introBox,.contactMini,.enquiry,.form,form,.field input,.field select,.field textarea,input,select,textarea){background-color:var(--vtg-card-bg);color:var(--vtg-text);border-color:var(--vtg-border)}
+body :is(input,select,textarea)::placeholder{color:var(--vtg-muted);opacity:1}
+body :is(button,.btn,.cardLink):focus-visible,body :is(a,input,select,textarea):focus-visible{outline:3px solid #d95a4e;outline-offset:3px}
+html[data-theme="dark"] body :is(.nav,header){background:rgba(13,17,23,.96)!important}
+html[data-theme="dark"] body :is(.helpCard,.introBox,.contactMini,.enquiry,.form){background-color:var(--vtg-card-bg)!important;color:var(--vtg-text)!important}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*::before,*::after{transition:none!important;animation:none!important}}
 </style>
 <style id="footer-page-photo-style">.footerPagePhoto{width:min(1160px,calc(100% - 40px));margin:0 auto 42px;overflow:hidden;border-radius:24px;border:1px solid rgba(120,130,140,.18);box-shadow:0 18px 48px rgba(25,25,25,.09);background:#11161d}.footerPagePhoto img{display:block;width:100%;height:clamp(210px,30vw,360px);object-fit:cover;object-position:center 48%}@media(max-width:520px){.footerPagePhoto{width:calc(100% - 28px);border-radius:17px;margin-bottom:30px}.footerPagePhoto img{height:210px}}</style>
 <style id="contact-theme-contrast-final">

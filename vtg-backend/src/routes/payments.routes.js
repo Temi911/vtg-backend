@@ -9,7 +9,9 @@ router.get('/ledger', requireAuth, ctrl.ledger);
 router.get('/:id/reconciliation', requireAuth, ctrl.getReconciliation);
 router.patch('/:id/status', requireAuth, requireRole('bank', 'admin'), ctrl.updateStatus);
 router.get('/forex-rates', ctrl.forexRates);
-router.post('/forex/convert', ctrl.convert);
+// Rate tables remain readable for public market-intelligence previews. Executing a
+// conversion is a buyer-workspace finance action and must require an authenticated buyer.
+router.post('/forex/convert', requireAuth, requireRole('buyer'), ctrl.convert);
 router.get('/compliance', ctrl.compliance);
 
 module.exports = router;
