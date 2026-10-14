@@ -22,7 +22,7 @@ Branch: `phase-1-site-stability`
 ## Remaining go-live checks
 
 1. Run a browser-based smoke test on desktop and mobile in both themes.
-2. Confirm the preview deployment builds and serves the branch without a blank page; deployment status is not yet verified.
+2. Preview build: Vercel reports the branch deployment as READY and the build log says “Deployment completed.” A browser-level smoke test is still outstanding; the preview could not be inspected through the available browser-fetch tools.
 3. Check the authentic brand asset with the owner. The repository currently contains only `assets/vtg-logo.svg`; the specifically requested red transparent PNG is not present in the repository tree, so it was not fabricated or substituted.
 4. Exercise sign-in, signup, verification, and role redirects against the live staging API, not only source-level checks.
 
