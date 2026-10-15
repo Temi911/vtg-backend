@@ -21,6 +21,7 @@ Use one versioned contract for intelligence shown in Trade OS, Marketplace and T
 - The public Market Intelligence news panel now shows the feed-provided publication/discovery timestamp, a calculated age band, source attribution, and a safe HTTP(S)-only original-source link. It explicitly states that age is not proof of accuracy and does not manufacture placeholder headlines when the feed is empty or unavailable.
 - The authenticated buyer dashboard’s Market Intelligence section now checks the protected `/api/market-intelligence/tools/contract` endpoint on entry and on demand, displays the API-declared FX/tariff/freight integration status, and clearly reports preview/session/API failures as unverified. Added a source-regression test for this panel.
 - The contract endpoint now separately identifies the existing UN Comtrade public preview as historical/statistical data rather than a live FX or freight quote.
+- The buyer workspace overview and Orders & Shipments screen now link users back to the authenticated intelligence evidence panel and explicitly separate trade assumptions from account-linked shipment facts.
 - Regression tests now cover future-dated/invalid validity windows, explicit provider limitations, public news timestamp-field compatibility, safe external URL protocols, empty-feed behaviour and the hourly news-job cadence.
 - Corrected the research-method card so its “Read the VTG guide” action stays on VTG’s own `/trade-guide.html` page instead of unexpectedly sending readers to an external research site.
 
@@ -47,5 +48,5 @@ Use one versioned contract for intelligence shown in Trade OS, Marketplace and T
 
 1. Run browser/API checks for the intelligence-centre estimate endpoint and verify both server success and fallback behaviour against the intended deployed backend.
 2. Add source-attributed country/tariff and FX/freight adapters only where an authoritative source/provider is available and credentials/terms permit it. Until then, those providers stay explicitly unconnected.
-3. The buyer workspace currently exposes Market Intelligence as its own tab; the remaining Trade OS and Trade Room workflow-specific provenance display still needs browser-level confirmation and, if those flows expose separate market values, an explicit status link/panel.
+3. Trade OS overview and Orders & Shipments now link to the authenticated evidence panel. Browser checks must still confirm these navigation paths and contrast in both themes.
 4. Verify both themes and role-based access in a browser, then confirm the intended Vercel build. Railway remains deferred.
