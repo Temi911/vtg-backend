@@ -56,8 +56,8 @@
   ].join('\n');
   var CONTRAST_CSS = [
     /* Shared contrast baseline for all VTG pages; image overlays and branded dark sections retain their own palettes. */
-    'html[data-theme="light"] body{color:#17212b}',
-    'html[data-theme="dark"] body{background:#0d1117;color:#eef3f6}',
+    'html[data-theme="light"] body{background-color:#f5f7fa;color:#17212b}',
+    'html[data-theme="dark"] body{background-color:#0d1117;color:#eef3f6}',
     'html[data-theme="light"] body :is(.card,.panel,.surface,.tile,.modal-content,.form-card,.portalCard,.stat-card,.feature-card,.step-card,.info-card,.faq-item,.callout,.routeCard,.route-card,.accessCard,.access-card,.partnership-card,.partner-card,.service-card,.content-card,.feature,.info-panel,.detail-card,.application-card,.news-card,.market-card){color:#17212b}',
     'html[data-theme="dark"] body :is(.card,.panel,.surface,.tile,.modal-content,.form-card,.portalCard,.stat-card,.feature-card,.step-card,.info-card,.faq-item,.callout,.routeCard,.route-card,.accessCard,.access-card,.partnership-card,.partner-card,.service-card,.content-card,.feature,.info-panel,.detail-card,.application-card,.news-card,.market-card){color:#eef3f6}',
     'html[data-theme="light"] body :is(.card,.panel,.surface,.tile,.modal-content,.form-card,.portalCard,.stat-card,.feature-card,.step-card,.info-card,.faq-item,.callout,.routeCard,.route-card,.accessCard,.access-card,.partnership-card,.partner-card,.service-card,.content-card,.feature,.info-panel,.detail-card,.application-card,.news-card,.market-card) :is(h1,h2,h3,h4,h5,h6,p,span,small,strong,b,label,li,dt,dd,figcaption){color:inherit}',
