@@ -17,10 +17,10 @@ test('current VTG frontend exposes the core trade interface', () => {
 });
 
 test('frontend includes trade calculator, cart and currency conversion hooks', () => {
-  assert.match(html, /vtg-commerce\.js/);
+  assert.match(html, /vtg-cart-calculator\.js/);
   assert.match(html, /api\/auth\/send-verification-code/);
   assert.match(html, /vtg-market-news\.js/);
-  assert.match(html, /map-enhancer\.js/);
+  assert.match(html, /vtg-country-intelligence\.js/);
 });
 
 test('verification-code endpoint fails closed when email delivery is not configured', async () => {
