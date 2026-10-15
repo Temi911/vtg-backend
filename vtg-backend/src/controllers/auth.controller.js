@@ -170,6 +170,15 @@ function getDemoAccount(email, password) {
   return DEMO_ACCOUNTS[normalized] || null;
 }
 
+function getDemoAccountFromToken(payload) {
+  if (!DEMO_AUTH_ENABLED) return null;
+  return Object.values(DEMO_ACCOUNTS).find((account) =>
+    account.id === payload.id &&
+    account.role === payload.role &&
+    account.email === normalizeEmail(payload.email)
+  ) || null;
+}
+
 function isDatabaseUnavailableError(error) {
   return Boolean(error && ['ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND', '57P01', '57P02', '57P03'].includes(error.code));
 }
@@ -279,12 +288,34 @@ const bankSignupSchema = baseSignup.extend({
   marketsServed: z.string().min(2).max(500),
 });
 
-function issueTokens(user) {
-  const payload = { id: user.id, role: user.role, email: user.email };
+function createTokenPair(user, sessionId) {
+  const payload = { id: user.id, role: user.role, email: user.email, sid: sessionId };
+  const refreshToken = signRefreshToken(payload);
+  const verifiedRefreshToken = verifyRefreshToken(refreshToken);
   return {
     accessToken: signAccessToken(payload),
-    refreshToken: signRefreshToken(payload),
+    refreshToken,
+    refreshTokenHash: crypto.createHash('sha256').update(refreshToken).digest('hex'),
+    expiresAt: new Date(verifiedRefreshToken.exp * 1000),
   };
+}
+
+async function issueTokens(user) {
+  const demoAccount = Object.values(DEMO_ACCOUNTS).find((account) =>
+    account.id === user.id && account.role === user.role && account.email === normalizeEmail(user.email)
+  );
+  if (demoAccount) {
+    const payload = { id: user.id, role: user.role, email: user.email };
+    return { accessToken: signAccessToken(payload), refreshToken: signRefreshToken(payload) };
+  }
+
+  const sessionId = crypto.randomUUID();
+  const tokens = createTokenPair(user, sessionId);
+  await query(
+    'INSERT INTO auth_sessions (id, user_id, refresh_token_hash, expires_at) VALUES ($1,$2,$3,$4)',
+    [sessionId, user.id, tokens.refreshTokenHash, tokens.expiresAt]
+  );
+  return { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
 }
 
 function publicUser(row, profile) {
@@ -374,7 +405,7 @@ const registerBuyer = asyncHandler(async (req, res) => {
 
   await audit.log(result.id, 'Account Created', `Buyer account created (${data.buyerType})`, req.ip);
   await dispatchWelcomeEmail(result, data.preferredLanguage, data.country, 'buyer', Boolean(data.marketingSubscribed), result.marketing_unsubscribe_token);
-  const tokens = issueTokens(result);
+  const tokens = await issueTokens(result);
   const profile = await fetchProfile(result.id, result.role);
   res.status(201).json({ user: publicUser(result, profile), ...tokens, agreementRequired: true });
 });
@@ -408,7 +439,7 @@ const registerSupplier = asyncHandler(async (req, res) => {
 
   await audit.log(result.id, 'Account Created', 'Supplier account created', req.ip);
   await dispatchWelcomeEmail(result, data.preferredLanguage, data.country, 'supplier', Boolean(data.marketingSubscribed), result.marketing_unsubscribe_token);
-  const tokens = issueTokens(result);
+  const tokens = await issueTokens(result);
   const profile = await fetchProfile(result.id, result.role);
   res.status(201).json({ user: publicUser(result, profile), ...tokens, agreementRequired: true });
 });
@@ -429,7 +460,7 @@ const registerAgent = asyncHandler(async (req,res) => {
   });
   await audit.log(result.id,'Agent Application Submitted',`${data.city}, ${data.country}`,req.ip);
   await dispatchWelcomeEmail(result, data.preferredLanguage, data.country, 'agent', Boolean(data.marketingSubscribed), result.marketing_unsubscribe_token);
-  const tokens=issueTokens(result);
+  const tokens=await issueTokens(result);
   const profile=await fetchProfile(result.id,result.role);
   res.status(201).json({user:publicUser(result,profile),...tokens,agreementRequired:true});
 });
@@ -463,7 +494,7 @@ const registerBank = asyncHandler(async (req, res) => {
 
   await audit.log(result.id, 'Account Created', 'Bank officer account created', req.ip);
   await dispatchWelcomeEmail(result, data.preferredLanguage, data.country, 'bank', Boolean(data.marketingSubscribed), result.marketing_unsubscribe_token);
-  const tokens = issueTokens(result);
+  const tokens = await issueTokens(result);
   const profile = await fetchProfile(result.id, result.role);
   res.status(201).json({ user: publicUser(result, profile), ...tokens, agreementRequired: true });
 });
@@ -494,7 +525,7 @@ const login = asyncHandler(async (req, res) => {
 
   const demoAccount = getDemoAccount(email, password);
   if (demoAccount) {
-    const tokens = issueTokens(demoAccount);
+    const tokens = await issueTokens(demoAccount);
     res.json({ user: publicUser(demoAccount, DEMO_PROFILES[demoAccount.role]), ...tokens });
     return;
   }
@@ -517,14 +548,14 @@ const login = asyncHandler(async (req, res) => {
   if (!ok) throw new AppError('Invalid email or password', 401, 'INVALID_CREDENTIALS');
 
   await audit.log(user.id, 'Login', `${user.role} logged in`, req.ip);
-  const tokens = issueTokens(user);
+  const tokens = await issueTokens(user);
   const profile = await fetchProfile(user.id, user.role);
   const agreementAccepted = await hasCurrentAgreement(user.id);
   res.json({ user: publicUser(user, profile), ...tokens, agreementRequired: !agreementAccepted });
 });
 
 const refresh = asyncHandler(async (req, res) => {
-  const schema = z.object({ refreshToken: z.string() });
+  const schema = z.object({ refreshToken: z.string().min(1).max(4096) });
   const { refreshToken } = schema.parse(req.body);
 
   let payload;
@@ -534,15 +565,67 @@ const refresh = asyncHandler(async (req, res) => {
     throw new AppError('Invalid or expired refresh token', 401, 'UNAUTHENTICATED');
   }
 
-  const { rows } = await query('SELECT * FROM users WHERE id = $1', [payload.id]);
-  const user = rows[0];
-  if (!user || !user.is_active) throw new AppError('Account not found or disabled', 401, 'UNAUTHENTICATED');
+  const demoAccount = getDemoAccountFromToken(payload);
+  if (demoAccount) {
+    res.json(await issueTokens(demoAccount));
+    return;
+  }
+  if (!payload.id || !payload.sid) {
+    throw new AppError('Invalid or expired refresh token', 401, 'UNAUTHENTICATED');
+  }
 
-  const tokens = issueTokens(user);
+  const tokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+  const tokens = await withTransaction(async (client) => {
+    const { rows } = await client.query(
+      `SELECT s.id AS session_id, u.id, u.role, u.email, u.is_active
+       FROM auth_sessions s
+       JOIN users u ON u.id=s.user_id
+       WHERE s.id=$1 AND s.user_id=$2 AND s.refresh_token_hash=$3
+         AND s.revoked_at IS NULL AND s.expires_at>NOW()
+       FOR UPDATE OF s`,
+      [payload.sid, payload.id, tokenHash]
+    );
+    const user = rows[0];
+    if (!user || !user.is_active) return null;
+
+    const nextTokens = createTokenPair(user, user.session_id);
+    await client.query(
+      'UPDATE auth_sessions SET refresh_token_hash=$1, expires_at=$2, last_used_at=NOW() WHERE id=$3',
+      [nextTokens.refreshTokenHash, nextTokens.expiresAt, user.session_id]
+    );
+    return { accessToken: nextTokens.accessToken, refreshToken: nextTokens.refreshToken };
+  });
+
+  if (!tokens) throw new AppError('Invalid or expired refresh token', 401, 'UNAUTHENTICATED');
   res.json(tokens);
 });
 
+const logout = asyncHandler(async (req, res) => {
+  const parsed = z.object({ refreshToken: z.string().min(1).max(4096) }).safeParse(req.body);
+  if (parsed.success) {
+    try {
+      const payload = verifyRefreshToken(parsed.data.refreshToken);
+      if (payload.id && payload.sid) {
+        const tokenHash = crypto.createHash('sha256').update(parsed.data.refreshToken).digest('hex');
+        await query(
+          'UPDATE auth_sessions SET revoked_at=COALESCE(revoked_at,NOW()) WHERE id=$1 AND user_id=$2 AND refresh_token_hash=$3',
+          [payload.sid, payload.id, tokenHash]
+        );
+      }
+    } catch (err) {
+      // Logout is idempotent; invalid or expired credentials need no further action.
+    }
+  }
+  res.json({ ok: true });
+});
+
 const me = asyncHandler(async (req, res) => {
+  if (req.user.isDemo) {
+    const demoAccount = DEMO_ACCOUNTS[normalizeEmail(req.user.email)];
+    if (!demoAccount || demoAccount.id !== req.user.id) throw new AppError('User not found', 404);
+    res.json({ user: publicUser(demoAccount, DEMO_PROFILES[demoAccount.role]), agreementRequired: false });
+    return;
+  }
   const { rows } = await query('SELECT * FROM users WHERE id = $1', [req.user.id]);
   const user = rows[0];
   if (!user) throw new AppError('User not found', 404);
@@ -560,6 +643,7 @@ module.exports = {
   verifyEmailCode,
   login,
   refresh,
+  logout,
   me,
   acceptAgreement,
   emailPreference,
