@@ -26,7 +26,7 @@ async function refreshBusinessVerificationStatus(userId, role) {
             CASE WHEN expires_at IS NOT NULL AND expires_at <= now() THEN 'expired' ELSE status::text END AS status
        FROM verification_documents
       WHERE user_id = $1 AND doc_type = ANY($2::text[])
-      ORDER BY uploaded_at DESC`,
+      ORDER BY uploaded_at DESC, id DESC`,
     [userId, required]
   );
   const latest = new Map();
@@ -89,7 +89,7 @@ const listMine = asyncHandler(async (req, res) => {
               WHEN EXISTS (
                 SELECT 1 FROM verification_documents newer
                  WHERE newer.user_id = vd.user_id AND newer.doc_type = vd.doc_type
-                   AND newer.uploaded_at > vd.uploaded_at
+                   AND (newer.uploaded_at > vd.uploaded_at OR (newer.uploaded_at = vd.uploaded_at AND newer.id::text > vd.id::text))
               ) THEN 'superseded'
               WHEN vd.expires_at IS NOT NULL AND vd.expires_at <= now() THEN 'expired'
               ELSE vd.status::text
@@ -156,7 +156,7 @@ const review = asyncHandler(async (req, res) => {
           SELECT 1 FROM verification_documents newer
            WHERE newer.user_id = verification_documents.user_id
              AND newer.doc_type = verification_documents.doc_type
-             AND newer.uploaded_at > verification_documents.uploaded_at
+             AND (newer.uploaded_at > verification_documents.uploaded_at OR (newer.uploaded_at = verification_documents.uploaded_at AND newer.id::text > verification_documents.id::text))
         )
       RETURNING id, user_id, doc_type, file_name, status, review_notes, uploaded_at, reviewed_at, expires_at`,
     [status, req.user.id, notes || null, status === 'verified' ? expiresAt || null : null, req.params.id]
@@ -195,7 +195,7 @@ const reviewQueue = asyncHandler(async (req, res) => {
        LEFT JOIN supplier_profiles sp ON sp.user_id = vd.user_id
        LEFT JOIN bank_profiles bp ON bp.user_id = vd.user_id
       WHERE vd.status = 'pending' AND u.role IN ('supplier','bank','agent')
-        AND vd.uploaded_at = (SELECT MAX(vd2.uploaded_at) FROM verification_documents vd2 WHERE vd2.user_id = vd.user_id AND vd2.doc_type = vd.doc_type)
+        AND NOT EXISTS (SELECT 1 FROM verification_documents vd2 WHERE vd2.user_id = vd.user_id AND vd2.doc_type = vd.doc_type AND (vd2.uploaded_at > vd.uploaded_at OR (vd2.uploaded_at = vd.uploaded_at AND vd2.id::text > vd.id::text)))
       ORDER BY vd.uploaded_at ASC`
   );
   const applicants = new Map();
