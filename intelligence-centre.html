@@ -78,6 +78,7 @@ body{visibility:hidden}.rolePanel{border:1px solid var(--line);border-left:4px s
     </div>
     <div class="actions"><button class="primary" type="submit"><i data-lucide="calculator"></i> Calculate estimate</button><button class="btn" id="vtgRefreshFx" type="button"><i data-lucide="refresh-cw"></i> Refresh exchange rates</button></div>
     <p class="toolNote" id="vtgFxStatus" role="status">Connecting to exchange-rate source…</p>
+    <p class="toolNote" id="vtgProviderStatus" role="status">Checking provider readiness…</p>
    </form>
    <aside class="toolPanel toolResult"><span class="tag"><i data-lucide="calculator"></i> Planning estimate</span><p class="resultLabel">Estimated landed cost</p><div class="resultTotal" id="vtgLandedTotal">—</div><div class="resultRows" id="vtgCostBreakdown"><div><span>Converted goods value</span><b>Waiting for rate</b></div></div><p class="toolNote">This is a planning estimate, not a customs assessment. VAT, levies, tariff classification, origin rules, exemptions, port fees and tax treatment vary by product and destination. Confirm them with the relevant authority or licensed professional.</p></aside>
   </div>
@@ -261,7 +262,19 @@ tabs.forEach(tab=>tab.addEventListener('click',()=>{active=tab.dataset.filter;ta
  }
  $('vtgCostForm')?.addEventListener('submit',e=>{e.preventDefault();requestServerEstimate()});
  ['vtgGoodsValue','vtgGoodsCurrency','vtgDestCurrency','vtgFreight','vtgInsurance','vtgDuty','vtgVatRate','vtgLocalCharges'].forEach(id=>$(id)?.addEventListener('input',calculateCost));
- $('vtgRefreshFx')?.addEventListener('click',loadFx);loadFx();
+ async function loadTradeContract(){
+  const status=$('vtgProviderStatus');if(!status)return;
+  try{
+   const res=await fetch('/api/market-intelligence/tools/contract',{headers:{Accept:'application/json',Authorization:'Bearer '+VTG_TOKEN},cache:'no-store'});
+   const data=await res.json().catch(()=>({}));
+   if(!res.ok)throw new Error(data.message||data.error||'Contract status unavailable');
+   const p=data.providers||{};
+   status.textContent='Provider readiness · FX: indicative client-side feed, not verified by VTG API · Tariffs: '+(p.tariff||'status unknown')+' · Freight: '+(p.freight||'status unknown')+'. No official tariff or live freight integration is confirmed.';
+  }catch(error){
+   status.textContent='Provider readiness could not be checked ('+String(error.message||'request failed')+'). Treat exchange rates as indicative; tariff and freight data are not verified by this endpoint.';
+  }
+ }
+ $('vtgRefreshFx')?.addEventListener('click',loadFx);loadFx();loadTradeContract();
  const countryCurrency={Algeria:'DZD',Angola:'AOA',Benin:'XOF',Botswana:'BWP',Burkina_Faso:'XOF','Burkina Faso':'XOF',Burundi:'BIF','Cabo Verde':'CVE',Cameroon:'XAF','Central African Republic':'XAF',Chad:'XAF',Comoros:'KMF','Republic of the Congo':'XAF','Democratic Republic of the Congo':'CDF',"Côte d’Ivoire":'XOF',Djibouti:'DJF',Egypt:'EGP','Equatorial Guinea':'XAF',Eritrea:'ERN',Eswatini:'SZL',Ethiopia:'ETB',Gabon:'XAF','The Gambia':'GMD',Ghana:'GHS',Guinea:'GNF','Guinea-Bissau':'XOF',Kenya:'KES',Lesotho:'LSL',Liberia:'LRD','DR Congo':'CDF',Libya:'LYD',Madagascar:'MGA',Malawi:'MWK',Mali:'XOF',Mauritania:'MRU',Mauritius:'MUR',Morocco:'MAD',Mozambique:'MZN',Namibia:'NAD',Niger:'XOF',Nigeria:'NGN',Rwanda:'RWF','São Tomé and Príncipe':'STN',Senegal:'XOF',Seychelles:'SCR','Sierra Leone':'SLE',Somalia:'SOS','South Africa':'ZAR','South Sudan':'SSP',Sudan:'SDG',Tanzania:'TZS',Togo:'XOF',Tunisia:'TND',Uganda:'UGX',Zambia:'ZMW',Zimbabwe:'ZWG',China:'CNY','South Korea':'KRW'};
  $('vtgDestination')?.addEventListener('change',()=>{const c=countryCurrency[$('vtgDestination').value];if(c&&[...$('vtgDestCurrency').options].some(o=>o.value===c))$('vtgDestCurrency').value=c;calculateCost()});
  const tradeForm=$('vtgTradeSearch');
