@@ -65,8 +65,16 @@ const resetPassword = asyncHandler(async (req, res) => {
       [tokenHash]
     );
     if (!found.rows[0]) return false;
-    await client.query('UPDATE users SET password_hash=$1, updated_at=NOW() WHERE id=$2 AND is_active=TRUE', [passwordHash, found.rows[0].user_id]);
+    const updated = await client.query(
+      'UPDATE users SET password_hash=$1, updated_at=NOW() WHERE id=$2 AND is_active=TRUE',
+      [passwordHash, found.rows[0].user_id]
+    );
+    if (!updated.rowCount) return false;
     await client.query('UPDATE account_recovery_tokens SET used_at=NOW() WHERE user_id=$1 AND used_at IS NULL', [found.rows[0].user_id]);
+    await client.query(
+      'UPDATE auth_sessions SET revoked_at=COALESCE(revoked_at,NOW()) WHERE user_id=$1 AND revoked_at IS NULL',
+      [found.rows[0].user_id]
+    );
     return true;
   });
   if (!result) throw new AppError('This reset link is invalid or expired. Request a new password reset link.', 400, 'INVALID_OR_EXPIRED_TOKEN');
