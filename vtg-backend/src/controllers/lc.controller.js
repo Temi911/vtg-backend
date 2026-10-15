@@ -103,9 +103,17 @@ const issue = asyncHandler(async (req, res) => {
   const lc = existingRows[0];
   if (!lc) throw new AppError('LC not found', 404);
 
-  const bankCanIssue = lc.issuing_bank_id === req.user.id ||
-    (lc.issuing_bank_id == null && (lc.order_bank_id === req.user.id || lc.order_bank_id == null));
-  if (!bankCanIssue) throw new AppError('You are not authorized to issue this LC', 403, 'FORBIDDEN');
+  // Fail closed: a bank must already be assigned to the LC or its order.
+  // A free-text issuingBankName is not proof that the authenticated bank is the
+  // institution selected by the buyer. Never let an unassigned LC be issued by
+  // whichever bank happens to know its ID.
+  const assignedBankId = lc.issuing_bank_id || lc.order_bank_id;
+  if (!assignedBankId) {
+    throw new AppError('This LC has no assigned issuing bank. Assign a bank to the order before issuance.', 409, 'BANK_ASSIGNMENT_REQUIRED');
+  }
+  if (assignedBankId !== req.user.id) {
+    throw new AppError('You are not authorized to issue this LC', 403, 'FORBIDDEN');
+  }
   if (lc.status !== 'requested') throw new AppError(`LC cannot be issued from status "${lc.status}"`, 409, 'INVALID_STATE');
 
   const swiftRef = `MT700-${uuidv4().slice(0, 10).toUpperCase()}`;
