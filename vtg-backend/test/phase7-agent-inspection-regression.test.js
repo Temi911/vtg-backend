@@ -32,3 +32,12 @@ test('agent profile review is restricted to admins and agent workspace to agents
   assert.match(agentRoutes, /get\('\/me',requireAuth,requireRole\('agent'\)/);
   assert.match(agentRoutes, /patch\('\/admin\/:id\/status',requireAuth,requireRole\('admin'\)/);
 });
+
+test('evidence listing enforces inspection membership and payout requires buyer approval', () => {
+  assert.match(inspection, /buyer_id=\$2 OR assigned_agent_id=\$2 OR \$3='admin'/);
+  assert.match(inspection, /Inspection not found or access denied\./);
+  assert.match(inspection, /path\.basename\(String\(e\.file_path\|\|''\)\)/);
+  assert.match(inspection, /eligible\[0\]\.status!=='approved'\|\|eligible\[0\]\.buyer_decision!=='approved'/);
+  assert.match(inspection, /A payment reference is required when marking a payout paid\./);
+  assert.match(inspection, /Inspection Agent Payout Updated/);
+});
