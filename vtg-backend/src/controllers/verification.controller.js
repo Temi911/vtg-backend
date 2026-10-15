@@ -131,12 +131,19 @@ const download = asyncHandler(async (req, res) => {
 });
 
 const review = asyncHandler(async (req, res) => {
-  const { status, notes } = z.object({
+  const { status, notes, expiresAt } = z.object({
     status: z.enum(['verified','rejected']),
-    notes: z.string().max(1000).optional()
+    notes: z.string().max(1000).optional(),
+    expiresAt: z.string().datetime().optional()
   }).superRefine((value, ctx) => {
     if (value.status === 'rejected' && !String(value.notes || '').trim()) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['notes'], message: 'A review note is required when rejecting a document.' });
+    }
+    if (value.expiresAt && value.status !== 'verified') {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['expiresAt'], message: 'Only verified evidence can have an expiry date.' });
+    }
+    if (value.expiresAt && Date.parse(value.expiresAt) <= Date.now()) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['expiresAt'], message: 'Expiry must be in the future.' });
     }
   }).parse(req.body);
 
