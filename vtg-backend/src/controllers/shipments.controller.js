@@ -412,10 +412,16 @@ const getLiveTracking = asyncHandler(async (req, res) => {
 const audit = require('../services/audit.service');
 
 const createSchema = z.object({
-  orderId: z.string().uuid(), containerNo: z.string().optional(), carrier: z.string().optional(),
-  originPort: z.string().optional(), destinationPort: z.string().optional(),
-  vesselName: z.string().optional(), vesselImo: z.string().optional(), vesselMmsi: z.string().optional(),
-  voyageNo: z.string().optional(), trackingProvider: z.string().optional(),
+  orderId: z.string().uuid(),
+  containerNo: z.string().trim().max(40).optional(),
+  carrier: z.string().trim().max(160).optional(),
+  originPort: z.string().trim().max(200).optional(),
+  destinationPort: z.string().trim().max(200).optional(),
+  vesselName: z.string().trim().max(160).optional(),
+  vesselImo: z.string().trim().max(20).optional(),
+  vesselMmsi: z.string().trim().max(20).optional(),
+  voyageNo: z.string().trim().max(80).optional(),
+  trackingProvider: z.string().trim().max(100).optional(),
 });
 
 const create = asyncHandler(async (req, res) => {
@@ -443,11 +449,11 @@ const create = asyncHandler(async (req, res) => {
 });
 
 const vesselSchema = z.object({
-  vesselName: z.string().trim().min(1).optional(),
-  vesselImo: z.string().trim().min(1).optional(),
-  vesselMmsi: z.string().trim().min(1).optional(),
-  voyageNo: z.string().trim().min(1).optional(),
-  trackingProvider: z.string().trim().min(1).optional()
+  vesselName: z.string().trim().min(1).max(160).optional(),
+  vesselImo: z.string().trim().min(1).max(20).optional(),
+  vesselMmsi: z.string().trim().min(1).max(20).optional(),
+  voyageNo: z.string().trim().min(1).max(80).optional(),
+  trackingProvider: z.string().trim().min(1).max(100).optional()
 }).refine(v => Object.values(v).some(Boolean), { message: 'At least one vessel/tracking field is required.' });
 
 const updateVessel = asyncHandler(async (req, res) => {
@@ -514,8 +520,8 @@ const getForOrder = asyncHandler(async (req, res) => {
 });
 
 const addEventSchema = z.object({
-  location: z.string().min(1),
-  detail: z.string().optional(),
+  location: z.string().trim().min(1).max(200),
+  detail: z.string().trim().max(1000).optional(),
   status: z.enum(['done', 'active', 'pending']).default('pending'),
   stage: z.enum(['finance','logistics','customs','inspection','delivery']).default('logistics'),
   sortOrder: z.number().int().optional(),
@@ -597,10 +603,10 @@ const customsSchema = z.object({
   authority: z.string().trim().max(160).optional(),
   brokerName: z.string().trim().max(160).optional(),
   declarationRef: z.string().trim().max(120).optional(),
-  assessmentAmountUsd: z.number().min(0).optional(),
-  dutiesAmountUsd: z.number().min(0).optional(),
-  taxesAmountUsd: z.number().min(0).optional(),
-  otherChargesUsd: z.number().min(0).optional(),
+  assessmentAmountUsd: z.number().finite().min(0).max(1000000000000).optional(),
+  dutiesAmountUsd: z.number().finite().min(0).max(1000000000000).optional(),
+  taxesAmountUsd: z.number().finite().min(0).max(1000000000000).optional(),
+  otherChargesUsd: z.number().finite().min(0).max(1000000000000).optional(),
   notes: z.string().trim().max(2000).optional(),
 });
 const customsStatusSchema = z.object({ status: z.enum(customsStatuses) });
