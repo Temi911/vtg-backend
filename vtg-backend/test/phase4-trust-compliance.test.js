@@ -90,3 +90,22 @@ test('Admin OS exposes accessible trust-risk review controls and calls the prote
   assert.match(adminScript, /resolutionNotes/);
   assert.match(adminScript, /not a legal determination/);
 });
+
+test('verification evidence expiry and supersession are derived from current evidence', () => {
+  const migration = fs.readFileSync(path.join(root, 'src', 'db', 'migrations', '019_verification_expiry.sql'), 'utf8');
+  assert.match(migration, /ADD COLUMN IF NOT EXISTS expires_at TIMESTAMPTZ/);
+  assert.match(verification, /expires_at IS NOT NULL AND expires_at <= now\(\)/);
+  assert.match(verification, /THEN 'superseded'/);
+  assert.match(verification, /expiresAt: z\.string\(\)\.datetime\(\)\.optional\(\)/);
+  assert.match(verification, /Expiry must be in the future/);
+  assert.match(verification, /Only verified evidence can have an expiry date/);
+  assert.match(verification, /expires_at = CASE WHEN \$1 = 'verified' THEN \$4::timestamptz ELSE NULL END/);
+});
+
+test('verification history escapes stored filenames and notes and shows review provenance', () => {
+  const page = fs.readFileSync(path.join(root, '..', 'verification.html'), 'utf8');
+  assert.match(page, /esc\(x\.file_name\)/);
+  assert.match(page, /esc\(x\.review_notes\)/);
+  assert.match(page, /Reviewer /);
+  assert.match(page, /Expires /);
+});
