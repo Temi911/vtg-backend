@@ -177,6 +177,8 @@ const createVideoCall = asyncHandler(async (req, res) => {
 });
 
 module.exports = {createStorefront,getStorefront,publishStorefront,listFeed,createFeedPost,rejectPublicFeedPost,reactToPost,listComments,createComment,toggleFollow,listFollowing,createEnquiry,listMyEnquiries,createSupportTicket,listMyTickets,createVideoCall};
+/* Disabled duplicated trailing fragments that broke parsing.
+
  + params.length + ' OR f.country_code IS NULL)'); }
   if (allowedTypes.includes(type)) { params.push(type); filters.push('f.post_type=
 
@@ -471,3 +473,5 @@ const createVideoCall = asyncHandler(async (req, res) => {
 });
 
 module.exports = {createStorefront,getStorefront,publishStorefront,listFeed,createFeedPost,reactToPost,createEnquiry,listMyEnquiries,createSupportTicket,listMyTickets,createVideoCall};
+
+*/
