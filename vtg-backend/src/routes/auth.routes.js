@@ -13,6 +13,7 @@ router.post('/reset-password', require('../controllers/account-recovery.controll
 router.post('/verify-email-code', ctrl.verifyEmailCode);
 router.post('/login', ctrl.login);
 router.post('/refresh', ctrl.refresh);
+router.post('/logout', ctrl.logout);
 router.get('/me', requireAuth, ctrl.me);
 router.post('/agreements/accept', requireAuth, ctrl.acceptAgreement);
 router.get('/email-preferences/:token', ctrl.emailPreference);
