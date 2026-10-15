@@ -1,6 +1,6 @@
 # VTG Phase 4 — Trust & Compliance
 
-**Status:** Source implementation is expanded and GitHub Actions passed all 38 tests on commit `2ddb35cbc0c68d4ec84a9c735bf86a04d5bfbc75` ([run #38716929015](https://github.com/Temi911/vtg-backend/actions/runs/38716929015)). Final acceptance still requires migration/database integration tests, browser verification, and operational storage/retention decisions. Do not represent these source changes as live backend behavior while Railway is deferred.
+**Status:** GitHub Actions passed the complete migration sequence against a clean PostgreSQL 16 service and then passed the Node test suite on commit `c8f0464d316bd05ec0bdd3ebf6998bd7e6c3560f` ([run #38721176840](https://github.com/Temi911/vtg-backend/actions/runs/38721176840)). This confirms clean-database migration compatibility in CI, not a migration on the live Railway database. Final acceptance still requires browser verification and operational storage/retention decisions. Do not represent these source changes as live backend behavior while Railway is deferred.
 
 ## Goal
 
@@ -40,7 +40,7 @@ These endpoints are source-defined and not available in a deployed backend until
 
 ## Required acceptance checks still outstanding
 
-1. Confirm the latest GitHub Actions run passes after the newest expiry/history/UI regression tests; fix any failure before acceptance.
+1. Completed: GitHub Actions successfully applied all numbered migrations to a clean PostgreSQL 16 database and ran the test suite.
 2. Apply migration 018 to a disposable test database and test constraints, foreign keys, filtering, create/update, and competing resolution requests.
 3. Exercise cross-account document access with owner, other supplier/bank/agent, buyer and admin identities; confirm only owner/admin can download and only admin can review.
 4. Verify file-signature tests, malformed upload handling, oversized uploads, storage cleanup on failed requests, and malware-scanning/storage policy.
