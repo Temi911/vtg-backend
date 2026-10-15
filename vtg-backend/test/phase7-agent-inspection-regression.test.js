@@ -23,6 +23,7 @@ test('inspection quote accepts an order ID so ownership and eligibility checks c
 test('inspection evidence and assignment endpoints require the appropriate roles', () => {
   assert.match(routes, /post\('\/requests',requireAuth,requireRole\('buyer'\)/);
   assert.match(routes, /post\('\/requests\/:id\/evidence',requireAuth,requireRole\('agent'\)/);
+  assert.match(routes, /upload\.single\('file'\),validateUploadedFile,scanUploadedFile,c\.uploadEvidence/);
   assert.match(routes, /patch\('\/admin\/requests\/:id\/assign',requireAuth,requireRole\('admin'\)/);
   assert.match(routes, /get\('\/admin\/queue',requireAuth,requireRole\('admin'\)/);
 });
