@@ -16,7 +16,7 @@ test('inspection payment cannot be self-confirmed when Paystack is unavailable',
 
 test('quote expiry is limited to buyer/admin and conversion uses a conditional update', () => {
   const source = read('quotes.controller.js');
-  assert.match(source, /status==='expired'.*req\.user\.id!==q\.buyer_id.*req\.user\.role!=='admin'/s);
+  assert.match(source, /status==='expired'.*req\.user\.id!==q\.buyer_id.*req\\.user\\.role\\s*!==\\s*'admin'/s);
   assert.match(source, /WHERE id=\$2 AND status='accepted' AND converted_order_id IS NULL RETURNING id/);
   assert.match(source, /QUOTE_CONVERSION_CONFLICT/);
 });
@@ -28,8 +28,8 @@ test('letters of credit fail closed when no bank is assigned', () => {
 
 test('bank compliance-case updates are restricted to the assigned bank or admin', () => {
   const source = read('trade-documents.controller.js');
-  assert.match(source, /o\.bank_id===req\.user\.id/);
-  assert.match(source, /req\.user\.role!=='admin'/);
+  assert.match(source, /o\\.bank_id\\s*===\\s*req\\.user\\.id/);
+  assert.match(source, /req\\.user\\.role\\s*!==\\s*'admin'/);
 });
 
 test('shipment-event creation verifies the shipment/order and participant assignment', () => {
@@ -41,6 +41,6 @@ test('shipment-event creation verifies the shipment/order and participant assign
 
 test('order cancellation is limited to buyer/admin and protects execution-stage orders', () => {
   const source = read('orders.controller.js');
-  assert.match(source, /req\.user\.role!=='admin'/);
+  assert.match(source, /req\\.user\\.role\\s*!==\\s*'admin'/);
   assert.match(source, /shipment execution has started|shipment.*started/i);
 });
