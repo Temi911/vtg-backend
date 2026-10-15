@@ -1,6 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 process.env.NODE_ENV = 'development';
+process.env.ENABLE_DEMO_AUTH = 'true';
+process.env.DEMO_BUYER_PASSWORD = 'Password123';
 const app = require('../src/server');
 
 function getRandomPort() {
