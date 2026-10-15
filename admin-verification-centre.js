@@ -25,7 +25,7 @@
       const date = prompt('Optional expiry date for this evidence (YYYY-MM-DD). Leave blank if the document has no known expiry:') || '';
       if (date.trim()) {
         const parsed = new Date(date.trim() + 'T23:59:59.999Z');
-        if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(date.trim()) || Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0,10) !== date.trim() || parsed.getTime() <= Date.now()) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date.trim()) || Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0,10) !== date.trim() || parsed.getTime() <= Date.now()) {
           throw new Error('Enter a valid future expiry date in YYYY-MM-DD format.');
         }
         expiresAt = parsed.toISOString();
