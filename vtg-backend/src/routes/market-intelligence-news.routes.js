@@ -19,39 +19,9 @@ router.get('/news', async (req, res, next) => {
        ORDER BY COALESCE(published_at, discovered_at) DESC LIMIT $1`, params);
     res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
     let lastSync = null;
-    try { const sync = await query(\"SELECT value FROM app_settings WHERE key = 'market_news_last_sync' LIMIT 1\"); lastSync = sync.rows[0]?.value || null; } catch (_) {}
+     try { const sync = await query("SELECT value FROM app_settings WHERE key = 'market_news_last_sync' LIMIT 1"); lastSync = sync.rows[0]?.value || null; } catch (_) {}
     res.json({ items: result.rows, count: result.rowCount, generatedAt: new Date().toISOString(), lastSync });
   } catch (err) { next(err); }
 });
 
-router.get('/admin/news', requireAuth, requireRole('admin'), async (req, res, next) => {
-  try {
-    const status = ['pending','published','rejected'].includes(req.query.status) ? req.query.status : 'pending';
-    const result = await query(
-      `SELECT id,title,source_name AS source,source_domain AS domain,source_url AS url,
-              published_at AS published,discovered_at AS discovered,topic,relevance_score AS relevance,
-              editorial_summary AS summary,status
-       FROM market_intelligence_news WHERE status=$1
-       ORDER BY discovered_at DESC LIMIT 100`, [status]);
-    res.json({ items: result.rows, count: result.rowCount });
-  } catch (err) { next(err); }
-});
-
-router.post('/admin/news/:id/moderate', requireAuth, requireRole('admin'), async (req, res, next) => {
-  try {
-    const status = String(req.body.status || '');
-    if (!['published','rejected','pending'].includes(status)) return res.status(400).json({ error: 'status must be published, rejected or pending' });
-    const result = await query(
-      'UPDATE market_intelligence_news SET status=$1,updated_at=NOW() WHERE id=$2 RETURNING id,status,title',
-      [status, req.params.id]);
-    if (!result.rowCount) return res.status(404).json({ error: 'News item not found' });
-    res.json({ item: result.rows[0] });
-  } catch (err) { next(err); }
-});
-
-router.post('/admin/news/sync', requireAuth, requireRole('admin'), async (req, res, next) => {
-  try { res.json({ ok: true, result: await syncMarketNews() }); }
-  catch (err) { next(err); }
-});
-
-module.exports = router;
+router.get('/admin/news', requireAuth, requireRole('admin'), async (re¶»§q«^

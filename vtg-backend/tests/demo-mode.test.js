@@ -1,19 +1,19 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+
 process.env.NODE_ENV = 'development';
+process.env.ENABLE_DEMO_AUTH = 'true';
+process.env.DEMO_BUYER_PASSWORD = 'Password123';
+
 const app = require('../src/server');
 
-function getRandomPort() {
-  return 0;
-}
-
-test('login works with the local development database fallback when PostgreSQL is unavailable', async () => {
-  const server = app.listen(getRandomPort());
+test('demo buyer login works with the local database fallback when demo auth is explicitly enabled', async () => {
+  const server = app.listen(0);
   try {
     const address = server.address();
-    const baseUrl = `http://127.0.0.1:${address.port}`;
+    const baseUrl = 'http://127.0.0.1:' + address.port;
 
-    const res = await fetch(`${baseUrl}/api/auth/login`, {
+    const res = await fetch(baseUrl + '/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: 'buyer@demo.vtg', password: 'Password123' }),
