@@ -1,6 +1,6 @@
 # VTG Phase 3 — Authentication & Account Management Audit
 
-Status: **Implementation added on the review branch; pending runtime verification; not signed off**
+Status: **Implementation and isolated frontend regression checks completed on the review branch; backend runtime verification pending; not signed off**
 
 Baseline: `main` at `972960fe9ee235b05953f0a1fcca8cf01db2cfa3`
 Working branch: `phase3/auth-account-management`
@@ -17,6 +17,13 @@ Scope: registration, email verification, login, authorization token lifecycle, p
 - Signup and login normalize email addresses by trimming and lowercasing. Signup duplicate checks, login, and password-recovery lookup compare case-insensitively to support older mixed-case records.
 - The earlier agent registration INSERT correction remains on this branch: the column list matches the supplied VTG ID and marketing fields.
 
+## Changes in this continuation
+
+- Added `vtg-auth-session.js` and loaded it synchronously in the document head of all 21 HTML pages with authenticated API calls or stored authentication tokens. On a same-origin protected `/api/*` request, it refreshes after a 401, retries that request once with the rotated access token, and stores both new tokens.
+- Refresh calls use the browser Web Locks API to serialize rotations across same-origin tabs. Browsers without Web Locks use an in-tab single-flight fallback. Login, refresh, logout, cross-origin URLs, and unauthenticated requests are not intercepted. A failed refresh clears only the matching rejected session and does not erase a newer signed-in session.
+- Added `vtg-backend/test/frontend-auth-session.test.js` covering token rotation/retry, request body preservation, cross-tab lock serialization, excluded endpoints, rejected-session cleanup, and account-switch preservation.
+- Performed a static scan of the backend route modules. Admin workspace and admin trade routes require the admin role; buyer order/payment/LC creation, supplier product/shipment operations, and bank payment/LC review operations include their intended role guards. Other authenticated routes use `requireAuth`; their ownership checks remain controller responsibilities and need runtime coverage.
+
 ## Demo-account boundary
 
 When `ENABLE_DEMO_AUTH=true`, the three configured demo accounts continue to use signed stateless tokens because they have no database user row. Their access tokens are accepted only for the exact demo ID, email, and role; their refresh tokens are not persisted or rotated, and logout cannot revoke a demo refresh token. Keep demo authentication disabled for production accounts.
@@ -31,7 +38,8 @@ When `ENABLE_DEMO_AUTH=true`, the three configured demo accounts continue to use
 
 ## Verification and deployment boundary
 
-- No automated tests, lint, browser interaction, visual review, or credentialed authentication flow was run.
+- The isolated client regression suite passed locally under Node 24: 5 tests passed, 0 failed. `node --check` also passed for the client script.
+- The repository-wide `npm test` suite and lint were not run; this local mirror does not contain the repository checkout or installed project dependencies. No browser interaction, visual review, or credentialed authentication flow was run.
 - The new migrations have not been applied to a database, and no authenticated API flow has been runtime-verified.
 - Vercel reports the GitHub-triggered branch deployment for code commit `7919535716b2278d6aa09244f65fd4c74dc80b69` as **READY**. This includes the session and verification-code source changes; it does not confirm authentication against a database.
 - The repository's Vercel config rewrites `/api/*` to Railway production. No API request was sent from the branch deployment, so the auth flow was not exercised against Railway.
@@ -44,7 +52,7 @@ When `ENABLE_DEMO_AUTH=true`, the three configured demo accounts continue to use
 1. Run the repository's relevant automated checks and review failures.
 2. Apply migrations 022 and 023 to an authorized non-production backend; verify buyer, supplier, bank, and agent signup/login; wrong-code lockout and resend; refresh rotation and replay rejection; logout; password reset; disabled accounts; and role changes.
 3. Verify the production demo-auth setting and exercise demo login/refresh/logout when demo auth is intentionally enabled.
-4. Add and browser-test a client refresh flow. Source search found that refresh tokens are stored after sign-in/signup but no frontend request to `/api/auth/refresh`; with 15-minute access tokens, expiry may require another sign-in until that client flow is connected. Browser-test the three edited sign-out controls and serialize concurrent refresh calls.
+4. Browser-test the new client refresh flow and the three sign-out controls, including behavior after real token expiry, a rejected/replayed refresh token, a disabled account, and simultaneous requests from separate tabs. The local regression tests use mocked fetch responses and do not exercise a browser or backend.
 5. Check existing user data for mixed-case email duplicates before any data-normalization migration. Queries are case-insensitive, but legacy duplicate rows are not cleaned up.
 6. Browser-test the new resend cooldown and verification lockout, including error messages, account recovery from a lockout, and concurrent code requests. The existing IP-based auth route rate limit remains in place.
 7. Define and verify an authorized administrator password-recovery process; admin accounts remain excluded from public recovery.
