@@ -78,6 +78,8 @@
     'html[data-theme="light"] body :is(.hero-copy,.heroCopy,.hero-text,.heroText,.hero-content,.heroContent,.intro-copy,.introCopy,.page-intro,.pageIntro,.section-copy,.sectionCopy,.text-card,.textCard,.copy-card,.copyCard) :is(h1,h2,h3,h4,h5,h6,p,span,small,strong,b,li){color:#17212b}',
     'html[data-theme="dark"] body :is(.hero-copy,.heroCopy,.hero-text,.heroText,.intro-copy,.introCopy,.page-intro,.pageIntro,.section-copy,.sectionCopy,.text-card,.textCard,.copy-card,.copyCard) :is(h1,h2,h3,h4,h5,h6,p,span,small,strong,b,li){color:#eef3f6}',
     'html body :is(.hero-copy,.heroCopy,.hero-text,.heroText,.hero-content,.heroContent,.intro-copy,.introCopy,.page-intro,.pageIntro,.section-copy,.sectionCopy,.text-card,.textCard,.copy-card,.copyCard) :is(h1,h2,h3,h4,h5,h6,p,span,small,strong,b,li){-webkit-text-fill-color:currentColor!important;opacity:1!important;visibility:visible!important;text-shadow:none}',
+    'html[data-theme="light"] body :is(.card,.panel,.surface,.tile,.modal-content,.form-card,.portalCard,.stat-card,.feature-card,.step-card,.info-card,.faq-item,.route-card,.access-card,.partnership-card,.partner-card,.service-card,.content-card,.info-panel,.detail-card,.application-card,.news-card,.market-card){background-color:#fff}',
+    'html[data-theme="dark"] body :is(.card,.panel,.surface,.tile,.modal-content,.form-card,.portalCard,.stat-card,.feature-card,.step-card,.info-card,.faq-item,.route-card,.access-card,.partnership-card,.partner-card,.service-card,.content-card,.info-panel,.detail-card,.application-card,.news-card,.market-card){background-color:#11161d}',
     '@media(prefers-reduced-motion:reduce){html[data-theme] body *{scroll-behavior:auto}}'
   ].join('\n');
   function addStyle() {
