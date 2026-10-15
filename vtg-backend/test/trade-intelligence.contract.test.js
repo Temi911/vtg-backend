@@ -50,3 +50,13 @@ test('landed cost rejects negative inputs and impossible rates', () => {
   assert.throws(() => calculateIndicativeLandedCost({ currency: 'USD', goodsValue: -1, dutyRate: 0.1 }));
   assert.throws(() => calculateIndicativeLandedCost({ currency: 'USD', goodsValue: 10, dutyRate: 1.5 }));
 });
+
+test('landed-cost API is mounted and protected by authentication and role checks', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const route = fs.readFileSync(path.join(__dirname, '..', 'src', 'routes', 'trade-intelligence.routes.js'), 'utf8');
+  const server = fs.readFileSync(path.join(__dirname, '..', 'src', 'server.js'), 'utf8');
+  assert.ok(route.includes("requireAuth, requireRole('buyer', 'supplier', 'bank', 'admin')"));
+  assert.ok(route.includes("router.post('/landed-cost/estimate'"));
+  assert.ok(server.includes("app.use('/api/market-intelligence/tools',tradeIntelligenceRoutes)"));
+});
