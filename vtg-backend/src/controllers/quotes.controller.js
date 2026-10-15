@@ -120,6 +120,9 @@ const updateStatus=asyncHandler(async(req,res)=>{
   if(status==='accepted' && req.user.id!==q.supplier_id && req.user.role!=='admin'){
     throw new AppError('Only the supplier can accept a quote',403,'FORBIDDEN');
   }
+  if(status==='expired' && req.user.id!==q.buyer_id && req.user.role!=='admin'){
+    throw new AppError('Only the buyer or an administrator can expire a quote',403,'FORBIDDEN');
+  }
   if(status==='rejected' && ![q.supplier_id,q.buyer_id].includes(req.user.id) && req.user.role!=='admin'){
     throw new AppError('You do not have access to this quote',403,'FORBIDDEN');
   }
@@ -163,9 +166,13 @@ const convertToOrder=asyncHandler(async(req,res)=>{
       [conv.rows[0].id,q.buyer_id,q.supplier_id]
     );
     await client.query(
-      'UPDATE trade_quotes SET status=\'converted\',converted_order_id=$1,updated_at=now() WHERE id=$2',
+      `UPDATE trade_quotes SET status='converted',converted_order_id=$1,updated_at=now()
+       WHERE id=$2 AND status='accepted' AND converted_order_id IS NULL RETURNING id`,
       [or.rows[0].id,q.id]
     );
+    if (!conv.rows[0]) {
+      throw new AppError('Quote was converted by another request; refresh the quote before trying again.',409,'QUOTE_CONVERSION_CONFLICT');
+    }
     return or.rows[0];
   });
 
