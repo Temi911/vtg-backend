@@ -22,7 +22,8 @@ async function refreshBusinessVerificationStatus(userId, role) {
   if (!['supplier','bank'].includes(role)) return 'not_required';
   const required = role === 'supplier' ? SUPPLIER_REQUIRED_DOCS : BANK_REQUIRED_DOCS;
   const { rows } = await query(
-    `SELECT doc_type, status
+    `SELECT doc_type,
+            CASE WHEN expires_at IS NOT NULL AND expires_at <= now() THEN 'expired' ELSE status::text END AS status
        FROM verification_documents
       WHERE user_id = $1 AND doc_type = ANY($2::text[])
       ORDER BY uploaded_at DESC`,
