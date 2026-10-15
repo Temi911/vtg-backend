@@ -58,7 +58,8 @@ test('verification evidence storage is outside the public static root', () => {
 test('verification history returns reviewer provenance and downloads are audit logged', () => {
   assert.match(verification, /reviewer\.full_name AS reviewer_name/);
   assert.match(verification, /expires_at = CASE WHEN \$1 = 'verified' THEN \$4::timestamptz ELSE NULL END/);
-  assert.match(verification, /NOT EXISTS \(SELECT 1 FROM verification_documents vd2 WHERE vd2\.user_id = vd\.user_id AND vd2\.doc_type = vd\.doc_type/);\n  assert.match(verification, /newer\.id::text > vd\.id::text/);
+  assert.match(verification, /NOT EXISTS \(SELECT 1 FROM verification_documents vd2 WHERE vd2\.user_id = vd\.user_id AND vd2\.doc_type = vd\.doc_type/);
+  assert.match(verification, /newer\.id::text > vd\.id::text/);
   assert.match(verification, /vd\.reviewer_id, vd\.reviewed_at/);
   assert.match(verification, /Verification Document Downloaded/);
 });
