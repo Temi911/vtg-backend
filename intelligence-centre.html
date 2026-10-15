@@ -72,7 +72,8 @@ body{visibility:hidden}.rolePanel{border:1px solid var(--line);border-left:4px s
      <label>Destination currency <select id="vtgDestCurrency"><option value="DZD">DZD · Algerian dinar</option><option value="AOA">AOA · Angolan kwanza</option><option value="BWP">BWP · Botswana pula</option><option value="BIF">BIF · Burundian franc</option><option value="CVE">CVE · Cape Verdean escudo</option><option value="XAF">XAF · Central African CFA franc</option><option value="KMF">KMF · Comorian franc</option><option value="CDF">CDF · Congolese franc</option><option value="DJF">DJF · Djiboutian franc</option><option value="EGP">EGP · Egyptian pound</option><option value="ERN">ERN · Eritrean nakfa</option><option value="SZL">SZL · Swazi lilangeni</option><option value="ETB">ETB · Ethiopian birr</option><option value="GMD">GMD · Gambian dalasi</option><option value="GHS">GHS · Ghanaian cedi</option><option value="GNF">GNF · Guinean franc</option><option value="KES">KES · Kenyan shilling</option><option value="LSL">LSL · Lesotho loti</option><option value="LRD">LRD · Liberian dollar</option><option value="LYD">LYD · Libyan dinar</option><option value="MGA">MGA · Malagasy ariary</option><option value="MWK">MWK · Malawian kwacha</option><option value="MRU">MRU · Mauritanian ouguiya</option><option value="MUR">MUR · Mauritian rupee</option><option value="MAD">MAD · Moroccan dirham</option><option value="MZN">MZN · Mozambican metical</option><option value="NAD">NAD · Namibian dollar</option><option value="NGN" selected>NGN · Nigerian naira</option><option value="RWF">RWF · Rwandan franc</option><option value="STN">STN · São Tomé and Príncipe dobra</option><option value="SCR">SCR · Seychellois rupee</option><option value="SLE">SLE · Sierra Leonean leone</option><option value="SOS">SOS · Somali shilling</option><option value="ZAR">ZAR · South African rand</option><option value="SSP">SSP · South Sudanese pound</option><option value="SDG">SDG · Sudanese pound</option><option value="TZS">TZS · Tanzanian shilling</option><option value="TND">TND · Tunisian dinar</option><option value="UGX">UGX · Ugandan shilling</option><option value="XOF">XOF · West African CFA franc</option><option value="ZMW">ZMW · Zambian kwacha</option><option value="ZWG">ZWG · Zimbabwe Gold</option><option value="CNY">CNY · Chinese yuan</option><option value="KRW">KRW · South Korean won</option><option value="USD">USD · US dollar</option><option value="EUR">EUR · Euro</option><option value="GBP">GBP · Pound sterling</option></select></label>
      <label>Freight (destination currency) <input id="vtgFreight" type="number" min="0" step="0.01" value="0"></label>
      <label>Insurance (destination currency) <input id="vtgInsurance" type="number" min="0" step="0.01" value="0"></label>
-     <label>Estimated duty (%) <input id="vtgDuty" type="number" min="0" max="100" step="0.01" value="0"></label>
+     <label>Estimated duty (%) <input id="vtgDuty" type="number" min="0" max="100" step="0.01" value="0"><small>Enter a rate you have verified for this product and destination.</small></label>
+     <label>Estimated VAT (%) <input id="vtgVatRate" type="number" min="0" max="100" step="0.01" value="0"><small>Optional planning input; VTG does not determine the applicable tax rate.</small></label>
      <label>Other local charges <input id="vtgLocalCharges" type="number" min="0" step="0.01" value="0"></label>
     </div>
     <div class="actions"><button class="primary" type="submit"><i data-lucide="calculator"></i> Calculate estimate</button><button class="btn" id="vtgRefreshFx" type="button"><i data-lucide="refresh-cw"></i> Refresh exchange rates</button></div>
@@ -232,14 +233,34 @@ tabs.forEach(tab=>tab.addEventListener('click',()=>{active=tab.dataset.filter;ta
  function rateConvert(amount,from,to){if(!fxRates||!fxRates[from]||!fxRates[to])return null;return amount/fxRates[from]*fxRates[to];}
  function calculateCost(){
   const amount=Number($('vtgGoodsValue').value||0),from=$('vtgGoodsCurrency').value,to=$('vtgDestCurrency').value;
-  const goods=rateConvert(amount,from,to),freight=Number($('vtgFreight').value||0),insurance=Number($('vtgInsurance').value||0),dutyPct=Number($('vtgDuty').value||0),local=Number($('vtgLocalCharges').value||0);
-  if(goods===null){$('vtgLandedTotal').textContent='Rate unavailable';$('vtgCostBreakdown').innerHTML='<div><span>Converted goods value</span><b>Cannot calculate yet</b></div>';return;}
-  const dutyBase=goods+freight+insurance,duty=dutyBase*dutyPct/100,total=dutyBase+duty+local;
+  const goods=rateConvert(amount,from,to),freight=Number($('vtgFreight').value||0),insurance=Number($('vtgInsurance').value||0),dutyPct=Number($('vtgDuty').value||0),vatPct=Number($('vtgVatRate').value||0),local=Number($('vtgLocalCharges').value||0);
+  if(goods===null){$('vtgLandedTotal').textContent='Rate unavailable';$('vtgCostBreakdown').innerHTML='<div><span>Converted goods value</span><b>Cannot calculate yet</b></div>';return null;}
+  const cif=goods+freight+insurance,duty=cif*dutyPct/100,vatBase=cif+duty,vat=vatBase*vatPct/100,total=vatBase+vat+local;
   $('vtgLandedTotal').textContent=money(total,to);
-  $('vtgCostBreakdown').innerHTML=[['Converted goods value',money(goods,to)],['Freight',money(freight,to)],['Insurance',money(insurance,to)],['Illustrative duty ('+dutyPct+'%)',money(duty,to)],['Other local charges',money(local,to)]].map(r=>'<div><span>'+esc(r[0])+'</span><b>'+esc(r[1])+'</b></div>').join('');
+  $('vtgCostBreakdown').innerHTML=[['Converted goods value',money(goods,to)],['Freight',money(freight,to)],['Insurance',money(insurance,to)],['Illustrative duty ('+dutyPct+'%)',money(duty,to)],['Illustrative VAT ('+vatPct+'%)',money(vat,to)],['Other local charges',money(local,to)]].map(r=>'<div><span>'+esc(r[0])+'</span><b>'+esc(r[1])+'</b></div>').join('');
+  return {goods,freight,insurance,dutyPct,vatPct,local,to};
  }
- $('vtgCostForm')?.addEventListener('submit',e=>{e.preventDefault();calculateCost()});
- ['vtgGoodsValue','vtgGoodsCurrency','vtgDestCurrency','vtgFreight','vtgInsurance','vtgDuty','vtgLocalCharges'].forEach(id=>$(id)?.addEventListener('input',calculateCost));
+ async function requestServerEstimate(){
+  const status=$('vtgFxStatus'),values=calculateCost();
+  if(!values){if(status)status.textContent='Estimate not sent: a usable exchange rate is required first.';return;}
+  if(status)status.textContent='Requesting authenticated VTG estimate…';
+  try{
+   const res=await fetch('/api/market-intelligence/tools/landed-cost/estimate',{
+    method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json',Authorization:'Bearer '+VTG_TOKEN},
+    cache:'no-store',body:JSON.stringify({currency:values.to,goodsValue:values.goods,freight:values.freight,insurance:values.insurance,dutyRate:values.dutyPct/100,vatRate:values.vatPct/100,vatBasis:'cif_plus_duty',otherCharges:values.local,assumptions:['Goods value converted using the displayed indicative exchange-rate feed.','Duty and VAT rates were entered by the user and were not verified by VTG.','Freight, insurance and other charges are entered in the destination currency.']})
+   });
+   const data=await res.json().catch(()=>({}));
+   if(!res.ok||!data.estimate)throw new Error(data.message||data.error||'Server estimate endpoint unavailable');
+   const e=data.estimate,parts=e.components||{};
+   $('vtgLandedTotal').textContent=money(e.estimatedTotal,e.currency);
+   $('vtgCostBreakdown').innerHTML=[['Converted goods value',parts.goods],['Freight',parts.freight],['Insurance',parts.insurance],['CIF',parts.cif],['Illustrative duty',parts.duty],['Illustrative VAT',parts.vat],['Other local charges',parts.otherCharges]].map(([label,value])=>'<div><span>'+esc(label)+'</span><b>'+esc(money(Number(value||0),e.currency))+'</b></div>').join('');
+   if(status)status.textContent='VTG server estimate calculated at '+new Date(data.generatedAt||Date.now()).toLocaleString()+' · Indicative only; entered tax rates and FX are not independently verified.';
+  }catch(error){
+   if(status)status.textContent='Server estimate unavailable ('+String(error.message||'request failed')+'). The local planning preview remains visible; no live tariff or tax rate has been inferred.';
+  }
+ }
+ $('vtgCostForm')?.addEventListener('submit',e=>{e.preventDefault();requestServerEstimate()});
+ ['vtgGoodsValue','vtgGoodsCurrency','vtgDestCurrency','vtgFreight','vtgInsurance','vtgDuty','vtgVatRate','vtgLocalCharges'].forEach(id=>$(id)?.addEventListener('input',calculateCost));
  $('vtgRefreshFx')?.addEventListener('click',loadFx);loadFx();
  const countryCurrency={Algeria:'DZD',Angola:'AOA',Benin:'XOF',Botswana:'BWP',Burkina_Faso:'XOF','Burkina Faso':'XOF',Burundi:'BIF','Cabo Verde':'CVE',Cameroon:'XAF','Central African Republic':'XAF',Chad:'XAF',Comoros:'KMF','Republic of the Congo':'XAF','Democratic Republic of the Congo':'CDF',"Côte d’Ivoire":'XOF',Djibouti:'DJF',Egypt:'EGP','Equatorial Guinea':'XAF',Eritrea:'ERN',Eswatini:'SZL',Ethiopia:'ETB',Gabon:'XAF','The Gambia':'GMD',Ghana:'GHS',Guinea:'GNF','Guinea-Bissau':'XOF',Kenya:'KES',Lesotho:'LSL',Liberia:'LRD','DR Congo':'CDF',Libya:'LYD',Madagascar:'MGA',Malawi:'MWK',Mali:'XOF',Mauritania:'MRU',Mauritius:'MUR',Morocco:'MAD',Mozambique:'MZN',Namibia:'NAD',Niger:'XOF',Nigeria:'NGN',Rwanda:'RWF','São Tomé and Príncipe':'STN',Senegal:'XOF',Seychelles:'SCR','Sierra Leone':'SLE',Somalia:'SOS','South Africa':'ZAR','South Sudan':'SSP',Sudan:'SDG',Tanzania:'TZS',Togo:'XOF',Tunisia:'TND',Uganda:'UGX',Zambia:'ZMW',Zimbabwe:'ZWG',China:'CNY','South Korea':'KRW'};
  $('vtgDestination')?.addEventListener('change',()=>{const c=countryCurrency[$('vtgDestination').value];if(c&&[...$('vtgDestCurrency').options].some(o=>o.value===c))$('vtgDestCurrency').value=c;calculateCost()});
