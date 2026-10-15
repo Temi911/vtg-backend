@@ -16,14 +16,25 @@
 
   async function reviewDocument(id, status) {
     let notes = '';
+    let expiresAt;
     if (status === 'rejected') {
       notes = prompt('Enter the reason for rejecting this document:') || '';
-      if (!notes.trim()) return;
+      if (notes.trim().length < 1) return;
+    }
+    if (status === 'verified') {
+      const date = prompt('Optional expiry date for this evidence (YYYY-MM-DD). Leave blank if the document has no known expiry:') || '';
+      if (date.trim()) {
+        const parsed = new Date(date.trim() + 'T23:59:59.999Z');
+        if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(date.trim()) || Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0,10) !== date.trim() || parsed.getTime() <= Date.now()) {
+          throw new Error('Enter a valid future expiry date in YYYY-MM-DD format.');
+        }
+        expiresAt = parsed.toISOString();
+      }
     }
     const r = await fetch(api + '/verification/documents/' + encodeURIComponent(id) + '/review', {
       method:'PATCH',
       headers:{'Content-Type':'application/json', Authorization:'Bearer ' + token},
-      body:JSON.stringify({status, notes})
+      body:JSON.stringify({status, notes, expiresAt})
     });
     const j = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(j.error?.message || j.message || 'Review failed');
