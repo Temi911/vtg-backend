@@ -1,40 +1,44 @@
 # VTG Phase 3 — Authentication & Account Management Audit
 
-Status: **Started — not accepted**
+Status: **Implementation added on the review branch; pending runtime verification; not signed off**
 
 Baseline: `main` at `972960fe9ee235b05953f0a1fcca8cf01db2cfa3`
 Working branch: `phase3/auth-account-management`
 Scope: registration, email verification, login, authorization token lifecycle, password recovery, and account status.
 
-## Work completed in this continuation
+## Changes in this continuation
 
-- Source-reviewed the auth controller, account recovery controller, auth routes, auth middleware, JWT/password utilities, recovery and email-verification migrations, sign-in/signup/verification pages, and existing auth-related tests.
-- Fixed the agent registration INSERT mismatch in `vtg-backend/src/controllers/auth.controller.js`: the SQL named only seven columns while supplying ten values. It now names `vtg_user_id`, `marketing_subscribed`, and `marketing_unsubscribe_token` as columns for the existing values. Without this fix, agent registration fails at the database insert.
-- Fix commit: `7ed11ea3eb25145e8929df36ac0817e76dceef4c` on the working branch.
+- Added `vtg-backend/src/db/migrations/022_auth_sessions.sql` to persist session IDs, refresh-token SHA-256 hashes, expiry, last-use time, and revocation time. The matching table is in `vtg-backend/db/schema.sql` for the local `pg-mem` schema.
+- Refresh tokens now include a session ID. Refresh validates the stored hash and expiry under a row lock, then replaces the hash and expiry in the same transaction. A previously rotated token no longer matches the stored hash and receives an unauthenticated response.
+- Added `POST /api/auth/logout`; the current sign-out controls in `buyer-dashboard.html`, `signup-agreement.html`, and `verification.html` call it before clearing browser tokens.
+- Access tokens now carry the session ID. `requireAuth` checks the session and active account on protected requests and loads the current role from the database, so a revoked session, disabled account, or changed role does not wait for the JWT expiry.
+- Successful password resets revoke every active session in the same database transaction as the password update.
+- The earlier agent registration SQL correction remains on this branch: its insert column list now matches the supplied VTG ID and marketing fields.
 
-## Existing controls found in source
+## Demo-account boundary
 
-- Passwords use bcrypt with 12 salt rounds.
-- Email verification codes are stored as SHA-256 hashes, expire after 15 minutes, and are consumed transactionally by signup.
-- Password-reset tokens are generated from 32 random bytes, stored as hashes, expire after 30 minutes, and are marked used transactionally. Issuing a new recovery link invalidates prior unused links for that account.
-- The auth route group has an IP-based rate limit of 30 requests per 15 minutes.
-- Signup, login, and recovery code restrict or gate account creation, email verification, and reset actions in the controller source.
+When `ENABLE_DEMO_AUTH=true`, the three configured demo accounts continue to use signed stateless tokens because they have no database user row. Their access tokens are accepted only for the exact demo ID, email, and role; their refresh tokens are not persisted or rotated, and logout cannot revoke a demo refresh token. Keep demo authentication disabled for production accounts.
 
-These are source findings only; no authentication flow was exercised against a live backend.
+## Source checks completed
 
-## Risks and work remaining
-
-1. Refresh tokens are stateless JWTs with a 30-day default lifetime. The refresh endpoint verifies the signature and account active flag but has no persisted session/token record or rotation/replay detection. There is no logout endpoint to revoke refresh tokens.
-2. `requireAuth` verifies the access-token signature but does not re-read account status or role. Disabling an account or changing its role may not affect an already issued access token until expiry.
-3. Password reset updates the password and invalidates recovery links, but cannot revoke existing access or refresh JWTs.
-4. Email verification codes are six digits and source review found no per-address attempt counter or lockout. The auth route IP limit is the only visible request throttling in this flow.
-5. Admin password recovery is excluded from the public recovery flow. Define and verify an authorized administrative recovery process rather than enabling public admin resets.
-6. Audit remaining signup roles and front-end flows, including case normalization, duplicate-account behavior, and the agent signup fix.
-7. Run the repository test suite and exercise signup, verification, login, refresh, password recovery, disabled accounts, and role changes when a backend environment can be used.
+- Reviewed the auth controller, auth middleware, auth routes, password-recovery controller, JWT helper, migration runner, SQL schema, sign-in token storage, and the three explicit sign-out handlers listed above.
+- Confirmed source defaults: access-token lifetime `15m`; refresh-token lifetime `30d`.
+- Confirmed the migration runner applies numbered migrations in numeric order and tracks each filename in `schema_migrations`.
+- Checked the branch file changes against the session lifecycle described above. These are code/source checks only.
 
 ## Verification and deployment boundary
 
-- The agent INSERT correction was checked against the source field list and its eight bound parameters; tests were not run in this continuation.
-- No backend runtime, credentialed account flow, or browser interaction was tested.
-- The fix remains on `phase3/auth-account-management`; it is not merged to `main`.
-- No Railway deployment or Railway configuration was changed. Backend runtime verification and deployment remain outside this work until Railway work is authorized.
+- No automated tests, lint, browser interaction, visual review, or credentialed backend flow was run in this continuation.
+- The migration has not been applied to a database. The backend has not been deployed or runtime-verified.
+- No Railway deployment or configuration was changed. Railway work remains deferred as requested.
+- Changes remain on `phase3/auth-account-management`; nothing has been merged to `main`.
+- Existing access and refresh tokens created before this change do not contain a session ID. After a future backend release with this middleware, those sessions will need to sign in again.
+
+## Remaining before Phase 3 sign-off
+
+1. Run the repository's relevant automated checks and review failures.
+2. Apply the migration to an authorized non-production backend, then verify buyer, supplier, bank, and agent signup/login; refresh rotation and reuse rejection; logout; password reset; disabled accounts; and role changes.
+3. Verify the production demo-auth setting and exercise demo login/refresh/logout when demo auth is intentionally enabled.
+4. Review all frontend logout and token-refresh behavior in a browser; the three explicit sign-out handlers above were source-edited but not browser-tested.
+5. Complete remaining account-flow review: email normalization and duplicate handling, verification-code attempt limits, and a documented administrator password-recovery process.
+6. Decide and verify cleanup/retention for expired and revoked session rows.
