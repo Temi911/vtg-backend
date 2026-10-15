@@ -42,12 +42,15 @@ When `ENABLE_DEMO_AUTH=true`, the three configured demo accounts continue to use
 - Clean `npm ci --ignore-scripts --no-audit --no-fund` passed after the review-branch lockfile repair. The full `npm test` suite passed: **14 tests, 14 passed, 0 failed**.
 - Tests used the local `pg-mem` fallback because no `DATABASE_URL` was provided. Demo login used explicit test-only opt-in; SMTP delivery was stubbed or intentionally unconfigured. These tests do not apply migrations to an external database or send email.
 - The backend package has no lint script; lint status is unavailable.
-- Vercel preview deployment `dpl_8xFtSpMAEoSk6xUHJuKZBUxZ9vzK` reached **READY** for review commit `370f7b5a0ecf6ff37780e6947ea622a31afe28b2` with `target: null`. It is a preview. No API request was sent from the preview and no database-backed auth flow was tested.
+- Vercel preview deployment `dpl_8xFtSpMAEoSk6xUHJuKZBUxZ9vzK` reached **READY** for review commit `370f7b5a0ecf6ff37780e6947ea622a31afe28b2` with `target: null`. It is a preview. No API request was sent to this exact code preview, and no database-backed auth flow was tested.
 - The earlier browser visual check covered the buyer dashboard in light and dark themes at desktop width only. It did not test token expiry, refresh, logout, signup, or authenticated backend flows.
 - Migrations 022 and 023 were not applied to an external database. No credentialed database auth flow was runtime-verified.
 - No Railway deployment or configuration change and no Railway API request was performed. Railway work remains deferred as requested.
 - Phase 3 code remains unmerged on the dependent review branch. `main` remains at `972960fe9ee235b05953f0a1fcca8cf01db2cfa3`.
 - Existing access and refresh tokens created before session IDs were introduced do not contain a session ID. After a future backend release with this middleware, those sessions will need to sign in again.
+
+
+- Follow-up access check on 2026-10-15: Chrome navigation to documentation preview `dpl_AosupHDBvrqCrRudV9NkjcEa9srv` reached Vercel's login page; sign-in was not attempted. One unauthenticated, read-only `GET /api/health` returned HTTP 404 with body `{"error":{"code":"NOT_FOUND","message":"Route GET /api/health not found"}}` and response header `x-railway-edge: jfk1`. This did not verify backend health or authentication. No auth, user-data, email, or mutating endpoint was called. Because the response came through Railway infrastructure and an authorized non-production API target was not available, no further API requests were made.
 
 ## Remaining before Phase 3 sign-off
 

@@ -58,6 +58,13 @@ Buyer sourcing and supplier comparison, supplier verification status, quote requ
 - The authenticated buyer workflow was not exercised against a deployed backend. Sandbox tests exercised only the local fallback and a mocked mail transport.
 - No Railway deployment, configuration, migration, or API request was performed.
 
+## Follow-up Vercel preview access check (2026-10-15)
+
+- Preview deployment `dpl_AosupHDBvrqCrRudV9NkjcEa9srv` for documentation commit `3a628128ed08924e42700de06ff8d8e4bb55163c` reached **READY** with `target: null`.
+- Vercel fetch returned HTTP 200 for `/`, `/buyer-dashboard.html`, `/signin.html`, `/supplier.html`, `/admin-os.html`, `/verification.html`, and `/signup-agreement.html`. The homepage and buyer-dashboard HTML include `vtg-auth-session.js` and `vtg-site-navigation.js`; the buyer dashboard also includes `buyer-trade-os.js` and `buyer-trade-room.js`. These are static HTTP/markup checks, not browser rendering or interaction checks.
+- Chrome navigation to this preview reached Vercel's login page. No Vercel sign-in was attempted, so the VTG pages were not visually inspected in this follow-up and no authenticated browser interaction was tested.
+- One unauthenticated, read-only `GET /api/health` returned HTTP 404 with body `{"error":{"code":"NOT_FOUND","message":"Route GET /api/health not found"}}`; the response included `x-railway-edge: jfk1`. This was not a health or application-flow pass. No auth, user-data, email, or mutating endpoint was called, and no further API requests were made because the preview API path reached Railway infrastructure and no authorized non-production API target was available.
+
 ## Outstanding before Phase 4 sign-off
 
 1. Finish and sign off Phase 3; its database-backed flows and migration checks remain open.
