@@ -9,7 +9,7 @@ Scope: registration, email verification, login, authorization token lifecycle, p
 ## Changes in this continuation
 
 - Added `vtg-backend/src/db/migrations/022_auth_sessions.sql` to persist session IDs, refresh-token SHA-256 hashes, expiry, last-use time, and revocation time. The matching table is in `vtg-backend/db/schema.sql` for the local `pg-mem` schema.
-- Refresh tokens now include a session ID. Refresh validates the stored hash and expiry under a row lock, then replaces the hash and expiry in the same transaction. A previously rotated token no longer matches the stored hash and receives an unauthenticated response.
+- Refresh tokens now include a session ID. Refresh validates the stored hash and expiry under a row lock, then replaces the hash and expiry in the same transaction. A previously rotated token no longer matches the stored hash, revokes that login session, and receives an unauthenticated response. Concurrent refresh requests using the same token can therefore revoke the session; clients should serialize refresh calls.
 - Added `POST /api/auth/logout`; the current sign-out controls in `buyer-dashboard.html`, `signup-agreement.html`, and `verification.html` call it before clearing browser tokens.
 - Access tokens now carry the session ID. `requireAuth` checks the session and active account on protected requests and loads the current role from the database, so a revoked session, disabled account, or changed role does not wait for the JWT expiry.
 - Successful password resets revoke every active session in the same database transaction as the password update.
