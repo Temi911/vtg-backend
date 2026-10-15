@@ -130,10 +130,48 @@ async function issueEmailVerificationCode(email, language='en') {
   const code = generateVerificationCode();
   const codeHash = hashVerificationCode(code);
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
-  await query(`INSERT INTO email_verifications (email, code_hash, expires_at, attempt_count, locked_until) VALUES ($1,$2,$3,0,NULL) ON CONFLICT (email) DO UPDATE SET code_hash=EXCLUDED.code_hash, expires_at=EXCLUDED.expires_at, created_at=NOW(), attempt_count=0, locked_until=NULL`, [normalizedEmail, codeHash, expiresAt]);
+
+  await withTransaction(async (client) => {
+    const { rows } = await client.query(
+      'SELECT created_at, attempt_count, locked_until, attempt_window_started_at FROM email_verifications WHERE email=$1 FOR UPDATE',
+      [normalizedEmail]
+    );
+    const previous = rows[0];
+    const now = Date.now();
+    if (previous?.locked_until && new Date(previous.locked_until).getTime() > now) {
+      throw new AppError('Too many incorrect verification attempts. Wait before requesting another code.', 429, 'VERIFICATION_CODE_LOCKED');
+    }
+    if (previous?.created_at && now - new Date(previous.created_at).getTime() < EMAIL_VERIFICATION_RESEND_COOLDOWN_MS) {
+      throw new AppError('Please wait before requesting another verification code.', 429, 'VERIFICATION_CODE_COOLDOWN');
+    }
+
+    const previousWindowStart = previous?.attempt_window_started_at
+      ? new Date(previous.attempt_window_started_at).getTime()
+      : 0;
+    const keepAttemptWindow = Boolean(previous && now - previousWindowStart < EMAIL_VERIFICATION_WINDOW_MS);
+    const attemptCount = keepAttemptWindow ? Number(previous.attempt_count || 0) : 0;
+    const attemptWindowStartedAt = keepAttemptWindow
+      ? new Date(previous.attempt_window_started_at)
+      : new Date(now);
+
+    await client.query(
+      `INSERT INTO email_verifications
+        (email, code_hash, expires_at, attempt_count, locked_until, attempt_window_started_at)
+       VALUES ($1,$2,$3,$4,NULL,$5)
+       ON CONFLICT (email) DO UPDATE SET
+         code_hash=EXCLUDED.code_hash,
+         expires_at=EXCLUDED.expires_at,
+         created_at=NOW(),
+         attempt_count=EXCLUDED.attempt_count,
+         locked_until=NULL,
+         attempt_window_started_at=EXCLUDED.attempt_window_started_at`,
+      [normalizedEmail, codeHash, expiresAt, attemptCount, attemptWindowStartedAt]
+    );
+  });
+
   const sent = await dispatchVerificationEmail(normalizedEmail, code, language);
   if (!sent) {
-    await query('DELETE FROM email_verifications WHERE email = $1', [normalizedEmail]);
+    await query('DELETE FROM email_verifications WHERE email=$1 AND code_hash=$2', [normalizedEmail, codeHash]);
     throw new AppError('We could not deliver the verification email. Please try again later.', 502, 'EMAIL_DELIVERY_FAILED');
   }
   return { sent: true };
@@ -141,6 +179,8 @@ async function issueEmailVerificationCode(email, language='en') {
 
 const EMAIL_VERIFICATION_MAX_ATTEMPTS = 5;
 const EMAIL_VERIFICATION_LOCKOUT_MS = 15 * 60 * 1000;
+const EMAIL_VERIFICATION_WINDOW_MS = 15 * 60 * 1000;
+const EMAIL_VERIFICATION_RESEND_COOLDOWN_MS = 60 * 1000;
 
 async function checkEmailVerificationCode(email, code, consume) {
   const normalizedEmail = normalizeEmail(email);
