@@ -213,7 +213,7 @@
       var preference = readPreference();
       var theme = preference === 'light' || preference === 'dark'
         ? preference
-        : ((hour >= 6 && hour < 22) ? 'light' : 'dark');
+        : ((hour >= 6 && hour < 18) ? 'light' : 'dark');
       if (theme !== lastTheme || root.getAttribute('data-theme') !== theme) {
         root.setAttribute('data-theme', theme);
         root.style.colorScheme = theme;
