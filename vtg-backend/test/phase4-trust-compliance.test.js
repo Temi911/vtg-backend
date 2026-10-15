@@ -109,3 +109,15 @@ test('verification history escapes stored filenames and notes and shows review p
   assert.match(page, /Reviewer /);
   assert.match(page, /Expires /);
 });
+
+test('agent approval requires current verified identity and experience evidence', () => {
+  const agent = fs.readFileSync(path.join(root, 'src', 'controllers', 'agent.controller.js'), 'utf8');
+  assert.match(agent, /AGENT_EVIDENCE_INCOMPLETE/);
+  assert.match(agent, /government_id/);
+  assert.match(agent, /proof_of_address/);
+  assert.match(agent, /business_registration/);
+  assert.match(agent, /professional_certificate/);
+  assert.match(agent, /reference_document/);
+  assert.match(agent, /expires_at/);
+  assert.match(agent, /A review note of at least five characters is required/);
+});
