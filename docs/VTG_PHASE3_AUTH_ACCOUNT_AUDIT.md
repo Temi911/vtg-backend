@@ -33,7 +33,7 @@ When `ENABLE_DEMO_AUTH=true`, the three configured demo accounts continue to use
 
 - No automated tests, lint, browser interaction, visual review, or credentialed authentication flow was run.
 - The new migrations have not been applied to a database, and no authenticated API flow has been runtime-verified.
-- Vercel reports the GitHub-triggered branch deployment for code commit `985d231d235b25a6af2149a4160c3ee26014342b` as **READY**. This confirms the branch build/deployment completed; it does not confirm authentication against a database.
+- Vercel reports the GitHub-triggered branch deployment for code commit `7919535716b2278d6aa09244f65fd4c74dc80b69` as **READY**. This includes the session and verification-code source changes; it does not confirm authentication against a database.
 - No Railway deployment or configuration was changed. Railway work remains deferred as requested.
 - Changes remain on `phase3/auth-account-management`; nothing has been merged to `main`.
 - Existing access and refresh tokens created before session IDs were introduced do not contain a session ID. After a future backend release with this middleware, those sessions will need to sign in again.
