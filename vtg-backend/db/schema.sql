@@ -53,7 +53,8 @@ CREATE TABLE email_verifications (
   expires_at    TIMESTAMPTZ NOT NULL,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   attempt_count INTEGER NOT NULL DEFAULT 0 CHECK (attempt_count >= 0),
-  locked_until  TIMESTAMPTZ
+  locked_until  TIMESTAMPTZ,
+  attempt_window_started_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX idx_email_verifications_expires ON email_verifications(expires_at);
 
