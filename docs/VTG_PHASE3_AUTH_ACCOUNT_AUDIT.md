@@ -1,9 +1,9 @@
 # VTG Phase 3 — Authentication & Account Management Audit
 
-Status: **Implementation and isolated frontend regression checks completed on the review branch; backend runtime verification pending; not signed off**
+Status: **Implementation and the isolated backend regression suite are complete on the dependent review branch; database-backed and authenticated browser checks remain outstanding; not signed off**
 
 Baseline: `main` at `972960fe9ee235b05953f0a1fcca8cf01db2cfa3`
-Working branch: `phase3/auth-account-management`
+Review branch: `phase4/buyer-trade-os` (descends from the Phase 3 review code)
 Scope: registration, email verification, login, authorization token lifecycle, password recovery, and account status.
 
 ## Changes in this continuation
@@ -38,22 +38,24 @@ When `ENABLE_DEMO_AUTH=true`, the three configured demo accounts continue to use
 
 ## Verification and deployment boundary
 
-- The isolated client regression suite passed locally under Node 24: 6 tests passed, 0 failed. `node --check` also passed for the client script.
-- The repository-wide `npm test` suite and lint were not run; this local mirror does not contain the repository checkout or installed project dependencies. No browser interaction, visual review, or credentialed authentication flow was run.
-- The new migrations have not been applied to a database, and no authenticated API flow has been runtime-verified.
-- Vercel reports the GitHub-triggered [branch deployment](https://vtg-backended-git-phase3-76bf67-olanrewajutope80-7999s-projects.vercel.app) for code commit `458bb5ec82edfdb602ab10c62a0fc01fb891902f` as **READY** (deployment `dpl_5hoAWjeYDAHLFnwyyFcCVQj1VXpo`). The deployed `vtg-auth-session.js` returned HTTP 200 and byte-matched the committed file. All 21 instrumented HTML pages returned HTTP 200 and contained the helper reference. These are static-file checks; they do not confirm authentication against a database.
-- The repository's Vercel config rewrites `/api/*` to Railway production. No API request was sent from the branch deployment, so the auth flow was not exercised against Railway.
-- No Railway deployment or configuration was changed. Railway work remains deferred as requested.
-- Changes remain on `phase3/auth-account-management`; nothing has been merged to `main`.
+- A repository-wide `node --check` scan passed for JavaScript sources in the isolated Node 22.23.2 sandbox (installed dependencies excluded).
+- Clean `npm ci --ignore-scripts --no-audit --no-fund` passed after the review-branch lockfile repair. The full `npm test` suite passed: **14 tests, 14 passed, 0 failed**.
+- Tests used the local `pg-mem` fallback because no `DATABASE_URL` was provided. Demo login used explicit test-only opt-in; SMTP delivery was stubbed or intentionally unconfigured. These tests do not apply migrations to an external database or send email.
+- The backend package has no lint script; lint status is unavailable.
+- Vercel preview deployment `dpl_8xFtSpMAEoSk6xUHJuKZBUxZ9vzK` reached **READY** for review commit `370f7b5a0ecf6ff37780e6947ea622a31afe28b2` with `target: null`. It is a preview. No API request was sent from the preview and no database-backed auth flow was tested.
+- The earlier browser visual check covered the buyer dashboard in light and dark themes at desktop width only. It did not test token expiry, refresh, logout, signup, or authenticated backend flows.
+- Migrations 022 and 023 were not applied to an external database. No credentialed database auth flow was runtime-verified.
+- No Railway deployment or configuration change and no Railway API request was performed. Railway work remains deferred as requested.
+- Phase 3 code remains unmerged on the dependent review branch. `main` remains at `972960fe9ee235b05953f0a1fcca8cf01db2cfa3`.
 - Existing access and refresh tokens created before session IDs were introduced do not contain a session ID. After a future backend release with this middleware, those sessions will need to sign in again.
 
 ## Remaining before Phase 3 sign-off
 
-1. Run the full backend `npm test` suite and the project lint in a checkout with dependencies. Only the isolated frontend client regression file was run here; the full repository checks remain outstanding.
-2. Apply migrations 022 and 023 to an authorized non-production backend; verify buyer, supplier, bank, and agent signup/login; wrong-code lockout and resend; refresh rotation and replay rejection; logout; password reset; disabled accounts; and role changes.
-3. Verify the production demo-auth setting and exercise demo login/refresh/logout when demo auth is intentionally enabled.
-4. Browser-test the new client refresh flow and the three sign-out controls, including behavior after real token expiry, a rejected/replayed refresh token, a disabled account, and simultaneous requests from separate tabs. The local regression tests use mocked fetch responses and do not exercise a browser or backend.
-5. Check existing user data for mixed-case email duplicates before any data-normalization migration. Queries are case-insensitive, but legacy duplicate rows are not cleaned up.
-6. Browser-test the new resend cooldown and verification lockout, including error messages, account recovery from a lockout, and concurrent code requests. The existing IP-based auth route rate limit remains in place.
-7. Define and verify an authorized administrator password-recovery process; admin accounts remain excluded from public recovery.
-8. Decide and verify cleanup/retention for expired and revoked session rows.
+1. Apply migrations 022 and 023 to an authorized non-production backend; verify buyer, supplier, bank, and agent signup/login; wrong-code lockout and resend; refresh rotation and replay rejection; logout; password reset; disabled accounts; and role changes.
+2. Browser-test the new client refresh flow and the three sign-out controls, including behavior after real token expiry, a rejected/replayed refresh token, a disabled account, and simultaneous requests from separate tabs. Current tests use mocked fetch responses and do not exercise a browser or deployed backend.
+3. Check existing user data for mixed-case email duplicates before any data-normalization migration. Queries are case-insensitive, but legacy duplicate rows are not cleaned up.
+4. Browser-test the resend cooldown and verification lockout with the deployed auth UI, including errors, recovery from lockout, and concurrent code requests. The IP-based auth route rate limit remains in place.
+5. Define and verify an authorized administrator password-recovery process; admin accounts remain excluded from public recovery.
+6. Decide and verify cleanup/retention for expired and revoked session rows.
+7. Confirm demo authentication stays disabled in production and test demo login/refresh/logout only in a safe environment where the flag is intentionally enabled.
+8. Verify actual email delivery with an authorized non-production SMTP provider and an end-to-end verification signup flow.

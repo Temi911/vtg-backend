@@ -1,12 +1,13 @@
 # VTG Phase 4 — Buyer Trade Operating System Audit
 
-Status: **Buyer workflow code and desktop browser contrast fix are on an isolated review branch; Phase 4 is not signed off. Backend runtime and phone-width browser checks remain outstanding.**
+Status: **Source fixes, clean dependency installation, repository JavaScript parsing, and the backend regression suite are complete on the isolated review branch. Phase 4 is not signed off; authorized live backend flows and phone-width authenticated browser checks remain outstanding.**
 
 - Repository: `Temi911/vtg-backend`
 - Phase 4 branch: `phase4/buyer-trade-os`
 - Phase 4 base: Phase 3 review branch at `6aec1288d5cc34ad137a8df93aa5aa452be15636`
 - Buyer trade workflow implementation commit: `4fb2c8df89a8425540e5133b7f6c3b4b3a5dfda8`
 - Desktop light-theme contrast fix: `8b9b0e58bde9de198b15780ccda5fd1a5b95d65b`
+- Supplemental source and test fixes: `370f7b5a0ecf6ff37780e6947ea622a31afe28b2`
 - `main` remains at `972960fe9ee235b05953f0a1fcca8cf01db2cfa3`; Phase 4 changes remain unmerged.
 - Phase 3 remains not signed off; see [Phase 3 auth audit](VTG_PHASE3_AUTH_ACCOUNT_AUDIT.md).
 
@@ -36,28 +37,33 @@ Buyer sourcing and supplier comparison, supplier verification status, quote requ
 - Isolated Vercel branch previews from the production API. The shared auth fetch helper returns a local 503 for same-origin `/api/*` calls on branch-preview hosts, and buyer modules refuse API access there.
 - Fixed the light-theme text contrast regression with buyer-overview-specific overrides for dark hero and premium-card surfaces.
 
+## Supplemental code repairs
+
+- Reconciled `vtg-backend/package-lock.json` with `package.json`; `axios` and its dependencies are now locked, and the clean install succeeds.
+- Corrected the paths to repository-root `api/atlas-locations.js` in the shipment controller and Atlas route.
+- Removed the malformed duplicate tail after the complete export block in `marketplace.controller.js`. A source check confirmed all 16 exported handlers were defined in the retained section and no unique declarations existed in the removed tail.
+- Repaired the query string in `market-intelligence-news.routes.js`, the closing punctuation in `vtg-trade-intelligence.js`, and escaped template delimiters in the root `vtg-atlas-reference.js`.
+- Updated tests whose assumptions no longer matched the current UI and safe auth behavior: demo auth is explicitly opted into for its test, verification codes are not returned when delivery is unavailable, and SMTP uses a local test double.
+
 ## Checks completed
 
 - Source review confirmed the Phase 4 UI endpoints match existing backend mounts for products, quotes, orders, shipments, documents, trade-document checklists, and Nigeria landed-cost calculations.
-- V8 syntax parsing passed for `buyer-trade-os.js`, `buyer-trade-room.js`, `vtg-auth-session.js`, the changed products/quotes/orders controllers, and both inline buyer-dashboard scripts.
-- Static assertions passed for dashboard module mounts, branch-preview API guards, buyer-only quote routes, supplier-status source, quote/order row locks, proof-document upload, and delivery-workflow enforcement.
-- GitHub reports Vercel success for the dashboard contrast fix commit `8b9b0e58bde9de198b15780ccda5fd1a5b95d65b`.
-- Vercel preview deployment `dpl_DCngC8ZCW7oYeEyjM4sfMfgKgio3` reached **READY** for that exact commit. It is a preview (`target: null`), not production.
-- In Chrome at the available desktop viewport, an unauthenticated visit to `/buyer-dashboard.html` redirected to buyer sign-in. `/buyer-dashboard.html?preview=1` loaded the dashboard and displayed the local-preview disclaimer.
-- Visually checked the dashboard in light and dark themes on the updated preview. Before the fix, the shared light-theme heading/paragraph rules made dark-surface copy difficult to read; after the fix, hero and premium-card text was legible in both themes.
-- Phone-width visual testing was not completed: the available browser surface did not expose a responsive viewport override. Responsive CSS breakpoints exist in source, but their rendered phone layout remains unverified.
-- The authenticated buyer modules were not exercised in the browser. Preview mode displayed local/demo dashboard content; no sign-in credentials were entered and no live buyer API flow was tested.
-- The repository backend package declares `test: node --test` and has no lint script. The workspace mirror contains only `sources/` and `AGENTS.md`, with no repository checkout or installed dependencies, so the full backend test suite was not run.
-- These source, static-file, and limited desktop visual checks do not verify database/API behavior or browser end-to-end workflows.
+- The full repository JavaScript syntax scan passed under Node 22.23.2 with `node --check`; it excluded installed dependencies and reported no syntax errors.
+- Clean `npm ci --ignore-scripts --no-audit --no-fund` passed after the lockfile repair.
+- `npm test` passed: **14 tests, 14 passed, 0 failed** in a disposable Vercel Sandbox checkout at commit `370f7b5a0ecf6ff37780e6947ea622a31afe28b2`. Tests used the local `pg-mem` fallback, an explicitly enabled test demo account, and a stubbed SMTP transport. No real email was sent and no external database was used.
+- `git diff --check` passed before the code commit.
+- Vercel preview deployment `dpl_8xFtSpMAEoSk6xUHJuKZBUxZ9vzK` reached **READY** for commit `370f7b5a0ecf6ff37780e6947ea622a31afe28b2`; its target is `null` (preview), not production.
+- Earlier desktop Chrome checks on the preview for `8b9b0e58bde9de198b15780ccda5fd1a5b95d65b` verified unauthenticated redirect, the explicit local-preview notice, and light/dark contrast. They did not exercise authenticated buyer APIs.
+- Phone-width visual testing remains incomplete because the available browser surface has no responsive viewport override. The responsive CSS exists, but its rendered phone layout remains unverified.
+- The authenticated buyer workflow was not exercised against a deployed backend. Sandbox tests exercised only the local fallback and a mocked mail transport.
 - No Railway deployment, configuration, migration, or API request was performed.
 
 ## Outstanding before Phase 4 sign-off
 
-1. Finish and sign off Phase 3. This branch contains the Phase 3 review branch as its base; neither Phase 3 nor Phase 4 has been merged to `main`.
-2. Run the backend `npm test` suite in a repository checkout with dependencies.
-3. Run authenticated buyer/supplier flows against an authorized non-production backend: verified/unverified catalogue records, quote request and response, duplicate concurrent conversion, order transitions, cross-account access, customs release, proof-of-delivery confirmation, document upload/download, and landed-cost input validation.
-4. Browser-check the authenticated buyer experience at desktop and phone widths in both themes, including comparison, keyboard/modal behavior, quote/order navigation, delivery errors, and API error states.
-5. Confirm supplier-verification evidence meaning and source. The UI displays VTG account status and public rating, not underlying company documents or licence evidence.
-6. Landed-cost calculation is Nigeria-only and depends on user-entered rates; other destination-country rules and authoritative rate sources are not enabled.
-7. Verify live vessel-provider behavior and stored document access with an authorized non-production backend.
-8. Complete Phase 3 sign-off items in [the Phase 3 audit](VTG_PHASE3_AUTH_ACCOUNT_AUDIT.md), including migrations 022/023 and authenticated database-backed auth flows.
+1. Finish and sign off Phase 3; its database-backed flows and migration checks remain open.
+2. Run authenticated buyer/supplier flows against an authorized non-production backend: verified/unverified catalogue records, quote request and response, duplicate concurrent conversion, order transitions, cross-account access, customs release, proof-of-delivery confirmation, document upload/download, and landed-cost input validation.
+3. Browser-check the authenticated buyer experience at desktop and phone widths in both themes, including comparison, keyboard/modal behavior, quote/order navigation, delivery errors, and API error states.
+4. Confirm supplier-verification evidence meaning and source. The UI displays VTG account status and public rating, not underlying company documents or licence evidence.
+5. Landed-cost calculation is Nigeria-only and depends on user-entered rates; other destination-country rules and authoritative rate sources are not enabled.
+6. Verify live vessel-provider behavior and stored document access with an authorized non-production backend.
+7. The backend package has no lint script; lint status is unavailable and must not be treated as a pass.
