@@ -47,6 +47,8 @@ test('verification upload checks declared file types before recording evidence',
 
 test('verification history returns reviewer provenance and downloads are audit logged', () => {
   assert.match(verification, /reviewer\.full_name AS reviewer_name/);
+  assert.match(verification, /expires_at = CASE WHEN \$1 = 'verified' THEN \$4::timestamptz ELSE NULL END/);
+  assert.match(verification, /SELECT MAX\(vd2\.uploaded_at\)/);
   assert.match(verification, /vd\.reviewer_id, vd\.reviewed_at/);
   assert.match(verification, /Verification Document Downloaded/);
 });
@@ -108,6 +110,9 @@ test('verification history escapes stored filenames and notes and shows review p
   assert.match(page, /esc\(x\.review_notes\)/);
   assert.match(page, /Reviewer /);
   assert.match(page, /Expires /);
+  const adminScript = fs.readFileSync(path.join(root, '..', 'admin-verification-centre.js'), 'utf8');
+  assert.match(adminScript, /Optional expiry date for this evidence/);
+  assert.match(adminScript, /expiresAt\}\)/);
 });
 
 test('agent approval requires current verified identity and experience evidence', () => {
