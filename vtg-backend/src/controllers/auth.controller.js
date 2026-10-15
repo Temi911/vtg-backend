@@ -130,7 +130,7 @@ async function issueEmailVerificationCode(email, language='en') {
   const code = generateVerificationCode();
   const codeHash = hashVerificationCode(code);
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
-  await query(`INSERT INTO email_verifications (email, code_hash, expires_at) VALUES ($1,$2,$3) ON CONFLICT (email) DO UPDATE SET code_hash=EXCLUDED.code_hash, expires_at=EXCLUDED.expires_at, created_at=NOW()`, [normalizedEmail, codeHash, expiresAt]);
+  await query(`INSERT INTO email_verifications (email, code_hash, expires_at, attempt_count, locked_until) VALUES ($1,$2,$3,0,NULL) ON CONFLICT (email) DO UPDATE SET code_hash=EXCLUDED.code_hash, expires_at=EXCLUDED.expires_at, created_at=NOW(), attempt_count=0, locked_until=NULL`, [normalizedEmail, codeHash, expiresAt]);
   const sent = await dispatchVerificationEmail(normalizedEmail, code, language);
   if (!sent) {
     await query('DELETE FROM email_verifications WHERE email = $1', [normalizedEmail]);
@@ -139,22 +139,41 @@ async function issueEmailVerificationCode(email, language='en') {
   return { sent: true };
 }
 
-async function consumeEmailVerificationCode(email, code) {
+const EMAIL_VERIFICATION_MAX_ATTEMPTS = 5;
+const EMAIL_VERIFICATION_LOCKOUT_MS = 15 * 60 * 1000;
+
+async function checkEmailVerificationCode(email, code, consume) {
   const normalizedEmail = normalizeEmail(email);
   const codeHash = hashVerificationCode(code);
   return withTransaction(async (client) => {
-    const found = await client.query('SELECT email FROM email_verifications WHERE email=$1 AND code_hash=$2 AND expires_at>NOW() FOR UPDATE', [normalizedEmail, codeHash]);
-    if (!found.rows[0]) return false;
-    await client.query('DELETE FROM email_verifications WHERE email=$1', [normalizedEmail]);
+    const found = await client.query(
+      'SELECT code_hash, attempt_count FROM email_verifications WHERE email=$1 AND expires_at>NOW() AND (locked_until IS NULL OR locked_until<=NOW()) FOR UPDATE',
+      [normalizedEmail]
+    );
+    const verification = found.rows[0];
+    if (!verification || Number(verification.attempt_count || 0) >= EMAIL_VERIFICATION_MAX_ATTEMPTS) return false;
+    if (verification.code_hash !== codeHash) {
+      const attemptCount = Number(verification.attempt_count || 0) + 1;
+      const lockedUntil = attemptCount >= EMAIL_VERIFICATION_MAX_ATTEMPTS
+        ? new Date(Date.now() + EMAIL_VERIFICATION_LOCKOUT_MS)
+        : null;
+      await client.query(
+        'UPDATE email_verifications SET attempt_count=$1, locked_until=$2 WHERE email=$3',
+        [attemptCount, lockedUntil, normalizedEmail]
+      );
+      return false;
+    }
+    if (consume) await client.query('DELETE FROM email_verifications WHERE email=$1', [normalizedEmail]);
     return true;
   });
 }
 
+async function consumeEmailVerificationCode(email, code) {
+  return checkEmailVerificationCode(email, code, true);
+}
+
 async function hasValidEmailVerificationCode(email, code) {
-  const normalizedEmail = normalizeEmail(email);
-  const codeHash = hashVerificationCode(code);
-  const { rows } = await query('SELECT email FROM email_verifications WHERE email=$1 AND code_hash=$2 AND expires_at>NOW()', [normalizedEmail, codeHash]);
-  return Boolean(rows[0]);
+  return checkEmailVerificationCode(email, code, false);
 }
 
 function getDemoAccount(email, password) {
@@ -208,7 +227,7 @@ const acceptAgreement = asyncHandler(async (req, res) => {
 });
 
 function normalizeEmail(email) { return String(email || '').trim().toLowerCase(); }
-function generateVerificationCode() { return String(Math.floor(100000 + Math.random() * 900000)); }
+function generateVerificationCode() { return String(crypto.randomInt(100000, 1000000)); }
 
 const VTG_AFRICA_COUNTRIES = [
   'Algeria','Angola','Benin','Botswana','Burkina Faso','Burundi','Cabo Verde','Cameroon','Central African Republic','Chad',
@@ -223,7 +242,7 @@ const VTG_BANK_COUNTRIES = [...VTG_AFRICA_COUNTRIES, ...VTG_SUPPLIER_COUNTRIES];
 const allowedCountry = (list, label) => z.string().min(2).max(80).refine(value => list.includes(value), label);
 
 const baseSignup = z.object({
-  email: z.string().email(),
+  email: z.string().trim().email().max(254).transform(value => value.toLowerCase()),
   password: z.string().min(8).regex(/[A-Z]/, 'Needs an uppercase letter').regex(/[0-9]/, 'Needs a number'),
   fullName: z.string().min(2),
   phone: z.string().min(7).optional(),
@@ -379,7 +398,7 @@ const registerBuyer = asyncHandler(async (req, res) => {
   const passwordHash = await hashPassword(data.password);
 
   const result = await withTransaction(async (client) => {
-    const existing = await client.query('SELECT id FROM users WHERE email = $1', [data.email]);
+    const existing = await client.query('SELECT id FROM users WHERE LOWER(email) = $1', [data.email]);
     if (existing.rows[0]) throw new AppError('An account with this email already exists', 409, 'EMAIL_TAKEN');
 
     const userRes = await client.query(
@@ -418,7 +437,7 @@ const registerSupplier = asyncHandler(async (req, res) => {
   const passwordHash = await hashPassword(data.password);
 
   const result = await withTransaction(async (client) => {
-    const existing = await client.query('SELECT id FROM users WHERE email = $1', [data.email]);
+    const existing = await client.query('SELECT id FROM users WHERE LOWER(email) = $1', [data.email]);
     if (existing.rows[0]) throw new AppError('An account with this email already exists', 409, 'EMAIL_TAKEN');
 
     const userRes = await client.query(
@@ -451,7 +470,7 @@ const registerAgent = asyncHandler(async (req,res) => {
   }
   const passwordHash=await hashPassword(data.password);
   const result=await withTransaction(async(client)=>{
-    const existing=await client.query('SELECT id FROM users WHERE email=$1',[data.email]);
+    const existing=await client.query('SELECT id FROM users WHERE LOWER(email)=$1',[data.email]);
     if(existing.rows[0]) throw new AppError('An account with this email already exists',409,'EMAIL_TAKEN');
     const userRes=await client.query(`INSERT INTO users(email,phone,password_hash,role,full_name,preferred_language,is_verified,vtg_user_id,marketing_subscribed,marketing_unsubscribe_token) VALUES($1,$2,$3,'agent',$4,$5,TRUE,$6,$7,$8) RETURNING *`,[data.email,data.phone||null,passwordHash,data.fullName,data.preferredLanguage,createVtgUserId(data.country,'agent'),Boolean(data.marketingSubscribed),createUnsubscribeToken()]);
     const user=userRes.rows[0];
@@ -473,7 +492,7 @@ const registerBank = asyncHandler(async (req, res) => {
   const passwordHash = await hashPassword(data.password);
 
   const result = await withTransaction(async (client) => {
-    const existing = await client.query('SELECT id FROM users WHERE email = $1', [data.email]);
+    const existing = await client.query('SELECT id FROM users WHERE LOWER(email) = $1', [data.email]);
     if (existing.rows[0]) throw new AppError('An account with this email already exists', 409, 'EMAIL_TAKEN');
 
     const userRes = await client.query(
@@ -500,7 +519,7 @@ const registerBank = asyncHandler(async (req, res) => {
 });
 
 const sendVerificationCode = asyncHandler(async (req, res) => {
-  const schema = z.object({ email: z.string().email(), preferredLanguage: z.string().optional() });
+  const schema = z.object({ email: z.string().trim().email().max(254).transform(value => value.toLowerCase()), preferredLanguage: z.string().optional() });
   const { email, preferredLanguage } = schema.parse(req.body);
   const verification = await issueEmailVerificationCode(email, preferredLanguage);
   res.json({
@@ -511,7 +530,7 @@ const sendVerificationCode = asyncHandler(async (req, res) => {
 });
 
 const verifyEmailCode = asyncHandler(async (req, res) => {
-  const schema = z.object({ email: z.string().email(), code: z.string().min(6).max(6) });
+  const schema = z.object({ email: z.string().trim().email().max(254).transform(value => value.toLowerCase()), code: z.string().min(6).max(6) });
   const { email, code } = schema.parse(req.body);
   if (!(await hasValidEmailVerificationCode(email, code))) {
     throw new AppError('The verification code is invalid or has expired', 401, 'INVALID_VERIFICATION_CODE');
@@ -520,7 +539,7 @@ const verifyEmailCode = asyncHandler(async (req, res) => {
 });
 
 const login = asyncHandler(async (req, res) => {
-  const schema = z.object({ email: z.string().email(), password: z.string().min(1) });
+  const schema = z.object({ email: z.string().trim().email().max(254).transform(value => value.toLowerCase()), password: z.string().min(1) });
   const { email, password } = schema.parse(req.body);
 
   const demoAccount = getDemoAccount(email, password);
@@ -532,7 +551,7 @@ const login = asyncHandler(async (req, res) => {
 
   let user;
   try {
-    const { rows } = await query('SELECT * FROM users WHERE email = $1', [email]);
+    const { rows } = await query('SELECT * FROM users WHERE LOWER(email) = $1', [email]);
     user = rows[0];
   } catch (err) {
     if (isDatabaseUnavailableError(err)) {
