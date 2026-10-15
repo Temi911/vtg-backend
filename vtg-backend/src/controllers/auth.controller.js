@@ -577,16 +577,22 @@ const refresh = asyncHandler(async (req, res) => {
   const tokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
   const tokens = await withTransaction(async (client) => {
     const { rows } = await client.query(
-      `SELECT s.id AS session_id, u.id, u.role, u.email, u.is_active
+      `SELECT s.id AS session_id, s.refresh_token_hash, u.id, u.role, u.email, u.is_active
        FROM auth_sessions s
        JOIN users u ON u.id=s.user_id
-       WHERE s.id=$1 AND s.user_id=$2 AND s.refresh_token_hash=$3
-         AND s.revoked_at IS NULL AND s.expires_at>NOW()
+       WHERE s.id=$1 AND s.user_id=$2 AND s.revoked_at IS NULL AND s.expires_at>NOW()
        FOR UPDATE OF s`,
-      [payload.sid, payload.id, tokenHash]
+      [payload.sid, payload.id]
     );
     const user = rows[0];
     if (!user || !user.is_active) return null;
+    if (user.refresh_token_hash !== tokenHash) {
+      await client.query(
+        'UPDATE auth_sessions SET revoked_at=COALESCE(revoked_at,NOW()) WHERE id=$1',
+        [user.session_id]
+      );
+      return null;
+    }
 
     const nextTokens = createTokenPair(user, user.session_id);
     await client.query(
