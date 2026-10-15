@@ -120,7 +120,7 @@ test('refreshes a rejected authenticated request, retries once, and stores rotat
   assert.equal(JSON.parse(browser.storage.getItem('vtg-auth')).refreshToken, 'refresh-new');
 });
 
-test('serializes concurrent requests in separate tabs with the same origin lock', async () => {
+test('serializes concurrent refreshes through the same-origin lock', async () => {
   const oldAccess = jwt({ id: 'user-1', sid: 'session-1', role: 'buyer', iat: 1 });
   const newAccess = jwt({ id: 'user-1', sid: 'session-1', role: 'buyer', iat: 2 });
   let refreshCount = 0;
@@ -135,6 +135,30 @@ test('serializes concurrent requests in separate tabs with the same origin lock'
     }
     return new Response('{}', { status: request.headers.get('Authorization') === 'Bearer ' + newAccess ? 200 : 401 });
   }, { accessToken: oldAccess });
+
+  const responses = await Promise.all([
+    browser.window.fetch('/api/one', { headers: { Authorization: 'Bearer ' + oldAccess } }),
+    browser.window.fetch('/api/two', { headers: { Authorization: 'Bearer ' + oldAccess } })
+  ]);
+  assert.deepEqual(responses.map((response) => response.status), [200, 200]);
+  assert.equal(refreshCount, 1);
+});
+
+test('coalesces parallel refreshes in one tab when Web Locks are unavailable', async () => {
+  const oldAccess = jwt({ id: 'user-1', sid: 'session-1', role: 'buyer', iat: 1 });
+  const newAccess = jwt({ id: 'user-1', sid: 'session-1', role: 'buyer', iat: 2 });
+  let refreshCount = 0;
+  const browser = createBrowser(async (request) => {
+    const url = new URL(request.url);
+    if (url.pathname === '/api/auth/refresh') {
+      refreshCount += 1;
+      await new Promise((resolve) => setTimeout(resolve, 15));
+      return new Response(JSON.stringify({ accessToken: newAccess, refreshToken: 'refresh-new' }), {
+        status: 200, headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    return new Response('{}', { status: request.headers.get('Authorization') === 'Bearer ' + newAccess ? 200 : 401 });
+  }, { accessToken: oldAccess, locks: false });
 
   const responses = await Promise.all([
     browser.window.fetch('/api/one', { headers: { Authorization: 'Bearer ' + oldAccess } }),
