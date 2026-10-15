@@ -13,7 +13,7 @@ const{z}=require('zod');const{query}=require('../config/db');const audit=require
       `SELECT DISTINCT ON (doc_type) doc_type,status::text AS status,expires_at
          FROM verification_documents
         WHERE user_id=$1 AND doc_type=ANY($2::text[])
-        ORDER BY doc_type,uploaded_at DESC`,
+        ORDER BY doc_type,uploaded_at DESC,id::text DESC`,
       [req.params.id,requiredTypes]
     );
     const latest=new Map(documents.map(row=>[row.doc_type,row]));
