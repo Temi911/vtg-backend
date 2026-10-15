@@ -34,6 +34,7 @@ When `ENABLE_DEMO_AUTH=true`, the three configured demo accounts continue to use
 - No automated tests, lint, browser interaction, visual review, or credentialed authentication flow was run.
 - The new migrations have not been applied to a database, and no authenticated API flow has been runtime-verified.
 - Vercel reports the GitHub-triggered branch deployment for code commit `7919535716b2278d6aa09244f65fd4c74dc80b69` as **READY**. This includes the session and verification-code source changes; it does not confirm authentication against a database.
+- The repository's Vercel config rewrites `/api/*` to Railway production. No API request was sent from the branch deployment, so the auth flow was not exercised against Railway.
 - No Railway deployment or configuration was changed. Railway work remains deferred as requested.
 - Changes remain on `phase3/auth-account-management`; nothing has been merged to `main`.
 - Existing access and refresh tokens created before session IDs were introduced do not contain a session ID. After a future backend release with this middleware, those sessions will need to sign in again.
@@ -43,7 +44,7 @@ When `ENABLE_DEMO_AUTH=true`, the three configured demo accounts continue to use
 1. Run the repository's relevant automated checks and review failures.
 2. Apply migrations 022 and 023 to an authorized non-production backend; verify buyer, supplier, bank, and agent signup/login; wrong-code lockout and resend; refresh rotation and replay rejection; logout; password reset; disabled accounts; and role changes.
 3. Verify the production demo-auth setting and exercise demo login/refresh/logout when demo auth is intentionally enabled.
-4. Review all frontend logout and token-refresh behavior in a browser. The three explicit sign-out handlers above were source-edited but not browser-tested; simultaneous refresh requests must be serialized.
+4. Add and browser-test a client refresh flow. Source search found that refresh tokens are stored after sign-in/signup but no frontend request to `/api/auth/refresh`; with 15-minute access tokens, expiry may require another sign-in until that client flow is connected. Browser-test the three edited sign-out controls and serialize concurrent refresh calls.
 5. Check existing user data for mixed-case email duplicates before any data-normalization migration. Queries are case-insensitive, but legacy duplicate rows are not cleaned up.
 6. Browser-test the new resend cooldown and verification lockout, including error messages, account recovery from a lockout, and concurrent code requests. The existing IP-based auth route rate limit remains in place.
 7. Define and verify an authorized administrator password-recovery process; admin accounts remain excluded from public recovery.
