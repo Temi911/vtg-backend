@@ -135,5 +135,6 @@ test('agent approval requires current verified identity and experience evidence'
   assert.match(agent, /professional_certificate/);
   assert.match(agent, /reference_document/);
   assert.match(agent, /expires_at/);
+  assert.match(agent, /ORDER BY doc_type,uploaded_at DESC,id::text DESC/);
   assert.match(agent, /A review note of at least five characters is required/);
 });
