@@ -102,3 +102,38 @@ test('verification review cannot update a document unless it is pending and curr
   assert.equal(result.error.statusCode, 404);
   assert.equal(auditCalls.length, 0);
 });
+
+
+test('invalid document type removes the Multer file before returning an error', async () => {
+  auditCalls.length = 0;
+  const unownedFile = path.join(privateRoot, 'invalid-type-upload.pdf');
+  fs.writeFileSync(unownedFile, '%PDF-1.7');
+  queryImpl = async () => { throw new Error('database should not be queried for an invalid type'); };
+  const result = await invoke(verification.upload, {
+    user: { id: 'supplier-1', role: 'supplier' },
+    body: { docType: 'bank_license' },
+    file: { path: unownedFile, filename: 'opaque.pdf', originalname: 'not-allowed.pdf', mimetype: 'application/pdf', size: 8 },
+    ip: '127.0.0.1'
+  });
+  assert.equal(result.error.code, 'INVALID_DOCUMENT_TYPE');
+  assert.equal(fs.existsSync(unownedFile), false);
+});
+
+test('database insert failure removes the upload file that has no owning row', async () => {
+  auditCalls.length = 0;
+  const orphanCandidate = path.join(privateRoot, 'db-failure-upload.pdf');
+  fs.writeFileSync(orphanCandidate, '%PDF-1.7');
+  queryImpl = async (sql) => {
+    if (sql.includes('SELECT business_verification_status')) return { rows: [{ business_verification_status: 'pending' }] };
+    if (sql.includes('INSERT INTO verification_documents')) throw new Error('simulated insert failure');
+    throw new Error('Unexpected database query in upload cleanup test');
+  };
+  const result = await invoke(verification.upload, {
+    user: { id: 'supplier-1', role: 'supplier' },
+    body: { docType: 'company_registration' },
+    file: { path: orphanCandidate, filename: 'opaque.pdf', originalname: 'company.pdf', mimetype: 'application/pdf', size: 8 },
+    ip: '127.0.0.1'
+  });
+  assert.match(result.error.message, /simulated insert failure/);
+  assert.equal(fs.existsSync(orphanCandidate), false);
+});
