@@ -149,10 +149,17 @@ const review = asyncHandler(async (req, res) => {
 
   const { rows } = await query(
     `UPDATE verification_documents
-        SET status = $1, reviewer_id = $2, review_notes = $3, reviewed_at = now()
-      WHERE id = $4 AND status = 'pending'
-      RETURNING id, user_id, doc_type, file_name, status, review_notes, uploaded_at, reviewed_at`,
-    [status, req.user.id, notes || null, req.params.id]
+        SET status = $1, reviewer_id = $2, review_notes = $3, reviewed_at = now(),
+            expires_at = CASE WHEN $1 = 'verified' THEN $4::timestamptz ELSE NULL END
+      WHERE id = $5 AND status = 'pending'
+        AND NOT EXISTS (
+          SELECT 1 FROM verification_documents newer
+           WHERE newer.user_id = verification_documents.user_id
+             AND newer.doc_type = verification_documents.doc_type
+             AND newer.uploaded_at > verification_documents.uploaded_at
+        )
+      RETURNING id, user_id, doc_type, file_name, status, review_notes, uploaded_at, reviewed_at, expires_at`,
+    [status, req.user.id, notes || null, status === 'verified' ? expiresAt || null : null, req.params.id]
   );
   if (!rows[0]) throw new AppError('Verification document not found', 404);
 
