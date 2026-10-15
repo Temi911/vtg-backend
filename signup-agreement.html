@@ -44,7 +44,7 @@ async function load(){
   const agree=document.getElementById('agree'),accept=document.getElementById('accept'),msg=document.getElementById('msg');
   agree.onchange=()=>accept.disabled=!agree.checked;
   accept.onclick=async()=>{accept.disabled=true;msg.textContent='Saving your acceptance…';try{const r=await api('/api/auth/agreements/accept',{method:'POST',body:'{}'});const d=await r.json();if(!r.ok)throw new Error(d.message||'Could not save your acceptance.');msg.className='msg ok';msg.textContent='Agreement accepted. Opening your VTG workspace…';setTimeout(()=>location.href=nextForRole(d.user?.role||JSON.parse(localStorage.getItem('vtg-auth')||'{}').user?.role||'buyer'),350)}catch(e){msg.className='msg';msg.textContent=e.message;accept.disabled=false}};
-  document.getElementById('logout').onclick=()=>{localStorage.removeItem('vtg_access_token');localStorage.removeItem('vtg-auth');location.href='/'};
+  document.getElementById('logout').onclick=async()=>{try{const saved=JSON.parse(localStorage.getItem('vtg-auth')||'{}');if(saved.refreshToken)await fetch(API+'/api/auth/logout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refreshToken:saved.refreshToken})})}catch(_){}localStorage.removeItem('vtg_access_token');localStorage.removeItem('vtg-auth');location.href='/'};
  }catch(e){app.innerHTML='<div class="eyebrow">VTG Access</div><h1 class="title">Session required</h1><p class="lead">'+e.message+'</p><button class="btn primary" onclick="location.href=\'/\'">Return to VTG</button>'}
 }
 load();
