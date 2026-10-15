@@ -1,6 +1,6 @@
 # VTG Phase 4 — Trust & Compliance
 
-**Status:** The latest full GitHub Actions workflow passed on commit `ee6e6d71770c21ba17ae100f42cbe9eda3f66621` ([run #38756117335](https://github.com/Temi911/vtg-backend/actions/runs/38756117335)). It applied all migrations to a clean PostgreSQL 16 service and passed the Node test suite, including private upload-boundary runtime checks, role-guard outcomes, controller-level document access tests, and source-level theme contrast checks. This confirms clean-database migration compatibility and the tested source behavior in CI, not a migration on the live Railway database or visual browser verification. Final acceptance still requires live browser checks and operational storage/retention decisions. Do not represent these source changes as live backend behavior while Railway is deferred.
+**Status:** The latest full GitHub Actions workflow passed on commit `f7ea2ab7311532290d189e9283707a7f74e98848` ([run #38756751322](https://github.com/Temi911/vtg-backend/actions/runs/38756751322)). It applied all migrations to a clean PostgreSQL 16 service and passed the Node test suite, including private upload-boundary runtime checks, role-guard outcomes, controller-level document access and orphan-cleanup tests, trust-risk database constraint/foreign-key/filter/competing-resolution tests, and source-level theme contrast checks. This confirms clean-database migration compatibility and the tested source behavior in CI, not a migration on the live Railway database or visual browser verification. Final acceptance still requires live browser checks and operational storage/retention decisions. Do not represent these source changes as live backend behavior while Railway is deferred.
 
 ## Goal
 
@@ -22,7 +22,8 @@ Make identity/business verification and risk signals evidence-based before expos
 - Added `vtg-backend/test/phase4-trust-compliance.test.js` checks for upload signature validation, access controls, review provenance, download auditing, migration constraints, admin-only risk routes, and explicit light/dark status contrast selectors.
 - Added `vtg-backend/test/phase4-upload-path.test.js` runtime tests proving unsafe upload directories inside the public static root are rejected and private directories outside it are accepted.
 - Added `vtg-backend/test/phase4-role-guard.test.js` direct middleware tests for unauthenticated, forbidden, allowed, and malformed roles.
-- Added `vtg-backend/test/phase4-verification-api.test.js` controller tests for cross-account download denial, owner download, admin authorization reaching the path guard, no-store/no-sniff headers, path traversal rejection, and stale/superseded review rejection.
+- Added `vtg-backend/test/phase4-verification-api.test.js` controller tests for cross-account download denial, owner download, admin authorization reaching the path guard, no-store/no-sniff headers, path traversal rejection, stale/superseded review rejection, and cleanup of unrecorded uploads when document-type validation or database insertion fails.
+- Added `vtg-backend/test/phase4-trust-risk-db.test.js`, which runs against the CI PostgreSQL service to exercise trust-risk foreign keys, severity constraints, required resolution provenance, filters, and competing terminal decisions.
 - Improved dark-mode contrast for pending, verified, and rejected status chips on `verification.html`; theme CSS regression checks are automated, but screenshots and actual browser interaction remain unverified.
 - Added indexes for trust-flag lookup by account and by status/severity.
 
@@ -46,9 +47,9 @@ These endpoints are source-defined and not available in a deployed backend until
 ## Required acceptance checks still outstanding
 
 1. Completed in CI: GitHub Actions successfully applied all numbered migrations to a clean PostgreSQL 16 database and passed the Node test suite on commit `ee6e6d7`.
-2. Apply migration 018 to a disposable test database and test constraints, foreign keys, filtering, create/update, and competing resolution requests.
+2. Completed in CI for migration 018: a disposable PostgreSQL service exercised foreign keys, severity/resolution constraints, filtering, and competing terminal decisions. Controller behavior is still not covered end-to-end over HTTP.
 3. Partially completed in controller tests: owner download, different-account denial, admin reaching the path guard, and stale-review rejection are covered. Still required: full HTTP/API tests using real authenticated supplier, bank, agent, buyer, and admin identities; confirm only admin can review.
-4. Verify file-signature tests, malformed upload handling, oversized uploads, storage cleanup on failed requests, and malware-scanning/storage policy.
+4. Partially completed in CI: file-signature validation and cleanup when document-type validation or database insertion fails are tested. Still required: malformed/oversized HTTP upload tests, malware scanning, private persistent storage, and operational retention/deletion policy.
 5. Confirm all protected routes work with the current agreement middleware and real authenticated roles.
 6. Outstanding: verify the Admin OS trust-risk workflow in a real browser, including light/dark theme contrast, keyboard operation, error states and admin-only API denial for other roles. Automated CSS-token checks do not substitute for browser verification.
 7. Define document retention/deletion and private persistent storage operations with the owner; expiry/supersession is represented in source, but scheduled reminders and operational cleanup are not yet implemented. Agent approval evidence requirements are implemented in source, but still need API/database tests.
