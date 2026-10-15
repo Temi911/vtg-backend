@@ -66,3 +66,8 @@ Do not mark Phase 2 complete until the browser, role/access, cross-account owner
 - `quotes.controller.js` now limits quote expiry to the buyer or admin and makes quote-to-order conversion conditional on the quote still being accepted and unconverted. A conflicting conversion throws inside the transaction so the duplicate order is rolled back. Source commit: `74c0359764e0377c2ca186602723483bae889163`. This still needs automated concurrency and authorization regression tests.
 
 - Follow-up correction commit `2dde3820e6feed0f7176e0f4a2b66f1919e2f34e` finalizes the quote-conversion conflict guard. Both changed controller files (`quotes.controller.js` and `inspection.controller.js`) were checked for JavaScript parse errors after the latest edits; both parsed successfully. This is a syntax check only, not a runtime or database integration test.
+
+
+## Regression coverage added — 2026-10-15
+
+Added `vtg-backend/test/phase2-authorization-regression.test.js` with source-regression checks for inspection-payment self-confirmation, quote expiry/conversion guards, unassigned letters of credit, assigned-bank compliance review, shipment-event assignment, and order cancellation after shipment execution starts. These checks assert that the safeguards remain present in source; they are not substitutes for API-level, database, concurrency, or real-browser tests. The current GitHub commit-status response did not return a completed test result, so the new checks are not reported as passing.
