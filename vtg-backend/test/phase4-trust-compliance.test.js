@@ -35,3 +35,18 @@ test('verification review queue exposes only pending documents for supplier, ban
   assert.match(verification, /WHERE vd\.status = 'pending' AND u\.role IN \('supplier','bank','agent'\)/);
   assert.match(verification, /Business Verification Reviewed/);
 });
+
+test('verification upload checks declared file types before recording evidence', () => {
+  const upload = fs.readFileSync(path.join(root, 'src', 'middleware', 'upload.js'), 'utf8');
+  assert.match(upload, /crypto\.randomUUID\(\)/);
+  assert.match(upload, /hasValidSignature/);
+  assert.match(upload, /FILE_SIGNATURE_MISMATCH/);
+  assert.match(upload, /fileSize: 10 \* 1024 \* 1024/);
+  assert.match(routes, /requireRole\('supplier', 'bank', 'agent'\), upload\.single\('file'\), validateUploadedFile/);
+});
+
+test('verification history returns reviewer provenance and downloads are audit logged', () => {
+  assert.match(verification, /reviewer\.full_name AS reviewer_name/);
+  assert.match(verification, /vd\.reviewer_id, vd\.reviewed_at/);
+  assert.match(verification, /Verification Document Downloaded/);
+});
