@@ -18,6 +18,8 @@ Use one versioned contract for intelligence shown in Trade OS, Marketplace and T
 - `vtg-backend/src/server.js` mounts the new router under `/api/market-intelligence/tools` without modifying the protected `frontend-v3.html`.
 - `intelligence-centre.html` now adds a user-entered VAT assumption, shows VAT in the local planning preview, and submits an authenticated request to the landed-cost estimate endpoint. If the server endpoint is unavailable, the page keeps the local estimate and explicitly labels the fallback rather than implying the server calculation succeeded.
 - The Intelligence Centre now requests the authenticated `/contract` endpoint and displays the actual integration limitations reported by the backend: the current FX figure is a client-side indicative feed not verified by this API, and tariff/freight adapters are not connected. The UI test checks that this caveat remains visible.
+- The public Market Intelligence news panel now shows the feed-provided publication/discovery timestamp, a calculated age band, source attribution, and a safe HTTP(S)-only original-source link. It explicitly states that age is not proof of accuracy and does not manufacture placeholder headlines when the feed is empty or unavailable.
+- Corrected the research-method card so its “Read the VTG guide” action stays on VTG’s own `/trade-guide.html` page instead of unexpectedly sending readers to an external research site.
 
 ## Acceptance requirements
 
