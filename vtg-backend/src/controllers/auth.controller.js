@@ -614,8 +614,8 @@ const logout = asyncHandler(async (req, res) => {
       if (payload.id && payload.sid) {
         const tokenHash = crypto.createHash('sha256').update(parsed.data.refreshToken).digest('hex');
         await query(
-          'UPDATE auth_sessions SET revoked_at=COALESCE(revoked_at,NOW()) WHERE id=$1 AND user_id=$2 AND refresh_token_hash=$3',
-          [payload.sid, payload.id, tokenHash]
+          'UPDATE auth_sessions SET revoked_at=COALESCE(revoked_at,NOW()) WHERE id=$1 AND user_id=$2',
+          [payload.sid, payload.id]
         );
       }
     } catch (err) {
