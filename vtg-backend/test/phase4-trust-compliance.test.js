@@ -78,8 +78,8 @@ test('trust risk flags require source, rationale and explicit resolution provena
 });
 
 test('Admin OS exposes accessible trust-risk review controls and calls the protected API', () => {
-  const adminHtml = fs.readFileSync(path.join(root, '..', '..', 'admin-os.html'), 'utf8');
-  const adminScript = fs.readFileSync(path.join(root, '..', '..', 'admin-trust-risk.js'), 'utf8');
+  const adminHtml = fs.readFileSync(path.join(root, '..', 'admin-os.html'), 'utf8');
+  const adminScript = fs.readFileSync(path.join(root, '..', 'admin-trust-risk.js'), 'utf8');
   assert.match(adminHtml, /Trust &amp; Compliance Review/);
   assert.match(adminHtml, /id="trust-risk-form"/);
   assert.match(adminHtml, /id="trust-risk-message" class="trust-risk-message" role="status" aria-live="polite"/);
