@@ -27,9 +27,10 @@ Repository: `Temi911/vtg-backend`, branch `main`
 - Shipment event authorization commit: `b373e1c28276ff3b523290939300cb69d2b9b611`.
 - Inspection order-ownership commit: `61bb431e6f226ea32ad79ee6b6af9043d030fddf`.
 - Order cancellation guard commit: `c7bd594326f3f2a63e24e09ac90883f8862ecc21`.
+- Updated Phase 2 findings and acceptance checklist: `21dcda74e858cc2b761afe02021248f84b395273`.
 - The live shared theme/navigation JavaScript was fetched after the changes and its delivered source was checked against those fixes. This proves source delivery for that asset, not visual rendering or full page behavior.
 - Across the existing audit and this continuation, all 46 non-archived root HTML pages were individually fetched from the staging site. The earlier recorded subset of 11 paths returned HTTP 200; current fetches of the remaining page paths returned page content with titles. A consolidated fresh status-code matrix for all 46 should still be recorded before final sign-off.
-- The deployment-list API call was denied by Vercel (403), so this report does not claim an independently confirmed deployment ID for the latest commits.
+- GitHub's combined commit status for the audit-report update is **Vercel success**. Direct Vercel deployment inspection and current live page fetches later failed because the Vercel connector returned a deployment/alias 404, so this report does not claim an independently inspected deployment ID or current visual behavior.
 
 ## Source-level audit performed
 
