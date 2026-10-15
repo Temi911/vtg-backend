@@ -1,6 +1,6 @@
 # VTG Phase 4 — Trust & Compliance
 
-**Status:** Implementation expanded; acceptance remains pending runtime/CI, database and browser verification. Do not represent these source changes as live backend behavior while Railway is deferred.
+**Status:** Source implementation and automated regression coverage are expanded; final acceptance remains pending a fresh passing CI run on the latest commit, migration/database integration tests, browser verification, and operational storage/retention decisions. Do not represent these source changes as live backend behavior while Railway is deferred.
 
 ## Goal
 
@@ -11,7 +11,9 @@ Make identity/business verification and risk signals evidence-based before expos
 - Verification upload is role-gated before the file is written; only supplier, bank and agent accounts can upload through this endpoint.
 - Upload accepts only PDF, JPEG, PNG and WEBP MIME types, caps uploads at 10 MB and one file per request, assigns opaque random on-disk filenames, and checks file signatures against the declared MIME type before the controller records evidence.
 - Verification downloads remain limited to the owner or admin, enforce path confinement to the upload directory, set private/no-store and no-sniff headers, and log the document ID/type and actor in the audit trail.
-- The owner's document history now returns reviewer ID/name, review time, status, notes, upload time and file metadata. Review decisions retain reviewer identity and timestamps; rejection requires a meaningful note.
+- The owner's document history now returns reviewer ID/name, review time, status, notes, upload time, optional expiry, and file metadata. User-facing history escapes stored filenames and review notes before rendering. Review decisions retain reviewer identity and timestamps; rejection requires a meaningful note.
+- Migration 019 adds optional evidence expiry. Reviewers can set a future expiry only when verifying a document. Expired evidence is displayed as expired and cannot satisfy the required-document check for supplier/bank verification.
+- Older evidence of the same type is displayed as superseded when a newer version exists; the review queue focuses on the newest upload, and the review update refuses a superseded document. Historical review decisions remain stored on the original row.
 - Existing supplier/bank status derivation requires every role-specific required document to be verified and the organisation logo to exist. Uploaded evidence alone does not mark an account verified.
 - Added an explicit structured trust-risk flag table in migration 018_trust_risk_flags.sql. Each flag records target account, creator, category, severity, source type/reference, rationale, status, and resolution notes/actor/time. Database constraints require resolution provenance for terminal states.
 - Added admin-only trust-risk endpoints under /api/admin/trust-risk-flags to list/filter, create, and update flags. Creating and changing a flag writes audit events. Resolution/dismissal requires explanatory notes; conditional updates prevent a second terminal decision from overwriting the first.
@@ -33,17 +35,17 @@ These endpoints are source-defined and not available in a deployed backend until
 - MIME and file-signature checks are useful initial controls, not malware scanning or full document sanitization.
 - Files are still stored using the configured local upload directory. Production must use private, persistent storage with controlled access, backup and retention/deletion procedures before relying on document uploads operationally.
 - Agent applications have a separate approval workflow. This phase does not silently treat a submitted agent document or risk flag as proof of agent approval.
-- The admin risk-flag API has no new user-facing dashboard panel yet; it is an API foundation and must be connected to the admin verification/compliance UI before a browser workflow can be accepted.
+- The admin risk-flag UI is connected in source, but its actual browser behavior and theme contrast have not yet been visually verified.
 
 ## Required acceptance checks still outstanding
 
-1. Run the full backend suite in a real Node environment/CI and fix all failures. Syntax checks alone are not test execution.
+1. Confirm the latest GitHub Actions run passes after the newest expiry/history/UI regression tests; fix any failure before acceptance.
 2. Apply migration 018 to a disposable test database and test constraints, foreign keys, filtering, create/update, and competing resolution requests.
 3. Exercise cross-account document access with owner, other supplier/bank/agent, buyer and admin identities; confirm only owner/admin can download and only admin can review.
 4. Verify file-signature tests, malformed upload handling, oversized uploads, storage cleanup on failed requests, and malware-scanning/storage policy.
 5. Confirm all protected routes work with the current agreement middleware and real authenticated roles.
-6. Connect the risk-flag API to the admin UI, render source/severity/status/resolution provenance, and verify light/dark theme contrast and keyboard operation.
-7. Define and implement document retention, expiry/supersession, and the agent-specific evidence review policy.
+6. Verify the Admin OS trust-risk workflow in a real browser, including light/dark theme contrast, keyboard operation, error states and admin-only API denial for other roles.
+7. Define document retention/deletion and private persistent storage operations with the owner; expiry/supersession is now represented in source, but scheduled reminders and operational cleanup are not yet implemented. Define the agent-specific evidence review policy and derive an explicit agent approval status from the existing application workflow.
 8. Re-test Phase 3 Trade Intelligence and Phase 2 access requirements as previously recorded. Neither phase is certified complete by Phase 4 source changes.
 9. Deploy backend changes only after explicit owner authorization to resume Railway work. Until then, no claim that the migration/API is live.
 
