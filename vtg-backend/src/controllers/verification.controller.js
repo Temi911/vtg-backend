@@ -83,8 +83,13 @@ const listMine = asyncHandler(async (req, res) => {
     throw new AppError('Verification documents are available for suppliers, banks and agents.', 403, 'FORBIDDEN');
   }
   const { rows } = await query(
-    `SELECT id, doc_type, file_name, mime_type, file_size_bytes, status, review_notes, uploaded_at, reviewed_at
-       FROM verification_documents WHERE user_id = $1 ORDER BY uploaded_at DESC`,
+    `SELECT vd.id, vd.doc_type, vd.file_name, vd.mime_type, vd.file_size_bytes,
+            vd.status, vd.review_notes, vd.uploaded_at, vd.reviewer_id, vd.reviewed_at,
+            reviewer.full_name AS reviewer_name
+       FROM verification_documents vd
+       LEFT JOIN users reviewer ON reviewer.id = vd.reviewer_id
+      WHERE vd.user_id = $1
+      ORDER BY vd.uploaded_at DESC`,
     [req.user.id]
   );
   const verificationStatus = ['supplier','bank'].includes(req.user.role) ? await refreshBusinessVerificationStatus(req.user.id, req.user.role) : 'not_required';
@@ -111,6 +116,7 @@ const download = asyncHandler(async (req, res) => {
   res.setHeader('Cache-Control', 'private, no-store, max-age=0');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('X-Content-Type-Options', 'nosniff');
+  await audit.log(req.user.id, 'Verification Document Downloaded', `documentId=${doc.id}; docType=${doc.doc_type}`, req.ip);
   res.download(absoluteFile, path.basename(doc.file_name));
 });
 
