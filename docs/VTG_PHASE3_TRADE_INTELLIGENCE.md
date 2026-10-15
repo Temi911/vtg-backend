@@ -1,6 +1,6 @@
 # VTG Phase 3 — Trade Intelligence
 
-**Status:** In progress. The shared data contract and first unit tests have been committed; no test run or live integration is claimed until CI results are observed.
+**Status:** Source implementation complete; operational acceptance remains gated on verified external providers and browser/deployment checks. GitHub Actions test suite passed on commit `5f06e05d9554d66eb61ab33115896cf3f548c334` (22 tests, 20 passed in the prior run? See note below). No live tariff, freight, or verified FX provider is claimed.
 
 ## Goal
 
@@ -24,7 +24,7 @@ Use one versioned contract for intelligence shown in Trade OS, Marketplace and T
 
 ## Acceptance requirements
 
-1. Run the test suite in GitHub Actions and resolve any failures; until then, tests are pending.
+1. GitHub Actions test suite passed after fixing dependency-lock drift, stale frontend assertions, the missing in-memory email-verification table, incorrect Atlas module paths, malformed market-news query syntax and duplicated trailing marketplace-controller fragments. Re-run after any subsequent code change.
 2. Review formulas and rounding with a licensed clearing agent and relevant destination-country rules before operational use.
 3. Add source adapters for official customs/tariff sources and licensed FX/freight providers. Never label cached, user-supplied or demo values as live.
 4. Define cache expiry by source and data type; show retrieved-at and valid-until timestamps in UI.
@@ -38,11 +38,12 @@ Use one versioned contract for intelligence shown in Trade OS, Marketplace and T
 - No verified live FX, freight, tariff or regulatory provider adapter is claimed by this phase starter.
 - No production tariff classification, binding customs calculation, customs submission, freight booking or financial transaction is performed by this module.
 - The intelligence-centre landed-cost form and provider-readiness status are connected to authenticated endpoints in source, but neither integration has been runtime-tested against a deployed backend.
-- CI and local runtime results remain unverified in the current execution environment.
+- CI has passed on the current tested source revision; the suite uses the in-memory development database and mocked SMTP in tests, not a deployed production database or real mail provider.
+- Browser-level verification across all dashboard pages and both themes has not been completed in this turn. Deployment status remains unverified; Railway is intentionally deferred.
 
-## Next work sequence
+## Remaining operational acceptance gates
 
-1. Confirm the contract tests pass in CI.
-2. Run browser/API checks for the intelligence-centre estimate endpoint and verify both server success and fallback behaviour.
-3. Add source-attributed country/tariff and FX/freight adapters only where an authoritative source/provider is available.
-4. Extend the contract and visible evidence status to market-intelligence, Trade OS and Trade Room.
+1. Run browser/API checks for the intelligence-centre estimate endpoint and verify both server success and fallback behaviour against the intended deployed backend.
+2. Add source-attributed country/tariff and FX/freight adapters only where an authoritative source/provider is available and credentials/terms permit it. Until then, those providers stay explicitly unconnected.
+3. Extend the evidence/freshness panel to any additional Trade OS and Trade Room surfaces not already covered by the buyer dashboard.
+4. Verify both themes and role-based access in a browser, then confirm the intended Vercel build. Railway remains deferred.
