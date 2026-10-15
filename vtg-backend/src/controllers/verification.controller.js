@@ -101,7 +101,17 @@ const download = asyncHandler(async (req, res) => {
   if (req.user.role !== 'admin' && req.user.id !== doc.user_id) {
     throw new AppError('You do not have access to this document', 403, 'FORBIDDEN');
   }
-  res.download(path.join(UPLOAD_DIR, doc.file_path), doc.file_name);
+  // Treat the database path as untrusted: never let a malformed row escape the
+  // private upload directory. Uploaded verification files contain sensitive evidence.
+  const uploadRoot = path.resolve(UPLOAD_DIR);
+  const absoluteFile = path.resolve(uploadRoot, doc.file_path);
+  if (!absoluteFile.startsWith(uploadRoot + path.sep)) {
+    throw new AppError('Verification document is unavailable', 404, 'DOCUMENT_NOT_FOUND');
+  }
+  res.setHeader('Cache-Control', 'private, no-store, max-age=0');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.download(absoluteFile, path.basename(doc.file_name));
 });
 
 const review = asyncHandler(async (req, res) => {
