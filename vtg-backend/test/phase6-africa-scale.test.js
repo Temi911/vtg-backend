@@ -43,3 +43,17 @@ test('country lookup validates input and returns isolated market data', () => {
   market.ports.pop();
   assert.ok(getMarket('NG').ports.length >= 5);
 });
+
+test('Africa market page is wired to the API and includes safe status and navigation cues', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const page = fs.readFileSync(path.resolve(__dirname, '../../africa-markets.html'), 'utf8');
+  const server = fs.readFileSync(path.resolve(__dirname, '../src/server.js'), 'utf8');
+  assert.match(page, /fetch\('\/api\/africa\/markets'/);
+  assert.match(page, /planning_data/);
+  assert.match(page, /liveProviderData!==false/);
+  assert.match(page, /marketStatus===\x27foundation\x27/);
+  assert.match(page, /id="theme-toggle"/);
+  assert.match(page, /id="footAfricaMarkets"|Africa Markets/);
+  assert.match(server, /app\.use\('\/api\/africa',africaMarketRoutes\)/);
+});
