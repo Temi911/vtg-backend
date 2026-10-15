@@ -32,6 +32,23 @@ test('fresh official source records can be marked decision-ready without claimin
   assert.equal(record.isDecisionReady, true);
 });
 
+
+test('future retrieval timestamps and expiry-before-retrieval cannot be decision-ready', () => {
+  const futureRetrieval = normalizeRecord({
+    schemaVersion: '1.0', kind: 'country_rule', status: 'live', title: 'Suspicious future record',
+    source: { name: 'Official authority', authority: 'official', retrievedAt: future(60), validUntil: future(120) },
+  });
+  assert.equal(futureRetrieval.freshness, 'unknown');
+  assert.equal(futureRetrieval.isDecisionReady, false);
+
+  const impossibleWindow = normalizeRecord({
+    schemaVersion: '1.0', kind: 'country_rule', status: 'live', title: 'Invalid validity window',
+    source: { name: 'Official authority', authority: 'official', retrievedAt: past(60), validUntil: past(90) },
+  });
+  assert.equal(impossibleWindow.freshness, 'unknown');
+  assert.equal(impossibleWindow.isDecisionReady, false);
+});
+
 test('landed cost estimate calculates CIF, duty, VAT and other charges transparently', () => {
   const result = calculateIndicativeLandedCost({
     currency: 'usd', goodsValue: 1000, freight: 100, insurance: 10,
