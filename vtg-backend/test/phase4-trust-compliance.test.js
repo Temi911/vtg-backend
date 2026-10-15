@@ -138,3 +138,16 @@ test('agent approval requires current verified identity and experience evidence'
   assert.match(agent, /ORDER BY doc_type,uploaded_at DESC,id::text DESC/);
   assert.match(agent, /A review note of at least five characters is required/);
 });
+
+
+test('verification and Admin OS define explicit light/dark theme tokens and dark status contrast', () => {
+  const verificationPage = fs.readFileSync(path.join(root, '..', 'verification.html'), 'utf8');
+  const adminPage = fs.readFileSync(path.join(root, '..', 'admin-os.html'), 'utf8');
+  assert.match(verificationPage, /:root\{--ink:#0b1720;--muted:#65757e;--line:#dbe5e8;--bg:#f5f8f9;--card:#fff/);
+  assert.match(verificationPage, /html\[data-theme="dark"\]\{--ink:#eef3f6;--muted:#b9c5ce;--line:#2b3640;--bg:#0d1117;--card:#11161d/);
+  assert.match(verificationPage, /html\[data-theme="dark"\] \.status\{background:#302717;color:#f2c66d\}/);
+  assert.match(verificationPage, /html\[data-theme="dark"\] \.status\.verified\{background:#13291f;color:#86efac\}/);
+  assert.match(verificationPage, /html\[data-theme="dark"\] \.status\.rejected\{background:#321b1b;color:#ff9999\}/);
+  assert.match(adminPage, /:root\{--bg:#f6f8fa;--card:#fff;--ink:#17202a;--muted:#687684;--line:#dfe5ea/);
+  assert.match(adminPage, /html\[data-theme=dark\]\{--bg:#0d1117;--card:#11161d;--ink:#eef3f6;--muted:#b9c5ce;--line:#2b3640/);
+});
