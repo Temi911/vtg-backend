@@ -48,7 +48,7 @@ test('verification upload checks declared file types before recording evidence',
 test('verification evidence storage is outside the public static root', () => {
   const upload = fs.readFileSync(path.join(root, 'src', 'middleware', 'upload.js'), 'utf8');
   const server = fs.readFileSync(path.join(root, 'src', 'server.js'), 'utf8');
-  assert.match(upload, /const STATIC_ROOT = path\.resolve\(\__dirname, '\.\.'\)/);
+  assert.match(upload, /const STATIC_ROOT = path\.resolve\(__dirname, '\.\.', '\.\.'\)/);
   assert.match(upload, /path\.resolve\(__dirname, '\.\.', '\.\.', '\.\.', 'private-uploads'\)/);
   assert.match(upload, /UPLOAD_DIR\.startsWith\(STATIC_ROOT \+ path\.sep\)/);
   assert.match(upload, /UPLOAD_DIR must be outside the public static web root/);
