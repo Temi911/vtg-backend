@@ -60,3 +60,15 @@ test('landed-cost API is mounted and protected by authentication and role checks
   assert.ok(route.includes("router.post('/landed-cost/estimate'"));
   assert.ok(server.includes("app.use('/api/market-intelligence/tools',tradeIntelligenceRoutes)"));
 });
+
+test('intelligence centre submits landed-cost estimates and labels VAT as user supplied', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const html = fs.readFileSync(path.join(__dirname, '..', '..', 'intelligence-centre.html'), 'utf8');
+  assert.ok(html.includes('id="vtgVatRate"'));
+  assert.ok(html.includes('/api/market-intelligence/tools/landed-cost/estimate'));
+  assert.ok(html.includes("Authorization:'Bearer '+VTG_TOKEN"));
+  assert.ok(html.includes('requestServerEstimate()'));
+  assert.ok(html.includes('user-entered tax rates and FX are not independently verified'));
+  assert.ok(html.includes('local planning preview remains visible'));
+});
