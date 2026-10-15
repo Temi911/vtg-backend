@@ -2,7 +2,7 @@ const { z } = require('zod');
 const { query, withTransaction } = require('../config/db');
 const { AppError } = require('../utils/AppError');
 const { asyncHandler } = require('../utils/asyncHandler');
-const { locations: atlasLocations } = require('../../api/atlas-locations');
+const { locations: atlasLocations } = require('../../../api/atlas-locations');
 const { getLiveVesselPosition } = require('../services/vessel-tracking.service');
 
 function resolveAtlasLocation(text) {
