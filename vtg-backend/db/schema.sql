@@ -47,6 +47,16 @@ CREATE TABLE auth_sessions (
 );
 CREATE INDEX idx_auth_sessions_user_expires ON auth_sessions(user_id, expires_at);
 
+CREATE TABLE email_verifications (
+  email         TEXT PRIMARY KEY,
+  code_hash     TEXT NOT NULL,
+  expires_at    TIMESTAMPTZ NOT NULL,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  attempt_count INTEGER NOT NULL DEFAULT 0 CHECK (attempt_count >= 0),
+  locked_until  TIMESTAMPTZ
+);
+CREATE INDEX idx_email_verifications_expires ON email_verifications(expires_at);
+
 CREATE TABLE buyer_profiles (
   user_id           UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
   buyer_type        buyer_type NOT NULL,
