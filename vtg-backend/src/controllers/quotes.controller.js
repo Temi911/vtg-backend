@@ -165,12 +165,12 @@ const convertToOrder=asyncHandler(async(req,res)=>{
       'INSERT INTO conversation_participants(conversation_id,user_id) VALUES($1,$2),($1,$3)',
       [conv.rows[0].id,q.buyer_id,q.supplier_id]
     );
-    await client.query(
+    const quoteUpdate = await client.query(
       `UPDATE trade_quotes SET status='converted',converted_order_id=$1,updated_at=now()
        WHERE id=$2 AND status='accepted' AND converted_order_id IS NULL RETURNING id`,
       [or.rows[0].id,q.id]
     );
-    if (!conv.rows[0]) {
+    if (!quoteUpdate.rows[0]) {
       throw new AppError('Quote was converted by another request; refresh the quote before trying again.',409,'QUOTE_CONVERSION_CONFLICT');
     }
     return or.rows[0];
