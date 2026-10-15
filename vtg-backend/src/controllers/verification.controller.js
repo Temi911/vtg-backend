@@ -85,7 +85,16 @@ const listMine = asyncHandler(async (req, res) => {
   }
   const { rows } = await query(
     `SELECT vd.id, vd.doc_type, vd.file_name, vd.mime_type, vd.file_size_bytes,
-            vd.status, vd.review_notes, vd.uploaded_at, vd.reviewer_id, vd.reviewed_at,
+            CASE
+              WHEN EXISTS (
+                SELECT 1 FROM verification_documents newer
+                 WHERE newer.user_id = vd.user_id AND newer.doc_type = vd.doc_type
+                   AND newer.uploaded_at > vd.uploaded_at
+              ) THEN 'superseded'
+              WHEN vd.expires_at IS NOT NULL AND vd.expires_at <= now() THEN 'expired'
+              ELSE vd.status::text
+            END AS status,
+            vd.review_notes, vd.uploaded_at, vd.reviewer_id, vd.reviewed_at, vd.expires_at,
             reviewer.full_name AS reviewer_name
        FROM verification_documents vd
        LEFT JOIN users reviewer ON reviewer.id = vd.reviewer_id
