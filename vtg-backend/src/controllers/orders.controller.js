@@ -131,7 +131,7 @@ const updateStatus = asyncHandler(async (req, res) => {
     disputed: ['confirmed', 'shipped', 'in_transit', 'arrived', 'customs', 'delivered', 'cancelled']
   };
   const supplierStatuses = new Set(['confirmed', 'shipped', 'in_transit']);
-  const buyerStatuses = new Set(['delivered', 'disputed']);
+  const buyerStatuses = new Set(['disputed']);
   const financeStatuses = new Set(['lc_issued']);
 
   const result=await withTransaction(async client=>{
@@ -155,15 +155,7 @@ const updateStatus = asyncHandler(async (req, res) => {
       throw new AppError('Only the buyer can confirm or dispute this order',403,'FORBIDDEN');
     }
     if(status==='delivered'){
-      const customs=await client.query(
-        `SELECT sc.status FROM shipments s
-          JOIN shipment_customs sc ON sc.shipment_id=s.id
-         WHERE s.order_id=$1 ORDER BY sc.created_at DESC LIMIT 1`,
-        [order.id]
-      );
-      if(customs.rows[0]&&customs.rows[0].status!=='released'){
-        throw new AppError('Customs must be released before this shipment can be marked delivered',409,'CUSTOMS_NOT_RELEASED');
-      }
+      throw new AppError('Confirm delivery through the shipment delivery workflow and attach a proof-of-delivery document',409,'DELIVERY_WORKFLOW_REQUIRED');
     }
     if(financeStatuses.has(status)&&!isBank&&req.user.role!=='admin'){
       throw new AppError('Only the assigned bank can record the LC milestone',403,'FORBIDDEN');

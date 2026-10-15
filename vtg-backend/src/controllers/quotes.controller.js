@@ -144,8 +144,8 @@ const convertToOrder=asyncHandler(async(req,res)=>{
     const locked=await client.query('SELECT * FROM trade_quotes WHERE id=$1 FOR UPDATE',[q.id]);
     const current=locked.rows[0];
     if(!current)throw new AppError('Quote not found',404);
-    if(current.status!=='accepted')throw new AppError('Only an accepted quote can become an order',409,'QUOTE_NOT_ACCEPTED');
     if(current.converted_order_id)throw new AppError('Quote has already been converted',409,'QUOTE_ALREADY_CONVERTED');
+    if(current.status!=='accepted')throw new AppError('Only an accepted quote can become an order',409,'QUOTE_NOT_ACCEPTED');
 
     const itemResult=await client.query('SELECT * FROM trade_quote_items WHERE quote_id=$1 ORDER BY id',[current.id]);
     if(!itemResult.rows.length)throw new AppError('Accepted quote has no line items',409,'QUOTE_HAS_NO_ITEMS');

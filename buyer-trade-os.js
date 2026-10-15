@@ -404,6 +404,7 @@
       const anchor=document.getElementById('vtgTradeJourney');
       if(anchor&&!document.getElementById('buyerOsPreviewNotice')){
         const notice=document.createElement('section');notice.id='buyerOsPreviewNotice';notice.className='buyerOs buyerOsPanel';
+        notice.style.cssText='display:block;margin:0 0 16px;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:16px;color:var(--ink);box-shadow:var(--shadow)';
         notice.innerHTML='<strong>Live buyer records are disabled in this branch preview.</strong><p class="buyerOsSub">This Vercel preview routes API traffic to the production backend. No buyer data is loaded or changed here.</p>';
         anchor.insertAdjacentElement('afterend',notice);
       }

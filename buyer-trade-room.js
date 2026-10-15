@@ -83,7 +83,7 @@
       </div>`;
     document.body.appendChild(modal);
 
-    let state={quotes:[],orders:[],selected:null,documents:[],shipment:null,shipmentEvents:[],shipmentRoute:[],payments:[]};
+    let state={quotes:[],orders:[],selected:null,documents:[],documentChecklist:null,shipment:null,shipmentEvents:[],shipmentRoute:[],payments:[]};
 
     function openModal(title,meta,body,submit){
       document.getElementById('buyerRoomModalTitle').textContent=title;
@@ -140,12 +140,14 @@
     async function selectOrder(id){
       try{
         const d=await api('/orders/'+encodeURIComponent(id)); state.selected={type:'order',data:d.order,items:d.items||[]};
-        const [docs,ship,pay]=await Promise.all([
+        const [docs,checklist,ship,pay]=await Promise.all([
           api('/documents/order/'+encodeURIComponent(id)).catch(()=>({documents:[]})),
+          api('/trade-documents/order/'+encodeURIComponent(id)).catch(()=>null),
           api('/shipments/order/'+encodeURIComponent(id)).catch(()=>null),
           api('/payments').catch(()=>({paymentRequests:[]}))
         ]);
         state.documents=docs.documents||[];
+        state.documentChecklist=checklist?.requirements?checklist:null;
         state.shipment=ship?.shipment||null; state.shipmentEvents=ship?.events||[]; state.shipmentRoute=ship?.routePoints||[];
         state.payments=(pay.paymentRequests||[]).filter(x=>String(x.order_id)===String(id));
         renderDetail();
@@ -183,12 +185,15 @@
         return;
       }
       const docs=state.documents;
+      const checklist=state.documentChecklist?.requirements||[];
+      const missingRequired=Number(state.documentChecklist?.missingRequired)||0;
       box.innerHTML=`
         <div class="buyerRoomItem"><div class="row"><strong>${esc(d.reference)}</strong><span class="buyerRoomBadge">${esc(d.status)}</span></div>
           <small>${esc(d.supplier_name||'Supplier')} • ${money(d.total_amount_usd)} • ${esc(d.incoterm||'FOB')}</small>
           <div class="buyerRoomActions"><button class="btn" id="roomUpload">Upload document</button>${!['delivered','cancelled'].includes(d.status)?'<button class="btn" id="roomPay">Start payment</button>':''}${!['delivered','cancelled'].includes(d.status)?'<button class="btn primary" id="roomInspect">Request inspection</button>':''}${['arrived','customs'].includes(d.status)?'<button class="btn primary" id="roomDeliver">Confirm delivery</button>':''}${d.status==='delivered'?'<span class="buyerRoomBadge">Delivery confirmed</span>':''}${orderActions(d)}</div></div>
         <div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Transaction timeline</strong><div class="buyerRoomTimeline" style="margin-top:10px">${timelineForOrder(d)}</div></div>
         <div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Documents</strong><div class="buyerRoomList" style="margin-top:7px">${docs.length?docs.map(x=>`<div class="buyerRoomItem"><div class="row"><strong style="font-size:10px">${esc(x.doc_type)}</strong><span class="buyerRoomBadge">${esc(x.status||'uploaded')}</span></div><small>${esc(x.file_name)}</small><div class="buyerRoomActions"><button class="btn" data-doc-download="${esc(x.id)}">Download</button></div></div>`).join(''):'<div class="buyerRoomEmpty">No order documents uploaded yet.</div>'}</div></div>
+        <div class="buyerRoomItem" style="margin-top:8px"><div class="row"><strong style="font-size:11px">Required document checklist</strong><span class="buyerRoomBadge">${missingRequired} required outstanding</span></div><div class="buyerRoomList" style="margin-top:7px">${checklist.length?checklist.map(x=>'<div class="buyerRoomItem"><strong>'+esc(x.label||x.doc_type)+'</strong><small>'+(x.required?'Required':'Optional')+' • '+esc(x.status||'missing')+'</small></div>').join(''):'<div class="buyerRoomEmpty">Checklist unavailable; confirm required trade documents with your authorized trade adviser.</div>'}</div></div>
         <div class="buyerRoomActions" style="margin-top:8px"><button class="btn" id="roomConversation">Message supplier</button></div></div><div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Payments</strong><div class="buyerRoomList" style="margin-top:7px">${state.payments.length?state.payments.map(x=>`<div><strong style="font-size:10px">${esc(x.method)} • ${esc(x.amount)} ${esc(x.currency)}</strong><small>${esc(x.status)} • ${esc(x.provider_ref||'Pending provider reference')}</small></div>`).join(''):'<div class="buyerRoomEmpty">No payment request initiated for this order.</div>'}</div></div>
         ${state.shipment?`<div class="buyerRoomItem" style="margin-top:8px"><strong style="font-size:11px">Shipment</strong><div class="buyerRoomActions"><button class="btn" id="roomLiveTrack">Check live tracking</button></div><small>${esc(state.shipment.container_no||'Container pending')} • ${esc(state.shipment.carrier||'Carrier pending')} • ${esc(state.shipment.origin_port||'Origin')} → ${esc(state.shipment.destination_port||'Destination')}</small><div class="buyerRoomTimeline" style="margin-top:10px">${state.shipmentEvents.length?state.shipmentEvents.map((x,i)=>`<div class="buyerRoomStep ${x.status==='done'?'done':x.status==='active'?'active':''}"><span class="buyerRoomDot"></span><div><strong>${esc(x.location)}</strong><small>${esc(x.detail||x.status||'Milestone')}</small></div></div>`).join(''):'<div class="buyerRoomEmpty">Shipment exists but no tracking milestones have been recorded yet.</div>' + (state.shipmentRoute.length ? '<div class="buyerRoomSub" style="margin-top:8px"><strong>Mapped route:</strong> '+state.shipmentRoute.map(x=>esc(x.name)).join(' → ')+'</div>' : '')}</div></div>`:''}
       `;
@@ -228,9 +233,34 @@
     }
 
     async function confirmDelivery(order){
-      openModal('Confirm delivery','Order '+order.reference,'<div class="notice">Confirm only after the goods have actually been received and the delivery record is ready to be closed.</div>',async()=>{
-        try{await api('/orders/'+encodeURIComponent(order.id)+'/status',{method:'PATCH',body:JSON.stringify({status:'delivered'})});modal.classList.remove('open');await refresh();await selectOrder(order.id);}
-        catch(e){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>';}
+      if(!state.shipment){
+        openModal('Shipment required','Order '+order.reference,'<div class="notice">Delivery can only be confirmed through a shipment record.</div>',()=>modal.classList.remove('open'));
+        return;
+      }
+      const proofDocs=state.documents.filter(x=>x.doc_type==='proof_of_delivery');
+      if(!proofDocs.length){
+        openModal('Proof of delivery required','Order '+order.reference,'<div class="notice">Upload a proof-of-delivery document before confirming delivery. The shipment workflow also checks customs release.</div>',()=>{
+          modal.classList.remove('open');
+          uploadDoc(order.id);
+        });
+        document.getElementById('buyerRoomSubmit').textContent='Upload proof of delivery';
+        return;
+      }
+      openModal('Confirm delivery','Order '+order.reference,`
+        <div class="notice">Confirm only after the goods have actually been received, customs has released the shipment, and the delivery proof is ready.</div>
+        <div class="buyerRoomField"><label>Proof-of-delivery document</label><select id="roomProofDocument">${proofDocs.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.file_name)+'</option>').join('')}</select></div>
+        <div class="buyerRoomField"><label>Recipient name (optional)</label><input id="roomDeliveryRecipient" maxlength="160"></div>
+        <div class="buyerRoomField"><label>Delivery notes (optional)</label><textarea id="roomDeliveryNotes" maxlength="2000"></textarea></div>
+      `,async()=>{
+        try{
+          await api('/shipments/'+encodeURIComponent(state.shipment.id)+'/delivery',{method:'PATCH',body:JSON.stringify({
+            status:'confirmed',
+            proofDocumentId:document.getElementById('roomProofDocument').value,
+            recipientName:document.getElementById('roomDeliveryRecipient').value.trim(),
+            notes:document.getElementById('roomDeliveryNotes').value.trim()
+          })});
+          modal.classList.remove('open');await refresh();await selectOrder(order.id);
+        }catch(e){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>'}
       });
     }
 
@@ -246,7 +276,7 @@
 
     function uploadDoc(orderId){
       openModal('Upload trade document','Secure document linked to '+(state.selected?.data?.reference||'order'),`
-        <div class="buyerRoomField"><label>Document type</label><select id="roomDocType"><option value="commercial_invoice">Commercial invoice</option><option value="packing_list">Packing list</option><option value="bill_of_lading">Bill of lading</option><option value="certificate_of_origin">Certificate of origin</option><option value="other">Other</option></select></div>
+        <div class="buyerRoomField"><label>Document type</label><select id="roomDocType"><option value="commercial_invoice">Commercial invoice</option><option value="packing_list">Packing list</option><option value="bill_of_lading">Bill of lading</option><option value="certificate_of_origin">Certificate of origin</option><option value="proof_of_delivery">Proof of delivery</option><option value="customs_declaration">Customs declaration</option><option value="customs_release">Customs release</option><option value="duty_assessment">Duty / tax assessment</option><option value="other">Other</option></select></div>
         <div class="buyerRoomField"><label>File</label><input id="roomDocFile" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx"></div>
       `,async()=>{
         const file=document.getElementById('roomDocFile').files[0];

@@ -11,6 +11,11 @@
   var ACCESS_KEY = 'vtg_access_token';
   var REFRESH_LOCK = 'vtg-auth-refresh-v1';
 
+  function isBranchPreviewHost() {
+    var host = String(window.location.hostname || '').toLowerCase();
+    return host.endsWith('.vercel.app') && host !== 'vtg-staging.vercel.app';
+  }
+
   function readState() {
     try {
       var auth = JSON.parse(window.localStorage.getItem(AUTH_KEY) || '{}');
@@ -147,6 +152,18 @@
       url = new URL(inputUrl, window.location.href);
     } catch (_) {
       return nativeFetch(input, init);
+    }
+
+    if (url.origin === window.location.origin && url.pathname.startsWith('/api/') && isBranchPreviewHost()) {
+      if (typeof Response === 'function') {
+        return new Response(JSON.stringify({
+          error: {
+            code: 'BRANCH_PREVIEW_API_DISABLED',
+            message: 'API calls are disabled in Vercel branch previews because this deployment targets the production backend.'
+          }
+        }), { status: 503, headers: { 'Content-Type': 'application/json' } });
+      }
+      throw new Error('API calls are disabled in Vercel branch previews.');
     }
 
     if (url.origin !== window.location.origin || !url.pathname.startsWith('/api/') ||
