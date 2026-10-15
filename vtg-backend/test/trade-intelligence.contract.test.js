@@ -105,3 +105,31 @@ test('buyer dashboard labels provider readiness honestly and checks the authenti
   assert.ok(html.includes('Treat all market inputs as unverified'));
   assert.ok(html.includes("if(v==='intelligence')loadBuyerIntelStatus()"));
 });
+
+
+test('provider contract names statistical data separately from live FX, tariff and freight', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const route = fs.readFileSync(path.join(__dirname, '..', 'src', 'routes', 'trade-intelligence.routes.js'), 'utf8');
+  assert.ok(route.includes("tradeStatistics: 'UN Comtrade public preview"));
+  assert.ok(route.includes("tariff: 'not connected by this endpoint'"));
+  assert.ok(route.includes("freight: 'not connected by this endpoint'"));
+  assert.ok(route.includes("fx: 'client-side indicative exchange-rate feed; not verified by this API'"));
+});
+
+test('public news feed UI matches the API timestamp fields and does not fabricate live stories', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const route = fs.readFileSync(path.join(__dirname, '..', 'src', 'routes', 'market-intelligence-news.routes.js'), 'utf8');
+  const script = fs.readFileSync(path.join(__dirname, '..', '..', 'vtg-market-intelligence-live.js'), 'utf8');
+  const job = fs.readFileSync(path.join(__dirname, '..', 'src', 'jobs', 'market-intelligence-news.job.js'), 'utf8');
+  assert.ok(route.includes('published_at AS published'));
+  assert.ok(route.includes('discovered_at AS discovered'));
+  assert.ok(route.includes('generatedAt'));
+  assert.ok(script.includes("item.published||item.discovered"));
+  assert.ok(script.includes('No current stories available'));
+  assert.ok(script.includes('Publication time and source are provided by the feed'));
+  assert.ok(script.includes("['https:','http:'].includes(u.protocol)"));
+  assert.ok(job.includes('60 * 60 * 1000'));
+  assert.ok(job.includes('MARKET_NEWS_AUTOSYNC'));
+});
