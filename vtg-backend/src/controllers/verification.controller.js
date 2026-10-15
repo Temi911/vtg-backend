@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const { z } = require('zod');
 const { query } = require('../config/db');
 const { AppError } = require('../utils/AppError');
@@ -44,39 +45,50 @@ async function refreshBusinessVerificationStatus(userId, role) {
 }
 
 const upload = asyncHandler(async (req, res) => {
-  if (!['supplier','bank','agent'].includes(req.user.role)) {
-    throw new AppError('Business verification uploads are available for suppliers, banks and agents.', 403, 'FORBIDDEN');
-  }
-  if (!req.file) throw new AppError('No file was uploaded', 400);
-  const { docType } = z.object({ docType: z.string().min(2).max(80) }).parse(req.body);
-  if (!allowedDocTypes(req.user.role).has(docType)) {
-    throw new AppError('This document type is not valid for your account type.', 400, 'INVALID_DOCUMENT_TYPE');
-  }
-
-  let previousStatus = null;
-  if (['supplier','bank'].includes(req.user.role)) {
-    const prior = await query('SELECT business_verification_status FROM users WHERE id=$1', [req.user.id]);
-    previousStatus = prior.rows[0]?.business_verification_status || 'pending';
-  }
-
-  const { rows } = await query(
-    `INSERT INTO verification_documents
-      (user_id, doc_type, file_name, file_path, mime_type, file_size_bytes)
-     VALUES ($1,$2,$3,$4,$5,$6)
-     RETURNING id, user_id, doc_type, file_name, mime_type, file_size_bytes, status, uploaded_at`,
-    [req.user.id, docType, req.file.originalname, req.file.filename, req.file.mimetype, req.file.size]
-  );
-
-  let verificationStatus = 'not_required';
-  if (['supplier','bank'].includes(req.user.role)) {
-    verificationStatus = await refreshBusinessVerificationStatus(req.user.id, req.user.role);
-    if (verificationStatus !== previousStatus) {
-      const u = (await query('SELECT email, full_name, role FROM users WHERE id=$1', [req.user.id])).rows[0];
-      await sendVerificationStatusEmail({ ...u, status: verificationStatus });
+  let persisted = false;
+  try {
+    if (!['supplier','bank','agent'].includes(req.user.role)) {
+      throw new AppError('Business verification uploads are available for suppliers, banks and agents.', 403, 'FORBIDDEN');
     }
+    if (!req.file) throw new AppError('No file was uploaded', 400);
+    const { docType } = z.object({ docType: z.string().min(2).max(80) }).parse(req.body);
+    if (!allowedDocTypes(req.user.role).has(docType)) {
+      throw new AppError('This document type is not valid for your account type.', 400, 'INVALID_DOCUMENT_TYPE');
+    }
+
+    let previousStatus = null;
+    if (['supplier','bank'].includes(req.user.role)) {
+      const prior = await query('SELECT business_verification_status FROM users WHERE id=$1', [req.user.id]);
+      previousStatus = prior.rows[0]?.business_verification_status || 'pending';
+    }
+
+    const { rows } = await query(
+      `INSERT INTO verification_documents
+        (user_id, doc_type, file_name, file_path, mime_type, file_size_bytes)
+       VALUES ($1,$2,$3,$4,$5,$6)
+       RETURNING id, user_id, doc_type, file_name, mime_type, file_size_bytes, status, uploaded_at`,
+      [req.user.id, docType, req.file.originalname, req.file.filename, req.file.mimetype, req.file.size]
+    );
+    // Once the row exists, keep the file even if a later notification or audit step fails.
+    persisted = true;
+
+    let verificationStatus = 'not_required';
+    if (['supplier','bank'].includes(req.user.role)) {
+      verificationStatus = await refreshBusinessVerificationStatus(req.user.id, req.user.role);
+      if (verificationStatus !== previousStatus) {
+        const u = (await query('SELECT email, full_name, role FROM users WHERE id=$1', [req.user.id])).rows[0];
+        await sendVerificationStatusEmail({ ...u, status: verificationStatus });
+      }
+    }
+    await audit.log(req.user.id, 'Verification Document Uploaded', `${docType}: ${req.file.originalname}`, req.ip);
+    res.status(201).json({ document: rows[0], verificationStatus });
+  } catch (error) {
+    // Multer writes the file before controller validation/DB work; remove it if no DB row owns it.
+    if (!persisted && req.file?.path) {
+      await fs.promises.unlink(req.file.path).catch(() => {});
+    }
+    throw error;
   }
-  await audit.log(req.user.id, 'Verification Document Uploaded', `${docType}: ${req.file.originalname}`, req.ip);
-  res.status(201).json({ document: rows[0], verificationStatus });
 });
 
 const listMine = asyncHandler(async (req, res) => {
