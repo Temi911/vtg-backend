@@ -19,7 +19,8 @@ COPY vtg-ui-repair.js ./vtg-ui-repair.js
 COPY assets/ ./assets/
 
 EXPOSE 3000
-RUN chown -R node /usr/src/app
+# Keep private evidence outside /usr/src/app (the public static root) and writable by the runtime user.
+RUN mkdir -p /usr/src/private-uploads && chown -R node /usr/src/app /usr/src/private-uploads
 USER node
 
 # Database migrations are handled by Railway's pre-deploy command.
