@@ -8,11 +8,20 @@ const { spawnSync } = require('node:child_process');
 const backendRoot = path.resolve(__dirname, '..');
 const middlewarePath = path.join(backendRoot, 'src', 'middleware', 'upload.js');
 
+test('production refuses to start without an explicit persistent upload mount', () => {
+  const result = spawnSync(process.execPath, ['-e', 'require(' + JSON.stringify(middlewarePath) + ')'], {
+    encoding: 'utf8',
+    env: { ...process.env, NODE_ENV: 'production', UPLOAD_DIR: '' },
+  });
+  assert.notEqual(result.status, 0, 'production must not silently use ephemeral container storage');
+  assert.match(result.stderr, /UPLOAD_DIR must point to a mounted persistent volume in production/);
+});
+
 test('upload middleware rejects a directory inside the Express static root at runtime', () => {
   const unsafePath = path.join(backendRoot, 'public-test-uploads');
   const result = spawnSync(process.execPath, ['-e', 'require(' + JSON.stringify(middlewarePath) + ')'], {
     encoding: 'utf8',
-    env: { ...process.env, UPLOAD_DIR: unsafePath },
+    env: { ...process.env, NODE_ENV: 'test', UPLOAD_DIR: unsafePath },
   });
   assert.notEqual(result.status, 0, 'unsafe upload directory must fail closed');
   assert.match(result.stderr, /UPLOAD_DIR must be outside the public static web root/);
@@ -25,7 +34,7 @@ test('upload middleware accepts a private directory outside the Express static r
     const script = 'const m=require(' + JSON.stringify(middlewarePath) + '); if(m.UPLOAD_DIR!==' + JSON.stringify(privatePath) + ') process.exit(3);';
     const result = spawnSync(process.execPath, ['-e', script], {
       encoding: 'utf8',
-      env: { ...process.env, UPLOAD_DIR: privatePath },
+      env: { ...process.env, NODE_ENV: 'test', UPLOAD_DIR: privatePath },
     });
     assert.equal(result.status, 0, result.stderr || result.stdout);
   } finally {
