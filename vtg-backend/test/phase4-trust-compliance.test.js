@@ -76,3 +76,17 @@ test('trust risk flags require source, rationale and explicit resolution provena
   assert.match(riskRoutes, /router\.use\(requireAuth, requireRole\('admin'\)\)/);
   assert.match(server, /app\.use\('\/api\/admin\/trust-risk-flags',trustRiskRoutes\)/);
 });
+
+test('Admin OS exposes accessible trust-risk review controls and calls the protected API', () => {
+  const adminHtml = fs.readFileSync(path.join(root, '..', '..', 'admin-os.html'), 'utf8');
+  const adminScript = fs.readFileSync(path.join(root, '..', '..', 'admin-trust-risk.js'), 'utf8');
+  assert.match(adminHtml, /Trust &amp; Compliance Review/);
+  assert.match(adminHtml, /id="trust-risk-form"/);
+  assert.match(adminHtml, /id="trust-risk-message" class="trust-risk-message" role="status" aria-live="polite"/);
+  assert.match(adminHtml, /admin-trust-risk\.js/);
+  assert.match(adminScript, /\/admin\/trust-risk-flags/);
+  assert.match(adminScript, /Authorization: 'Bearer '/);
+  assert.match(adminScript, /source_reference|sourceReference/);
+  assert.match(adminScript, /resolutionNotes/);
+  assert.match(adminScript, /not a legal determination/);
+});
