@@ -62,3 +62,5 @@ Do not mark Phase 2 complete until the browser, role/access, cross-account owner
 ## Additional source finding — 2026-10-15
 
 - `inspection.controller.js` no longer lets a buyer mark an inspection payment as paid by submitting their own claim when Paystack is unavailable. The endpoint now returns a provider-unavailable response until secure payment verification is configured. Source commit: `9e0ee22a748c4558e9b76ab258f20267fdc68219`. This is not a live-backend claim; Railway has not been deployed.
+
+- `quotes.controller.js` now limits quote expiry to the buyer or admin and makes quote-to-order conversion conditional on the quote still being accepted and unconverted. A conflicting conversion throws inside the transaction so the duplicate order is rolled back. Source commit: `74c0359764e0377c2ca186602723483bae889163`. This still needs automated concurrency and authorization regression tests.
