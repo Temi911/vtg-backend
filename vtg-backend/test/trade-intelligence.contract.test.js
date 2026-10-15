@@ -71,4 +71,7 @@ test('intelligence centre submits landed-cost estimates and labels VAT as user s
   assert.ok(html.includes('requestServerEstimate()'));
   assert.ok(html.includes('user-entered tax rates and FX are not independently verified'));
   assert.ok(html.includes('local planning preview remains visible'));
+  assert.ok(html.includes('id="vtgProviderStatus"'));
+  assert.ok(html.includes("fetch('/api/market-intelligence/tools/contract'"));
+  assert.ok(html.includes('No official tariff or live freight integration is confirmed.'));
 });
