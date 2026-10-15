@@ -45,6 +45,16 @@ test('verification upload checks declared file types before recording evidence',
   assert.match(routes, /requireRole\('supplier', 'bank', 'agent'\), upload\.single\('file'\), validateUploadedFile/);
 });
 
+test('verification evidence storage is outside the public static root', () => {
+  const upload = fs.readFileSync(path.join(root, 'src', 'middleware', 'upload.js'), 'utf8');
+  const server = fs.readFileSync(path.join(root, 'src', 'server.js'), 'utf8');
+  assert.match(upload, /const STATIC_ROOT = path\.resolve\(\__dirname, '\.\.'\)/);
+  assert.match(upload, /path\.resolve\(__dirname, '\.\.', '\.\.', '\.\.', 'private-uploads'\)/);
+  assert.match(upload, /UPLOAD_DIR\.startsWith\(STATIC_ROOT \+ path\.sep\)/);
+  assert.match(upload, /UPLOAD_DIR must be outside the public static web root/);
+  assert.match(server, /express\.static\(workspaceRoot/);
+});
+
 test('verification history returns reviewer provenance and downloads are audit logged', () => {
   assert.match(verification, /reviewer\.full_name AS reviewer_name/);
   assert.match(verification, /expires_at = CASE WHEN \$1 = 'verified' THEN \$4::timestamptz ELSE NULL END/);
