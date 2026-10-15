@@ -154,6 +154,12 @@ const updateStatus = asyncHandler(async (req, res) => {
   if (buyerStatuses.has(status) && !isBuyer && req.user.role !== 'admin') {
     throw new AppError('Only the buyer can confirm or dispute this order', 403, 'FORBIDDEN');
   }
+  if (status === 'cancelled' && !isBuyer && req.user.role !== 'admin') {
+    throw new AppError('Only the buyer or an administrator can cancel this order', 403, 'FORBIDDEN');
+  }
+  if (status === 'cancelled' && !['pending', 'confirmed', 'lc_issued'].includes(order.status) && req.user.role !== 'admin') {
+    throw new AppError('An order cannot be cancelled after shipment execution has started', 409, 'ORDER_CANCELLATION_CLOSED');
+  }
   if (status === 'delivered') {
     const customsRes = await query(
       `SELECT sc.status
