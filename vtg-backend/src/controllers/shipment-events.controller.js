@@ -11,6 +11,11 @@ const events=asyncHandler(async(req,res)=>{
 });
 const append=asyncHandler(async(req,res)=>{
  if(!['admin','supplier','agent'].includes(req.user.role))throw new AppError('Role cannot add external tracking events',403,'FORBIDDEN');
+ const shipment=await query('SELECT s.id,o.supplier_id,o.id AS order_id FROM shipments s JOIN orders o ON o.id=s.order_id WHERE s.id=$1',[req.params.shipmentId]);
+ const target=shipment.rows[0];
+ if(!target)throw new AppError('Shipment not found',404);
+ if(req.user.role==='supplier'&&target.supplier_id!==req.user.id)throw new AppError('You are not the supplier for this shipment',403,'FORBIDDEN');
+ if(req.user.role==='agent'){const assigned=await query('SELECT 1 FROM inspection_requests WHERE order_id=$1 AND assigned_agent_id=$2 LIMIT 1',[target.order_id,req.user.id]);if(!assigned.rows[0])throw new AppError('You are not assigned to this shipment order',403,'FORBIDDEN');}
  const {eventType,status,location,detail,source}=req.body||{};
  if(!eventType||!status)throw new AppError('eventType and status are required',400,'INVALID_EVENT');
  const q=await query(`INSERT INTO shipment_events(shipment_id,event_type,status,location,detail,source,event_time,created_by)
