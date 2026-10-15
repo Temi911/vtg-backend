@@ -1,6 +1,6 @@
 # VTG Phase 3 — Trade Intelligence
 
-**Status:** Source implementation complete; operational acceptance remains gated on verified external providers and browser/deployment checks. GitHub Actions test suite passed on commit `5f06e05d9554d66eb61ab33115896cf3f548c334` (22 tests, 20 passed in the prior run? See note below). No live tariff, freight, or verified FX provider is claimed.
+**Status:** Phase 3 core source implementation is in place; final operational acceptance remains gated on verified external providers, remaining Trade OS/Trade Room coverage, and browser/deployment checks. GitHub Actions test suite passed on commit `5f06e05d9554d66eb61ab33115896cf3f548c334` (22 tests passed). No live tariff, freight, or verified FX provider is claimed.
 
 ## Goal
 
