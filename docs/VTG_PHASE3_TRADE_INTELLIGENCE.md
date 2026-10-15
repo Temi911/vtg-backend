@@ -14,6 +14,8 @@ Use one versioned contract for intelligence shown in Trade OS, Marketplace and T
 - Expired evidence is marked stale. A record is marked `isDecisionReady` only when it is live, has current expiry metadata and is attributed to an official source. This is a display/readiness signal, not a legal or commercial guarantee.
 - `calculateIndicativeLandedCost` uses user-supplied goods value, freight, insurance, duty rate, VAT rate/basis and other charges. It returns component-level arithmetic, assumptions and limitations; it does not discover or certify applicable tariff rates.
 - `vtg-backend/test/trade-intelligence.contract.test.js` covers required retrieval timestamps, stale-source handling, normalization and landed-cost arithmetic.
+- `vtg-backend/src/routes/trade-intelligence.routes.js` adds authenticated endpoints: `GET /api/market-intelligence/tools/contract` and `POST /api/market-intelligence/tools/landed-cost/estimate`. The estimate route is limited to buyer, supplier, bank and admin roles and does not retrieve or certify tariff rates.
+- `vtg-backend/src/server.js` mounts the new router under `/api/market-intelligence/tools` without modifying the protected `frontend-v3.html`.
 
 ## Acceptance requirements
 
@@ -36,6 +38,6 @@ Use one versioned contract for intelligence shown in Trade OS, Marketplace and T
 ## Next work sequence
 
 1. Confirm the contract tests pass in CI.
-2. Inspect existing API routes and current intelligence UI data sources, then add a read-only API surface that reuses the contract.
+2. Inspect existing API routes and current intelligence UI data sources, then integrate the new authenticated contract and estimate endpoints.
 3. Add source-attributed country/tariff and FX/freight adapters only where an authoritative source/provider is available.
 4. Integrate the contract into the intelligence UI and display evidence status consistently.
