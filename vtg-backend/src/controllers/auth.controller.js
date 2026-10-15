@@ -617,7 +617,7 @@ const logout = asyncHandler(async (req, res) => {
           [payload.sid, payload.id]
         );
       }
-    } catch (err) {
+    } catch {
       // Logout is idempotent; invalid or expired credentials need no further action.
     }
   }
