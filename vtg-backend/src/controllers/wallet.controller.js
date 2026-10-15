@@ -18,9 +18,9 @@ const getTransactions = asyncHandler(async (req, res) => {
 
 const sendSchema = z.object({
   recipientEmail: z.string().email(),
-  amount: z.number().positive(),
+  amount: z.number().finite().positive().max(1000000000),
   currency: z.enum(['USD', 'NGN', 'CNY']),
-  note: z.string().optional(),
+  note: z.string().trim().max(500).optional(),
 });
 
 // POST /wallet/send — simple peer-to-peer transfer between two VTG users
@@ -31,17 +31,14 @@ const send = asyncHandler(async (req, res) => {
   if (!recipient) throw new AppError('Recipient not found on VTG', 404, 'RECIPIENT_NOT_FOUND');
   if (recipient.id === req.user.id) throw new AppError('You cannot send money to yourself', 400);
 
-  await wallet.debit(req.user.id, data.currency, data.amount, {
-    counterpartyName: recipient.full_name,
-    description: data.note || 'Wallet transfer',
-  });
-  await wallet.credit(recipient.id, data.currency, data.amount, {
-    counterpartyName: req.user.email,
+  const transfer = await wallet.transfer(req.user.id, recipient.id, data.currency, data.amount, {
+    senderEmail: req.user.email,
+    recipientName: recipient.full_name,
     description: data.note || 'Wallet transfer',
   });
 
   await audit.log(req.user.id, 'Wallet Transfer', `Sent ${data.amount} ${data.currency} to ${data.recipientEmail}`, req.ip);
-  res.json({ message: 'Payment dispatched' });
+  res.json({ message: 'Wallet transfer recorded', transfer });
 });
 
 module.exports = { getBalances, getTransactions, send };
