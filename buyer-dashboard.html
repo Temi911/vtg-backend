@@ -114,6 +114,14 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--lux-gold);outline-o
  #page-overview .vtg-premium-card{padding:16px}
  #page-overview .vtg-kpi-row{grid-template-columns:minmax(0,1fr)}
 }
+
+/* Light-theme contrast for dark buyer-dashboard panels. The shared navigation stylesheet
+   has general light-mode text rules that otherwise make this dark command-centre UI unreadable. */
+html[data-theme="light"] body #page-overview .commandHero :is(h1,h2,h3,h4,h5,h6,strong,b){color:#fff!important}
+html[data-theme="light"] body #page-overview .commandHero :is(p,small,li){color:#c0d0df!important}
+html[data-theme="light"] body #page-overview .vtg-premium-card :is(h1,h2,h3,h4,h5,h6){color:#fff!important}
+html[data-theme="light"] body #page-overview .vtg-premium-card :is(p,small,li){color:#afc0cd!important}
+
 </style><script src="/vtg-auth-session.js?v=20261015-auth-session"></script>
 </head><body><div class="topline"></div><div class="app">
 <aside class="sidebar" id="sidebar"><a class="brand" href="/frontend-v3.html"><img class="logo" src="/assets/vtg-logo.svg" alt="VTG"><span><strong>VINTAGE TRADE GLOBAL</strong><small>BUYER WORKSPACE</small></span></a><div class="label" data-i18n="workspace">Workspace</div><nav>
