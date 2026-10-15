@@ -1,6 +1,6 @@
 # VTG Phase 4 — Trust & Compliance
 
-**Status:** Source implementation and automated regression coverage are expanded; final acceptance remains pending a fresh passing CI run on the latest commit, migration/database integration tests, browser verification, and operational storage/retention decisions. Do not represent these source changes as live backend behavior while Railway is deferred.
+**Status:** Source implementation is expanded and GitHub Actions passed all 38 tests on commit `2ddb35cbc0c68d4ec84a9c735bf86a04d5bfbc75` ([run #38716929015](https://github.com/Temi911/vtg-backend/actions/runs/38716929015)). Final acceptance still requires migration/database integration tests, browser verification, and operational storage/retention decisions. Do not represent these source changes as live backend behavior while Railway is deferred.
 
 ## Goal
 
