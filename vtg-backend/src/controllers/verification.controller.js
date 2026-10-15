@@ -195,6 +195,7 @@ const reviewQueue = asyncHandler(async (req, res) => {
        LEFT JOIN supplier_profiles sp ON sp.user_id = vd.user_id
        LEFT JOIN bank_profiles bp ON bp.user_id = vd.user_id
       WHERE vd.status = 'pending' AND u.role IN ('supplier','bank','agent')
+        AND vd.uploaded_at = (SELECT MAX(vd2.uploaded_at) FROM verification_documents vd2 WHERE vd2.user_id = vd.user_id AND vd2.doc_type = vd.doc_type)
       ORDER BY vd.uploaded_at ASC`
   );
   const applicants = new Map();
