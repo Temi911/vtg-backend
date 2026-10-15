@@ -1,5 +1,3 @@
-const axios = require('axios');
-
 const NCS_HS_LIBRARY = 'https://cet.customs.gov.ng/hs-code-library';
 const NCS_HOME = 'https://customs.gov.ng/';
 
@@ -13,8 +11,9 @@ function normalizeCountry(country) {
 }
 
 async function getNigeriaRates() {
-  const response = await axios.get(NCS_HOME, { timeout: 8000 });
-  const html = String(response.data || '');
+  const response = await fetch(NCS_HOME, { signal: AbortSignal.timeout(8000), headers: { Accept: 'text/html' } });
+  if (!response.ok) throw new Error('Nigerian Customs source returned HTTP ' + response.status);
+  const html = String(await response.text() || '');
   const rates = {};
   const currencies = [
     ['USD', /USD[^\d]{0,100}NGN([\d,.]+)/i],
