@@ -24,7 +24,7 @@ router.get('/contract', requireAuth, requireRole('buyer', 'supplier', 'bank', 'a
     statuses: ['live', 'indicative', 'demo', 'unavailable'],
     freshness: ['current', 'recent', 'stale', 'unknown'],
     provenanceRequired: ['source name', 'authority type', 'retrieval timestamp for live records'],
-    providers: { tariff: 'not connected by this endpoint', freight: 'not connected by this endpoint', fx: 'use the existing authenticated integrations endpoint and inspect provider status' },
+    providers: { tariff: 'not connected by this endpoint', freight: 'not connected by this endpoint', fx: 'client-side indicative exchange-rate feed; not verified by this API' },
     note: 'Contract discovery only; this response does not claim that live tariff or freight data is available.'
   });
 });
