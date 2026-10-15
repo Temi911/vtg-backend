@@ -42,7 +42,7 @@ test('verification upload checks declared file types before recording evidence',
   assert.match(upload, /hasValidSignature/);
   assert.match(upload, /FILE_SIGNATURE_MISMATCH/);
   assert.match(upload, /fileSize: 10 \* 1024 \* 1024/);
-  assert.match(routes, /requireRole\('supplier', 'bank', 'agent'\), upload\.single\('file'\), validateUploadedFile/);
+  assert.match(routes, /requireRole\('supplier', 'bank', 'agent'\), upload\.single\('file'\), validateUploadedFile, scanUploadedFile/);
 });
 
 test('verification evidence storage is outside the public static root', () => {
