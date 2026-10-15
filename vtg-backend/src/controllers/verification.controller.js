@@ -36,9 +36,9 @@ async function refreshBusinessVerificationStatus(userId, role) {
   if (role === 'bank') logoUrl = (await query('SELECT institution_logo_url FROM bank_profiles WHERE user_id=$1',[userId])).rows[0]?.institution_logo_url || null;
   const docsVerified = required.every(type => latest.get(type) === 'verified');
   const verified = docsVerified && Boolean(logoUrl);
-  const hasRejected = required.some(type => latest.get(type) === 'rejected');
+  const hasRejectedOrExpired = required.some(type => ['rejected', 'expired'].includes(latest.get(type)));
   const hasSubmitted = required.some(type => latest.has(type));
-  const status = verified ? 'verified' : hasRejected ? 'needs_correction' : hasSubmitted ? 'under_review' : 'pending';
+  const status = verified ? 'verified' : hasRejectedOrExpired ? 'needs_correction' : hasSubmitted ? 'under_review' : 'pending';
   await query('UPDATE users SET business_verification_status=$1 WHERE id=$2', [status, userId]);
   return status;
 }
