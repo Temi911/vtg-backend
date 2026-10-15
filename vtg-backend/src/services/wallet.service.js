@@ -5,17 +5,20 @@ const { AppError } = require('../utils/AppError');
  * Ensures a wallet row exists for (userId, currency); returns its id.
  */
 async function ensureWallet(client, userId, currency) {
+  // INSERT ... ON CONFLICT makes concurrent first-use transfers safe when
+  // both transactions attempt to create the same wallet simultaneously.
+  const created = await client.query(
+    'INSERT INTO wallet_accounts (user_id, currency, balance) VALUES ($1, $2, 0) ON CONFLICT (user_id, currency) DO NOTHING RETURNING id',
+    [userId, currency]
+  );
+  if (created.rows[0]) return created.rows[0].id;
+
   const existing = await client.query(
     'SELECT id FROM wallet_accounts WHERE user_id = $1 AND currency = $2',
     [userId, currency]
   );
-  if (existing.rows[0]) return existing.rows[0].id;
-
-  const created = await client.query(
-    'INSERT INTO wallet_accounts (user_id, currency, balance) VALUES ($1, $2, 0) RETURNING id',
-    [userId, currency]
-  );
-  return created.rows[0].id;
+  if (!existing.rows[0]) throw new AppError('Wallet account could not be prepared', 500, 'WALLET_ACCOUNT_ERROR');
+  return existing.rows[0].id;
 }
 
 /**
@@ -74,7 +77,9 @@ async function debit(userId, currency, amount, { counterpartyName, reference, de
  * Either both ledger entries and balance changes commit, or neither does.
  */
 async function transfer(senderId, recipientId, currency, amount, { senderEmail, recipientName, reference, description } = {}) {
-  if (!Number.isFinite(amount) || amount <= 0) throw new AppError('Amount must be a finite positive number', 400, 'INVALID_AMOUNT');
+  if (!Number.isFinite(amount) || amount <= 0 || !Number.isSafeInteger(Math.round(amount * 100)) || Math.abs(amount * 100 - Math.round(amount * 100)) > 1e-7) {
+    throw new AppError('Amount must be positive and have no more than two decimal places', 400, 'INVALID_AMOUNT');
+  }
   if (senderId === recipientId) throw new AppError('You cannot send money to yourself', 400, 'SELF_TRANSFER');
   return withTransaction(async (client) => {
     const senderWalletId = await ensureWallet(client, senderId, currency);

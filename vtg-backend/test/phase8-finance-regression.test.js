@@ -13,6 +13,9 @@ test('wallet transfer is one transaction with locked balances and paired ledger 
   assert.match(walletService, /return withTransaction\(async \(client\) =>/);
   assert.match(walletService, /FOR UPDATE/);
   assert.match(walletService, /INSUFFICIENT_FUNDS/);
+  assert.match(walletService, /ON CONFLICT \(user_id, currency\) DO NOTHING RETURNING id/);
+  assert.match(walletService, /no more than two decimal places/);
+  assert.match(walletController, /no more than two decimal places/);
   assert.match(walletService, /VALUES \(\$1,'debit'/);
   assert.match(walletService, /\(\$7,'credit'/);
   assert.match(walletController, /wallet\.transfer\(/);

@@ -18,7 +18,7 @@ const getTransactions = asyncHandler(async (req, res) => {
 
 const sendSchema = z.object({
   recipientEmail: z.string().email(),
-  amount: z.number().finite().positive().max(1000000000),
+  amount: z.number().finite().positive().max(1000000000).refine((value) => Math.abs(value * 100 - Math.round(value * 100)) < 1e-7, 'Amount must have no more than two decimal places'),
   currency: z.enum(['USD', 'NGN', 'CNY']),
   note: z.string().trim().max(500).optional(),
 });
