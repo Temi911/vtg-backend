@@ -28,7 +28,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   if (!parsed.success) throw new AppError('Enter a valid email address.', 400, 'VALIDATION_ERROR');
   const email = parsed.data.email.toLowerCase();
   // Always return the same public response to avoid exposing whether an account exists.
-  const { rows } = await query('SELECT id, email, full_name, role FROM users WHERE email=$1 AND is_active=TRUE LIMIT 1', [email]);
+  const { rows } = await query('SELECT id, email, full_name, role FROM users WHERE LOWER(email)=$1 AND is_active=TRUE LIMIT 1', [email]);
   if (rows[0] && rows[0].role !== 'admin' && emailReady()) {
     const token = crypto.randomBytes(32).toString('hex');
     const tokenHash = sha(token);
