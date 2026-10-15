@@ -30,9 +30,13 @@ const list = asyncHandler(async (req, res) => {
   }
 
   const { rows } = await query(
-    `SELECT p.*, sp.company_name AS supplier_name, sp.verified_supplier, sp.rating
+    `SELECT p.*, sp.company_name AS supplier_name,
+            u.business_verification_status AS supplier_verification_status,
+            (u.business_verification_status = 'verified') AS verified_supplier,
+            sp.verified_supplier AS supplier_profile_verified, sp.rating
      FROM products p
      JOIN supplier_profiles sp ON sp.user_id = p.supplier_id
+     JOIN users u ON u.id = p.supplier_id
      WHERE ${conditions.join(' AND ')}
      ORDER BY p.created_at DESC`,
     params
@@ -42,8 +46,13 @@ const list = asyncHandler(async (req, res) => {
 
 const getOne = asyncHandler(async (req, res) => {
   const { rows } = await query(
-    `SELECT p.*, sp.company_name AS supplier_name, sp.verified_supplier, sp.rating
-     FROM products p JOIN supplier_profiles sp ON sp.user_id = p.supplier_id
+    `SELECT p.*, sp.company_name AS supplier_name,
+            u.business_verification_status AS supplier_verification_status,
+            (u.business_verification_status = 'verified') AS verified_supplier,
+            sp.verified_supplier AS supplier_profile_verified, sp.rating
+     FROM products p
+     JOIN supplier_profiles sp ON sp.user_id = p.supplier_id
+     JOIN users u ON u.id = p.supplier_id
      WHERE p.id = $1`,
     [req.params.id]
   );

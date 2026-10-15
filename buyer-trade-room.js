@@ -2,11 +2,20 @@
   'use strict';
 
   const API = '/api';
-  const token = () => localStorage.getItem('vtg_access_token') || '';
+  function currentSession(){try{return JSON.parse(localStorage.getItem('vtg-auth')||'null')}catch(_){return null}}
+  const token = () => localStorage.getItem('vtg_access_token') || currentSession()?.accessToken || '';
+  function isBranchPreviewDeployment(){return location.hostname.toLowerCase().endsWith('.vercel.app')&&location.hostname.toLowerCase()!=='vtg-staging.vercel.app'}
+  function canUseLiveBuyerWorkspace(){
+    if(isBranchPreviewDeployment()||new URLSearchParams(location.search).get('preview')==='1'||!token())return false;
+    const role=currentSession()?.user?.role;
+    return !role||role==='buyer';
+  }
+  function getUserId(){return String(currentSession()?.user?.id||'')}
   const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const money = n => new Intl.NumberFormat(undefined,{style:'currency',currency:'USD',maximumFractionDigits:2}).format(Number(n)||0);
 
   async function api(path, options={}) {
+    if(isBranchPreviewDeployment()) throw new Error('Live buyer API access is disabled in Vercel branch previews because /api targets the production backend.');
     const headers = {...(options.headers||{}), Authorization:'Bearer '+token()};
     if (options.body && !(options.body instanceof FormData)) headers['Content-Type']='application/json';
     const r=await fetch(API+path,{...options,headers});
@@ -248,7 +257,7 @@
       });
     }
 
-    function openOrderConversation(order){openModal('Supplier conversation','Order '+order.reference,`<div id="roomConversationMessages" class="buyerRoomList"><div class="buyerRoomEmpty">Loading conversation…</div></div><div class="buyerRoomField" style="margin-top:10px"><label>Message supplier</label><textarea id="roomConversationInput" placeholder="Write a trade-related message…"></textarea></div>`,async()=>{const input=document.getElementById('roomConversationInput');const body=input?.value.trim();if(!body){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">Write a message first.</div>';return}try{const conv=await api('/messages');const match=(conv.conversations||[]).find(x=>String(x.order_id)===String(order.id));if(!match)throw new Error('No supplier conversation is linked to this order yet.');await api('/messages/'+encodeURIComponent(match.id)+'/messages',{method:'POST',body:JSON.stringify({body})});modal.classList.remove('open')}catch(e){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>'}});api('/messages').then(d=>{const match=(d.conversations||[]).find(x=>String(x.order_id)===String(order.id));if(!match){document.getElementById('roomConversationMessages').innerHTML='<div class="buyerRoomEmpty">No supplier conversation is linked to this order yet.</div>';return}return api('/messages/'+encodeURIComponent(match.id)+'/messages').then(m=>{document.getElementById('roomConversationMessages').innerHTML=(m.messages||[]).map(x=>'<div class="buyerRoomItem"><strong>'+esc(x.sender_id===getUserId()?'You':'Supplier')+'</strong><small>'+esc(x.body)+'</small></div>').join('')||'<div class="buyerRoomEmpty">No messages yet.</div>'})}).catch(e=>{const el=document.getElementById('roomConversationMessages');if(el)el.innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>'})}
+    function openOrderConversation(order){openModal('Supplier conversation','Order '+order.reference,`<div id="roomConversationMessages" class="buyerRoomList"><div class="buyerRoomEmpty">Loading conversation…</div></div><div class="buyerRoomField" style="margin-top:10px"><label>Message supplier</label><textarea id="roomConversationInput" placeholder="Write a trade-related message…"></textarea></div>`,async()=>{const input=document.getElementById('roomConversationInput');const body=input?.value.trim();if(!body){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">Write a message first.</div>';return}try{const conv=await api('/messages');const match=(conv.conversations||[]).find(x=>String(x.order_id)===String(order.id));if(!match)throw new Error('No supplier conversation is linked to this order yet.');await api('/messages/'+encodeURIComponent(match.id)+'/messages',{method:'POST',body:JSON.stringify({body})});modal.classList.remove('open')}catch(e){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>'}});api('/messages').then(d=>{const match=(d.conversations||[]).find(x=>String(x.order_id)===String(order.id));if(!match){document.getElementById('roomConversationMessages').innerHTML='<div class="buyerRoomEmpty">No supplier conversation is linked to this order yet.</div>';return}return api('/messages/'+encodeURIComponent(match.id)+'/messages').then(m=>{document.getElementById('roomConversationMessages').innerHTML=(m.messages||[]).map(x=>'<div class="buyerRoomItem"><strong>'+esc((getUserId()&&String(x.sender_id)===getUserId())?'You':'Supplier')+'</strong><small>'+esc(x.body)+'</small></div>').join('')||'<div class="buyerRoomEmpty">No messages yet.</div>'})}).catch(e=>{const el=document.getElementById('roomConversationMessages');if(el)el.innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>'})}
 
     function requestInspection(order){
       openModal('Request pre-shipment inspection','Order '+order.reference,
@@ -266,32 +275,11 @@
           try{
             const body={orderId:order.id,country:document.getElementById('roomInspectCountry').value,city:document.getElementById('roomInspectCity').value.trim(),productName:document.getElementById('roomInspectProduct').value.trim(),category:document.getElementById('roomInspectCategory').value.trim(),quantity:Number(document.getElementById('roomInspectQuantity').value),serviceLevel:document.getElementById('roomInspectLevel').value,supplierName:document.getElementById('roomInspectSupplier').value.trim(),supplierAddress:document.getElementById('roomInspectAddress').value.trim(),requestedChecks:document.getElementById('roomInspectChecks').value.trim(),addVideo:document.getElementById('roomInspectVideo').checked,urgent:document.getElementById('roomInspectUrgent').checked};
             if(!body.city||!body.productName||!body.category||!body.supplierName||!body.supplierAddress||!body.requestedChecks){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">Complete the inspection details first.</div>';return}
-            const d=await api('/inspections/requests',{method:'POST',body:JSON.stringify(body)});modal.classList.remove('open');openModal('Inspection request created','Order '+order.reference,'<div class="notice">Request <b>'+esc(d.request?.reference||'created')+'</b> created. Inspection fee: <b>
-      openModal('Start payment','Order '+order.reference,`
-        <div class="buyerRoomField"><label>Payment method</label><select id="roomPayMethod"><option value="tt">Bank transfer / TT</option><option value="escrow">Escrow</option><option value="forex">Forex</option><option value="dp">Documentary payment</option><option value="crypto">Crypto</option></select></div>
-        <div class="buyerRoomField"><label>Amount (USD)</label><input id="roomPayAmount" type="number" min="0.01" step="0.01" value="${esc(Number(order.total_amount_usd)||0)}"></div>
-        <div class="buyerRoomField"><label>Currency</label><select id="roomPayCurrency"><option>USD</option><option>NGN</option><option>CNY</option></select></div>
-        <div class="notice">Payment initiation records the chosen rail and provider response. It does not itself confirm settlement.</div>
-      `,async()=>{
-        try{await api('/payments',{method:'POST',body:JSON.stringify({method:document.getElementById('roomPayMethod').value,orderId:order.id,amount:Number(document.getElementById('roomPayAmount').value),currency:document.getElementById('roomPayCurrency').value,counterpartyName:order.supplier_name||undefined})});modal.classList.remove('open');await selectOrder(order.id)}
-        catch(e){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>'}
-      });
-    }
-
-    async function refresh(){
-      try{
-        const [q,o]=await Promise.all([api('/quotes'),api('/orders')]);
-        state.quotes=q.quotes||[]; state.orders=o.orders||[]; renderTransactions();
-        if(state.selected?.type==='order'){const still=state.orders.find(x=>String(x.id)===String(state.selected.data.id));if(still)await selectOrder(still.id)}
-      }catch(e){document.getElementById('buyerRoomTransactions').innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>'}
-    }
-
-    refresh();
-  }
-
-  function boot(){style();mount()}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-})();+Number(d.payment?.amountUsd||0).toFixed(2)+'</b>.</div><p class="buyerRoomEmpty">Continue to the Product Verification Centre to pay the inspection fee and track agent assignment.</p>',()=>modal.classList.remove('open'));
+            const d=await api('/inspections/requests',{method:'POST',body:JSON.stringify(body)});
+            modal.classList.remove('open');
+            openModal('Inspection request created','Order '+order.reference,
+              '<div class="notice">Request <b>'+esc(d.request?.reference||'created')+'</b> created. Inspection fee: <b>'+Number(d.payment?.amountUsd||0).toFixed(2)+'</b>.</div><p class="buyerRoomEmpty">Continue to the Product Verification Centre to pay the inspection fee and track agent assignment.</p>',
+              ()=>modal.classList.remove('open'));
             const b=document.createElement('button');b.className='btn primary';b.textContent='Open Product Verification Centre';b.onclick=()=>location.href='/buyer-verifications.html';document.getElementById('buyerRoomModalMsg')?.appendChild(b);
           }catch(e){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>'}
         });
@@ -320,6 +308,6 @@
     refresh();
   }
 
-  function boot(){style();mount()}
+  function boot(){if(!canUseLiveBuyerWorkspace())return;style();mount()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();

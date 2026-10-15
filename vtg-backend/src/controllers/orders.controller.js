@@ -118,13 +118,6 @@ const updateStatusSchema = z.object({
 
 const updateStatus = asyncHandler(async (req, res) => {
   const { status } = updateStatusSchema.parse(req.body);
-  const existing = await query('SELECT * FROM orders WHERE id = $1', [req.params.id]);
-  if (!existing.rows[0]) throw new AppError('Order not found', 404);
-  const order = existing.rows[0];
-  if (![order.buyer_id, order.supplier_id, order.bank_id].includes(req.user.id) && req.user.role !== 'admin') {
-    throw new AppError('You do not have access to this order', 403, 'FORBIDDEN');
-  }
-
   const transitions = {
     pending: ['confirmed', 'cancelled'],
     confirmed: ['lc_issued', 'shipped', 'cancelled', 'disputed'],
@@ -137,46 +130,55 @@ const updateStatus = asyncHandler(async (req, res) => {
     cancelled: [],
     disputed: ['confirmed', 'shipped', 'in_transit', 'arrived', 'customs', 'delivered', 'cancelled']
   };
-  if (!transitions[order.status] || !transitions[order.status].includes(status)) {
-    throw new AppError(`Order cannot move from ${order.status} to ${status}`, 409, 'INVALID_ORDER_TRANSITION');
-  }
-
   const supplierStatuses = new Set(['confirmed', 'shipped', 'in_transit']);
   const buyerStatuses = new Set(['delivered', 'disputed']);
   const financeStatuses = new Set(['lc_issued']);
-  const isSupplier = req.user.id === order.supplier_id;
-  const isBuyer = req.user.id === order.buyer_id;
-  const isBank = req.user.id === order.bank_id;
 
-  if (supplierStatuses.has(status) && !isSupplier && req.user.role !== 'admin') {
-    throw new AppError('Only the supplier can advance this order to this milestone', 403, 'FORBIDDEN');
-  }
-  if (buyerStatuses.has(status) && !isBuyer && req.user.role !== 'admin') {
-    throw new AppError('Only the buyer can confirm or dispute this order', 403, 'FORBIDDEN');
-  }
-  if (status === 'delivered') {
-    const customsRes = await query(
-      `SELECT sc.status
-         FROM shipments s
-         JOIN shipment_customs sc ON sc.shipment_id = s.id
-        WHERE s.order_id = $1
-        ORDER BY sc.created_at DESC
-        LIMIT 1`,
-      [order.id]
-    );
-    if (customsRes.rows[0] && customsRes.rows[0].status !== 'released') {
-      throw new AppError('Customs must be released before this shipment can be marked delivered', 409, 'CUSTOMS_NOT_RELEASED');
+  const result=await withTransaction(async client=>{
+    const existing=await client.query('SELECT * FROM orders WHERE id=$1 FOR UPDATE',[req.params.id]);
+    const order=existing.rows[0];
+    if(!order)throw new AppError('Order not found',404);
+    if(![order.buyer_id,order.supplier_id,order.bank_id].includes(req.user.id)&&req.user.role!=='admin'){
+      throw new AppError('You do not have access to this order',403,'FORBIDDEN');
     }
-  }
-  if (financeStatuses.has(status) && !isBank && req.user.role !== 'admin') {
-    throw new AppError('Only the assigned bank can record the LC milestone', 403, 'FORBIDDEN');
-  }
+    if(!transitions[order.status]||!transitions[order.status].includes(status)){
+      throw new AppError('Order cannot move from '+order.status+' to '+status,409,'INVALID_ORDER_TRANSITION');
+    }
 
-  const { rows } = await query('UPDATE orders SET status = $1, updated_at = now() WHERE id = $2 RETURNING *', [status, req.params.id]);
-  await audit.log(req.user.id, 'Order Status Updated', `Order ${order.reference} -> ${status}`, req.ip);
-  const otherParty = req.user.id === order.buyer_id ? order.supplier_id : order.buyer_id;
-  await notify(otherParty, 'Order Status Updated', `Order ${order.reference} is now "${status.replace(/_/g, ' ')}".`);
-  res.json({ order: rows[0] });
+    const isSupplier=req.user.id===order.supplier_id;
+    const isBuyer=req.user.id===order.buyer_id;
+    const isBank=req.user.id===order.bank_id;
+    if(supplierStatuses.has(status)&&!isSupplier&&req.user.role!=='admin'){
+      throw new AppError('Only the supplier can advance this order to this milestone',403,'FORBIDDEN');
+    }
+    if(buyerStatuses.has(status)&&!isBuyer&&req.user.role!=='admin'){
+      throw new AppError('Only the buyer can confirm or dispute this order',403,'FORBIDDEN');
+    }
+    if(status==='delivered'){
+      const customs=await client.query(
+        `SELECT sc.status FROM shipments s
+          JOIN shipment_customs sc ON sc.shipment_id=s.id
+         WHERE s.order_id=$1 ORDER BY sc.created_at DESC LIMIT 1`,
+        [order.id]
+      );
+      if(customs.rows[0]&&customs.rows[0].status!=='released'){
+        throw new AppError('Customs must be released before this shipment can be marked delivered',409,'CUSTOMS_NOT_RELEASED');
+      }
+    }
+    if(financeStatuses.has(status)&&!isBank&&req.user.role!=='admin'){
+      throw new AppError('Only the assigned bank can record the LC milestone',403,'FORBIDDEN');
+    }
+
+    const updated=await client.query('UPDATE orders SET status=$1,updated_at=now() WHERE id=$2 RETURNING *',[status,order.id]);
+    return {
+      order:updated.rows[0],
+      otherParty:req.user.id===order.buyer_id?order.supplier_id:order.buyer_id
+    };
+  });
+
+  await audit.log(req.user.id,'Order Status Updated','Order '+result.order.reference+' -> '+status,req.ip);
+  await notify(result.otherParty,'Order Status Updated','Order '+result.order.reference+' is now "'+status.replace(/_/g,' ')+'".');
+  res.json({order:result.order});
 });
 
 module.exports = { create, listMine, getOne, updateStatus };

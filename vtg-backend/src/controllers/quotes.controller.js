@@ -136,42 +136,50 @@ const updateStatus=asyncHandler(async(req,res)=>{
 const convertToOrder=asyncHandler(async(req,res)=>{
   const data=await getQuote(req.params.id,req.user);
   const q=data.quote;
-  if(q.status!=='accepted') throw new AppError('Only an accepted quote can become an order',409,'QUOTE_NOT_ACCEPTED');
-  if(q.converted_order_id) throw new AppError('Quote has already been converted',409,'QUOTE_ALREADY_CONVERTED');
   if(req.user.id!==q.buyer_id && req.user.role!=='admin'){
     throw new AppError('Only the buyer can convert an accepted quote into an order',403,'FORBIDDEN');
   }
 
-  const order=await withTransaction(async client=>{
+  const converted=await withTransaction(async client=>{
+    const locked=await client.query('SELECT * FROM trade_quotes WHERE id=$1 FOR UPDATE',[q.id]);
+    const current=locked.rows[0];
+    if(!current)throw new AppError('Quote not found',404);
+    if(current.status!=='accepted')throw new AppError('Only an accepted quote can become an order',409,'QUOTE_NOT_ACCEPTED');
+    if(current.converted_order_id)throw new AppError('Quote has already been converted',409,'QUOTE_ALREADY_CONVERTED');
+
+    const itemResult=await client.query('SELECT * FROM trade_quote_items WHERE quote_id=$1 ORDER BY id',[current.id]);
+    if(!itemResult.rows.length)throw new AppError('Accepted quote has no line items',409,'QUOTE_HAS_NO_ITEMS');
     const ref='VTG-'+new Date().getFullYear()+'-'+uuidv4().slice(0,6).toUpperCase();
-    const or=await client.query(
+    const orderResult=await client.query(
       `INSERT INTO orders(reference,buyer_id,supplier_id,total_amount_usd,incoterm,notes)
        VALUES($1,$2,$3,$4,$5,$6) RETURNING *`,
-      [ref,q.buyer_id,q.supplier_id,q.total_amount_usd,q.incoterm,
-       (q.notes?q.notes+' ':'')+'Converted from '+q.reference]
+      [ref,current.buyer_id,current.supplier_id,current.total_amount_usd,current.incoterm,
+       (current.notes?current.notes+' ':'')+'Converted from '+current.reference]
     );
-    for(const item of data.items){
+    const order=orderResult.rows[0];
+    for(const item of itemResult.rows){
       await client.query(
         `INSERT INTO order_items(order_id,product_id,description,quantity,unit_price_usd)
          VALUES($1,$2,$3,$4,$5)`,
-        [or.rows[0].id,item.product_id,item.description,item.quantity,item.unit_price_usd]
+        [order.id,item.product_id,item.description,item.quantity,item.unit_price_usd]
       );
     }
-    const conv=await client.query('INSERT INTO conversations(order_id) VALUES($1) RETURNING id',[or.rows[0].id]);
+    const conversation=await client.query('INSERT INTO conversations(order_id) VALUES($1) RETURNING id',[order.id]);
     await client.query(
       'INSERT INTO conversation_participants(conversation_id,user_id) VALUES($1,$2),($1,$3)',
-      [conv.rows[0].id,q.buyer_id,q.supplier_id]
+      [conversation.rows[0].id,current.buyer_id,current.supplier_id]
     );
-    await client.query(
-      'UPDATE trade_quotes SET status=\'converted\',converted_order_id=$1,updated_at=now() WHERE id=$2',
-      [or.rows[0].id,q.id]
+    const updated=await client.query(
+      "UPDATE trade_quotes SET status='converted',converted_order_id=$1,updated_at=now() WHERE id=$2 AND status='accepted' AND converted_order_id IS NULL RETURNING id",
+      [order.id,current.id]
     );
-    return or.rows[0];
+    if(!updated.rows[0])throw new AppError('Quote has already been converted',409,'QUOTE_ALREADY_CONVERTED');
+    return {order,quoteReference:current.reference};
   });
 
-  await audit.log(req.user.id,'Quote Converted To Order',`Quote ${q.reference} -> order ${order.reference}`,req.ip);
-  await notify(q.supplier_id,'Quote Accepted — Order Created',`Quote ${q.reference} has been converted to order ${order.reference}.`);
-  res.status(201).json({order,quoteReference:q.reference});
+  await audit.log(req.user.id,'Quote Converted To Order','Quote '+converted.quoteReference+' -> order '+converted.order.reference,req.ip);
+  await notify(converted.order.supplier_id,'Quote Accepted — Order Created','Quote '+converted.quoteReference+' has been converted to order '+converted.order.reference+'.');
+  res.status(201).json({order:converted.order,quoteReference:converted.quoteReference});
 });
 
 module.exports={create,listMine,getOne,updateStatus,convertToOrder};

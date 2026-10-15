@@ -2,13 +2,21 @@
   'use strict';
 
   const API = '/api';
-  const token = () => localStorage.getItem('vtg_access_token') || '';
+  function currentSession(){try{return JSON.parse(localStorage.getItem('vtg-auth')||'null')}catch(_){return null}}
+  const token = () => localStorage.getItem('vtg_access_token') || currentSession()?.accessToken || '';
+  function isBranchPreviewDeployment(){return location.hostname.toLowerCase().endsWith('.vercel.app')&&location.hostname.toLowerCase()!=='vtg-staging.vercel.app'}
+  function canUseLiveBuyerWorkspace(){
+    if(isBranchPreviewDeployment()||new URLSearchParams(location.search).get('preview')==='1'||!token())return false;
+    const role=currentSession()?.user?.role;
+    return !role||role==='buyer';
+  }
 
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
   }[c]));
 
   async function api(path, options = {}) {
+    if(isBranchPreviewDeployment()) throw new Error('Live buyer API access is disabled in Vercel branch previews because /api targets the production backend.');
     const headers = { ...(options.headers || {}), Authorization: 'Bearer ' + token() };
     if (options.body && !(options.body instanceof FormData)) headers['Content-Type'] = 'application/json';
     const r = await fetch(API + path, { ...options, headers });
@@ -59,6 +67,16 @@
       @media(max-width:900px){.buyerOsKpis{grid-template-columns:repeat(2,1fr)}.buyerOsGrid{grid-template-columns:1fr}}
       @media(max-width:560px){.buyerOsKpis{grid-template-columns:1fr 1fr}.buyerProductGrid{grid-template-columns:1fr}.buyerOsHead{flex-direction:column}}
       html[data-theme="dark"] .buyerOsModal{background:rgba(0,0,0,.7)}
+      .buyerOsCompare{margin-top:12px}
+      .buyerOsCompareGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+      .buyerOsCompareCard{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--card)}
+      .buyerOsCompareCard small{display:block;color:var(--muted);font-size:10px;line-height:1.5;margin-top:4px}
+      .buyerOsCostGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+      .buyerOsCostGrid .buyerOsField{display:grid;gap:5px;margin:0}
+      .buyerOsCostGrid .buyerOsField span{font-size:10px;font-weight:700;color:var(--muted)}
+      .buyerOsCostGrid input{min-width:0;width:100%;border:1px solid var(--line);border-radius:9px;padding:9px;background:var(--card);color:var(--ink)}
+      @media(max-width:900px){.buyerOsCompareGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.buyerOsCostGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+      @media(max-width:560px){.buyerOsCompareGrid,.buyerOsCostGrid{grid-template-columns:1fr}}
     `;
     document.head.appendChild(s);
   }
@@ -97,6 +115,7 @@
           <div class="buyerOsSub">Live supplier catalogue from the VTG products API</div>
           <div class="buyerOsSearch"><input id="buyerProductSearch" placeholder="Search products, categories or suppliers"><button class="btn" id="buyerProductLoad">Search</button></div>
           <div id="buyerProducts" class="buyerProductGrid"><div class="buyerOsEmpty">Loading supplier catalogue…</div></div>
+          <div id="buyerCompare" class="buyerOsCompare" aria-live="polite"><div class="buyerOsEmpty">Choose up to three listings to compare supplier status, price, MOQ and lead time.</div></div>
         </div>
         <div class="buyerOsPanel">
           <h3>My trade activity</h3>
@@ -116,6 +135,28 @@
           <div id="buyerNextActions" class="buyerOsList"><div class="buyerOsEmpty">Preparing actions…</div></div>
         </div>
       </div>
+      <div class="buyerOsPanel" style="margin-top:14px">
+        <h3>Planning landed-cost estimate — Nigeria</h3>
+        <div class="buyerOsSub">Enter rates confirmed from a suitable customs source. This is a planning scenario, not a tariff determination or tax assessment.</div>
+        <form id="buyerLandedCostForm">
+          <div class="buyerOsCostGrid">
+            <label class="buyerOsField"><span>Selected product</span><input id="buyerCostProductName" placeholder="Optional description"></label>
+            <label class="buyerOsField"><span>Unit price (USD)</span><input id="buyerCostUnitPrice" type="number" min="0.01" step="0.01" required></label>
+            <label class="buyerOsField"><span>Quantity</span><input id="buyerCostQuantity" type="number" min="1" step="1" value="1" required></label>
+            <label class="buyerOsField"><span>Freight (USD)</span><input id="buyerCostFreight" type="number" min="0" step="0.01" value="0"></label>
+            <label class="buyerOsField"><span>Insurance (USD)</span><input id="buyerCostInsurance" type="number" min="0" step="0.01" value="0"></label>
+            <label class="buyerOsField"><span>Customs duty rate (%)</span><input id="buyerCostDuty" type="number" min="0" max="100" step="0.01" required></label>
+            <label class="buyerOsField"><span>VAT rate (%)</span><input id="buyerCostVat" type="number" min="0" max="100" step="0.01" required></label>
+            <label class="buyerOsField"><span>Other levies (USD)</span><input id="buyerCostLevies" type="number" min="0" step="0.01" value="0"></label>
+            <label class="buyerOsField"><span>Port charges (USD)</span><input id="buyerCostPort" type="number" min="0" step="0.01" value="0"></label>
+            <label class="buyerOsField"><span>Clearing fee (USD)</span><input id="buyerCostClearing" type="number" min="0" step="0.01" value="0"></label>
+            <label class="buyerOsField"><span>Inland transport (USD)</span><input id="buyerCostInland" type="number" min="0" step="0.01" value="0"></label>
+          </div>
+          <div class="buyerOsModalActions"><button class="btn primary" id="buyerCostSubmit" type="submit">Calculate planning estimate</button></div>
+        </form>
+        <div id="buyerCostResult" class="buyerOsEmpty" role="status" aria-live="polite">No estimate calculated yet.</div>
+      </div>
+      <div id="buyerOsRefreshMessage" class="buyerOsError" role="status" aria-live="polite" hidden></div>
     `;
 
     journey.insertAdjacentElement('afterend', host);
@@ -137,13 +178,17 @@
     document.body.appendChild(modal);
 
     let selectedProduct = null;
+    const compareIds = new Set();
     let cache = {products:[],orders:[],quotes:[],enquiries:[],shipments:[],notifications:[]};
 
     function openQuote(product) {
       selectedProduct = product;
       document.getElementById('buyerQuoteTitle').textContent = 'Request quote — ' + product.name;
       document.getElementById('buyerQuoteMeta').textContent = (product.supplier_name || 'Supplier') + ' • ' + money(product.unit_price_usd) + ' per unit' + (product.min_order_qty ? ' • MOQ ' + product.min_order_qty : '');
-      document.getElementById('buyerQuoteQty').value = 1;
+      const quantity = document.getElementById('buyerQuoteQty');
+      const minimum = Math.max(1, parseInt(product.min_order_qty, 10) || 1);
+      quantity.min = String(minimum);
+      quantity.value = String(minimum);
       document.getElementById('buyerQuoteNotes').value = '';
       document.getElementById('buyerQuoteMsg').innerHTML = '';
       modal.classList.add('open');
@@ -151,7 +196,17 @@
 
     async function submitQuote() {
       if (!selectedProduct) return;
-      const qty = Math.max(1, Number(document.getElementById('buyerQuoteQty').value) || 1);
+      const qty = Number(document.getElementById('buyerQuoteQty').value);
+      const minimum = Math.max(1, parseInt(selectedProduct.min_order_qty, 10) || 1);
+      const msg = document.getElementById('buyerQuoteMsg');
+      if (!Number.isSafeInteger(qty) || qty < minimum) {
+        msg.innerHTML = '<div class="buyerOsError">Enter a whole quantity of at least '+minimum+'.</div>';
+        return;
+      }
+      if (selectedProduct.supplier_verification_status !== 'verified') {
+        msg.innerHTML = '<div class="buyerOsError">This supplier is not verified for quote requests.</div>';
+        return;
+      }
       const body = {
         supplierId: selectedProduct.supplier_id,
         items: [{ productId:selectedProduct.id, description:selectedProduct.name, quantity:qty, unitPriceUsd:Number(selectedProduct.unit_price_usd) }],
@@ -159,7 +214,6 @@
         validityUntil: document.getElementById('buyerQuoteValidity').value || undefined,
         notes: document.getElementById('buyerQuoteNotes').value.trim() || undefined
       };
-      const msg = document.getElementById('buyerQuoteMsg');
       msg.innerHTML = '<div class="notice">Sending quote request…</div>';
       try {
         const d = await api('/quotes', {method:'POST', body:JSON.stringify(body)});
@@ -174,14 +228,20 @@
     function renderProducts(list) {
       const box = document.getElementById('buyerProducts');
       if (!list.length) { box.innerHTML='<div class="buyerOsEmpty">No active products matched your search.</div>'; return; }
-      box.innerHTML = list.slice(0,40).map(p => `
+      box.innerHTML = list.slice(0,40).map(p => {
+        const verified = String(p.supplier_verification_status||'').toLowerCase() === 'verified';
+        const verification = verified ? 'Verified by VTG' : 'Not verified for order placement';
+        return `
         <article class="buyerProduct">
           <span class="buyerOsBadge">${esc(p.category || 'Trade product')}</span>
           <b>${esc(p.name)}</b>
-          <small>${esc(p.supplier_name || 'Verified supplier')} ${p.verified_supplier ? '• Verified' : ''}</small>
+          <small>${esc(p.supplier_name || 'Supplier account')}</small>
+          <small>VTG supplier verification: ${verification}</small>
+          <small>Rating: ${Number.isFinite(Number(p.rating))&&p.rating!==null?esc(p.rating)+'/5':'Not rated'}</small>
           <small>${money(p.unit_price_usd)} / unit ${p.lead_time ? '• '+esc(p.lead_time) : ''}</small>
-          <div class="actions"><button class="btn primary" data-quote-id="${esc(p.id)}">Request quote</button><button class="btn" data-enquire-id="${esc(p.id)}">Enquire</button></div>
-        </article>`).join('');
+          <div class="actions"><button class="btn primary" data-quote-id="${esc(p.id)}" ${verified?'':'disabled title="Quote requests require a supplier verified by VTG"'}>Request quote</button><button class="btn" data-enquire-id="${esc(p.id)}">Enquire</button><button class="btn" data-compare-id="${esc(p.id)}" aria-pressed="${compareIds.has(String(p.id))}">${compareIds.has(String(p.id))?'Remove comparison':'Compare'}</button><button class="btn" data-cost-id="${esc(p.id)}">Estimate cost</button></div>
+        </article>`;
+      }).join('');
       box.querySelectorAll('[data-quote-id]').forEach(b => b.onclick = () => {
         const p = cache.products.find(x => String(x.id) === b.dataset.quoteId); if (p) openQuote(p);
       });
@@ -192,6 +252,37 @@
         try { const d=await api('/marketplace/enquiries',{method:'POST',body:JSON.stringify({supplierId:p.supplier_id,productId:p.id,subject,message})}); alert('Enquiry '+(d.enquiry?.reference||'')+' sent.'); await refresh(); }
         catch(e){ alert(e.message); }
       });
+      box.querySelectorAll('[data-compare-id]').forEach(b=>b.onclick=()=>toggleComparison(b.dataset.compareId));
+      box.querySelectorAll('[data-cost-id]').forEach(b=>b.onclick=()=>{
+        const p=cache.products.find(x=>String(x.id)===b.dataset.costId);if(p)estimateProduct(p);
+      });
+      renderComparison();
+    }
+
+    function renderComparison() {
+      const box=document.getElementById('buyerCompare');
+      const items=cache.products.filter(p=>compareIds.has(String(p.id))).slice(0,3);
+      if(!items.length){box.innerHTML='<div class="buyerOsEmpty">Choose up to three listings to compare supplier status, price, MOQ and lead time.</div>';return}
+      box.innerHTML='<div class="buyerOsCompareGrid">'+items.map(p=>{
+        const verified=String(p.supplier_verification_status||'').toLowerCase()==='verified';
+        return '<article class="buyerOsCompareCard"><strong>'+esc(p.name)+'</strong><small>Supplier: '+esc(p.supplier_name||'Supplier account')+'</small><small>VTG verification: '+(verified?'Verified':'Not verified for order placement')+'</small><small>Unit price: '+money(p.unit_price_usd)+'</small><small>MOQ: '+esc(p.min_order_qty||'Not listed')+'</small><small>Lead time: '+esc(p.lead_time||'Not listed')+'</small><small>Rating: '+(Number.isFinite(Number(p.rating))&&p.rating!==null?esc(p.rating)+'/5':'Not rated')+'</small></article>';
+      }).join('')+'</div>';
+    }
+
+    function toggleComparison(id) {
+      const key=String(id);
+      if(compareIds.has(key)) compareIds.delete(key);
+      else if(compareIds.size>=3){alert('Compare up to three suppliers at a time.');return}
+      else compareIds.add(key);
+      filterProducts();
+    }
+
+    function estimateProduct(product) {
+      document.getElementById('buyerCostProductName').value=product.name+' — '+(product.supplier_name||'Supplier account');
+      document.getElementById('buyerCostUnitPrice').value=String(Number(product.unit_price_usd)||'');
+      const minimum=Math.max(1,parseInt(product.min_order_qty,10)||1);
+      document.getElementById('buyerCostQuantity').value=String(minimum);
+      document.getElementById('buyerLandedCostForm').scrollIntoView({behavior:'smooth',block:'center'});
     }
 
     function filterProducts() {
@@ -210,10 +301,20 @@
     function renderShipments() {
       const box = document.getElementById('buyerShipments');
       if (!cache.shipments.length) { box.innerHTML='<div class="buyerOsEmpty">No shipments are connected to your orders yet.</div>'; return; }
-      box.innerHTML = cache.shipments.slice(0,6).map(s => `
-        <div class="buyerOsItem"><div class="row"><strong>${esc(s.reference)}</strong><span class="buyerOsBadge">${esc(s.status)}</span></div>
-        <small>${esc(s.originPort || 'Origin')} → ${esc(s.destinationPort || 'Destination')} • ${Number(s.percentComplete)||0}% complete</small>
-        <div class="progress" style="margin-top:7px"><i style="width:${Math.max(0,Math.min(100,Number(s.percentComplete)||0))}%"></i></div></div>`).join('');
+      box.innerHTML = cache.shipments.slice(0,6).map(s => {
+        const logistics=s.logistics||{};
+        const shipment=logistics.shipment||{};
+        const order=logistics.order||{};
+        const ports=logistics.ports||{};
+        const reference=order.reference||s.reference||'Order';
+        const status=order.status||s.status||'tracking pending';
+        const origin=ports.origin||s.originPort||'Origin';
+        const destination=ports.destination||s.destinationPort||'Destination';
+        const progress=Math.max(0,Math.min(100,Number(shipment.percentComplete??s.percentComplete)||0));
+        return `<div class="buyerOsItem"><div class="row"><strong>${esc(reference)}</strong><span class="buyerOsBadge">${esc(status)}</span></div>
+        <small>${esc(origin)} → ${esc(destination)} • ${progress}% complete</small>
+        <div class="progress" style="margin-top:7px"><i style="width:${progress}%"></i></div></div>`;
+      }).join('');
     }
 
     function renderNextActions() {
@@ -225,29 +326,36 @@
       if (pendingOrders.length) actions.push('<div class="buyerOsItem"><strong>Review active orders</strong><small>Keep commercial terms, documents and shipment milestones together.</small><button class="btn" data-tab-action="trade-room" style="margin-top:7px">Review orders</button></div>');
       if (!actions.length) actions.push('<div class="buyerOsItem"><strong>Start sourcing</strong><small>Search the live supplier catalogue and request your first quote.</small></div>');
       box.innerHTML=actions.join('');
-      box.querySelectorAll('[data-tab-action]').forEach(b=>b.onclick=()=>window.showTab?.(b.dataset.tabAction));
+      box.querySelectorAll('[data-tab-action]').forEach(b=>b.onclick=()=>{
+        const target=document.getElementById('buyerTradeRoomLive');
+        target?.scrollIntoView({behavior:'smooth',block:'start'});
+      });
     }
 
     async function refresh() {
-      try {
-        const [products,orders,quotes,enquiries,shipments,notifications] = await Promise.all([
-          api('/products'),
-          api('/orders'),
-          api('/quotes'),
-          api('/marketplace/enquiries/mine'),
-          api('/shipments/atlas'),
-          api('/notifications')
-        ]);
-        cache={products:products.products||[],orders:orders.orders||[],quotes:quotes.quotes||[],enquiries:enquiries.enquiries||[],shipments:shipments.shipments||[],notifications:notifications.notifications||[]};
-        document.getElementById('buyerOrdersKpi').textContent=cache.orders.length;
-        document.getElementById('buyerQuotesKpi').textContent=cache.quotes.filter(q=>!['rejected','expired','converted'].includes(q.status)).length;
-        document.getElementById('buyerEnquiriesKpi').textContent=cache.enquiries.length;
-        document.getElementById('buyerAlertsKpi').textContent=cache.notifications.filter(n=>!n.read_at).length;
-        renderProducts(cache.products);renderActivity();renderShipments();renderNextActions();
-      } catch(e) {
-        document.getElementById('buyerProducts').innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>';
-        document.getElementById('buyerActivity').innerHTML='<div class="buyerOsError">Unable to load buyer activity. Your session may need to be refreshed.</div>';
-      }
+      const requests=[
+        ['products','/products','products'],
+        ['orders','/orders','orders'],
+        ['quotes','/quotes','quotes'],
+        ['enquiries','/marketplace/enquiries/mine','enquiries'],
+        ['shipments','/shipments/atlas','shipments'],
+        ['notifications','/notifications','notifications']
+      ];
+      const results=await Promise.allSettled(requests.map(([,path])=>api(path)));
+      const failed=[];
+      results.forEach((result,index)=>{
+        const [key,,field]=requests[index];
+        if(result.status==='fulfilled') cache[key]=Array.isArray(result.value[field])?result.value[field]:[];
+        else failed.push(requests[index][0]+': '+(result.reason?.message||'Request failed'));
+      });
+      document.getElementById('buyerOrdersKpi').textContent=cache.orders.length;
+      document.getElementById('buyerQuotesKpi').textContent=cache.quotes.filter(q=>!['rejected','expired','converted'].includes(q.status)).length;
+      document.getElementById('buyerEnquiriesKpi').textContent=cache.enquiries.length;
+      document.getElementById('buyerAlertsKpi').textContent=cache.notifications.filter(n=>!n.read_at).length;
+      renderProducts(cache.products);renderActivity();renderShipments();renderNextActions();
+      const status=document.getElementById('buyerOsRefreshMessage');
+      status.hidden=failed.length===0;
+      status.textContent=failed.length?'Some buyer data could not be refreshed: '+failed.join('; '):'';
     }
 
     document.getElementById('buyerRefresh').onclick=refresh;
@@ -256,11 +364,53 @@
     document.getElementById('buyerProductSearch').addEventListener('input',filterProducts);
     document.getElementById('buyerQuoteCancel').onclick=()=>modal.classList.remove('open');
     document.getElementById('buyerQuoteSubmit').onclick=submitQuote;
+    document.getElementById('buyerLandedCostForm').addEventListener('submit',async event=>{
+      event.preventDefault();
+      const form=event.currentTarget;
+      if(!form.reportValidity())return;
+      const byId=id=>document.getElementById(id);
+      const resultBox=byId('buyerCostResult');
+      const payload={
+        country:'NG',destination:'Nigeria',currency:'USD',
+        unitPrice:Number(byId('buyerCostUnitPrice').value),
+        quantity:Number(byId('buyerCostQuantity').value),
+        freight:Number(byId('buyerCostFreight').value)||0,
+        insurance:Number(byId('buyerCostInsurance').value)||0,
+        dutyRate:Number(byId('buyerCostDuty').value)/100,
+        vatRate:Number(byId('buyerCostVat').value)/100,
+        otherLevies:Number(byId('buyerCostLevies').value)||0,
+        portCharges:Number(byId('buyerCostPort').value)||0,
+        clearingFee:Number(byId('buyerCostClearing').value)||0,
+        inlandTransport:Number(byId('buyerCostInland').value)||0
+      };
+      resultBox.textContent='Calculating the Nigeria planning estimate…';
+      try{
+        const result=await api('/trade/landed-cost',{method:'POST',body:JSON.stringify(payload)});
+        if(!result.supported){
+          resultBox.textContent=result.message||'A country-specific estimate is not available.';
+          return;
+        }
+        resultBox.innerHTML='<div class="buyerOsItem"><strong>Estimated total landed cost: '+money(result.estimatedTotalLandedCost)+'</strong><small>Product value '+money(result.productValue)+' • CIF '+money(result.cif)+'</small><small>Duty '+money(result.duty)+' • VAT '+money(result.vat)+' • Local charges '+money(result.localCharges)+'</small><small>'+esc(result.methodology||'Planning estimate only; confirm applicable charges with an authorized customs source.')+'</small></div>';
+      }catch(error){resultBox.innerHTML='<div class="buyerOsError">'+esc(error.message)+'</div>'}
+    });
     modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open')});
 
     refresh();
   }
 
-  function boot(){ injectStyle(); mount(); }
+  function boot(){
+    if(new URLSearchParams(location.search).get('preview')==='1')return;
+    if(isBranchPreviewDeployment()){
+      const anchor=document.getElementById('vtgTradeJourney');
+      if(anchor&&!document.getElementById('buyerOsPreviewNotice')){
+        const notice=document.createElement('section');notice.id='buyerOsPreviewNotice';notice.className='buyerOs buyerOsPanel';
+        notice.innerHTML='<strong>Live buyer records are disabled in this branch preview.</strong><p class="buyerOsSub">This Vercel preview routes API traffic to the production backend. No buyer data is loaded or changed here.</p>';
+        anchor.insertAdjacentElement('afterend',notice);
+      }
+      return;
+    }
+    if(!canUseLiveBuyerWorkspace())return;
+    injectStyle(); mount();
+  }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
 })();
