@@ -16,6 +16,7 @@ Use one versioned contract for intelligence shown in Trade OS, Marketplace and T
 - `vtg-backend/test/trade-intelligence.contract.test.js` covers required retrieval timestamps, stale-source handling, normalization and landed-cost arithmetic.
 - `vtg-backend/src/routes/trade-intelligence.routes.js` adds authenticated endpoints: `GET /api/market-intelligence/tools/contract` and `POST /api/market-intelligence/tools/landed-cost/estimate`. The estimate route is limited to buyer, supplier, bank and admin roles and does not retrieve or certify tariff rates.
 - `vtg-backend/src/server.js` mounts the new router under `/api/market-intelligence/tools` without modifying the protected `frontend-v3.html`.
+- `intelligence-centre.html` now adds a user-entered VAT assumption, shows VAT in the local planning preview, and submits an authenticated request to the landed-cost estimate endpoint. If the server endpoint is unavailable, the page keeps the local estimate and explicitly labels the fallback rather than implying the server calculation succeeded.
 
 ## Acceptance requirements
 
@@ -24,7 +25,7 @@ Use one versioned contract for intelligence shown in Trade OS, Marketplace and T
 3. Add source adapters for official customs/tariff sources and licensed FX/freight providers. Never label cached, user-supplied or demo values as live.
 4. Define cache expiry by source and data type; show retrieved-at and valid-until timestamps in UI.
 5. Add API routes with role-appropriate read access and validate provider responses before storing or returning them.
-6. Connect the same contract to intelligence-centre, market-intelligence, Trade OS and Trade Room without replacing the protected `frontend-v3.html`.
+6. Extend the same contract and provenance/freshness display to market-intelligence, Trade OS and Trade Room without replacing the protected `frontend-v3.html`.
 7. Add API/database tests, source outage tests, stale-data UI tests and cross-surface consistency tests.
 8. Keep provider integration and backend deployment separate from this source-level work; Railway is deferred.
 
@@ -32,12 +33,12 @@ Use one versioned contract for intelligence shown in Trade OS, Marketplace and T
 
 - No verified live FX, freight, tariff or regulatory provider adapter is claimed by this phase starter.
 - No production tariff classification, binding customs calculation, customs submission, freight booking or financial transaction is performed by this module.
-- No live frontend integration is claimed yet.
+- The intelligence-centre landed-cost form is connected to the authenticated estimate endpoint in source, but the integration has not been runtime-tested against a deployed backend.
 - CI and local runtime results remain unverified in the current execution environment.
 
 ## Next work sequence
 
 1. Confirm the contract tests pass in CI.
-2. Inspect existing API routes and current intelligence UI data sources, then integrate the new authenticated contract and estimate endpoints.
+2. Run browser/API checks for the intelligence-centre estimate endpoint and verify both server success and fallback behaviour.
 3. Add source-attributed country/tariff and FX/freight adapters only where an authoritative source/provider is available.
-4. Integrate the contract into the intelligence UI and display evidence status consistently.
+4. Extend the contract and visible evidence status to market-intelligence, Trade OS and Trade Room.
