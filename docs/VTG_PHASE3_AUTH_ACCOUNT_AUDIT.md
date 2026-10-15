@@ -13,7 +13,7 @@ Scope: registration, email verification, login, authorization token lifecycle, p
 - Added `POST /api/auth/logout`; the current sign-out controls in `buyer-dashboard.html`, `signup-agreement.html`, and `verification.html` call it before clearing browser tokens.
 - Access tokens carry the session ID. `requireAuth` checks the active session and account on protected requests and loads the current role from the database. Revoked sessions and disabled accounts are rejected; role changes use the current database role.
 - Password reset revokes all active sessions in the same transaction as a successful password update.
-- Added `vtg-backend/src/db/migrations/023_email_verification_attempts.sql`. Verification attempts now count incorrect codes and lock a code after five failures; issuing a new code resets the counter. Codes use cryptographically secure random generation.
+- Added `vtg-backend/src/db/migrations/023_email_verification_attempts.sql`. Verification attempts are counted per email across code reissues within a 15-minute window; five failures lock code issuance for 15 minutes. New-code requests have a 60-second per-email cooldown and cannot reset an active lockout. Codes use cryptographically secure random generation.
 - Signup and login normalize email addresses by trimming and lowercasing. Signup duplicate checks, login, and password-recovery lookup compare case-insensitively to support older mixed-case records.
 - The earlier agent registration INSERT correction remains on this branch: the column list matches the supplied VTG ID and marketing fields.
 
@@ -45,6 +45,6 @@ When `ENABLE_DEMO_AUTH=true`, the three configured demo accounts continue to use
 3. Verify the production demo-auth setting and exercise demo login/refresh/logout when demo auth is intentionally enabled.
 4. Review all frontend logout and token-refresh behavior in a browser. The three explicit sign-out handlers above were source-edited but not browser-tested; simultaneous refresh requests must be serialized.
 5. Check existing user data for mixed-case email duplicates before any data-normalization migration. Queries are case-insensitive, but legacy duplicate rows are not cleaned up.
-6. Add and verify per-email verification-code resend throttling, beyond the existing IP-based auth route rate limit.
+6. Browser-test the new resend cooldown and verification lockout, including error messages, account recovery from a lockout, and concurrent code requests. The existing IP-based auth route rate limit remains in place.
 7. Define and verify an authorized administrator password-recovery process; admin accounts remain excluded from public recovery.
 8. Decide and verify cleanup/retention for expired and revoked session rows.
