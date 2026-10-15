@@ -177,6 +177,10 @@ html:not([data-theme="dark"]) body .page .layout .formSide .formIntro .sub {
   visibility: visible !important;
 }
 
+
+/* Keep dark-theme primary action labels above WCAG AA contrast. */
+html[data-theme="dark"] .primary{background:#bd3b35!important;color:#fff!important}
+html[data-theme="dark"] .primary:hover{background:#992126!important;color:#fff!important}
 </style>
 <script>(function(){try{document.documentElement.setAttribute('data-theme',((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark'))}catch(e){}})();</script><script src="/vtg-auth-session.js?v=20261015-auth-session"></script>
 </head>
