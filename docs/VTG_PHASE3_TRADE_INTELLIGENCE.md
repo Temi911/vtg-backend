@@ -17,6 +17,7 @@ Use one versioned contract for intelligence shown in Trade OS, Marketplace and T
 - `vtg-backend/src/routes/trade-intelligence.routes.js` adds authenticated endpoints: `GET /api/market-intelligence/tools/contract` and `POST /api/market-intelligence/tools/landed-cost/estimate`. The estimate route is limited to buyer, supplier, bank and admin roles and does not retrieve or certify tariff rates.
 - `vtg-backend/src/server.js` mounts the new router under `/api/market-intelligence/tools` without modifying the protected `frontend-v3.html`.
 - `intelligence-centre.html` now adds a user-entered VAT assumption, shows VAT in the local planning preview, and submits an authenticated request to the landed-cost estimate endpoint. If the server endpoint is unavailable, the page keeps the local estimate and explicitly labels the fallback rather than implying the server calculation succeeded.
+- The Intelligence Centre now requests the authenticated `/contract` endpoint and displays the actual integration limitations reported by the backend: the current FX figure is a client-side indicative feed not verified by this API, and tariff/freight adapters are not connected. The UI test checks that this caveat remains visible.
 
 ## Acceptance requirements
 
@@ -33,7 +34,7 @@ Use one versioned contract for intelligence shown in Trade OS, Marketplace and T
 
 - No verified live FX, freight, tariff or regulatory provider adapter is claimed by this phase starter.
 - No production tariff classification, binding customs calculation, customs submission, freight booking or financial transaction is performed by this module.
-- The intelligence-centre landed-cost form is connected to the authenticated estimate endpoint in source, but the integration has not been runtime-tested against a deployed backend.
+- The intelligence-centre landed-cost form and provider-readiness status are connected to authenticated endpoints in source, but neither integration has been runtime-tested against a deployed backend.
 - CI and local runtime results remain unverified in the current execution environment.
 
 ## Next work sequence
