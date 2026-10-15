@@ -1,6 +1,6 @@
 # VTG Phase 7 — Agent Network & Inspection Operations
 
-Status: **Existing workflow foundation audited; one quote-validation defect fixed; full operational acceptance remains pending.**
+Status: **Core workflow hardening and regression coverage committed; final CI result and live-environment acceptance remain pending.**
 
 ## Objective
 
@@ -18,6 +18,13 @@ Support verified inspection agents in China and South Korea, buyer-requested pre
 ## Phase 7 fix in this continuation
 
 The quote handler checked `d.orderId` to verify that the linked order belonged to the buyer and was eligible for inspection, but the Zod schema did not declare `orderId`. Zod therefore stripped the field before those checks could run. The schema now accepts an optional UUID order ID so the ownership and eligibility checks can execute. A regression test covers this path and the main role boundaries.
+
+## Additional hardening in this continuation
+
+- Inspection evidence uploads now pass through MIME/signature validation and ClamAV scanning middleware before the controller accepts the file. In production, missing or unavailable ClamAV fails closed; uploaded files are removed when validation/scanning fails.
+- Evidence listing now verifies that the caller is the inspection's buyer, assigned agent, or an admin before returning the evidence list. Download access remains limited to those same parties, and the stored path is checked to be a single filename before resolving it inside the private upload directory.
+- Agent payout reconciliation now requires the buyer's explicit approval of the inspection report before an admin can update payout status. Marking a payout paid also requires a payment reference and writes an audit event. This is manual reconciliation, not an integrated payout transfer.
+- Regression checks cover the above access, upload middleware, and payout gates.
 
 ## Acceptance tests and launch gates
 
