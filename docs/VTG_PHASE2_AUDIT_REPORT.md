@@ -22,6 +22,11 @@ Repository: `Temi911/vtg-backend`, branch `main`
 - Shared card-surface contrast commit: `f7198a5d2c710948af13079b31f3ec09dfe8480a`.
 - Body background preservation commit: `91d671c76076710479867cbd9332094499c39720`.
 - Test workflow commit: `78abd070f83bf9f2a6eac2b0dd964593f6708ebc`.
+- LC fail-closed authorization commit: `81f8ab9507c51bcbce0ef7e91eca14379a806882`.
+- Assigned-bank compliance check commit: `2b0593ceff87e5db4ec7f1b3b74075b007c6b669`.
+- Shipment event authorization commit: `b373e1c28276ff3b523290939300cb69d2b9b611`.
+- Inspection order-ownership commit: `61bb431e6f226ea32ad79ee6b6af9043d030fddf`.
+- Order cancellation guard commit: `c7bd594326f3f2a63e24e09ac90883f8862ecc21`.
 - The live shared theme/navigation JavaScript was fetched after the changes and its delivered source was checked against those fixes. This proves source delivery for that asset, not visual rendering or full page behavior.
 - Across the existing audit and this continuation, all 46 non-archived root HTML pages were individually fetched from the staging site. The earlier recorded subset of 11 paths returned HTTP 200; current fetches of the remaining page paths returned page content with titles. A consolidated fresh status-code matrix for all 46 should still be recorded before final sign-off.
 - The deployment-list API call was denied by Vercel (403), so this report does not claim an independently confirmed deployment ID for the latest commits.
@@ -31,14 +36,19 @@ Repository: `Temi911/vtg-backend`, branch `main`
 - Enumerated 46 non-archived root HTML pages on `main`. All 46 contain a viewport meta tag. 45 include `vtg-site-navigation.js`; `account-help.html` is intentionally self-contained with its own header and local theme-toggle handler. This is a structural scan only; it does not establish contrast or visual quality.
 - Reviewed authentication middleware and selected order, payment, quote, shipment, LC, trade-document, and verification routes/controllers. Source contains authentication/role middleware and user/participant checks on the selected paths. This was not a complete endpoint-by-endpoint authorization proof.
 - **LC issuance authorization hardened in source:** `lc.controller.js` now fails closed with `BANK_ASSIGNMENT_REQUIRED` if neither `letters_of_credit.issuing_bank_id` nor `orders.bank_id` is assigned, and otherwise permits issuance only to that exact assigned bank account. This removes the previous path where any authenticated bank could issue an unassigned LC. The buyer's free-text `issuingBankName` is still not an account assignment; a durable bank-selection/assignment workflow must be implemented and tested. This source change is not deployed to Railway.
+- **Compliance review authorization hardened in source:** `trade-documents.controller.js` now verifies that a bank role matches `orders.bank_id` before updating a trade compliance case. Admin review remains available.
+- **Shipment event writes hardened in source:** `shipment-events.controller.js` now verifies the target shipment exists, requires a supplier to match the order's supplier account, and requires an agent to be assigned to an inspection request for that order before allowing the event write.
+- **Inspection request ownership hardened in source:** `inspection.controller.js` now checks that an optional linked `trade_orders` record belongs to the authenticated buyer and is not delivered/cancelled before creating the request.
+- **Order cancellation hardened in source:** `orders.controller.js` now restricts cancellation to the buyer or admin and blocks non-admin cancellation after shipment execution has started.
 
 ## Checks still required before Phase 2 sign-off
 
 1. Run every non-archived page in a real browser at desktop and mobile sizes, in light and dark themes; inspect contrast, layout, keyboard use, and working controls. No visual browser testing was performed in this audit.
 2. Test authenticated and unauthenticated behavior for each workspace and API route across buyer, supplier, bank, agent, and admin roles.
 3. Build and test the durable bank assignment workflow for LCs, including buyer selection of an actual registered bank account, order/LC binding, and authorized bank issuance. The insecure fallback is removed, but unassigned LCs now correctly fail closed.
-4. Test cross-account access to orders, payments, quotes, shipments, trade documents, LC records, and verification files using separate accounts.
-5. Confirm the new GitHub Actions workflow actually runs, then fix any failures and record the result. The test suite was not run in this continuation; no automated test result is claimed.
+4. Add and run regression tests for the compliance-bank assignment guard, shipment event participant guard, inspection linked-order ownership guard, and order cancellation policy.
+5. Test cross-account access to orders, payments, quotes, shipments, trade documents, LC records, and verification files using separate accounts.
+6. Confirm the new GitHub Actions workflow actually runs, then fix any failures and record the result. The test suite was not run in this continuation; no automated test result is claimed.
 6. Verify that demo/preview mode cannot authorize account actions and uses synthetic data only.
 7. Establish which news, financial, vessel, port, customs, and FX features use live integrations versus demo/static data.
 8. Complete backend/API checks only when they can be done without deploying or modifying Railway, or after Railway work is explicitly authorized. A local clone/test attempt could not run because this environment could not resolve github.com; no tests are claimed as passing.
