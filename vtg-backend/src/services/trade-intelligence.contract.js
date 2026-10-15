@@ -42,9 +42,21 @@ function normalizeRecord(input) {
   const retrieved = record.source.retrievedAt ? Date.parse(record.source.retrievedAt) : NaN;
   const expiry = record.source.validUntil ? Date.parse(record.source.validUntil) : NaN;
   let freshness = 'unknown';
-  if (Number.isFinite(expiry)) freshness = expiry < now ? 'stale' : 'current';
-  else if (Number.isFinite(retrieved)) freshness = now - retrieved > 24 * 60 * 60 * 1000 ? 'stale' : 'recent';
-  return { ...record, freshness, isDecisionReady: record.status === 'live' && freshness === 'current' && record.source.authority === 'official' };
+  const futureRetrieval = Number.isFinite(retrieved) && retrieved > now + 5 * 60 * 1000;
+  const expiryBeforeRetrieval = Number.isFinite(expiry) && Number.isFinite(retrieved) && expiry < retrieved;
+  if (futureRetrieval || expiryBeforeRetrieval) {
+    freshness = 'unknown';
+  } else if (Number.isFinite(expiry)) {
+    freshness = expiry < now ? 'stale' : 'current';
+  } else if (Number.isFinite(retrieved)) {
+    const age = now - retrieved;
+    freshness = age > 24 * 60 * 60 * 1000 ? 'stale' : 'recent';
+  }
+  return {
+    ...record,
+    freshness,
+    isDecisionReady: record.status === 'live' && freshness === 'current' && record.source.authority === 'official',
+  };
 }
 
 const landedCostInputSchema = z.object({
