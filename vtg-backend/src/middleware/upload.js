@@ -4,9 +4,9 @@ const crypto = require('crypto');
 const multer = require('multer');
 const { AppError } = require('../utils/AppError');
 
-// Verification evidence must live outside the Express static web root. A configured
-// path inside that root could expose identity documents as public URLs.
-const STATIC_ROOT = path.resolve(__dirname, '..');
+// Express serves the backend workspace root (the parent of src) as static files.
+// Keep verification evidence outside that entire tree, not merely outside src.
+const STATIC_ROOT = path.resolve(__dirname, '..', '..');
 const UPLOAD_DIR = path.resolve(process.env.UPLOAD_DIR || path.resolve(__dirname, '..', '..', '..', 'private-uploads'));
 if (UPLOAD_DIR === STATIC_ROOT || UPLOAD_DIR.startsWith(STATIC_ROOT + path.sep)) {
   throw new Error('UPLOAD_DIR must be outside the public static web root');
