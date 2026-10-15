@@ -1,6 +1,6 @@
 # VTG Phase 6 — Africa Scale
 
-Status: **Initial regional configuration foundation implemented; not yet operationally launched across the listed countries.**
+Status: **Phase 6 software foundation implemented; regional markets remain planning entries until the launch gates below are independently verified.**
 
 ## Scope
 Create a country-aware catalogue so VTG can expand beyond a single-country experience without pretending that regional operations, representatives, live shipping routes, or regulatory integrations already exist.
@@ -24,17 +24,21 @@ These are static planning/reference entries, not live port schedules, current co
 
 ## Implemented
 - Country-specific currency, locale, time-zone, region and port reference configuration.
-- Read-only catalogue API.
-- Input validation and regression tests for regional coverage, country lookup, planned/live labels, and empty representative directories.
+- Read-only catalogue API mounted at `/api/africa/markets`.
+- Responsive `africa-markets.html` catalogue page with country/region/currency/locale/time-zone/port search, market-status filtering, light/dark theme, clear API-failure handling, and status disclaimers.
+- Landing-page Explore footer link to the Africa Markets page.
+- Input validation and regression tests for regional coverage, country lookup, planned/live labels, empty representative directories, page/API wiring and key status cues.
 - Explicit distinction between planning data and live provider data.
 
-## Still required before launch
-1. Review market prioritization with VTG.
-2. Verify ports, inland corridors, freight partners and operating coverage country by country.
-3. Approve and verify regional representatives before adding them.
-4. Integrate country-specific regulator/customs sources and record source URLs, effective dates and review ownership.
-5. Add localized UI/content and country-aware forms, payments, tax/landed-cost logic and notifications only after their requirements are verified.
-6. Complete staging/browser checks, security review and deployment approval. Railway remains untouched in this phase.
+## Launch gates (not represented as completed)
+1. Review market prioritization with VTG and approve the country-by-country rollout order.
+2. Verify ports, inland corridors, freight partners and actual operating coverage country by country with accountable local partners.
+3. Add representatives only after the person, mandate, contact details and consent are confirmed.
+4. Integrate country-specific regulator/customs sources and record source URLs, effective dates and review ownership; obtain qualified local review before presenting checklists as authoritative.
+5. Specify and validate country-specific payment availability, tax/landed-cost logic, product restrictions, notifications and localized content before enabling transactions.
+6. Run staging and browser checks on deployed frontend/API, perform a security review, and approve deployment. Railway was not modified for this phase.
+
+The GitHub Actions backend test suite passed for the initial catalogue commit. Later UI/navigation and regression-test commits have their own workflow runs; check those results before marking the final revision green. Live browser/deployment verification has not been confirmed from this workspace.
 
 ## Not claimed
 - No regional representative has been appointed by this implementation.
