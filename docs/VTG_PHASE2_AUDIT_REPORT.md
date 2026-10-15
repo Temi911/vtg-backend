@@ -57,3 +57,8 @@ Repository: `Temi911/vtg-backend`, branch `main`
 ## Acceptance rule
 
 Do not mark Phase 2 complete until the browser, role/access, cross-account ownership, LC issuer assignment, and automated-test checks pass. HTTP responses, source presence, and hidden navigation links do not prove authorization or end-to-end functionality.
+
+
+## Additional source finding — 2026-10-15
+
+- `inspection.controller.js` no longer lets a buyer mark an inspection payment as paid by submitting their own claim when Paystack is unavailable. The endpoint now returns a provider-unavailable response until secure payment verification is configured. Source commit: `9e0ee22a748c4558e9b76ab258f20267fdc68219`. This is not a live-backend claim; Railway has not been deployed.
