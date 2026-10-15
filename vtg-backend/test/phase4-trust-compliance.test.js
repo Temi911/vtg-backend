@@ -50,3 +50,29 @@ test('verification history returns reviewer provenance and downloads are audit l
   assert.match(verification, /vd\.reviewer_id, vd\.reviewed_at/);
   assert.match(verification, /Verification Document Downloaded/);
 });
+
+test('file signature checks reject extension or MIME spoofing', () => {
+  const { hasValidSignature } = require('../src/middleware/upload');
+  assert.equal(hasValidSignature('application/pdf', Buffer.from('%PDF-1.7')), true);
+  assert.equal(hasValidSignature('image/png', Buffer.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a])), true);
+  assert.equal(hasValidSignature('image/jpeg', Buffer.from([0xff,0xd8,0xff,0x00])), true);
+  assert.equal(hasValidSignature('image/webp', Buffer.from('RIFF0000WEBP')), true);
+  assert.equal(hasValidSignature('application/pdf', Buffer.from('<html>not a pdf')), false);
+  assert.equal(hasValidSignature('image/png', Buffer.from('not a png')), false);
+});
+
+test('trust risk flags require source, rationale and explicit resolution provenance', () => {
+  const migration = fs.readFileSync(path.join(root, 'src', 'db', 'migrations', '018_trust_risk_flags.sql'), 'utf8');
+  const controller = fs.readFileSync(path.join(root, 'src', 'controllers', 'trust-risk.controller.js'), 'utf8');
+  const riskRoutes = fs.readFileSync(path.join(root, 'src', 'routes', 'trust-risk.routes.js'), 'utf8');
+  const server = fs.readFileSync(path.join(root, 'src', 'server.js'), 'utf8');
+  assert.match(migration, /source_type TEXT NOT NULL/);
+  assert.match(migration, /rationale TEXT NOT NULL/);
+  assert.match(migration, /resolved_by UUID REFERENCES users\(id\)/);
+  assert.match(migration, /resolved_at TIMESTAMPTZ/);
+  assert.match(controller, /Resolution notes of at least five characters are required/);
+  assert.match(controller, /Trust Risk Flag Created/);
+  assert.match(controller, /Trust Risk Flag Updated/);
+  assert.match(riskRoutes, /router\.use\(requireAuth, requireRole\('admin'\)\)/);
+  assert.match(server, /app\.use\('\/api\/admin\/trust-risk-flags',trustRiskRoutes\)/);
+});
