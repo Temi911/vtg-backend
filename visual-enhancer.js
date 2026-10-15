@@ -519,7 +519,7 @@
         </div>
       </div>
     `;
-    ai.insertAdjacentElement('afterend',cta);
+    atlas.insertAdjacentElement('afterend',cta);
 
     ['#how','#network','#contact'].forEach(sel=>{const el=document.querySelector(sel);if(el)el.remove();});
     document.querySelectorAll('.heroIn>.vtgTradeJourney,.vtgValueStrip').forEach(el=>el.remove());
