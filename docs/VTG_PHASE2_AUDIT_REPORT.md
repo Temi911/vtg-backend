@@ -30,18 +30,18 @@ Repository: `Temi911/vtg-backend`, branch `main`
 
 - Enumerated 46 non-archived root HTML pages on `main`. All 46 contain a viewport meta tag. 45 include `vtg-site-navigation.js`; `account-help.html` is intentionally self-contained with its own header and local theme-toggle handler. This is a structural scan only; it does not establish contrast or visual quality.
 - Reviewed authentication middleware and selected order, payment, quote, shipment, LC, trade-document, and verification routes/controllers. Source contains authentication/role middleware and user/participant checks on the selected paths. This was not a complete endpoint-by-endpoint authorization proof.
-- **Access-control issue identified:** LC issue routes require a bank role, but `lc.controller.js` allows issuance when both `letters_of_credit.issuing_bank_id` and `orders.bank_id` are null. LC request creation stores a free-text `issuing_bank_name` and does not bind a VTG bank account. A bank user who knows an LC ID may therefore pass the source-level issue check without being the named/assigned institution. This remains unfixed. A safe correction needs an explicit, durable bank assignment rule and must be coordinated with backend deployment work later; no LC controller or Railway changes were made in this continuation.
+- **LC issuance authorization hardened in source:** `lc.controller.js` now fails closed with `BANK_ASSIGNMENT_REQUIRED` if neither `letters_of_credit.issuing_bank_id` nor `orders.bank_id` is assigned, and otherwise permits issuance only to that exact assigned bank account. This removes the previous path where any authenticated bank could issue an unassigned LC. The buyer's free-text `issuingBankName` is still not an account assignment; a durable bank-selection/assignment workflow must be implemented and tested. This source change is not deployed to Railway.
 
 ## Checks still required before Phase 2 sign-off
 
 1. Run every non-archived page in a real browser at desktop and mobile sizes, in light and dark themes; inspect contrast, layout, keyboard use, and working controls. No visual browser testing was performed in this audit.
 2. Test authenticated and unauthenticated behavior for each workspace and API route across buyer, supplier, bank, agent, and admin roles.
-3. Fix and retest the LC issuer-to-bank assignment gap before accepting finance access control.
+3. Build and test the durable bank assignment workflow for LCs, including buyer selection of an actual registered bank account, order/LC binding, and authorized bank issuance. The insecure fallback is removed, but unassigned LCs now correctly fail closed.
 4. Test cross-account access to orders, payments, quotes, shipments, trade documents, LC records, and verification files using separate accounts.
 5. Confirm the new GitHub Actions workflow actually runs, then fix any failures and record the result. The test suite was not run in this continuation; no automated test result is claimed.
 6. Verify that demo/preview mode cannot authorize account actions and uses synthetic data only.
 7. Establish which news, financial, vessel, port, customs, and FX features use live integrations versus demo/static data.
-8. Complete backend/API checks only when they can be done without deploying or modifying Railway, or after Railway work is explicitly authorized.
+8. Complete backend/API checks only when they can be done without deploying or modifying Railway, or after Railway work is explicitly authorized. A local clone/test attempt could not run because this environment could not resolve github.com; no tests are claimed as passing.
 
 ## Acceptance rule
 
