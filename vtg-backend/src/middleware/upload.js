@@ -7,6 +7,9 @@ const { AppError } = require('../utils/AppError');
 // Express serves the backend workspace root (the parent of src) as static files.
 // Keep verification evidence outside that entire tree, not merely outside src.
 const STATIC_ROOT = path.resolve(__dirname, '..', '..');
+if (process.env.NODE_ENV === 'production' && !process.env.UPLOAD_DIR) {
+  throw new Error('UPLOAD_DIR must point to a mounted persistent volume in production');
+}
 const UPLOAD_DIR = path.resolve(process.env.UPLOAD_DIR || path.resolve(__dirname, '..', '..', '..', 'private-uploads'));
 if (UPLOAD_DIR === STATIC_ROOT || UPLOAD_DIR.startsWith(STATIC_ROOT + path.sep)) {
   throw new Error('UPLOAD_DIR must be outside the public static web root');
