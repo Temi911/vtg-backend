@@ -1,6 +1,6 @@
 # VTG Phase 4 — Trust & Compliance
 
-**Status:** GitHub Actions passed the complete migration sequence against a clean PostgreSQL 16 service and then passed the Node test suite on commit `c8f0464d316bd05ec0bdd3ebf6998bd7e6c3560f` ([run #38721176840](https://github.com/Temi911/vtg-backend/actions/runs/38721176840)). This confirms clean-database migration compatibility in CI, not a migration on the live Railway database. Final acceptance still requires browser verification and operational storage/retention decisions. Do not represent these source changes as live backend behavior while Railway is deferred.
+**Status:** GitHub Actions passed the complete migration sequence against a clean PostgreSQL 16 service and the Node test suite on commit `86e886fd9b5e101353ca6b5b45f0d19d8a348039` ([run #38728751945](https://github.com/Temi911/vtg-backend/actions/runs/38728751945)). A subsequent review found the upload-root guard was comparing against `src` rather than the full Express static root; that boundary has been corrected, agent evidence ordering now has a deterministic ID tie-breaker, and the container now creates a writable private-upload directory outside the static root. CI for those newest commits is still required before calling them verified. This confirms clean-database migration compatibility in CI, not a migration on the live Railway database. Final acceptance still requires browser verification and operational storage/retention decisions. Do not represent these source changes as live backend behavior while Railway is deferred.
 
 ## Goal
 
@@ -10,6 +10,7 @@ Make identity/business verification and risk signals evidence-based before expos
 
 - Verification upload is role-gated before the file is written; only supplier, bank and agent accounts can upload through this endpoint.
 - Upload accepts only PDF, JPEG, PNG and WEBP MIME types, caps uploads at 10 MB and one file per request, assigns opaque random on-disk filenames, and checks file signatures against the declared MIME type before the controller records evidence.
+- The upload-directory guard compares against the full backend workspace served by Express static middleware, and the Docker image prepares the default private directory as writable by the non-root runtime user. This keeps files outside the public static tree but does not make the container filesystem persistent.
 - Verification downloads remain limited to the owner or admin, enforce path confinement to the upload directory, set private/no-store and no-sniff headers, and log the document ID/type and actor in the audit trail.
 - The owner's document history now returns reviewer ID/name, review time, status, notes, upload time, optional expiry, and file metadata. User-facing history escapes stored filenames and review notes before rendering. Review decisions retain reviewer identity and timestamps; rejection requires a meaningful note.
 - Migration 019 adds optional evidence expiry. Reviewers can set a future expiry only when verifying a document. Expired evidence is displayed as expired and cannot satisfy the required-document check for supplier/bank verification.
@@ -34,7 +35,7 @@ These endpoints are source-defined and not available in a deployed backend until
 - A risk flag is an internal review record, not an automated finding of wrongdoing and not a legal/sanctions determination.
 - No KYC/KYB, AML or sanctions screening provider is connected or claimed.
 - MIME and file-signature checks are useful initial controls, not malware scanning or full document sanitization.
-- Files are still stored using the configured local upload directory. Production must use private, persistent storage with controlled access, backup and retention/deletion procedures before relying on document uploads operationally.
+- Files are still stored using the configured local upload directory. Production must use private, persistent storage with controlled access, backup and retention/deletion procedures before relying on document uploads operationally. If an `UPLOAD_DIR` was configured inside the old static tree, move existing files into approved private storage and update the environment configuration before deployment; the code change does not migrate existing files automatically.
 - Agent applications have a separate approval workflow. This phase does not silently treat a submitted agent document or risk flag as proof of agent approval.
 - The admin risk-flag UI is connected in source, but its actual browser behavior and theme contrast have not yet been visually verified.
 
