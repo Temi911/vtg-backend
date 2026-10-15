@@ -1,5 +1,3 @@
-const axios = require('axios');
-
 const PROVIDER = String(process.env.VTG_TRACKING_PROVIDER || 'none').toLowerCase();
 const API_KEY = process.env.VTG_TRACKING_API_KEY || '';
 const BASE_URL = process.env.VTG_TRACKING_BASE_URL || 'https://api.datalastic.com/api/v0';
@@ -19,12 +17,15 @@ async function fetchDatalastic(identifier) {
   if (!identifier?.imo && !identifier?.mmsi) return unavailable('Shipment has no IMO or MMSI identifier.');
 
   const params = identifier.imo ? { imo: identifier.imo } : { mmsi: identifier.mmsi };
-  const response = await axios.get(`${BASE_URL}/vessel`, {
-    params,
-    headers: { 'x-api-key': API_KEY },
-    timeout: 10000
+  const endpoint = new URL(`${BASE_URL}/vessel`);
+  for (const [key, value] of Object.entries(params)) endpoint.searchParams.set(key, String(value));
+  const response = await fetch(endpoint, {
+    headers: { 'x-api-key': API_KEY, Accept: 'application/json' },
+    signal: AbortSignal.timeout(10000)
   });
-  const d = response.data?.data;
+  if (!response.ok) throw new Error('Vessel provider returned HTTP ' + response.status);
+  const payload = await response.json();
+  const d = payload?.data;
   if (!d || !Number.isFinite(Number(d.lat)) || !Number.isFinite(Number(d.lon))) {
     return unavailable('Provider returned no current vessel position.');
   }
