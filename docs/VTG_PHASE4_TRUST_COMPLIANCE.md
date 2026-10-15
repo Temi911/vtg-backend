@@ -1,6 +1,6 @@
 # VTG Phase 4 — Trust & Compliance
 
-**Status:** GitHub Actions passed the complete migration sequence against a clean PostgreSQL 16 service and the Node test suite on commit `86e886fd9b5e101353ca6b5b45f0d19d8a348039` ([run #38728751945](https://github.com/Temi911/vtg-backend/actions/runs/38728751945)). A subsequent review found the upload-root guard was comparing against `src` rather than the full Express static root; that boundary has been corrected, agent evidence ordering now has a deterministic ID tie-breaker, and the container now creates a writable private-upload directory outside the static root. CI for those newest commits is still required before calling them verified. This confirms clean-database migration compatibility in CI, not a migration on the live Railway database. Final acceptance still requires browser verification and operational storage/retention decisions. Do not represent these source changes as live backend behavior while Railway is deferred.
+**Status:** The latest full GitHub Actions workflow passed on commit `ee6e6d71770c21ba17ae100f42cbe9eda3f66621` ([run #38756117335](https://github.com/Temi911/vtg-backend/actions/runs/38756117335)). It applied all migrations to a clean PostgreSQL 16 service and passed the Node test suite, including private upload-boundary runtime checks, role-guard outcomes, controller-level document access tests, and source-level theme contrast checks. This confirms clean-database migration compatibility and the tested source behavior in CI, not a migration on the live Railway database or visual browser verification. Final acceptance still requires live browser checks and operational storage/retention decisions. Do not represent these source changes as live backend behavior while Railway is deferred.
 
 ## Goal
 
@@ -19,7 +19,11 @@ Make identity/business verification and risk signals evidence-based before expos
 - Agent approval is now evidence-gated in the agent admin status endpoint: it requires current verified government ID, proof of address, and at least one current verified business-registration, professional-certificate, or reference document. Rejection/suspension requires a written review note. Document review and agent-profile approval remain distinct steps.
 - Added an explicit structured trust-risk flag table in migration 018_trust_risk_flags.sql. Each flag records target account, creator, category, severity, source type/reference, rationale, status, and resolution notes/actor/time. Database constraints require resolution provenance for terminal states.
 - Added admin-only trust-risk endpoints under /api/admin/trust-risk-flags to list/filter, create, and update flags. Creating and changing a flag writes audit events. Resolution/dismissal requires explanatory notes; conditional updates prevent a second terminal decision from overwriting the first.
-- Added vtg-backend/test/phase4-trust-compliance.test.js checks for upload signature validation, access controls, review provenance, download auditing, migration constraints and admin-only risk routes.
+- Added `vtg-backend/test/phase4-trust-compliance.test.js` checks for upload signature validation, access controls, review provenance, download auditing, migration constraints, admin-only risk routes, and explicit light/dark status contrast selectors.
+- Added `vtg-backend/test/phase4-upload-path.test.js` runtime tests proving unsafe upload directories inside the public static root are rejected and private directories outside it are accepted.
+- Added `vtg-backend/test/phase4-role-guard.test.js` direct middleware tests for unauthenticated, forbidden, allowed, and malformed roles.
+- Added `vtg-backend/test/phase4-verification-api.test.js` controller tests for cross-account download denial, owner download, admin authorization reaching the path guard, no-store/no-sniff headers, path traversal rejection, and stale/superseded review rejection.
+- Improved dark-mode contrast for pending, verified, and rejected status chips on `verification.html`; theme CSS regression checks are automated, but screenshots and actual browser interaction remain unverified.
 - Added indexes for trust-flag lookup by account and by status/severity.
 
 ## Endpoints introduced
@@ -41,12 +45,12 @@ These endpoints are source-defined and not available in a deployed backend until
 
 ## Required acceptance checks still outstanding
 
-1. Completed: GitHub Actions successfully applied all numbered migrations to a clean PostgreSQL 16 database and ran the test suite.
+1. Completed in CI: GitHub Actions successfully applied all numbered migrations to a clean PostgreSQL 16 database and passed the Node test suite on commit `ee6e6d7`.
 2. Apply migration 018 to a disposable test database and test constraints, foreign keys, filtering, create/update, and competing resolution requests.
-3. Exercise cross-account document access with owner, other supplier/bank/agent, buyer and admin identities; confirm only owner/admin can download and only admin can review.
+3. Partially completed in controller tests: owner download, different-account denial, admin reaching the path guard, and stale-review rejection are covered. Still required: full HTTP/API tests using real authenticated supplier, bank, agent, buyer, and admin identities; confirm only admin can review.
 4. Verify file-signature tests, malformed upload handling, oversized uploads, storage cleanup on failed requests, and malware-scanning/storage policy.
 5. Confirm all protected routes work with the current agreement middleware and real authenticated roles.
-6. Verify the Admin OS trust-risk workflow in a real browser, including light/dark theme contrast, keyboard operation, error states and admin-only API denial for other roles.
+6. Outstanding: verify the Admin OS trust-risk workflow in a real browser, including light/dark theme contrast, keyboard operation, error states and admin-only API denial for other roles. Automated CSS-token checks do not substitute for browser verification.
 7. Define document retention/deletion and private persistent storage operations with the owner; expiry/supersession is represented in source, but scheduled reminders and operational cleanup are not yet implemented. Agent approval evidence requirements are implemented in source, but still need API/database tests.
 8. Re-test Phase 3 Trade Intelligence and Phase 2 access requirements as previously recorded. Neither phase is certified complete by Phase 4 source changes.
 9. Deploy backend changes only after explicit owner authorization to resume Railway work. Until then, no claim that the migration/API is live.
