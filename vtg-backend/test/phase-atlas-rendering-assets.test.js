@@ -19,17 +19,18 @@ test('workspace Atlas uses a real interactive map and public map tiles without a
   assert.match(renderer, /vtgLeafletMap/);
   assert.match(renderer, /leaflet@1\.9\.4\/dist\/leaflet\.js/);
   assert.match(renderer, /tile\.openstreetmap\.org/);
-  assert.match(renderer, /tile\.openstreetmap\.de/);
-  assert.match(renderer, /no API key required/i);
+  assert.match(renderer, /https:\/\/www\.openstreetmap\.org\//);
+  assert.doesNotMatch(renderer, /cartocdn\.com|tile\.openstreetmap\.de/);
   assert.match(renderer, /classList\.contains\('open'\)\)open\(\)/);
   assert.doesNotMatch(renderer, /maplibre-gl|mapbox|tiles\.openfreemap|maps\.googleapis\.com/);
 });
 
-test('public Trade Atlas uses Leaflet, real map tiles, and a fallback tile provider', () => {
+test('public Trade Atlas uses Leaflet, official OSM tiles, and a graceful tile-error state', () => {
   const page = read('trade-atlas.html');
   assert.match(page, /leaflet@1\.9\.4\/dist\/leaflet\.js/);
   assert.match(page, /tile\.openstreetmap\.org/);
-  assert.match(page, /tile\.openstreetmap\.de/);
+  assert.match(page, /https:\/\/www\.openstreetmap\.org\//);
+  assert.doesNotMatch(page, /cartocdn\.com|tile\.openstreetmap\.de/);
   assert.match(page, /L\.map\(/);
 });
 
@@ -50,7 +51,8 @@ test('buyer dashboard embeds the interactive Atlas renderer and keeps regional m
   assert.match(dashboard, /vtg-buyer-atlas\.js/);
   assert.match(dashboard, /vtg:buyer-map-region/);
   assert.match(renderer, /tile\.openstreetmap\.org/);
-  assert.match(renderer, /tile\.openstreetmap\.de/);
+  assert.match(renderer, /https:\/\/www\.openstreetmap\.org\//);
+  assert.doesNotMatch(renderer, /cartocdn\.com|tile\.openstreetmap\.de/);
   assert.match(data, /Tin Can Island/);
   assert.match(data, /Shanghai/);
   assert.match(data, /Busan/);
