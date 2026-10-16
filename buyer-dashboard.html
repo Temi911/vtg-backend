@@ -355,7 +355,7 @@ $('saveProfile').addEventListener('click',()=>{db.set('profile',{name:$('display
 function setLang(v){lang=dict[v]?v:'en';localStorage.setItem('vtg-language',lang);document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';document.querySelectorAll('[data-i18n]').forEach(el=>{const key=el.dataset.i18n;if(t(key))el.textContent=t(key)});$('language').value=lang;$('language2').value=lang;renderProducts();renderRfqs();renderCart();renderFeed();renderChat();renderSuppliers();verify();renderDocs();renderNotes();$('crumb').textContent=t(view);document.title=t('dashboard')+' | VTG'}
 setLang(lang);renderProducts();renderRfqs();renderCart();renderFeed();renderChat();renderSuppliers();verify();renderDocs();renderNotes();renderLC();stats();calcFx();$('language2').value=lang;$('appearance').value=localStorage.getItem('vtg-theme-mode')==='manual'?(localStorage.getItem('vtg-theme')||'light'):'auto';const initial=location.hash.slice(1);if(initial&&$('page-'+initial))go(initial);
 })();
-</script><script src="/vtg-buyer-atlas.js?v=20261016-leaflet" defer></script>
+</script><script src="/vtg-buyer-atlas.js?v=20261016-osm-official-2" defer></script>
 <script src="/vtg-site-navigation.js?v=20261013-integrated-buyer" defer></script><div id="google_translate_element" aria-hidden="true"></div>
 <script>
 (function(){
