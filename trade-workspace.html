@@ -40,4 +40,5 @@ footer{border-top:1px solid var(--line);background:var(--surface);padding:25px 0
 <footer><div class="wrap foot"><span>© 2026 Vintage Trade Global · Powered by Folayele Global Resources Limited</span><div class="footlinks"><a href="/about-vintage.html">About</a><a href="/partnerships.html">Partnerships</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div></div></footer>
 <script>
 (function(){var root=document.documentElement,btn=document.getElementById('themeToggle');var saved=null;try{saved=localStorage.getItem('vtg-theme')}catch(e){}if(saved==='dark'||saved==='light'){root.setAttribute('data-theme',saved)}else{root.setAttribute('data-theme',matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}function paint(){btn.textContent=root.getAttribute('data-theme')==='dark'?'Light mode':'Dark mode'}btn.addEventListener('click',function(){var next=root.getAttribute('data-theme')==='dark'?'light':'dark';root.setAttribute('data-theme',next);try{localStorage.setItem('vtg-theme',next)}catch(e){}paint()});paint()})();
-</script></body></html>
+</script><script src="/vtg-site-navigation.js?v=20261016-theme-presets-1" defer></script>
+</body></html>
