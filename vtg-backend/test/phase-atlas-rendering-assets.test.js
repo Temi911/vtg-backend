@@ -20,7 +20,7 @@ test('workspace Atlas uses a real interactive map and public map tiles without a
   assert.match(renderer, /leaflet@1\.9\.4\/dist\/leaflet\.js/);
   assert.match(renderer, /tile\.openstreetmap\.org/);
   assert.match(renderer, /basemaps\.cartocdn\.com/);
-  assert.match(renderer, /No API key required/);
+  assert.match(renderer, /no API key required/i);
   assert.match(renderer, /classList\.contains\('open'\)\)open\(\)/);
   assert.doesNotMatch(renderer, /maplibre-gl|mapbox|tiles\.openfreemap|maps\.googleapis\.com/);
 });
