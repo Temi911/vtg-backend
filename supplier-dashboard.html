@@ -32,12 +32,40 @@ html[data-skin] input:focus,
 html[data-skin] select:focus,
 html[data-skin] textarea:focus{outline:2px solid color-mix(in srgb,var(--accent) 70%,transparent);outline-offset:1px;border-color:var(--accent)!important}
 
+
+/* Keep the left workspace usable and readable in both appearance modes. */
+html[data-theme="light"] .sidebar{background:#ffffff!important;color:#17212b!important;border-right:1px solid #e1e6ed}
+html[data-theme="light"] .sidebar .brand{border-bottom-color:#e1e6ed}
+html[data-theme="light"] .sidebar .brand strong{color:#17212b}
+html[data-theme="light"] .sidebar .brand small{color:#687687}
+html[data-theme="light"] .sidebar .nav-label{color:#687687}
+html[data-theme="light"] .sidebar .nav-btn{color:#475569}
+html[data-theme="light"] .sidebar .nav-btn:hover{background:color-mix(in srgb,var(--accent) 10%,#fff)!important;color:var(--accent)!important}
+html[data-theme="light"] .sidebar .nav-btn.active,
+html[data-theme="light"] .sidebar .nav-btn[aria-current="page"]{background:color-mix(in srgb,var(--accent) 14%,#fff)!important;color:var(--accent)!important;border-left-color:var(--accent)!important}
+html[data-theme="light"] .sidebar .sidebar-bottom{border-top-color:#e1e6ed}
+html[data-theme="light"] .sidebar .sidebar-bottom p{color:#687687}
+html[data-theme="light"] .sidebar .sidebar-bottom a{color:#334155}
+html[data-theme="light"] .sidebar .nav-count{background:#e9edf2!important;color:#334155!important}
+html[data-theme="dark"] .sidebar{background:#111820!important;color:#f5f7f9!important;border-right:1px solid #2c343d}
+html[data-theme="dark"] .logo-dark{display:none!important}
+html[data-theme="dark"] .logo-light{display:block!important;background:transparent!important}
+html[data-theme="light"] .logo-dark{display:block!important}
+html[data-theme="light"] .logo-light{display:none!important}
+.logo-light{display:none}
+html[data-theme="dark"] .preview-banner{display:flex!important;visibility:visible!important;opacity:1!important;background:color-mix(in srgb,var(--accent) 18%,#141b23)!important;border-color:color-mix(in srgb,var(--accent) 48%,#2b3743)!important;color:#f0f4f7!important;box-shadow:0 8px 24px #0003}
+html[data-theme="dark"] .preview-banner strong{color:#ffffff!important}
+html[data-theme="dark"] .preview-banner p{color:#d1dae3!important}
+html[data-theme="light"] .preview-banner{display:flex!important;visibility:visible!important;opacity:1!important;background:color-mix(in srgb,var(--accent) 8%,#fff)!important;border-color:color-mix(in srgb,var(--accent) 28%,#e1e6ed)!important;color:#17212b!important}
+html[data-theme="light"] .preview-banner strong{color:#17212b!important}
+html[data-theme="light"] .preview-banner p{color:#475569!important}
+
 </style>
 </head>
 <body>
 <div class="app">
 <aside class="sidebar" id="sidebar" aria-label="Supplier navigation">
-  <a class="brand" href="/frontend-v3.html"><img src="/assets/vtg-logo.svg" alt="VTG logo"><span><strong>VINTAGE TRADE GLOBAL</strong><small>SUPPLIER TRADE OS</small></span></a>
+  <a class="brand" href="/frontend-v3.html"><img class="logo-dark" src="/assets/vtg-logo.svg" alt="VTG logo"><img class="logo-light" src="/assets/vtg-logo-light.svg" alt="" aria-hidden="true"><span><strong>VINTAGE TRADE GLOBAL</strong><small>SUPPLIER TRADE OS</small></span></a>
   <div class="workspace-tag">SUPPLIER WORKSPACE · PREVIEW</div>
   <div class="nav-label">Workspace</div>
   <button class="nav-btn active" data-page="overview"><span class="nav-icon">▦</span>Command centre</button>
