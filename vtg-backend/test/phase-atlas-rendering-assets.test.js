@@ -13,13 +13,24 @@ test('active Atlas launcher assets exist at the URLs requested by the UI', () =>
   assert.ok(fs.existsSync(path.join(root, 'vtg-trade-atlas.js')), 'active trade data must not live only in archive/');
 });
 
-test('Atlas renderer is self-contained and does not require an external map API key', () => {
+test('workspace Atlas uses a real interactive map and public map tiles without a paid API key', () => {
   const renderer = read('vtg-map-atlas-ui.js');
   assert.match(renderer, /\/vtg-trade-atlas\.js/);
-  assert.match(renderer, /vtgSvgMap/);
+  assert.match(renderer, /vtgLeafletMap/);
+  assert.match(renderer, /leaflet@1\.9\.4\/dist\/leaflet\.js/);
+  assert.match(renderer, /tile\.openstreetmap\.org/);
+  assert.match(renderer, /basemaps\.cartocdn\.com/);
   assert.match(renderer, /No API key required/);
   assert.match(renderer, /classList\.contains\('open'\)\)open\(\)/);
   assert.doesNotMatch(renderer, /maplibre-gl|mapbox|tiles\.openfreemap|maps\.googleapis\.com/);
+});
+
+test('public Trade Atlas uses Leaflet, real map tiles, and a fallback tile provider', () => {
+  const page = read('trade-atlas.html');
+  assert.match(page, /leaflet@1\.9\.4\/dist\/leaflet\.js/);
+  assert.match(page, /tile\.openstreetmap\.org/);
+  assert.match(page, /basemaps\.cartocdn\.com/);
+  assert.match(page, /L\.map\(/);
 });
 
 test('Atlas data includes African, Chinese and South Korean trade locations and corridors', () => {
