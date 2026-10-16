@@ -396,7 +396,8 @@
 
     var workspacePaths = [
       '/buyer-dashboard.html','/admin-os.html','/agent-dashboard.html','/vtg-ai-dashboard.html',
-      '/trade-os.html','/trade-workspace.html','/account-trade-feed.html','/buyer-trade-room.html'
+      '/trade-os.html','/trade-workspace.html','/account-trade-feed.html','/buyer-trade-room.html',
+      '/buyer-verifications.html','/inspection-admin.html','/verification.html'
     ];
     var isWorkspace = workspacePaths.some(function (p) { return path.endsWith(p); });
     var key = isWorkspace ? 'vtg-user-theme-preset' : 'vtg-visitor-theme-preset';
