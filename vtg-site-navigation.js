@@ -1,4 +1,4 @@
-/* VTG navigation. The homepage footer markup and visual system are the single source of truth site-wide. */
+/* VTG navigation. Shared header/footer, day/night mode and preset styling apply site-wide except buyer/supplier dashboards. */
 /* 2026-10-10: non-home pages use the simplified logo / Previous / Home header. */
 /* 2026-10-10: keep VTG AI in the shared footer and show a clear red active-page underline. */
 (function () {
@@ -91,7 +91,7 @@
   }
   function syncBrandLogos() {
     var path = (window.location.pathname || '').toLowerCase();
-    if (path.endsWith('/buyer-dashboard.html') || path.endsWith('/supplier-dashboard.html')) return;
+    if (path.endsWith('/buyer-dashboard.html') || path.endsWith('/buyer-dashboard-preview.html') || path.endsWith('/supplier-dashboard.html')) return;
     var darkMode = document.documentElement.getAttribute('data-theme') === 'dark';
     document.querySelectorAll('img[src*="vtg-logo"], img[alt*="Vintage Trade Global"], img[alt="VTG"]').forEach(function (img) {
       var src = darkMode ? '/assets/vtg-logo-light.svg' : '/assets/vtg-logo.svg';
