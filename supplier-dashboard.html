@@ -17,6 +17,21 @@ html[data-skin=ocean-finance]{--accent:#087f9f;--accent2:#075d79;--soft:#e5f7fb}
 @media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{position:fixed;left:0;top:0;bottom:0;height:100dvh;width:270px;transform:translateX(-105%);transition:transform .2s;box-shadow:12px 0 30px #0002}.sidebar.open{transform:translateX(0)}.mobile-menu{display:inline-flex}.topbar{align-items:flex-start}.top-controls{gap:5px}.top-controls .control-select{max-width:125px}.content{padding-top:20px}.page-head{align-items:flex-start;flex-direction:column}.grid3{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){.topbar{padding:10px}.crumb{display:none}.topbar{justify-content:flex-end}.top-controls{width:100%}.top-controls .control-select{flex:1;max-width:none;min-width:0}.stats{gap:8px}.stat{padding:12px}.stat strong{font-size:22px}.grid3,.module-cards{grid-template-columns:1fr}.field-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.quick-grid{grid-template-columns:1fr 1fr}.panel-head,.panel-body{padding:13px}.head-actions{width:100%}.head-actions .btn{flex:1}.control-select#languageSelect{max-width:88px}.top-controls .control-label{display:none}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Workspace skin drives the sidebar's hover, expanded and selected navigation states. */
+html[data-skin] .sidebar .nav-btn{border-left:3px solid transparent;transition:background .18s ease,color .18s ease,border-color .18s ease}
+html[data-skin] .sidebar .nav-btn:hover{background:color-mix(in srgb,var(--accent) 24%,#111820)!important;color:#fff!important}
+html[data-skin] .sidebar .nav-btn.active,
+html[data-skin] .sidebar .nav-btn[aria-current="page"]{background:color-mix(in srgb,var(--accent) 31%,#111820)!important;color:color-mix(in srgb,var(--accent) 48%,white)!important;border-left-color:var(--accent)!important;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 32%,transparent)!important}
+html[data-skin] .sidebar .nav-btn:focus-visible{outline:2px solid var(--accent)!important;outline-offset:2px}
+html[data-skin] .sidebar .nav-count{background:color-mix(in srgb,var(--accent) 35%,#202a34)!important;color:#fff!important}
+html[data-skin] .sidebar .workspace-tag{border-color:color-mix(in srgb,var(--accent) 48%,#303b45)!important;background:color-mix(in srgb,var(--accent) 13%,#111820)!important}
+html[data-skin] .btn.primary,
+html[data-skin] .b.primary{background:var(--accent)!important;border-color:var(--accent)!important;color:#fff!important}
+html[data-skin] input:focus,
+html[data-skin] select:focus,
+html[data-skin] textarea:focus{outline:2px solid color-mix(in srgb,var(--accent) 70%,transparent);outline-offset:1px;border-color:var(--accent)!important}
+
 </style>
 </head>
 <body>
@@ -138,7 +153,7 @@ function setTheme(mode){const actual=mode==='auto'?(new Date().getHours()>=7&&ne
 function localStorageSafe(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function initPrefs(){let mode='auto',skin='executive',lang='en';try{mode=localStorage.getItem('vtg-supplier-os-theme-mode')||'auto';skin=localStorage.getItem('vtg-supplier-os-skin')||'executive';lang=localStorage.getItem('vtg-supplier-os-language')||'en'}catch(e){}setTheme(mode);document.documentElement.dataset.skin=skin;$('skinSelect').value=skin;$('settingsSkin').value=skin;$('languageSelect').value=lang;$('settingsLanguage').value=lang}
 function applySkin(s){document.documentElement.dataset.skin=s;$('skinSelect').value=s;$('settingsSkin').value=s;localStorageSafe('vtg-supplier-os-skin',s)}
-function go(page){if(!pageNames[page])return;currentPage=page;document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+page));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===page));$('crumbTitle').textContent=pageNames[page];$('sidebar').classList.remove('open');window.scrollTo({top:0,behavior:'smooth'});if(page==='products')renderProducts();if(page==='rfqs')renderRfqs();if(page==='orders')renderOrders();if(page==='profile')renderChecks();if(page==='tasks')renderTasks();if(page==='deals')renderDeals();if(page==='quality')renderInspections();if(page==='logistics')renderShipments();if(page==='documents')renderDocuments();if(page==='finance')renderFinance();if(page==='messages')renderMessages();if(page==='team')renderTeam();if(page==='trust')renderSupport();if(page==='analytics')renderAnalytics()}
+function go(page){if(!pageNames[page])return;currentPage=page;document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+page));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===page));document.querySelectorAll('.sidebar .nav-btn').forEach(b=>{if(b.dataset.page===page)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('crumbTitle').textContent=pageNames[page];$('sidebar').classList.remove('open');window.scrollTo({top:0,behavior:'smooth'});if(page==='products')renderProducts();if(page==='rfqs')renderRfqs();if(page==='orders')renderOrders();if(page==='profile')renderChecks();if(page==='tasks')renderTasks();if(page==='deals')renderDeals();if(page==='quality')renderInspections();if(page==='logistics')renderShipments();if(page==='documents')renderDocuments();if(page==='finance')renderFinance();if(page==='messages')renderMessages();if(page==='team')renderTeam();if(page==='trust')renderSupport();if(page==='analytics')renderAnalytics()}
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
 document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
 $('mobileMenu').addEventListener('click',()=>$('sidebar').classList.toggle('open'));
