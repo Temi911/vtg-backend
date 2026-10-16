@@ -243,9 +243,8 @@ function init(){
      map.removeLayer(layer);
      mapStatus.textContent='Primary map tiles are unavailable; trying an alternate map source…';
      mapStatus.style.display='block';
-     const alternate=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
-      subdomains:'abcd',
-      attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &middot; &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
+     const alternate=L.tileLayer('https://tile.openstreetmap.de/{z}/{x}/{y}.png',{
+      attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
       maxZoom:19,crossOrigin:true
      }).addTo(map);
      loadedTiles=0;failedTiles=0;watchTiles(alternate);
