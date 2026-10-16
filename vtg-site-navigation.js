@@ -480,7 +480,21 @@
     });
     wrap.appendChild(label);
     wrap.appendChild(select);
-    var host = document.querySelector('#vtgFooter .vtgFooterBottom') || document.querySelector('#vtgThemeControl') || document.body;
+    // Put the preset selector where people can actually discover it, not buried at the bottom of the footer.
+    var host;
+    if (isWorkspace) {
+      host = document.querySelector('.topbar .actions') ||
+        document.querySelector('.topRight') ||
+        document.querySelector('.topbar') ||
+        document.querySelector('.top');
+    } else {
+      host = document.querySelector('.vtg-page-nav .vtg-nav-actions') ||
+        document.querySelector('.vtg-page-nav') ||
+        document.querySelector('header .actions') ||
+        document.querySelector('header .nav-actions') ||
+        document.querySelector('header');
+    }
+    if (!host) host = document.querySelector('#vtgFooter .vtgFooterBottom') || document.querySelector('#vtgThemeControl') || document.body;
     host.appendChild(wrap);
   }
 
@@ -502,10 +516,10 @@
     addStyle();
     renderFooter();
     ensureThemeControl();
-    ensureThemePresets();
     adaptHomeAnchors();
     simplifyPageHeader();
     addPageNavigation();
+    ensureThemePresets();
     setActiveFooterLink();
     window.addEventListener('hashchange', setActiveFooterLink);
     window.addEventListener('popstate', setActiveFooterLink);
