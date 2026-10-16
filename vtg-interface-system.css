@@ -132,3 +132,63 @@ html[data-vtg-skin][data-theme] body :is(.active,.is-active,[aria-current="page"
 html[data-vtg-skin][data-theme] body :is(.active,.is-active,[aria-current="page"],[aria-selected="true"]) :is(svg,i,.icon) { color:var(--vtg-ui-accent); }
 html[data-theme="dark"] [data-vtg-theme-logo="light-on-dark"] { filter:none; }
 html[data-theme="light"] [data-vtg-theme-logo="dark-on-light"] { filter:none; }
+
+
+/* Unified visual contract: true white in light mode, true black in night mode.
+   Preset identity is carried by the selected skin accent across controls and states. */
+html[data-vtg-skin] {
+  --vtg-ui-accent:var(--vtg-skin-accent,#a5232b);
+  --vtg-ui-accent-strong:var(--vtg-skin-strong,#851d24);
+  --vtg-ui-link:var(--vtg-skin-link,var(--vtg-ui-accent));
+  --vtg-ui-surface:#fff;
+  --vtg-ui-page:#fff;
+  --vtg-ui-text:#17212b;
+}
+html[data-theme="light"][data-vtg-skin] {
+  color-scheme:light;
+  --vtg-ui-page:#fff; --vtg-ui-surface:#fff; --vtg-ui-surface-2:#fff;
+  --vtg-ui-text:#17212b; --vtg-ui-muted:#56616d; --vtg-ui-border:#dedede;
+}
+html[data-theme="dark"][data-vtg-skin] {
+  color-scheme:dark;
+  --vtg-ui-page:#000; --vtg-ui-surface:#000; --vtg-ui-surface-2:#000;
+  --vtg-ui-text:#fff; --vtg-ui-muted:#c4c4c4; --vtg-ui-border:#303030;
+}
+html[data-vtg-skin][data-theme] body {
+  background:#fff;
+  background-color:var(--vtg-ui-page)!important;
+  color:var(--vtg-ui-text)!important;
+}
+html[data-theme="light"][data-vtg-skin] body :is(header,nav,.nav,.site-nav,.site-header,.siteHeader,.topbar,.top-bar,.page-header,.pageHeader,.toolbar,.sidebar,footer,.footer,.site-footer,.footerGrid,#vtgFooter,#vtgPageNavigation,main,.main-content,.content-section,.section,.section.alt,.page,.pageMain,.workspace,.workspace-panel,.content-wrap,.container,.layout,.content,.page-content,.pageContent,.main,.mainContent,.dashboard-shell,.shell) {
+  background:#fff!important;background-color:#fff!important;color:#17212b!important;
+}
+html[data-theme="dark"][data-vtg-skin] body :is(header,nav,.nav,.site-nav,.site-header,.siteHeader,.topbar,.top-bar,.page-header,.pageHeader,.toolbar,.sidebar,footer,.footer,.site-footer,.footerGrid,#vtgFooter,#vtgPageNavigation,main,.main-content,.content-section,.section,.section.alt,.page,.pageMain,.workspace,.workspace-panel,.content-wrap,.container,.layout,.content,.page-content,.pageContent,.main,.mainContent,.dashboard-shell,.shell) {
+  background:#000!important;background-color:#000!important;color:#fff!important;border-color:#303030!important;
+}
+html[data-theme="light"][data-vtg-skin] body :is(.card,.panel,.surface,.tile,.modal,.modal-content,.dialog,.dialog-content,.dropdown-menu,.popover,.popover-content,.tooltip,.drawer,.sheet,.form-card,.formCard,.portalCard,.stat-card,.statCard,.node,.path,.feature-card,.step-card,.info-card,.faq-item,.callout,.routeCard,.route-card,.selectedHub,.accessCard,.access-card,.table-wrap,.table-responsive,.notice,.alert,.workspace-panel,.content-card,.contentCard,.application-card,.applicationCard,.market-card,.marketCard,.news-card,.newsCard,.chart-card,.chartCard,.widget,.widget-card,.form-section,.formSection,.settings-card,.settings-panel,.tab-panel,.tab-content,.accordion-item,.accordion-content,.menu-panel,.search-panel,.result-card,.list-card,.metric-card,.kpi-card) {
+  background:#fff!important;background-color:#fff!important;color:#17212b!important;border-color:#dedede!important;
+}
+html[data-theme="dark"][data-vtg-skin] body :is(.card,.panel,.surface,.tile,.modal,.modal-content,.dialog,.dialog-content,.dropdown-menu,.popover,.popover-content,.tooltip,.drawer,.sheet,.form-card,.formCard,.portalCard,.stat-card,.statCard,.node,.path,.feature-card,.step-card,.info-card,.faq-item,.callout,.routeCard,.route-card,.selectedHub,.accessCard,.access-card,.table-wrap,.table-responsive,.notice,.alert,.workspace-panel,.content-card,.contentCard,.application-card,.applicationCard,.market-card,.marketCard,.news-card,.newsCard,.chart-card,.chartCard,.widget,.widget-card,.form-section,.formSection,.settings-card,.settings-panel,.tab-panel,.tab-content,.accordion-item,.accordion-content,.menu-panel,.search-panel,.result-card,.list-card,.metric-card,.kpi-card) {
+  background:#000!important;background-color:#000!important;color:#fff!important;border-color:#303030!important;
+}
+html[data-theme="light"][data-vtg-skin] body :is(input,select,textarea,[contenteditable="true"],.input,.select) {
+  background:#fff!important;background-color:#fff!important;color:#17212b!important;border-color:#cfcfcf!important;
+}
+html[data-theme="dark"][data-vtg-skin] body :is(input,select,textarea,[contenteditable="true"],.input,.select) {
+  background:#000!important;background-color:#000!important;color:#fff!important;border-color:#404040!important;
+}
+html[data-theme="light"][data-vtg-skin] body :is(th,thead,.table-head,.table-header) {background:#fff!important;color:#17212b!important}
+html[data-theme="dark"][data-vtg-skin] body :is(th,thead,.table-head,.table-header) {background:#000!important;color:#fff!important}
+html[data-vtg-skin][data-theme] body :is(button,.btn,.button,.action-button,[role="button"],[role="tab"],.tab,.chip,.pill,.badge,.tag,input,select,textarea,progress,meter) {accent-color:var(--vtg-skin-accent,#a5232b)}
+html[data-vtg-skin][data-theme] body :is(.primary,.btn-primary,.primary-btn,.btn.primary,button.primary,a.primary,[data-action="primary"],[aria-pressed="true"].primary) {
+  background:var(--vtg-skin-accent,#a5232b)!important;border-color:var(--vtg-skin-accent,#a5232b)!important;color:#fff!important;
+}
+html[data-vtg-skin][data-theme] body :is(.active,.is-active,[aria-current="page"],[aria-selected="true"],[aria-pressed="true"],.selected,.checked,.is-selected) {
+  border-color:var(--vtg-skin-accent,#a5232b)!important;outline-color:var(--vtg-skin-accent,#a5232b);
+}
+html[data-vtg-skin][data-theme] body :is(input,select,textarea,[contenteditable="true"],button,[role="button"],[role="tab"]):focus-visible {
+  outline:2px solid var(--vtg-skin-accent,#a5232b)!important;outline-offset:2px;
+}
+html[data-vtg-skin][data-theme] body a:not(.primary):not(.btn-primary):not(.btn):not(.button):not(.vtg-nav-brand) {color:var(--vtg-skin-link,var(--vtg-skin-accent,#a5232b))}
+html[data-theme="dark"][data-vtg-skin] body :is(h1,h2,h3,h4,h5,h6,p,span,small,strong,b,label,li,dt,dd,figcaption,th,td) {color:inherit}
+html[data-theme="light"][data-vtg-skin] body :is(h1,h2,h3,h4,h5,h6,p,span,small,strong,b,label,li,dt,dd,figcaption,th,td) {color:inherit}
