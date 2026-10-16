@@ -100,13 +100,14 @@ html[data-theme="light"] body .eyebrow,html[data-theme="light"] body .tool .ico,
 (function(){
 const $=s=>document.querySelector(s), messages=$('#messages'), input=$('#prompt'), form=$('#chatForm'), send=$('#sendBtn'), role=$('#role');
  const root=document.documentElement;
- let themeMode=localStorage.getItem('vtg-ai-theme-mode')||'auto';
+ let themeMode=localStorage.getItem('vtg-theme-preference')||localStorage.getItem('vtg-ai-theme-mode')||'auto';
  if(!['auto','light','dark'].includes(themeMode))themeMode='auto';
- const timeTheme=()=>{const hour=new Date().getHours();return hour>=7&&hour<19?'light':'dark'};
- const getTheme=()=>themeMode==='auto'?timeTheme():themeMode;
+ const timeTheme=()=>{const hour=new Date().getHours();return hour>=6&&hour<18?'light':'dark'};
+ const getTheme=()=>{const shared=localStorage.getItem('vtg-theme-preference');if(shared==='light'||shared==='dark')return shared;return themeMode==='auto'?timeTheme():themeMode};
  const applyTheme=()=>{const theme=getTheme();root.setAttribute('data-theme',theme);root.style.colorScheme=theme;const btn=$('#themeBtn');if(btn){btn.innerHTML='<i data-lucide="'+(themeMode==='auto'?'sun-moon':theme==='dark'?'sun':'moon')+'"></i>';btn.setAttribute('aria-label',themeMode==='auto'?'Theme: automatic by local time. Click to choose light or dark mode':theme==='dark'?'Theme: dark. Click to change theme mode':'Theme: light. Click to change theme mode');btn.title=themeMode==='auto'?'Theme: automatic by local time':theme==='dark'?'Theme: dark':'Theme: light'}iconRefresh()};
  applyTheme();
- $('#themeBtn').addEventListener('click',()=>{themeMode=themeMode==='auto'?'light':themeMode==='light'?'dark':'auto';localStorage.setItem('vtg-ai-theme-mode',themeMode);applyTheme()});
+ $('#themeBtn').addEventListener('click',()=>{themeMode=themeMode==='auto'?'light':themeMode==='light'?'dark':'auto';if(window.vtgSetThemePreference)window.vtgSetThemePreference(themeMode);else{localStorage.setItem('vtg-theme-preference',themeMode);localStorage.setItem('vtg-ai-theme-mode',themeMode)}applyTheme()});
+ document.addEventListener('vtg:themechange',event=>{themeMode=event.detail.preference||'auto';applyTheme()});
  window.setInterval(()=>{if(themeMode==='auto')applyTheme()},60000);
  $('#notificationBtn').addEventListener('click',()=>{const status=$('#statusText')?.textContent||'Assistant status unavailable';const msg=status==='Assistant available'?'You’re all caught up. VTG AI is available for your trade questions.':'No new notifications. Assistant status: '+status+'.';let toast=$('#vtgToast');if(!toast){toast=document.createElement('div');toast.id='vtgToast';toast.className='vtgToast';toast.setAttribute('role','status');document.body.appendChild(toast)}toast.textContent=msg;toast.classList.add('show');window.clearTimeout(window.__vtgToastTimer);window.__vtgToastTimer=window.setTimeout(()=>toast.classList.remove('show'),3600)});
  $('#helpBtn').addEventListener('click',()=>{document.querySelector('.workspace').scrollIntoView({behavior:'smooth',block:'start'});input.focus()});

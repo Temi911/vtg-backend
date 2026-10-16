@@ -80,4 +80,13 @@ test('shared interface styles provide distinct light and dark card surfaces and 
   assert.match(styles, /--vtg-ui-text:#eef3f6/);
   assert.match(styles, /background-color:var\(--vtg-ui-surface\)/);
   assert.match(styles, /color:var\(--vtg-ui-muted\)/);
+  const navigation = read('vtg-site-navigation.js');
+  assert.match(navigation, /vtg-theme-mode/);
+  assert.match(navigation, /vtg-ai-theme-mode/);
+  assert.match(navigation, /window\.vtgSetThemePreference = function/);
+  const buyer = read('buyer-dashboard.html');
+  assert.match(buyer, /window\.vtgSetThemePreference\(v\)/);
+  const aiDashboard = read('vtg-ai-dashboard.html');
+  assert.match(aiDashboard, /window\.vtgSetThemePreference\(themeMode\)/);
+  assert.match(aiDashboard, /hour>=6&&hour<18/);
 });
