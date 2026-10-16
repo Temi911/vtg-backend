@@ -13,13 +13,13 @@ test('active Atlas launcher assets exist at the URLs requested by the UI', () =>
   assert.ok(fs.existsSync(path.join(root, 'vtg-trade-atlas.js')), 'active trade data must not live only in archive/');
 });
 
-test('Atlas renderer loads data and map engine, then initializes an already-open drawer', () => {
+test('Atlas renderer is self-contained and does not require an external map API key', () => {
   const renderer = read('vtg-map-atlas-ui.js');
   assert.match(renderer, /\/vtg-trade-atlas\.js/);
-  assert.match(renderer, /maplibre-gl@5\.13\.0\/dist\/maplibre-gl\.js/);
-  assert.match(renderer, /data-vtg-maplibre-css/);
-  assert.match(renderer, /VTGInstallTradeAtlas/);
-  assert.match(renderer, /classList\.contains\('open'\)\) open\(\)/);
+  assert.match(renderer, /vtgSvgMap/);
+  assert.match(renderer, /No API key required/);
+  assert.match(renderer, /classList\.contains\('open'\)\)open\(\)/);
+  assert.doesNotMatch(renderer, /maplibre-gl|mapbox|tiles\.openfreemap|maps\.googleapis\.com/);
 });
 
 test('Atlas data includes African, Chinese and South Korean trade locations and corridors', () => {
