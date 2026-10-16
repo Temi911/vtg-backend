@@ -68,6 +68,8 @@ test('shared navigation exposes exactly three visitor themes and ten workspace t
   assert.match(navigation, /endsWith\('\/frontend-v3\.html'\)/);
   assert.match(navigation, /endsWith\('\/supplier-dashboard\.html'\)/);
   assert.match(navigation, /endsWith\('\/bank-trade-os\.html'\)/);
+  assert.match(navigation, /data-navkey="ai" href="\/vtg-ai\.html" id="footAi">VTG AI<\/a>/);
+  assert.match(navigation, /ai: \['\/vtg-ai\.html', '\/vtg-ai-dashboard\.html'\]/);
 });
 
 test('shared interface styles provide distinct light and dark card surfaces and readable text', () => {
