@@ -388,11 +388,105 @@
       wrap.setAttribute('data-current-theme', event.detail.theme);
     });
   }
+  function ensureThemePresets() {
+    var path = (window.location.pathname || '').toLowerCase();
+    // Keep the public landing page exactly as it is, and leave these two dashboards out of this redesign.
+    if (path === '/' || path.endsWith('/frontend-v3.html') || path.endsWith('/supplier-dashboard.html') || path.endsWith('/bank-trade-os.html')) return;
+    if (document.getElementById('vtgThemePresetControl')) return;
+
+    var workspacePaths = [
+      '/buyer-dashboard.html','/admin-os.html','/agent-dashboard.html','/vtg-ai-dashboard.html',
+      '/trade-os.html','/trade-workspace.html','/account-trade-feed.html','/buyer-trade-room.html'
+    ];
+    var isWorkspace = workspacePaths.some(function (p) { return path.endsWith(p); });
+    var key = isWorkspace ? 'vtg-user-theme-preset' : 'vtg-visitor-theme-preset';
+    var presets = isWorkspace ? [
+      ['executive','Executive','A calm executive workspace'],
+      ['ocean-finance','Ocean Finance','Blue financial workspace'],
+      ['emerald-trade','Emerald Trade','Green trade operations'],
+      ['copper-ledger','Copper Ledger','Warm finance and ledger'],
+      ['indigo-intel','Indigo Intelligence','Indigo research workspace'],
+      ['crimson-ops','Crimson Operations','VTG red operations'],
+      ['mono-pro','Monochrome Pro','Minimal neutral workspace'],
+      ['sandstone','Sandstone','Warm neutral workspace'],
+      ['arctic-blue','Arctic Blue','Cool high-clarity workspace'],
+      ['midnight-harbor','Midnight Harbor','Dark port operations']
+    ] : [
+      ['trade-classic','Trade Classic','VTG red, clean and familiar'],
+      ['ocean-route','Ocean Route','Ocean blue and teal'],
+      ['graphite-port','Graphite Port','Quiet graphite and steel']
+    ];
+
+    var root = document.documentElement;
+    var style = document.createElement('style');
+    style.id = 'vtg-theme-presets-style';
+    style.textContent = [
+      'html[data-vtg-skin="trade-classic"]{--vtg-skin-accent:#a5232b;--vtg-skin-strong:#851d24;--vtg-skin-soft:#fff0ef;--vtg-skin-link:#a5232b;--vtg-skin-dark:#ff8e86}',
+      'html[data-vtg-skin="ocean-route"]{--vtg-skin-accent:#087f9f;--vtg-skin-strong:#075d79;--vtg-skin-soft:#e5f7fb;--vtg-skin-link:#087f9f;--vtg-skin-dark:#64d8f0}',
+      'html[data-vtg-skin="graphite-port"]{--vtg-skin-accent:#526777;--vtg-skin-strong:#354956;--vtg-skin-soft:#edf2f5;--vtg-skin-link:#405d70;--vtg-skin-dark:#a8c3d3}',
+      'html[data-vtg-skin="executive"]{--vtg-skin-accent:#a5232b;--vtg-skin-strong:#851d24;--vtg-skin-soft:#fff0ef;--vtg-skin-link:#a5232b;--vtg-skin-dark:#ff8e86}',
+      'html[data-vtg-skin="ocean-finance"]{--vtg-skin-accent:#087f9f;--vtg-skin-strong:#075d79;--vtg-skin-soft:#e5f7fb;--vtg-skin-link:#087f9f;--vtg-skin-dark:#64d8f0}',
+      'html[data-vtg-skin="emerald-trade"]{--vtg-skin-accent:#16734a;--vtg-skin-strong:#105b3a;--vtg-skin-soft:#e8f7ef;--vtg-skin-link:#16734a;--vtg-skin-dark:#79d7ac}',
+      'html[data-vtg-skin="copper-ledger"]{--vtg-skin-accent:#a45b2a;--vtg-skin-strong:#7c421d;--vtg-skin-soft:#fbefe5;--vtg-skin-link:#995123;--vtg-skin-dark:#f0b27d}',
+      'html[data-vtg-skin="indigo-intel"]{--vtg-skin-accent:#5753b8;--vtg-skin-strong:#3e3a91;--vtg-skin-soft:#efeeff;--vtg-skin-link:#5753b8;--vtg-skin-dark:#aaa7ff}',
+      'html[data-vtg-skin="crimson-ops"]{--vtg-skin-accent:#c52c37;--vtg-skin-strong:#941e29;--vtg-skin-soft:#fff0f1;--vtg-skin-link:#b4232b;--vtg-skin-dark:#ff9aa1}',
+      'html[data-vtg-skin="mono-pro"]{--vtg-skin-accent:#48525b;--vtg-skin-strong:#29323a;--vtg-skin-soft:#eef1f3;--vtg-skin-link:#394956;--vtg-skin-dark:#c0cbd3}',
+      'html[data-vtg-skin="sandstone"]{--vtg-skin-accent:#8b6b43;--vtg-skin-strong:#6b4f2e;--vtg-skin-soft:#f7f0e5;--vtg-skin-link:#79582f;--vtg-skin-dark:#e2c49a}',
+      'html[data-vtg-skin="arctic-blue"]{--vtg-skin-accent:#2f6fb1;--vtg-skin-strong:#204e83;--vtg-skin-soft:#eaf3ff;--vtg-skin-link:#2f6fb1;--vtg-skin-dark:#9dcaff}',
+      'html[data-vtg-skin="midnight-harbor"]{--vtg-skin-accent:#4f8da8;--vtg-skin-strong:#2f6279;--vtg-skin-soft:#e7f4f8;--vtg-skin-link:#377d9b;--vtg-skin-dark:#83d5f0}',
+      'html[data-vtg-skin] body{accent-color:var(--vtg-skin-accent)}',
+      'html[data-theme="light"][data-vtg-skin] body{background-color:#f5f7fa!important;color:#17212b!important}',
+      'html[data-theme="dark"][data-vtg-skin] body{background-color:#0d1117!important;color:#eef3f6!important}',
+      'html[data-vtg-skin] body :is(.nav,.site-nav,.topbar,.page-header,.vtg-page-nav){border-color:var(--vtg-skin-accent)!important}',
+      'html[data-vtg-skin] body :is(.primary,.btn-primary,.primary-btn,.btn.primary,button.primary,a.primary){background:var(--vtg-skin-accent)!important;border-color:var(--vtg-skin-accent)!important;color:#fff!important}',
+      'html[data-vtg-skin] body a:not(.primary):not(.btn-primary):not(.btn){color:var(--vtg-skin-link)}',
+      'html[data-theme="light"][data-vtg-skin] body :is(input,select,textarea){background:#fff!important;color:#17212b!important;border-color:#cbd5df!important}',
+      'html[data-theme="dark"][data-vtg-skin] body :is(input,select,textarea){background:#171d24!important;color:#eef3f6!important;border-color:#46535e!important}',
+      'html[data-vtg-skin] #vtgThemePresetControl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 0 12px;padding:0;background:transparent;font:600 11px/1.3 Manrope,Arial,sans-serif}',
+      'html[data-vtg-skin] #vtgThemePresetControl label{font-weight:800;color:inherit!important}',
+      'html[data-vtg-skin] #vtgThemePresetControl select{max-width:205px;min-height:32px;padding:5px 26px 5px 9px;border:1px solid #cbd5df;border-radius:8px;background:#fff;color:#17212b;font:700 11px/1.3 Manrope,Arial,sans-serif}',
+      'html[data-theme="dark"][data-vtg-skin] #vtgThemePresetControl select{background:#171d24;color:#eef3f6;border-color:#46535e}',
+      '@media(max-width:800px){html[data-vtg-skin] #vtgThemePresetControl{margin:8px 0 0;flex-basis:100%}}'
+    ].join('\n');
+    document.head.appendChild(style);
+
+    var wrap = document.createElement('div');
+    wrap.id = 'vtgThemePresetControl';
+    var label = document.createElement('label');
+    label.htmlFor = 'vtgThemePreset';
+    label.textContent = isWorkspace ? 'Workspace theme' : 'Visitor theme';
+    var select = document.createElement('select');
+    select.id = 'vtgThemePreset';
+    select.setAttribute('aria-label', isWorkspace ? 'Choose one of ten workspace themes' : 'Choose one of three visitor themes');
+    presets.forEach(function (item) {
+      var option = document.createElement('option');
+      option.value = item[0];
+      option.textContent = item[1];
+      option.title = item[2];
+      select.appendChild(option);
+    });
+    var selected = isWorkspace ? 'executive' : 'trade-classic';
+    try { selected = window.localStorage.getItem(key) || selected; } catch (error) {}
+    if (!presets.some(function (item) { return item[0] === selected; })) selected = isWorkspace ? 'executive' : 'trade-classic';
+    select.value = selected;
+    root.setAttribute('data-vtg-skin', selected);
+    select.addEventListener('change', function () {
+      root.setAttribute('data-vtg-skin', select.value);
+      try { window.localStorage.setItem(key, select.value); } catch (error) {}
+      document.dispatchEvent(new CustomEvent('vtg:skinchange', { detail: { skin: select.value, audience: isWorkspace ? 'workspace' : 'visitor' } }));
+    });
+    wrap.appendChild(label);
+    wrap.appendChild(select);
+    var host = document.querySelector('#vtgFooter .vtgFooterBottom') || document.querySelector('#vtgThemeControl') || document.body;
+    host.appendChild(wrap);
+  }
+
   function init() {
     applyTimeBasedTheme();
     addStyle();
     renderFooter();
     ensureThemeControl();
+    ensureThemePresets();
     adaptHomeAnchors();
     simplifyPageHeader();
     addPageNavigation();
