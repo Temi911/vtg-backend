@@ -1,0 +1,73 @@
+/* Interactive real-world map for the buyer workspace Atlas. */
+(() => {
+  'use strict';
+  const DATA_URL='/vtg-trade-atlas.js?v=20261016-buyer-map';
+  let pendingRegion=null;
+  const css=`
+    .vtgBuyerAtlasMap{width:100%;height:100%;min-height:320px;background:#eaf0f4}
+    .vtgBuyerAtlasMap .leaflet-container{width:100%;height:100%;min-height:320px;font:12px Manrope,Arial,sans-serif}
+    .vtgBuyerAtlasPopup{min-width:145px;color:#1d3441;font:12px/1.5 Manrope,Arial,sans-serif}
+    .vtgBuyerAtlasPopup strong{display:block;margin-bottom:3px}.vtgBuyerAtlasPopup small{color:#536b79}
+    @media(max-width:600px){.mapWrap{height:360px!important}.vtgBuyerAtlasMap,.vtgBuyerAtlasMap .leaflet-container{min-height:300px}}
+  `;
+  function ensureCss(){if(document.getElementById('vtgBuyerAtlasCss'))return;const s=document.createElement('style');s.id='vtgBuyerAtlasCss';s.textContent=css;document.head.appendChild(s);}
+  function loadCss(url){
+    const existing=[...document.querySelectorAll('link[data-vtg-buyer-leaflet-css]')].find(x=>x.href===url);
+    if(existing){if(existing.dataset.state==='loaded')return Promise.resolve();if(existing.dataset.state==='failed')return Promise.reject(Error('Leaflet CSS failed'));return new Promise((r,j)=>{existing.addEventListener('load',r,{once:true});existing.addEventListener('error',()=>j(Error('Leaflet CSS failed')),{once:true});});}
+    return new Promise((resolve,reject)=>{const l=document.createElement('link');l.rel='stylesheet';l.href=url;l.dataset.vtgBuyerLeafletCss='1';l.onload=()=>{l.dataset.state='loaded';resolve();};l.onerror=()=>{l.dataset.state='failed';reject(Error('Leaflet CSS failed'));};document.head.appendChild(l);});
+  }
+  function loadJs(url,attr){
+    if(window.L)return Promise.resolve();
+    const old=document.querySelector('script['+attr+']');
+    if(old){if(old.dataset.state==='loaded'||window.L)return Promise.resolve();if(old.dataset.state==='failed')return Promise.reject(Error('Leaflet JS failed'));return new Promise((r,j)=>{old.addEventListener('load',r,{once:true});old.addEventListener('error',()=>j(Error('Leaflet JS failed')),{once:true});});}
+    return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=url;s.crossOrigin='anonymous';s.setAttribute(attr,'1');s.onload=()=>{s.dataset.state='loaded';resolve();};s.onerror=()=>{s.dataset.state='failed';reject(Error('Leaflet JS failed'));};document.head.appendChild(s);});
+  }
+  async function leaflet(){
+    if(window.L)return;
+    try{await loadCss('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');await loadJs('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js','data-vtg-buyer-leaflet-primary');}
+    catch(_){await loadCss('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css');await loadJs('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js','data-vtg-buyer-leaflet-fallback');}
+  }
+  function data(){
+    if(window.VTGTradeAtlasData)return Promise.resolve(window.VTGTradeAtlasData);
+    return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=DATA_URL;s.onload=()=>window.VTGTradeAtlasData?resolve(window.VTGTradeAtlasData):reject(Error('Atlas data unavailable'));s.onerror=reject;document.head.appendChild(s);});
+  }
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function init(){
+    const node=document.getElementById('map');if(!node||node.dataset.vtgMapInit)return;
+    node.dataset.vtgMapInit='loading';ensureCss();
+    Promise.all([leaflet(),data()]).then(([,D])=>{
+      if(!window.L)throw Error('Leaflet unavailable');
+      const map=L.map(node,{zoomControl:true,scrollWheelZoom:true,worldCopyJump:true,minZoom:2,maxZoom:18}).setView([17,38],2);
+      const groups={countries:L.layerGroup().addTo(map),ports:L.layerGroup().addTo(map),hubs:L.layerGroup().addTo(map),routes:L.layerGroup().addTo(map)};
+      let loaded=0,failed=0,fallback=false,base;
+      const watch=layer=>{layer.on('tileload',()=>{loaded++;node.dataset.mapTiles='loaded';});layer.on('tileerror',()=>{failed++;if(!loaded&&failed>=4&&!fallback){fallback=true;map.removeLayer(layer);const dark=document.documentElement.getAttribute('data-theme')==='dark';base=L.tileLayer('https://{s}.basemaps.cartocdn.com/'+(dark?'dark_all':'light_all')+'/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:19,attribution:'&copy; OpenStreetMap contributors &middot; &copy; CARTO'}).addTo(map);loaded=0;failed=0;watch(base);node.dataset.mapTiles='fallback';}});};
+      base=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'}).addTo(map);watch(base);
+      const colors={countries:'#078c91',ports:'#e46b42',hubs:'#7754cf'};
+      [['countries','country'],['ports','port / terminal'],['hubs','trade hub']].forEach(([key,label])=>(D[key]||[]).forEach(p=>{
+        if(!Number.isFinite(+p.lat)||!Number.isFinite(+p.lon))return;
+        const marker=L.circleMarker([+p.lat,+p.lon],{radius:key==='countries'?4:key==='ports'?6:7,color:'#fff',weight:1.5,fillColor:colors[key],fillOpacity:.96});
+        marker.bindPopup('<div class="vtgBuyerAtlasPopup"><strong>'+esc(p.name)+'</strong><small>'+esc(p.country||'Trade market')+' · '+label+'</small><p style="margin:6px 0 0">Coordinates: '+(+p.lat).toFixed(4)+', '+(+p.lon).toFixed(4)+'</p></div>').addTo(groups[key]);
+      }));
+      (D.routes||[]).forEach(r=>{const pts=(r.coords||[]).map(p=>[+p[1],+p[0]]);if(pts.length>1)L.polyline(pts,{color:'#d5a33b',weight:2.5,opacity:.85,dashArray:'7 6'}).bindTooltip(esc(r.name),{sticky:true}).addTo(groups.routes);});
+      function setRegion(region){
+        const views={africa:{center:[4,18],zoom:3},china:{center:[31,105],zoom:4},korea:{center:[36.2,127.8],zoom:6},world:{center:[17,38],zoom:2}};
+        const v=views[region]||views.world;map.setView(v.center,v.zoom,{animate:true});
+      }
+      document.querySelectorAll('[data-map]').forEach(btn=>{if(btn.dataset.vtgAtlasBound)return;btn.dataset.vtgAtlasBound='1';btn.addEventListener('click',()=>setRegion(btn.dataset.map));});
+      document.addEventListener('vtg:themechange',event=>{if(!base||!window.L)return;const theme=event.detail?.theme||'light';if(fallback){map.removeLayer(base);base=L.tileLayer('https://{s}.basemaps.cartocdn.com/'+(theme==='dark'?'dark_all':'light_all')+'/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:19,attribution:'&copy; OpenStreetMap contributors &middot; &copy; CARTO'}).addTo(map);}});
+      window.VTGBuyerAtlas={map,groups,data:D,setRegion};
+      node.dataset.vtgMapInit='ready';
+      if(pendingRegion)setRegion(pendingRegion);
+      const refresh=()=>map.invalidateSize({pan:false});
+      window.addEventListener('resize',refresh,{passive:true});
+      document.querySelectorAll('[data-view="atlas"]').forEach(el=>el.addEventListener('click',()=>window.setTimeout(refresh,180)));
+      window.setTimeout(refresh,160);
+    }).catch(error=>{
+      console.error('VTG buyer Atlas failed to initialize:',error);
+      node.dataset.vtgMapInit='failed';
+      node.innerHTML='<div style="min-height:320px;display:grid;place-items:center;padding:24px;text-align:center;background:#eef4f6;color:#233746"><div><strong>Interactive map could not load on this connection.</strong><p>Check your internet connection and reopen the Atlas. This map uses public OpenStreetMap/CARTO services and does not require a paid API key.</p><a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">Open OpenStreetMap</a></div></div>';
+    });
+  }
+  window.addEventListener('vtg:buyer-map-region',event=>{const region=event.detail?.region;if(window.VTGBuyerAtlas?.setRegion)window.VTGBuyerAtlas.setRegion(region);else pendingRegion=region;});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
