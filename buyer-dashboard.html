@@ -243,6 +243,34 @@ html[data-theme="light"] #page-letter-credit .lcDisclaimer{color:#637282!importa
 html[data-theme="light"] #page-letter-credit .lcDisclaimer{background:#f8fafc!important;border:1px solid #dfe5eb}
 
 .vtg-chart-empty{min-height:170px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:22px;text-align:center;border:1px dashed var(--line);border-radius:12px;background:var(--panel2);color:var(--muted)}.vtg-chart-empty-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--soft);color:var(--red);font-size:20px;font-weight:800}.vtg-chart-empty strong{font-size:11px;color:var(--ink)}.vtg-chart-empty p{max-width:420px;margin:0;font-size:10px;line-height:1.7}
+
+/* Final overview-hero contrast fix: keep the headline and supporting copy readable in either theme. */
+html[data-theme="light"] #page-overview .commandHero{
+  background:radial-gradient(ellipse at 78% 28%,#183d50 0%,#102633 42%,#0b1823 100%)!important;
+  color:#f7f8fa!important;
+}
+html[data-theme="light"] #page-overview .commandHero .commandCopy,
+html[data-theme="light"] #page-overview .commandHero .commandCopy h1,
+html[data-theme="light"] #page-overview .commandHero .commandCopy h1 em{
+  color:#ffffff!important;
+  opacity:1!important;
+  visibility:visible!important;
+  -webkit-text-fill-color:currentColor!important;
+}
+html[data-theme="light"] #page-overview .commandHero .commandCopy h1 em{
+  color:#ffaaa2!important;
+}
+html[data-theme="light"] #page-overview .commandHero .commandCopy>p{
+  color:#e0e8ef!important;
+  opacity:1!important;
+  visibility:visible!important;
+  -webkit-text-fill-color:#e0e8ef!important;
+}
+html[data-theme="light"] #page-overview .commandHero .commandCopy .eyebrow,
+html[data-theme="light"] #page-overview .commandHero .heroMeta{
+  color:#e8eef3!important;
+}
+
 </style></head><body><div class="topline"></div><div class="app">
 <aside class="sidebar" id="sidebar"><a class="brand" href="/frontend-v3.html"><img class="logo" src="/assets/vtg-logo.svg" alt="VTG"><span><strong>VINTAGE TRADE GLOBAL</strong><small>BUYER WORKSPACE</small></span></a><div class="label" data-i18n="workspace">Workspace</div><nav>
 <div><button class="groupBtn" data-group="work" aria-expanded="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="overview">Overview</span><span class="chev">⌄</span></button><div class="items" data-items="work"><a href="#overview" data-view="overview" class="active">▦ <span data-i18n="dashboard">Dashboard</span></a></div></div>
