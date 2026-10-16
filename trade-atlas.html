@@ -208,29 +208,58 @@ function init(){
   const mapNode=document.getElementById('locationMap');
   if(!mapNode)return false;
   if(!window.L){
-   mapNode.innerHTML='<div style="height:100%;min-height:300px;display:grid;place-items:center;padding:24px;text-align:center;color:#233746;background:#eef4f6"><div><strong>Interactive world map could not load.</strong><p style="margin:8px 0 0">Check your internet connection and refresh to load country names and map labels.</p></div></div>';
-   console.error('VTG Trade Atlas: Leaflet map library did not load.');
+   mapNode.innerHTML='<div style="height:100%;min-height:300px;display:grid;place-items:center;padding:24px;text-align:center;color:#233746;background:#eef4f6"><div><strong>Connecting to the interactive map…</strong><p style="margin:8px 0 0">Trying an alternate map-library source. A network that blocks map services may still prevent tiles from loading.</p></div></div>';
+   console.error('VTG Trade Atlas: primary Leaflet source did not load; trying the alternate CDN.');
+   if(!mapNode.dataset.vtgLeafletFallback){
+    mapNode.dataset.vtgLeafletFallback='loading';
+    const fallbackCss=document.createElement('link');
+    fallbackCss.rel='stylesheet';
+    fallbackCss.href='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css';
+    fallbackCss.crossOrigin='anonymous';
+    document.head.appendChild(fallbackCss);
+    const fallbackScript=document.createElement('script');
+    fallbackScript.src='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js';
+    fallbackScript.crossOrigin='anonymous';
+    fallbackScript.onload=()=>{mapNode.dataset.vtgLeafletFallback='loaded';try{initializeAtlasMap();}catch(error){console.error('VTG Atlas alternate map initialization failed:',error);}};
+    fallbackScript.onerror=()=>{mapNode.dataset.vtgLeafletFallback='failed';mapNode.innerHTML='<div style="min-height:300px;display:grid;place-items:center;padding:24px;text-align:center;color:#233746;background:#eef4f6"><div><strong>Interactive map service is unavailable on this connection.</strong><p style="margin:8px 0 0">Please check your connection and reload. The map uses public map services and does not require a VTG account.</p></div></div>';};
+    document.head.appendChild(fallbackScript);
+   }
    return false;
   }
   mapNode.innerHTML='';
   mapNode.style.background='#eaf0f4';
   const map=L.map(mapNode,{worldCopyJump:true,zoomControl:true,scrollWheelZoom:true,minZoom:2,maxZoom:18,preferCanvas:true}).setView([17,38],2);
   atlasMap=map;
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-   attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
-   maxZoom:19, tileSize:256, crossOrigin:true
-  }).addTo(map);
   const mapStatus=document.createElement('div');
   mapStatus.style.cssText='position:absolute;z-index:1000;top:10px;left:50%;transform:translateX(-50%);max-width:90%;padding:8px 12px;border-radius:9px;background:#fff;color:#243746;border:1px solid #ccd8df;box-shadow:0 2px 10px #0002;font:600 12px Manrope,Arial,sans-serif;display:none';
   mapNode.appendChild(mapStatus);
-  let loadedTiles=0,failedTiles=0;
-  map.on('baselayerchange',()=>{});
-  const tileLayer=map.eachLayer(layer=>{if(layer instanceof L.TileLayer)return layer;})||null;
-  const baseTiles=map._layers&&Object.values(map._layers).find(layer=>layer instanceof L.TileLayer);
-  if(baseTiles){
-   baseTiles.on('tileload',()=>{loadedTiles++;mapStatus.style.display='none';});
-   baseTiles.on('tileerror',()=>{failedTiles++;if(!loadedTiles){mapStatus.textContent='Map tiles are blocked or unavailable on this connection. Try again later; no API key is required.';mapStatus.style.display='block';}});
-  }
+  let loadedTiles=0,failedTiles=0,usedFallbackTiles=false;
+  const watchTiles=layer=>{
+   layer.on('tileload',()=>{loadedTiles++;mapStatus.style.display='none';});
+   layer.on('tileerror',()=>{
+    failedTiles++;
+    if(!loadedTiles&&failedTiles>=4&&!usedFallbackTiles){
+     usedFallbackTiles=true;
+     map.removeLayer(layer);
+     mapStatus.textContent='Primary map tiles are unavailable; trying an alternate map source…';
+     mapStatus.style.display='block';
+     const alternate=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+      subdomains:'abcd',
+      attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &middot; &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
+      maxZoom:19,crossOrigin:true
+     }).addTo(map);
+     loadedTiles=0;failedTiles=0;watchTiles(alternate);
+    }else if(!loadedTiles&&usedFallbackTiles&&failedTiles>=4){
+     mapStatus.textContent='Both public map tile sources are unavailable on this connection. Check the network and reload; no API key is required.';
+     mapStatus.style.display='block';
+    }
+   });
+  };
+  const baseTiles=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+   attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+   maxZoom:19,tileSize:256,crossOrigin:true
+  }).addTo(map);
+  watchTiles(baseTiles);
   const hubIcon=(hub)=>L.divIcon({
    className:'vtg-atlas-marker-wrap',
    html:'<span style="display:block;width:13px;height:13px;border-radius:50%;background:'+(hub.type==='Airport'?'#c88a18':'#c83232')+';border:2px solid #fff;box-shadow:0 1px 7px #12212b99"></span>',
