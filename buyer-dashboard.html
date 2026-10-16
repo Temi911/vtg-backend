@@ -418,9 +418,36 @@ html[data-skin] input:focus,
 html[data-skin] select:focus,
 html[data-skin] textarea:focus{outline:2px solid color-mix(in srgb,var(--skin-accent) 70%,transparent);outline-offset:1px;border-color:var(--skin-accent)!important}
 
+
+/* Dashboard mode system: light navigation by day, dark navigation at night. */
+html[data-theme="light"] .sidebar{background:#ffffff!important;color:#17212b!important;border-right:1px solid #e1e6ed}
+html[data-theme="light"] .sidebar .brand{border-bottom-color:#e1e6ed}
+html[data-theme="light"] .sidebar .brand strong{color:#17212b}
+html[data-theme="light"] .sidebar .brand small{color:#657384}
+html[data-theme="light"] .sidebar .label{color:#657384}
+html[data-theme="light"] .sidebar .groupBtn{color:#334155}
+html[data-theme="light"] .sidebar .groupBtn:hover,
+html[data-theme="light"] .sidebar .groupBtn[aria-expanded="true"]{background:color-mix(in srgb,var(--skin-accent) 11%,#fff)!important;color:var(--skin-accent)!important;box-shadow:inset 3px 0 var(--skin-accent)}
+html[data-theme="light"] .sidebar .items a{color:#526173}
+html[data-theme="light"] .sidebar .items a:hover{background:color-mix(in srgb,var(--skin-accent) 9%,#fff)!important;color:var(--skin-accent)!important}
+html[data-theme="light"] .sidebar .items a.active,
+html[data-theme="light"] .sidebar .items a[aria-current="page"]{background:color-mix(in srgb,var(--skin-accent) 13%,#fff)!important;color:var(--skin-accent)!important}
+html[data-theme="light"] .sidebar .profile{border-top-color:#e1e6ed}
+html[data-theme="light"] .sidebar .profile button{color:#657384}
+html[data-theme="dark"] .sidebar{background:#111820!important;color:#f5f7f9!important;border-right:1px solid #2c343d}
+html[data-theme="dark"] .logo-dark{display:none!important}
+html[data-theme="dark"] .logo-light{display:block!important;background:transparent!important}
+html[data-theme="light"] .logo-dark{display:block!important}
+html[data-theme="light"] .logo-light{display:none!important}
+.logo-light{display:none}
+.workspace-tag{margin:13px 7px 4px;padding:9px 10px;border:1px solid color-mix(in srgb,var(--skin-accent) 40%,var(--line));border-radius:10px;background:color-mix(in srgb,var(--skin-accent) 9%,var(--panel));color:var(--skin-accent);font-size:9px;letter-spacing:.08em;font-weight:800}
+html[data-theme="dark"] .workspace-tag{background:color-mix(in srgb,var(--skin-accent) 16%,#111820);border-color:color-mix(in srgb,var(--skin-accent) 48%,#303b45);color:#f4f7fa}
+html[data-theme="light"] .sidebar .count{background:#e9edf2;color:#475569}
+html[data-theme="dark"] .sidebar .count{background:#34404b;color:#f5f7f9}
+
 </style>
 </head><body><div class="topline"></div><div class="app">
-<aside class="sidebar" id="sidebar"><a class="brand" href="/frontend-v3.html"><img class="logo" src="/assets/vtg-logo.svg" alt="VTG"><span><strong>VINTAGE TRADE GLOBAL</strong><small>BUYER WORKSPACE</small></span></a><div class="label" data-i18n="workspace">Workspace</div><nav>
+<aside class="sidebar" id="sidebar"><a class="brand" href="/frontend-v3.html"><img class="logo logo-dark" src="/assets/vtg-logo.svg" alt="VTG"><img class="logo logo-light" src="/assets/vtg-logo-light.svg" alt="" aria-hidden="true"><span><strong>VINTAGE TRADE GLOBAL</strong><small>BUYER WORKSPACE</small></span></a><div class="workspace-tag" aria-label="Buyer workspace">BUYER WORKSPACE · TRADE DESK</div><div class="label" data-i18n="workspace">Workspace</div><nav>
 <div><button class="groupBtn" data-group="work" aria-expanded="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="overview">Overview</span><span class="chev">⌄</span></button><div class="items" data-items="work"><a href="#overview" data-view="overview" class="active">▦ <span data-i18n="dashboard">Dashboard</span></a></div></div>
 <div><button class="groupBtn" data-group="trade" aria-expanded="true"><svg viewBox="0 0 24 24"><path d="M3 7h18l-2 13H5z"/><path d="M8 7a4 4 0 0 1 8 0"/></svg><span data-i18n="tradeTools">Trade tools</span><span class="chev">⌄</span></button><div class="items" data-items="trade"><a href="#marketplace" data-view="marketplace">▤ <span data-i18n="marketplace">Marketplace</span></a><a href="#rfqs" data-view="rfqs">☷ <span data-i18n="rfqs">RFQs & quotations</span><span class="count" id="rfqCount">0</span></a><a href="#cart" data-view="cart">▣ <span data-i18n="cart">Cart & landed cost</span><span class="count" id="cartCount">0</span></a><a href="#orders" data-view="orders">⇄ <span data-i18n="orders">Orders & shipments</span></a><a href="#verification" data-view="verification">✓ <span data-i18n="verification">Product verification</span></a><a href="#documents" data-view="documents">▤ <span data-i18n="documents">Trade documents</span></a></div></div>
 <div><button class="groupBtn" data-group="connect" aria-expanded="true"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3 21l1.9-5.6A8.5 8.5 0 1 1 21 11.5Z"/></svg><span data-i18n="connect">Connect</span><span class="chev">⌄</span></button><div class="items" data-items="connect"><a href="#feed" data-view="feed">▤ <span data-i18n="tradeFeed">Trade feed</span></a><a href="#messages" data-view="messages">◉ <span data-i18n="messages">Messages & calls</span></a><a href="#suppliers" data-view="suppliers">♡ <span data-i18n="suppliers">Saved suppliers</span></a></div></div>
