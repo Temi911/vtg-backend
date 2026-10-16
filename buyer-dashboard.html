@@ -271,6 +271,13 @@ html[data-theme="light"] #page-overview .commandHero .heroMeta{
   color:#e8eef3!important;
 }
 
+
+/* Buyer dashboard: remove the page header and footer while retaining workspace navigation. */
+.topbar,.foot{display:none!important}
+.app{min-height:100vh!important}
+@media(max-width:790px){
+  .sidebar{top:0!important;height:100vh!important}
+}
 </style></head><body><div class="topline"></div><div class="app">
 <aside class="sidebar" id="sidebar"><a class="brand" href="/frontend-v3.html"><img class="logo" src="/assets/vtg-logo.svg" alt="VTG"><span><strong>VINTAGE TRADE GLOBAL</strong><small>BUYER WORKSPACE</small></span></a><div class="label" data-i18n="workspace">Workspace</div><nav>
 <div><button class="groupBtn" data-group="work" aria-expanded="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="overview">Overview</span><span class="chev">⌄</span></button><div class="items" data-items="work"><a href="#overview" data-view="overview" class="active">▦ <span data-i18n="dashboard">Dashboard</span></a></div></div>
