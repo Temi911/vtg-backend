@@ -33,6 +33,35 @@ button,a,input,select,textarea,[role="button"]{-webkit-tap-highlight-color:trans
 :where(.eyebrow,.kicker,.section-label,.sectionLabel,.overline){color:var(--vtg-ui-accent)}
 html[data-theme="light"]{color-scheme:light}
 html[data-theme="dark"]{color-scheme:dark}
+:root{
+  --vtg-ui-page:#f5f7fa;
+  --vtg-ui-surface:#fff;
+  --vtg-ui-text:#17212b;
+  --vtg-ui-muted:#5e6b78;
+  --vtg-ui-border:#dce4eb;
+}
+html[data-theme="dark"]{
+  --vtg-ui-page:#0d1117;
+  --vtg-ui-surface:#151c24;
+  --vtg-ui-text:#eef3f6;
+  --vtg-ui-muted:#b1bdc8;
+  --vtg-ui-border:#2b3640;
+}
+html[data-vtg-skin][data-theme] body{
+  background-color:var(--vtg-ui-page);
+  color:var(--vtg-ui-text);
+}
+html[data-vtg-skin][data-theme] body :where(.card,.panel,.surface,.form-card,.info-card,.feature-card,.content-card,.faq-item,.route-card,.portCard,.marketCard,.newsCard,.service-card,.partner-card,.detail-card,.stat-card,.access-card,.application-card){
+  background-color:var(--vtg-ui-surface);
+  border-color:var(--vtg-ui-border);
+  color:var(--vtg-ui-text);
+}
+html[data-vtg-skin][data-theme] body :where(.card,.panel,.surface,.form-card,.info-card,.feature-card,.content-card,.faq-item,.route-card,.portCard,.marketCard,.newsCard,.service-card,.partner-card,.detail-card,.stat-card,.access-card,.application-card) :where(h1,h2,h3,h4,h5,p,li,label,td,th,figcaption,.description,.subtitle,.muted,.meta){
+  color:var(--vtg-ui-text);
+}
+html[data-vtg-skin][data-theme] body :where(.card,.panel,.surface,.form-card,.info-card,.feature-card,.content-card,.faq-item,.route-card,.portCard,.marketCard,.newsCard,.service-card,.partner-card,.detail-card,.stat-card,.access-card,.application-card) :where(.muted,.meta,.subtitle,small){
+  color:var(--vtg-ui-muted);
+}
 html[data-theme="light"] :where(input,select,textarea){background-color:#fff;color:#17212b}
 html[data-theme="dark"] :where(input,select,textarea){background-color:#171d24;color:#eef3f6;border-color:#46535e}
 html[data-theme="light"] :where(input,textarea)::placeholder{color:#687586;opacity:1}
