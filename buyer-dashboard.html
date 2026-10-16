@@ -276,7 +276,100 @@ html[data-theme="light"] #page-overview .commandHero .heroMeta{
    The dashboard-native topbar, theme controls, notifications, languages and sidebar remain available. */
 #vtgPageNavigation{display:none!important}
 html body footer#vtgFooter.vtgCompactFooter,html body #vtgFooter{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;border:0!important}
-</style></head><body><div class="topline"></div><div class="app">
+</style>
+<style id="vtg-supplier-matched-sizing">
+/* Shared workspace sizing: match the Supplier Dashboard while preserving Buyer-specific tools and behavior. */
+body{font:13px/1.55 Manrope,Arial,sans-serif}
+.app{grid-template-columns:252px minmax(0,1fr)}
+.sidebar{padding:19px 13px}
+.brand{gap:10px;padding:0 8px 19px}
+.logo{width:44px;height:44px}
+.brand small{margin-top:3px}
+.label{padding:17px 10px 6px}
+.groupBtn{gap:10px;padding:10px;border-radius:9px;font-size:10px}
+.items{gap:2px;padding:2px 0 7px 12px}
+.items a{padding:10px;border-radius:9px;font-size:10px}
+.topbar{height:auto;min-height:68px;padding:11px clamp(14px,2.5vw,34px)}
+.actions{gap:7px}
+.btn,.iconBtn,.lang{min-height:35px;border-radius:9px;padding:8px 10px;font-size:10px}
+.iconBtn{width:36px;height:35px;padding:0}
+.content{max-width:1600px;padding:27px clamp(14px,2.5vw,34px) 48px}
+.welcome{gap:18px;margin-bottom:22px}
+h1{font-size:clamp(26px,3vw,36px);line-height:1.14;letter-spacing:-.055em;margin:7px 0 8px}
+h2{font-size:14px;letter-spacing:-.025em}
+h3{font-size:11px;margin:0 0 7px}
+.desc{font-size:11px;line-height:1.75}
+.stats{gap:11px;margin-bottom:16px}
+.stat,.panel,.tool{border-radius:14px}
+.stat{padding:15px}
+.stat strong{font-size:25px;letter-spacing:-.06em;margin:8px 0 2px}
+.layout2{gap:14px}
+.panelHead{padding:16px 17px}
+.panelHead p{margin:4px 0 0}
+.panelBody{padding:16px 17px}
+.tiles{gap:8px}
+.tile{padding:12px;border-radius:10px}
+.tile .ico{width:29px;height:29px;border-radius:9px;margin-bottom:8px;font-size:13px}
+.tile strong{font-size:10px;margin-bottom:4px}
+.tile small{font-size:9px;line-height:1.5}
+.fieldGrid{gap:12px}
+.field{gap:5px;font-size:9px}
+.field input,.field select,.field textarea{min-height:38px;border-radius:9px;padding:9px 10px;font-size:10px}
+.field textarea{min-height:85px}
+.formActions{gap:8px;margin-top:13px}
+.notice{border-radius:10px;padding:11px;font-size:9px;line-height:1.65}
+.rows{padding:4px 17px}
+.row{gap:10px;padding:11px 0}
+.row strong{font-size:10px}
+.productGrid{gap:10px}
+.product{border-radius:11px}
+.productArt{height:100px;font-size:27px}
+.productInfo{padding:12px}
+.productInfo strong{font-size:10px}
+.productInfo p{margin:6px 0 10px}
+.productFoot b{font-size:12px}
+.productFoot button{padding:7px;font-size:9px}
+.mapWrap{border-radius:10px}
+.messageLayout{grid-template-columns:230px minmax(0,1fr)}
+.thread{padding:10px;font-size:10px}
+.chatHead{padding:14px 16px}
+.chatLog{padding:14px;gap:8px}
+.bubble{border-radius:10px;padding:10px 11px;font-size:10px}
+.chatForm{padding:10px}
+.chatForm input{padding:9px 10px;font-size:10px}
+.empty{padding:24px;font-size:10px}
+.chip{border-radius:99px;padding:4px 7px;font-size:8px}
+.toast{font-size:10px}
+.modalBox{border-radius:16px;padding:19px}
+.modalBox p{font-size:10px;line-height:1.7}
+.foot{padding:24px 0;font-size:9px}
+@media(max-width:1100px){
+ .app{grid-template-columns:220px minmax(0,1fr)}
+ .layout2{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+ .app{grid-template-columns:1fr}
+ .sidebar{padding:19px 13px}
+ .topbar{padding:10px 14px}
+ .content{padding:22px 14px 38px}
+ .welcome{gap:14px;margin-bottom:18px}
+ .panelHead,.panelBody{padding:13px}
+ .messageLayout{grid-template-columns:1fr}
+ .threads{border-right:0;border-bottom:1px solid var(--line)}
+}
+@media(max-width:480px){
+ .topbar{padding:10px}
+ .content{padding:18px 10px 30px}
+ .stats{gap:8px}
+ .stat{padding:12px}
+ .stat strong{font-size:22px}
+ .panelHead,.panelBody{padding:13px}
+ .fieldGrid{grid-template-columns:1fr}
+ .productGrid{grid-template-columns:1fr}
+ .tile{padding:11px}
+}
+</style>
+</head><body><div class="topline"></div><div class="app">
 <aside class="sidebar" id="sidebar"><a class="brand" href="/frontend-v3.html"><img class="logo" src="/assets/vtg-logo.svg" alt="VTG"><span><strong>VINTAGE TRADE GLOBAL</strong><small>BUYER WORKSPACE</small></span></a><div class="label" data-i18n="workspace">Workspace</div><nav>
 <div><button class="groupBtn" data-group="work" aria-expanded="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="overview">Overview</span><span class="chev">⌄</span></button><div class="items" data-items="work"><a href="#overview" data-view="overview" class="active">▦ <span data-i18n="dashboard">Dashboard</span></a></div></div>
 <div><button class="groupBtn" data-group="trade" aria-expanded="true"><svg viewBox="0 0 24 24"><path d="M3 7h18l-2 13H5z"/><path d="M8 7a4 4 0 0 1 8 0"/></svg><span data-i18n="tradeTools">Trade tools</span><span class="chev">⌄</span></button><div class="items" data-items="trade"><a href="#marketplace" data-view="marketplace">▤ <span data-i18n="marketplace">Marketplace</span></a><a href="#rfqs" data-view="rfqs">☷ <span data-i18n="rfqs">RFQs & quotations</span><span class="count" id="rfqCount">0</span></a><a href="#cart" data-view="cart">▣ <span data-i18n="cart">Cart & landed cost</span><span class="count" id="cartCount">0</span></a><a href="#orders" data-view="orders">⇄ <span data-i18n="orders">Orders & shipments</span></a><a href="#verification" data-view="verification">✓ <span data-i18n="verification">Product verification</span></a><a href="#documents" data-view="documents">▤ <span data-i18n="documents">Trade documents</span></a></div></div>
