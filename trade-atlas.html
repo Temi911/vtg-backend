@@ -207,38 +207,65 @@ function init(){
  const initializeAtlasMap=()=>{
   const mapNode=document.getElementById('locationMap');
   if(!mapNode)return false;
-  // Rebuild only the Location Map. No Google/Mapbox key or token is used.
-  const renderEmbedFallback=()=>{
-   if(!mapNode||mapNode.dataset.embedFallback==='1')return;
-   mapNode.dataset.embedFallback='1';
-   mapNode.innerHTML='<iframe title="Public trade hubs location map" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.openstreetmap.org/export/embed.html?bbox=-18%2C-36%2C150%2C55&amp;layer=mapnik" style="display:block;width:100%;height:100%;min-height:320px;border:0" allowfullscreen></iframe><p style="margin:0;padding:8px 12px;font-size:12px;color:#60717c;background:#fff">Interactive location map · OpenStreetMap</p>';
+  let svgFallbackShown=false;
+  const renderVtgMapFallback=()=>{
+   if(svgFallbackShown||!mapNode)return;
+   svgFallbackShown=true;
+   if(atlasMap){try{atlasMap.remove();}catch(_){}atlasMap=null;}
+   const W=1200,H=520, left=-180,right=180,top=82,bottom=-58;
+   const xy=(lon,lat)=>({x:(Number(lon)-left)/(right-left)*W,y:(top-Number(lat))/(top-bottom)*H});
+   const poly=(coords)=>coords.map((p,i)=>{const q=xy(p[0],p[1]);return (i?'L':'M')+q.x.toFixed(1)+' '+q.y.toFixed(1)}).join(' ')+' Z';
+   const continents=[
+    [[-168,70],[-140,70],[-125,55],[-105,50],[-80,8],[-98,8],[-112,25],[-130,45],[-155,58]],
+    [[-82,12],[-68,8],[-48,-5],[-35,-25],[-52,-56],[-70,-35],[-78,-5]],
+    [[-18,36],[5,38],[35,30],[50,10],[40,-12],[25,-35],[10,-35],[-5,-5],[-17,15]],
+    [[-10,70],[25,72],[60,55],[95,55],[130,45],[160,60],[180,55],[170,25],[140,5],[120,-10],[100,5],[75,8],[60,25],[45,35],[30,55],[5,58]],
+    [[112,-11],[154,-10],[150,-40],[130,-45],[114,-30]],
+    [[-52,82],[-20,78],[-35,60],[-48,60]]
+   ];
+   const continentSvg=continents.map(c=>'<path d="'+poly(c)+'" fill="#dce9df" stroke="#9db9ac" stroke-width="1.8"/>').join('');
+   const grid=[];
+   for(let lon=-150;lon<=180;lon+=30){const a=xy(lon,top),b=xy(lon,bottom);grid.push('<path d="M'+a.x+' '+a.y+' V'+b.y+'" stroke="#c9d9df" stroke-width="1" stroke-dasharray="3 7"/>');}
+   for(let lat=-30;lat<=60;lat+=15){const a=xy(left,lat),b=xy(right,lat);grid.push('<path d="M'+a.x+' '+a.y+' H'+b.x+'" stroke="#c9d9df" stroke-width="1" stroke-dasharray="3 7"/>');}
+   const hubsForRoutes=hubs.filter(h=>['ng-tin','ng-apapa','ng-lekki','cn-yantian','cn-shanghai','kr-busan','kr-incheon','cn-guangzhou'].includes(h.id));
+   const lagos=hubs.find(h=>h.id==='ng-tin')||hubs[0];
+   const routeSvg=hubsForRoutes.filter(h=>h.id!==lagos?.id).map(h=>{
+    if(!lagos)return '';
+    const a=xy(lagos.lng,lagos.lat),b=xy(h.lng,h.lat),mx=(a.x+b.x)/2,my=Math.min(a.y,b.y)-Math.max(25,Math.abs(a.x-b.x)*.13);
+    return '<path d="M'+a.x.toFixed(1)+' '+a.y.toFixed(1)+' Q'+mx.toFixed(1)+' '+my.toFixed(1)+' '+b.x.toFixed(1)+' '+b.y.toFixed(1)+'" fill="none" stroke="#d3423e" stroke-width="2.4" stroke-dasharray="7 7" opacity=".75"/>';
+   }).join('');
+   const markerSvg=hubs.map(h=>{
+    const p=xy(h.lng,h.lat), color=/Airport/i.test(h.type)?'#d7a33e':'#d3423e';
+    return '<g class="vtgSvgHub" data-map-hub="'+String(h.id).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" tabindex="0" role="button" aria-label="Select '+escapeHTML(h.name)+'" style="cursor:pointer"><circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="10" fill="'+color+'" opacity=".16"/><circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="5.2" fill="'+color+'" stroke="#fff" stroke-width="2"/></g>';
+   }).join('');
+   mapNode.innerHTML='<div class="vtg-own-map" style="position:relative;width:100%;height:100%;min-height:340px;overflow:hidden;background:linear-gradient(145deg,#eef6f8,#d8e8ef);border-radius:12px"><svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="VTG location map showing public African and Asian trade hubs" style="display:block;width:100%;height:100%;min-height:340px">'+grid.join('')+continentSvg+routeSvg+markerSvg+'<text x="35" y="42" fill="#17384b" font-size="22" font-weight="700">VTG · AFRICA — ASIA TRADE MAP</text><text x="35" y="68" fill="#456474" font-size="13">Select a marker for public port or airport details · Illustrative corridors</text><text x="35" y="'+(H-24)+'" fill="#456474" font-size="13">VTG map fallback · Coordinates are approximate · © OpenStreetMap data attribution is not implied for this original schematic</text></svg><div style="position:absolute;right:12px;top:12px;display:flex;gap:8px;flex-wrap:wrap"><span style="background:#fff;color:#17384b;border:1px solid #d4e0e5;border-radius:99px;padding:7px 10px;font-size:12px">● Ports</span><span style="background:#fff;color:#17384b;border:1px solid #d4e0e5;border-radius:99px;padding:7px 10px;font-size:12px">● Airports</span></div></div>';
+   mapNode.querySelectorAll('[data-map-hub]').forEach(el=>{
+    const choose=()=>{const h=hubs.find(x=>String(x.id)===el.getAttribute('data-map-hub'));if(h){selectAtlasHub(h,'map');const selected=document.getElementById('selectedHub');if(selected)selected.scrollIntoView({behavior:'smooth',block:'center'});}};
+    el.addEventListener('click',choose);
+    el.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();choose();}});
+   });
   };
-  if(!window.L){return false;}
+  if(!window.L){renderVtgMapFallback();return true;}
   try{
    mapNode.innerHTML='';
-   mapNode.dataset.embedFallback='0';
    if(atlasMap){try{atlasMap.remove();}catch(_){}atlasMap=null;}
    atlasMap=L.map(mapNode,{scrollWheelZoom:false,preferCanvas:true,worldCopyJump:true,zoomControl:true}).setView([20,55],3);
-   const tileLayer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    maxZoom:19,subdomains:'abc',attribution:'© OpenStreetMap contributors',crossOrigin:true,updateWhenIdle:true,keepBuffer:2
+   // Official OSM tile endpoint; avoid CARTO raster URLs that now require a key.
+   const tileLayer=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom:19,attribution:'© OpenStreetMap contributors',updateWhenIdle:true,keepBuffer:2
    }).addTo(atlasMap);
-   let tileFailures=0,embedTimer=window.setTimeout(()=>{if(tileFailures>=3)renderEmbedFallback();},9000);
+   let tileFailures=0;
+   const fallbackTimer=window.setTimeout(()=>{if(tileFailures>0)renderVtgMapFallback();},7000);
    tileLayer.on('tileerror',()=>{
     tileFailures++;
-    if(tileFailures>=6){window.clearTimeout(embedTimer);renderEmbedFallback();}
+    if(tileFailures>=4){window.clearTimeout(fallbackTimer);renderVtgMapFallback();}
    });
    const bounds=[];
    hubs.forEach(h=>{
-    const marker=L.circleMarker([Number(h.lat),Number(h.lng)],{
-     radius:h.type==='Sea port'?5:4,color:'#ffffff',weight:1.5,fillColor:h.color||'#d3423e',fillOpacity:1
-    }).addTo(atlasMap);
+    const marker=L.circleMarker([Number(h.lat),Number(h.lng)],{radius:h.type==='Sea port'?5:4,color:'#ffffff',weight:1.5,fillColor:h.color||'#d3423e',fillOpacity:1}).addTo(atlasMap);
     atlasMapMarkers.set(h.id,marker);
     marker.bindPopup('<strong>'+escapeHTML(h.name)+'</strong><br>'+escapeHTML(h.city)+'<br><small>'+escapeHTML(h.type+' · '+h.code)+'</small><br><button type="button" class="mapHubSelect" data-map-hub="'+escapeHTML(h.id)+'">View facility details</button>');
-    marker.on('click',()=>{
-     selectAtlasHub(h,'map');
-     const selected=document.getElementById('selectedHub');
-     if(selected)selected.scrollIntoView({behavior:'smooth',block:'center'});
-    });
+    marker.on('click',()=>{selectAtlasHub(h,'map');const selected=document.getElementById('selectedHub');if(selected)selected.scrollIntoView({behavior:'smooth',block:'center'});});
     bounds.push([Number(h.lat),Number(h.lng)]);
    });
    if(bounds.length)atlasMap.fitBounds(L.latLngBounds(bounds).pad(.12),{maxZoom:5});
@@ -246,26 +273,15 @@ function init(){
     const button=event.target.closest('[data-map-hub]');
     if(!button)return;
     const hub=hubs.find(x=>String(x.id)===button.dataset.mapHub);
-    if(hub){
-     selectAtlasHub(hub,'map');
-     const selected=document.getElementById('selectedHub');
-     if(selected)selected.scrollIntoView({behavior:'smooth',block:'center'});
-    }
+    if(hub){selectAtlasHub(hub,'map');const selected=document.getElementById('selectedHub');if(selected)selected.scrollIntoView({behavior:'smooth',block:'center'});}
    });
-   const updateMapAppearance=()=>{
-    const theme=document.documentElement.getAttribute('data-theme')||'dark';
-    mapNode.classList.toggle('atlasMapNight',theme!=='light');
-   };
+   const updateMapAppearance=()=>{const theme=document.documentElement.getAttribute('data-theme')||'dark';mapNode.classList.toggle('atlasMapNight',theme!=='light');};
    updateMapAppearance();
    document.addEventListener('vtg:themechange',updateMapAppearance);
    window.setTimeout(()=>{if(atlasMap)atlasMap.invalidateSize(true);},250);
    window.addEventListener('resize',()=>{if(atlasMap)atlasMap.invalidateSize(true);});
    return true;
-  }catch(error){
-   console.error('VTG Location Map initialization failed:',error);
-   renderEmbedFallback();
-   return true;
-  }
+  }catch(error){console.error('VTG Location Map initialization failed:',error);renderVtgMapFallback();return true;}
  };
  if(!initializeAtlasMap()){
   const leafletFallback=document.createElement('script');leafletFallback.src='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js';leafletFallback.onload=()=>initializeAtlasMap();leafletFallback.onerror=()=>{const mapNode=document.getElementById('locationMap');if(mapNode&&!mapNode.querySelector('iframe'))mapNode.innerHTML='<iframe title="Public trade hubs map" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.openstreetmap.org/export/embed.html?bbox=-18%2C-36%2C150%2C55&amp;layer=mapnik" style="display:block;width:100%;height:100%;min-height:300px;border:0" allowfullscreen></iframe>';};document.head.appendChild(leafletFallback);
