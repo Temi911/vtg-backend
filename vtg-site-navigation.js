@@ -206,8 +206,18 @@
     var lastTheme = '';
     var preferenceKey = 'vtg-theme-preference';
     function readPreference() {
-      try { return window.localStorage.getItem(preferenceKey) || 'auto'; }
-      catch (error) { return 'auto'; }
+      try {
+        var preference = window.localStorage.getItem(preferenceKey);
+        if (preference === 'light' || preference === 'dark' || preference === 'auto') return preference;
+        // Migrate legacy dashboard preferences without letting stale keys override an explicit global choice.
+        if (window.localStorage.getItem('vtg-theme-mode') === 'manual') {
+          var legacyTheme = window.localStorage.getItem('vtg-theme');
+          if (legacyTheme === 'light' || legacyTheme === 'dark') return legacyTheme;
+        }
+        var aiTheme = window.localStorage.getItem('vtg-ai-theme-mode');
+        if (aiTheme === 'light' || aiTheme === 'dark') return aiTheme;
+        return 'auto';
+      } catch (error) { return 'auto'; }
     }
     function syncTheme() {
       var now = new Date();
@@ -229,7 +239,12 @@
     window.vtgSyncTheme = syncTheme;
     window.vtgSetThemePreference = function (preference) {
       if (['auto', 'light', 'dark'].indexOf(preference) === -1) return;
-      try { window.localStorage.setItem(preferenceKey, preference); } catch (error) {}
+      try {
+        window.localStorage.setItem(preferenceKey, preference);
+        window.localStorage.setItem('vtg-theme-mode', preference === 'auto' ? 'auto' : 'manual');
+        window.localStorage.setItem('vtg-ai-theme-mode', preference);
+        if (preference !== 'auto') window.localStorage.setItem('vtg-theme', preference);
+      } catch (error) {}
       lastTheme = '';
       syncTheme();
     };
