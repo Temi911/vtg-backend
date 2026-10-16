@@ -234,6 +234,7 @@ function init(){
   mapNode.querySelectorAll('[data-map-hub]').forEach(el=>{const choose=()=>{const h=hubs.find(x=>String(x.id)===el.getAttribute('data-map-hub'));if(h){selectAtlasHub(h,'map');const selected=document.getElementById('selectedHub');if(selected)selected.scrollIntoView({behavior:'smooth',block:'center'});}};el.addEventListener('click',choose);el.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();choose();}});});
   return true;
  };
+ initializeAtlasMap();
 }
 window.addEventListener('load',()=>setTimeout(init,80));
 })();
