@@ -105,6 +105,11 @@
       drawer.addEventListener('transitionend',()=>map.invalidateSize({pan:false}),{once:true});
     }catch(error){console.error('VTG workspace Atlas could not start:',error);status.textContent='Map setup failed on this connection. Check your internet connection and reload; the Atlas requires a public map library and tile service.';status.style.display='block';}
   }
+  document.addEventListener('click',event=>{
+    const trigger=event.target?.closest?.('#atlasHeaderBtn, #mapBtn, [data-vtg-open-atlas]');
+    if(!trigger)return;
+    window.setTimeout(()=>{const drawer=document.getElementById('mapDrawer');if(drawer?.classList.contains('open'))open();},120);
+  },true);
   window.VTGStartMapRecovery=open;
   if(document.getElementById('mapDrawer')?.classList.contains('open'))open();
 })();
