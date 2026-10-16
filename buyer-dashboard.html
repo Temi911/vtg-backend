@@ -369,28 +369,36 @@ h3{font-size:11px;margin:0 0 7px}
  .tile{padding:11px}
 }
 
-/* Buyer workspace theme selector: ten coordinated accent palettes, independent of light/dark mode. */
+
+/* Workspace theme palettes: applied after the dashboard's base and legacy theme rules. */
+html[data-skin="executive"]{--red:#b52931;--soft:#fff0ef;--skin-accent:#b52931;--skin-soft:#fff0ef}
+html[data-skin="ocean-finance"]{--red:#147da1;--soft:#e7f6fb;--skin-accent:#147da1;--skin-soft:#e7f6fb}
+html[data-skin="emerald-trade"]{--red:#168364;--soft:#e6f7ef;--skin-accent:#168364;--skin-soft:#e6f7ef}
+html[data-skin="copper-ledger"]{--red:#a65b36;--soft:#fbefe7;--skin-accent:#a65b36;--skin-soft:#fbefe7}
+html[data-skin="indigo-intel"]{--red:#6256c9;--soft:#efedff;--skin-accent:#6256c9;--skin-soft:#efedff}
+html[data-skin="crimson-ops"]{--red:#c02e49;--soft:#fff0f3;--skin-accent:#c02e49;--skin-soft:#fff0f3}
+html[data-skin="mono-pro"]{--red:#505965;--soft:#edf0f3;--skin-accent:#505965;--skin-soft:#edf0f3}
+html[data-skin="sandstone"]{--red:#9b7743;--soft:#f6f0e4;--skin-accent:#9b7743;--skin-soft:#f6f0e4}
+html[data-skin="arctic-blue"]{--red:#3276cf;--soft:#eaf3ff;--skin-accent:#3276cf;--skin-soft:#eaf3ff}
+html[data-skin="midnight-harbor"]{--red:#1685a8;--soft:#e8f5fa;--skin-accent:#1685a8;--skin-soft:#e8f5fa}
+html[data-theme="dark"][data-skin="ocean-finance"]{--red:#62c4e7;--soft:#142d38;--skin-accent:#62c4e7;--skin-soft:#142d38}
+html[data-theme="dark"][data-skin="emerald-trade"]{--red:#68d8ad;--soft:#15352b;--skin-accent:#68d8ad;--skin-soft:#15352b}
+html[data-theme="dark"][data-skin="copper-ledger"]{--red:#e5a27d;--soft:#39271f;--skin-accent:#e5a27d;--skin-soft:#39271f}
+html[data-theme="dark"][data-skin="indigo-intel"]{--red:#a9a0ff;--soft:#292642;--skin-accent:#a9a0ff;--skin-soft:#292642}
+html[data-theme="dark"][data-skin="crimson-ops"]{--red:#ff8297;--soft:#3b2028;--skin-accent:#ff8297;--skin-soft:#3b2028}
+html[data-theme="dark"][data-skin="mono-pro"]{--red:#c1c8d0;--soft:#252c34;--skin-accent:#c1c8d0;--skin-soft:#252c34}
+html[data-theme="dark"][data-skin="sandstone"]{--red:#d8bd88;--soft:#342d20;--skin-accent:#d8bd88;--skin-soft:#342d20}
+html[data-theme="dark"][data-skin="arctic-blue"]{--red:#8dbbff;--soft:#1d2d45;--skin-accent:#8dbbff;--skin-soft:#1d2d45}
+html[data-theme="dark"][data-skin="midnight-harbor"]{--red:#72cbe8;--soft:#18313b;--skin-accent:#72cbe8;--skin-soft:#18313b}
+html[data-skin] .btn.primary,html[data-skin] button.primary{background:var(--skin-accent)!important;border-color:var(--skin-accent)!important;color:#fff!important}
+html[data-skin] .groupBtn.active,html[data-skin] .groupBtn[aria-expanded="true"]{border-color:var(--skin-accent)!important}
+html[data-skin] .activeStep,html[data-skin] .globeTag,html[data-skin] .tagTop{border-color:var(--skin-accent)!important}
+html[data-skin] .eyebrow,html[data-skin] .vtg-card-kicker,html[data-skin] .tileArrow{color:var(--skin-accent)!important}
+html[data-skin] .vtg-pill,html[data-skin] .statusPill{background:var(--skin-soft)!important;border-color:var(--skin-accent)!important}
+html[data-skin] .tile:hover,html[data-skin] .actionTile:hover,html[data-skin] .panel:focus-within{border-color:var(--skin-accent)!important}
+html[data-skin] .topline{background:linear-gradient(90deg,var(--skin-accent),var(--skin-accent),#edc5a0)!important}
 .workspace-theme-label{font-size:10px;font-weight:800;color:var(--muted);white-space:nowrap}
 .workspace-theme-select{max-width:160px;min-width:132px;padding:9px 10px!important}
-html[data-skin="executive"]{--red:#b52931;--soft:#fff0ef}
-html[data-skin="ocean-finance"]{--red:#147da1;--soft:#e7f6fb}
-html[data-skin="emerald-trade"]{--red:#168364;--soft:#e6f7ef}
-html[data-skin="copper-ledger"]{--red:#a65b36;--soft:#fbefe7}
-html[data-skin="indigo-intel"]{--red:#6256c9;--soft:#efedff}
-html[data-skin="crimson-ops"]{--red:#c02e49;--soft:#fff0f3}
-html[data-skin="mono-pro"]{--red:#505965;--soft:#edf0f3}
-html[data-skin="sandstone"]{--red:#9b7743;--soft:#f6f0e4}
-html[data-skin="arctic-blue"]{--red:#3276cf;--soft:#eaf3ff}
-html[data-skin="midnight-harbor"]{--red:#53a7c5;--soft:#e8f5fa}
-html[data-theme="dark"][data-skin="ocean-finance"]{--red:#62c4e7;--soft:#142d38}
-html[data-theme="dark"][data-skin="emerald-trade"]{--red:#68d8ad;--soft:#15352b}
-html[data-theme="dark"][data-skin="copper-ledger"]{--red:#e5a27d;--soft:#39271f}
-html[data-theme="dark"][data-skin="indigo-intel"]{--red:#a9a0ff;--soft:#292642}
-html[data-theme="dark"][data-skin="crimson-ops"]{--red:#ff8297;--soft:#3b2028}
-html[data-theme="dark"][data-skin="mono-pro"]{--red:#c1c8d0;--soft:#252c34}
-html[data-theme="dark"][data-skin="sandstone"]{--red:#d8bd88;--soft:#342d20}
-html[data-theme="dark"][data-skin="arctic-blue"]{--red:#8dbbff;--soft:#1d2d45}
-html[data-theme="dark"][data-skin="midnight-harbor"]{--red:#72cbe8;--soft:#18313b}
 @media(max-width:900px){.workspace-theme-label{display:none}.workspace-theme-select{max-width:135px;min-width:112px}}
 @media(max-width:560px){.workspace-theme-select{max-width:112px;min-width:100px;padding:8px 6px!important}.actions{gap:5px}.workspace-theme-select option{font-size:12px}}
 </style>
