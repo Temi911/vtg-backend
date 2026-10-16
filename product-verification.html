@@ -135,4 +135,17 @@ html[data-theme="light"] body .heroActions a.btn.secondary:hover {
 }
 </style>
 
+
+<style id="vtg-product-verification-interface-refinement-20261016">
+:root{--vtg-ver-ink:#20252d;--vtg-ver-muted:#687586;--vtg-ver-line:#e1e6ed;--vtg-ver-card:#fff}
+html[data-theme="dark"]{--vtg-ver-ink:#f3f5f7;--vtg-ver-muted:#b4c0cb;--vtg-ver-line:#2b3743;--vtg-ver-card:#141b23}
+.process,.step,.evidenceCard,.checkList,.form{border-radius:15px}
+.step,.evidenceCard{box-shadow:0 12px 30px rgba(22,31,43,.045);transition:transform .18s ease,border-color .18s ease}
+.step:hover,.evidenceCard:hover{transform:translateY(-2px);border-color:color-mix(in srgb,#b52931 32%,var(--vtg-ver-line))}
+.checkItem{border-radius:10px}
+html[data-theme="dark"] .step,html[data-theme="dark"] .evidenceCard,html[data-theme="dark"] .checkList,html[data-theme="dark"] .checkItem,html[data-theme="dark"] .form{background:var(--vtg-ver-card);border-color:var(--vtg-ver-line);color:var(--vtg-ver-ink)}
+html[data-theme="dark"] .plainNote,html[data-theme="dark"] .caveat{background:#101820;border-color:var(--vtg-ver-line);color:var(--vtg-ver-muted)}
+html[data-theme="dark"] .form input,html[data-theme="dark"] .form select,html[data-theme="dark"] .form textarea{background:#0e151d;color:var(--vtg-ver-ink);border-color:var(--vtg-ver-line)}
+.btn:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid color-mix(in srgb,#b52931 34%,transparent);outline-offset:2px}
+</style>
 </body></html>
