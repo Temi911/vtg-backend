@@ -1,6 +1,6 @@
 # VTG Theme and Interface Standard
 
-The landing page is deliberately excluded from the redesign. The supplier dashboard and bank trade workspace are also excluded from the current interface refresh.
+The landing page and all non-dashboard public pages use the shared day/night and visitor-preset system without changing the landing-page layout. Buyer and supplier dashboards are excluded from this shared refresh. User/workspace pages that already offer ten workspace presets keep those presets.
 
 ## Appearance schedule
 - Use the visitor's browser/device local time, never server time or a fixed Nigerian time zone.
@@ -30,12 +30,12 @@ Workspace pages offer ten visual presets:
 Presets change the accent palette, links, primary controls, and focus color. The day/night schedule still controls surface and text contrast. Visitor and workspace selections are saved separately in local storage on the current browser; they are not account-synced.
 
 ## Implementation
-- The shared controller is /vtg-site-navigation.js; it sets the html data-theme attribute, color-scheme, and emits vtg:themechange.
-- The preset controller sets data-vtg-skin and stores a separate visitor/workspace preference.
+- The shared controller is /vtg-site-navigation.js; it sets the html data-theme attribute, color-scheme, emits vtg:themechange, swaps the dark-text and light-text VTG logos, and renders the shared header/footer and appearance controls on non-excluded pages.
+- The preset controller sets data-vtg-skin and stores visitor/workspace preferences separately so visitor presets follow public pages and workspace presets follow user/workspace pages.
 - Use CSS variables for page surfaces, text, muted text, borders, cards, forms, and navigation. Provide both light and dark styling.
 - Preserve the actual VTG logo, images, carousel structure, map controls, chart legibility, status colors, and accessible contrast.
 - Custom theme styling must follow the shared data-theme attribute rather than creating a separate clock or unrelated saved preference.
-- The landing page (/ and /frontend-v3.html), supplier-dashboard.html, and bank-trade-os.html must not receive the new preset control or new skin styling during this refresh.
+- The buyer-dashboard.html, buyer-dashboard-preview.html, and supplier-dashboard.html must not receive the shared preset control or shared interface stylesheet during this refresh. The landing page receives theme/logo/preset support while keeping its approved layout intact.
 
 ## Repository cleanup policy
 - Keep only code that active pages or application/runtime tests reference in the active tree.
