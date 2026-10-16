@@ -401,6 +401,23 @@ html[data-skin] .topline{background:linear-gradient(90deg,var(--skin-accent),var
 .workspace-theme-select{max-width:160px;min-width:132px;padding:9px 10px!important}
 @media(max-width:900px){.workspace-theme-label{display:none}.workspace-theme-select{max-width:135px;min-width:112px}}
 @media(max-width:560px){.workspace-theme-select{max-width:112px;min-width:100px;padding:8px 6px!important}.actions{gap:5px}.workspace-theme-select option{font-size:12px}}
+
+/* Workspace skin must reach the left navigation and its real interaction states. */
+html[data-skin] .sidebar .groupBtn{transition:background .18s ease,color .18s ease,border-color .18s ease}
+html[data-skin] .sidebar .groupBtn:hover,
+html[data-skin] .sidebar .groupBtn[aria-expanded="true"]{background:color-mix(in srgb,var(--skin-accent) 23%,#111820)!important;color:#fff!important;box-shadow:inset 3px 0 var(--skin-accent)}
+html[data-skin] .sidebar .items a{border-left:3px solid transparent;transition:background .18s ease,color .18s ease,border-color .18s ease}
+html[data-skin] .sidebar .items a:hover{background:color-mix(in srgb,var(--skin-accent) 19%,#111820)!important;color:#fff!important}
+html[data-skin] .sidebar .items a.active,
+html[data-skin] .sidebar .items a[aria-current="page"]{background:color-mix(in srgb,var(--skin-accent) 28%,#111820)!important;color:color-mix(in srgb,var(--skin-accent) 48%,white)!important;border-left-color:var(--skin-accent)!important;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--skin-accent) 30%,transparent)!important}
+html[data-skin] .sidebar .groupBtn:focus-visible,
+html[data-skin] .sidebar .items a:focus-visible{outline:2px solid var(--skin-accent)!important;outline-offset:2px}
+html[data-skin] .btn.primary,
+html[data-skin] button.primary{background:var(--skin-accent)!important;border-color:var(--skin-accent)!important;color:#fff!important}
+html[data-skin] input:focus,
+html[data-skin] select:focus,
+html[data-skin] textarea:focus{outline:2px solid color-mix(in srgb,var(--skin-accent) 70%,transparent);outline-offset:1px;border-color:var(--skin-accent)!important}
+
 </style>
 </head><body><div class="topline"></div><div class="app">
 <aside class="sidebar" id="sidebar"><a class="brand" href="/frontend-v3.html"><img class="logo" src="/assets/vtg-logo.svg" alt="VTG"><span><strong>VINTAGE TRADE GLOBAL</strong><small>BUYER WORKSPACE</small></span></a><div class="label" data-i18n="workspace">Workspace</div><nav>
@@ -518,7 +535,7 @@ $('workspaceSkin').addEventListener('change',e=>applyBuyerSkin(e.target.value));
 document.addEventListener('vtg:themechange',e=>{if(e.detail&&e.detail.theme)applyTheme(e.detail.theme);const pref=e.detail&&e.detail.preference;if(pref&&$('appearance'))$('appearance').value=pref});
 $('theme').addEventListener('click',()=>{const n=document.documentElement.dataset.theme==='dark'?'light':'dark';try{localStorage.setItem('vtg-theme-preference',n);localStorage.setItem('vtg-theme',n);localStorage.setItem('vtg-theme-mode','manual')}catch(e){}if(window.vtgSetThemePreference)window.vtgSetThemePreference(n);else applyTheme(n);if($('appearance'))$('appearance').value=n});
 document.querySelectorAll('[data-group]').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.group,el=document.querySelector('[data-items="'+id+'"]'),open=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',String(!open));el.classList.toggle('closed',open)}));$('menuBtn').addEventListener('click',()=>$('sidebar').classList.toggle('open'));
-function go(v){if(!$('page-'+v))v='overview';view=v;document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+v));document.querySelectorAll('[data-view]').forEach(a=>a.classList.toggle('active',a.dataset.view===v));$('crumb').textContent=t(v==='overview'?'overview':v);history.replaceState(null,'','#'+v);$('sidebar').classList.remove('open');window.scrollTo(0,0);if(v==='cart')renderCart();if(v==='messages')renderChat();if(v==='feed')renderFeed();if(v==='intelligence')loadBuyerIntelStatus()}
+function go(v){if(!$('page-'+v))v='overview';view=v;document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+v));document.querySelectorAll('[data-view]').forEach(a=>a.classList.toggle('active',a.dataset.view===v));document.querySelectorAll('.sidebar [data-view]').forEach(a=>{if(a.dataset.view===v)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});$('crumb').textContent=t(v==='overview'?'overview':v);history.replaceState(null,'','#'+v);$('sidebar').classList.remove('open');window.scrollTo(0,0);if(v==='cart')renderCart();if(v==='messages')renderChat();if(v==='feed')renderFeed();if(v==='intelligence')loadBuyerIntelStatus()}
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();go(b.dataset.view)}));
 async function loadBuyerIntelStatus(){
  const status=$('vtgIntelStatus'),fx=$('vtgIntelFx'),tariff=$('vtgIntelTariff'),freight=$('vtgIntelFreight');
