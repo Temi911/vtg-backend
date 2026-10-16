@@ -481,7 +481,20 @@
     host.appendChild(wrap);
   }
 
+  function ensureInterfaceStylesheet() {
+    var path = (window.location.pathname || '').toLowerCase();
+    // Explicitly keep the landing page and the two excluded workspaces unchanged.
+    if (path === '/' || path.endsWith('/frontend-v3.html') || path.endsWith('/supplier-dashboard.html') || path.endsWith('/bank-trade-os.html')) return;
+    if (document.querySelector('link[data-vtg-interface-system]')) return;
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/vtg-interface-system.css?v=20261016-1';
+    link.setAttribute('data-vtg-interface-system', '1');
+    document.head.appendChild(link);
+  }
+
   function init() {
+    ensureInterfaceStylesheet();
     applyTimeBasedTheme();
     addStyle();
     renderFooter();
