@@ -191,6 +191,58 @@ html[data-theme="light"] .vtg-premium-card p,html[data-theme="light"] .vtg-finan
 html[data-theme="light"] .vtg-intel-evidence p{color:var(--muted)}
 
 
+
+/* Light-mode contrast repair: explicitly reset text and surface colours in the trade journey, LC workspace and shipment/document status cards. */
+html[data-theme="light"] #page-overview .commandCopy .eyebrow{color:#ffaaa2}
+html[data-theme="light"] #page-overview .commandCopy h1{color:#fff}
+html[data-theme="light"] #page-overview .commandCopy>p{color:#e0e8ef}
+html[data-theme="light"] #page-overview .heroMeta{color:#e8eef3}
+html[data-theme="light"] #page-overview .heroMeta b{color:#ffaaa2}
+html[data-theme="light"] #page-overview .journeyCard{background:#fff!important;color:#1b2733!important}
+html[data-theme="light"] #page-overview .journeyTop h2,
+html[data-theme="light"] #page-overview .journeyBottom span b,
+html[data-theme="light"] #page-overview .routeStop b{color:#1b2733!important}
+html[data-theme="light"] #page-overview .journeyTop p,
+html[data-theme="light"] #page-overview .journeyBottom span,
+html[data-theme="light"] #page-overview .routeStop small,
+html[data-theme="light"] #page-overview .previewFootnote{color:#637282!important}
+html[data-theme="light"] #page-overview .routeIcon{background:#f8fafc;color:#536475;border-color:#dfe5eb}
+html[data-theme="light"] #page-overview .routeStop.activeStep .routeIcon{background:#fff0ef;color:#a5232b;border-color:#e8bfc2}
+html[data-theme="light"] #page-overview .vtg-premium-card,
+html[data-theme="light"] #page-overview .vtg-finance-card,
+html[data-theme="light"] #page-overview .vtg-intel-evidence{background:#fff!important;color:#1b2733!important}
+html[data-theme="light"] #page-overview .vtg-premium-card *,
+html[data-theme="light"] #page-overview .vtg-finance-card *,
+html[data-theme="light"] #page-overview .vtg-intel-evidence *{text-shadow:none}
+html[data-theme="light"] #page-overview .vtg-premium-card h2,
+html[data-theme="light"] #page-overview .vtg-premium-card h3,
+html[data-theme="light"] #page-overview .vtg-finance-card h2,
+html[data-theme="light"] #page-overview .vtg-finance-card h3,
+html[data-theme="light"] #page-overview .vtg-intel-evidence h2,
+html[data-theme="light"] #page-overview .vtg-kpi b,
+html[data-theme="light"] #page-overview .vtg-status-row strong{color:#1b2733!important}
+html[data-theme="light"] #page-overview .vtg-premium-card p,
+html[data-theme="light"] #page-overview .vtg-finance-card p,
+html[data-theme="light"] #page-overview .vtg-intel-evidence p,
+html[data-theme="light"] #page-overview .vtg-kpi span,
+html[data-theme="light"] #page-overview .vtg-status-row span{color:#637282!important}
+html[data-theme="light"] #page-overview .vtg-kpi,
+html[data-theme="light"] #page-overview .vtg-status-row{background:#f8fafc!important;border-color:#dfe5eb!important;color:#1b2733!important}
+html[data-theme="light"] #page-overview .vtg-pill{background:#f3f6f9;color:#536475;border-color:#dfe5eb}
+html[data-theme="light"] #page-overview .vtg-route-step{background:#fff!important;border-color:#dfe5eb!important;color:#1b2733!important}
+html[data-theme="light"] #page-overview .vtg-route-step b,
+html[data-theme="light"] #page-overview .vtg-route-step strong{color:#1b2733!important}
+html[data-theme="light"] #page-overview .vtg-route-step small,
+html[data-theme="light"] #page-overview .vtg-map-note{color:#637282!important}
+html[data-theme="light"] #page-letter-credit .lcIntro{background:linear-gradient(115deg,#111f2a,#203b4b)!important;color:#fff!important}
+html[data-theme="light"] #page-letter-credit .lcIntro h1{color:#fff!important}
+html[data-theme="light"] #page-letter-credit .lcIntro p{color:#e0e8ef!important}
+html[data-theme="light"] #page-letter-credit .lcStep b{color:#1b2733!important}
+html[data-theme="light"] #page-letter-credit .lcStep p,
+html[data-theme="light"] #page-letter-credit .lcDisclaimer{color:#637282!important}
+html[data-theme="light"] #page-letter-credit .lcDisclaimer{background:#f8fafc!important;border:1px solid #dfe5eb}
+
+.vtg-chart-empty{min-height:170px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:22px;text-align:center;border:1px dashed var(--line);border-radius:12px;background:var(--panel2);color:var(--muted)}.vtg-chart-empty-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--soft);color:var(--red);font-size:20px;font-weight:800}.vtg-chart-empty strong{font-size:11px;color:var(--ink)}.vtg-chart-empty p{max-width:420px;margin:0;font-size:10px;line-height:1.7}
 </style></head><body><div class="topline"></div><div class="app">
 <aside class="sidebar" id="sidebar"><a class="brand" href="/frontend-v3.html"><img class="logo" src="/assets/vtg-logo.svg" alt="VTG"><span><strong>VINTAGE TRADE GLOBAL</strong><small>BUYER WORKSPACE</small></span></a><div class="label" data-i18n="workspace">Workspace</div><nav>
 <div><button class="groupBtn" data-group="work" aria-expanded="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="overview">Overview</span><span class="chev">⌄</span></button><div class="items" data-items="work"><a href="#overview" data-view="overview" class="active">▦ <span data-i18n="dashboard">Dashboard</span></a></div></div>
@@ -214,7 +266,7 @@ html[data-theme="light"] .vtg-intel-evidence p{color:var(--muted)}
     <section class="vtg-premium-card"><div class="vtg-lux-heading"><span class="vtg-lux-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19H21"/><path d="M8 16v-4M13 16V7M18 16v-7"/></svg></span><div><span class="vtg-card-kicker">Buyer intelligence</span><h2 style="margin-top:5px">Monthly transaction overview</h2></div></div>
       <p>Visual summary of your recorded transactions. Live totals will appear when your buyer account is connected.</p>
       <div class="vtg-kpi-row"><div class="vtg-kpi"><span>Recorded transactions</span><b>—</b><span>Awaiting account data</span></div><div class="vtg-kpi"><span>Trade value</span><b>—</b><span>Awaiting account data</span></div><div class="vtg-kpi"><span>Completed orders</span><b>—</b><span>Awaiting account data</span></div></div>
-      <svg class="vtg-chart" viewBox="0 0 560 170" role="img" aria-label="Monthly transactions bar chart layout awaiting account data"><g stroke="#ffffff17" stroke-width="1"><path d="M35 30H540M35 65H540M35 100H540M35 135H540"/></g><g fill="#d7e1e9" font-size="10"><text x="35" y="157">Jan</text><text x="116" y="157">Feb</text><text x="197" y="157">Mar</text><text x="278" y="157">Apr</text><text x="359" y="157">May</text><text x="440" y="157">Jun</text><text x="510" y="157">Jul</text></g><g fill="#a5232b" opacity=".95"><rect x="47" y="103" width="25" height="32" rx="4"/><rect x="128" y="89" width="25" height="46" rx="4"/><rect x="209" y="96" width="25" height="39" rx="4"/><rect x="290" y="75" width="25" height="60" rx="4"/><rect x="371" y="57" width="25" height="78" rx="4"/><rect x="452" y="68" width="25" height="67" rx="4"/><rect x="515" y="82" width="20" height="53" rx="4"/></g><text x="280" y="18" fill="#ffb2b2" text-anchor="middle" font-size="10">Illustrative chart layout · no transaction figures shown</text></svg>
+      <div class="vtg-chart-empty" role="status"><span class="vtg-chart-empty-mark" aria-hidden="true">—</span><strong>Transaction analytics will appear here</strong><p>Connect your buyer account and verified transaction records to display monthly activity. No sample figures are shown.</p></div>
     </section>
     <section class="vtg-premium-card"><div class="vtg-lux-heading"><span class="vtg-lux-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V21H7z"/><path d="M14 3.5V8h4M10 12h5M10 16h5"/></svg></span><div><span class="vtg-card-kicker">Document control</span><h2 style="margin-top:5px">Approval status</h2></div></div><p>Know what is approved, pending review, or still being prepared.</p>
       <div class="vtg-status-list"><div class="vtg-status-row"><span>Pro forma invoice</span><span class="vtg-pill review">Example status</span></div><div class="vtg-status-row"><span>Commercial invoice</span><span class="vtg-pill pending">Example status</span></div><div class="vtg-status-row"><span>Packing list</span><span class="vtg-pill pending">Example status</span></div><div class="vtg-status-row"><span>Bill of lading</span><span class="vtg-pill review">Example status</span></div></div>
@@ -288,7 +340,11 @@ function t(k){return (dict[lang]&&dict[lang][k])||dict.en[k]||k}function say(s){
 if(preview)$('preview').style.display='block';else if(auth?.user){const n=auth.user.name||auth.user.fullName||auth.user.companyName||auth.user.email||'Buyer';$('profileName').textContent=n;$('profileEmail').textContent=auth.user.email||'Buyer account';$('avatar').textContent=n.charAt(0).toUpperCase()}
 function setLang(v){lang=dict[v]?v:'en';localStorage.setItem('vtg-language',lang);document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';document.querySelectorAll('[data-i18n]').forEach(el=>{const key=el.dataset.i18n;if(t(key))el.textContent=t(key)});$('language').value=lang;$('language2').value=lang;renderProducts();renderRfqs();renderCart();renderFeed();renderChat();renderVerify();renderDocs();renderNotes();$('crumb').textContent=t(view==='overview'?'overview':view);document.title=t('dashboard')+' | VTG';}
 function chooseLanguage(v){localStorage.setItem('vtg-language',v==='zh-CN'?'zh':v);if(v==='en'){document.cookie='googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';document.cookie='googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain='+location.hostname;}else{var cv='/en/'+v;document.cookie='googtrans='+cv+';path=/;max-age=31536000;SameSite=Lax';document.cookie='googtrans='+cv+';path=/;domain='+location.hostname+';max-age=31536000;SameSite=Lax';}location.reload()}$('language').addEventListener('change',e=>chooseLanguage(e.target.value));$('language2').addEventListener('change',e=>chooseLanguage(e.target.value));
-const themeMode=localStorage.getItem('vtg-theme-mode')||'auto';function applyTheme(v){document.documentElement.dataset.theme=v}applyTheme(themeMode==='manual'?(localStorage.getItem('vtg-theme')||'light'):(new Date().getHours()>=6&&new Date().getHours()<18?'light':'dark'));$('theme').addEventListener('click',()=>{const n=document.documentElement.dataset.theme==='dark'?'light':'dark';localStorage.setItem('vtg-theme',n);localStorage.setItem('vtg-theme-mode','manual');applyTheme(n)});
+function applyTheme(v){if(v!=='light'&&v!=='dark')return;document.documentElement.dataset.theme=v;document.documentElement.style.colorScheme=v}
+function resolveBuyerTheme(){let pref='';try{pref=localStorage.getItem('vtg-theme-preference')||'';if(pref==='light'||pref==='dark')return pref;if(pref==='auto')return (new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark';const mode=localStorage.getItem('vtg-theme-mode');if(mode==='manual')return localStorage.getItem('vtg-theme')||'light'}catch(e){}return (new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark'}
+applyTheme(resolveBuyerTheme());
+document.addEventListener('vtg:themechange',e=>{if(e.detail&&e.detail.theme)applyTheme(e.detail.theme);const pref=e.detail&&e.detail.preference;if(pref&&$('appearance'))$('appearance').value=pref});
+$('theme').addEventListener('click',()=>{const n=document.documentElement.dataset.theme==='dark'?'light':'dark';try{localStorage.setItem('vtg-theme-preference',n);localStorage.setItem('vtg-theme',n);localStorage.setItem('vtg-theme-mode','manual')}catch(e){}if(window.vtgSetThemePreference)window.vtgSetThemePreference(n);else applyTheme(n);if($('appearance'))$('appearance').value=n});
 document.querySelectorAll('[data-group]').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.group,el=document.querySelector('[data-items="'+id+'"]'),open=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',String(!open));el.classList.toggle('closed',open)}));$('menuBtn').addEventListener('click',()=>$('sidebar').classList.toggle('open'));
 function go(v){if(!$('page-'+v))v='overview';view=v;document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+v));document.querySelectorAll('[data-view]').forEach(a=>a.classList.toggle('active',a.dataset.view===v));$('crumb').textContent=t(v==='overview'?'overview':v);history.replaceState(null,'','#'+v);$('sidebar').classList.remove('open');window.scrollTo(0,0);if(v==='cart')renderCart();if(v==='messages')renderChat();if(v==='feed')renderFeed();if(v==='intelligence')loadBuyerIntelStatus()}
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();go(b.dataset.view)}));
@@ -350,7 +406,7 @@ function calcFx(){const n=(+$('amount').value||0)*(+$('rate').value||0);$('fxRes
 $('aiForm').addEventListener('submit',e=>{e.preventDefault();const q=$('question').value.toLowerCase();let a=['Confirm supplier identity and written quotation','Check product specification and quantity','Confirm HS code, permits and import rules','Estimate freight, insurance, duties and delivery','Agree payment terms, inspection and documents'];if(q.includes('ship')||q.includes('port'))a=['Confirm Incoterms and named port','Confirm cargo size, weight and readiness','Compare freight routes and transit estimates','Estimate insurance, port and inland charges','Confirm transport and customs documents'];$('answer').textContent=t('checklist')+'\n• '+a.join('\n• ');});
 document.querySelectorAll('[data-map]').forEach(b=>b.addEventListener('click',()=>{const region=b.dataset.map;if(window.VTGBuyerAtlas?.setRegion)window.VTGBuyerAtlas.setRegion(region);else window.dispatchEvent(new CustomEvent('vtg:buyer-map-region',{detail:{region}}));say('Map view updated')}));
 function stats(){ $('statRfqs').textContent=rfqs().length;$('statCart').textContent=cart().reduce((n,x)=>n+x.qty,0);$('statFeed').textContent=feed().length;$('statVerify').textContent=db.get('verify',[]).length;$('cartCount').textContent=cart().reduce((n,x)=>n+x.qty,0);$('rfqCount').textContent=rfqs().length;const a=[];rfqs().slice(0,2).forEach(x=>a.push({title:'RFQ: '+x.product,desc:'Saved locally'}));feed().slice(0,2).forEach(x=>a.push({title:'Trade feed draft',desc:x.text.slice(0,90)}));$('activity').innerHTML=a.length?a.slice(0,5).map(x=>'<div><strong>'+esc(x.title)+'</strong><p>'+esc(x.desc)+'</p></div>').join(''):'<div><strong>'+t('ready')+'</strong><p>'+t('readyDesc')+'</p></div>'}
-$('savePrefs').addEventListener('click',()=>{setLang($('language2').value);const v=$('appearance').value;if(v==='auto'){localStorage.setItem('vtg-theme-mode','auto');applyTheme(new Date().getHours()>=6&&new Date().getHours()<18?'light':'dark')}else{localStorage.setItem('vtg-theme-mode','manual');localStorage.setItem('vtg-theme',v);applyTheme(v)}say(t('prefsSaved')||t('saved'))});
+$('savePrefs').addEventListener('click',()=>{setLang($('language2').value);const v=$('appearance').value;try{localStorage.setItem('vtg-theme-preference',v);if(v==='auto'){localStorage.setItem('vtg-theme-mode','auto')}else{localStorage.setItem('vtg-theme-mode','manual');localStorage.setItem('vtg-theme',v)}}catch(e){}if(window.vtgSetThemePreference)window.vtgSetThemePreference(v);else applyTheme(v==='auto'?resolveBuyerTheme():v);say(t('prefsSaved')||t('saved'))});
 $('saveProfile').addEventListener('click',()=>{db.set('profile',{name:$('displayName').value,email:$('displayEmail').value});say(t('profileSaved')||t('saved'))});const p=db.get('profile',{});$('displayName').value=p.name||'';$('displayEmail').value=p.email||'';$('alerts').addEventListener('click',()=>say('No new account-linked notifications.'));$('signout').addEventListener('click',()=>{if(preview){location.href='/signin.html?role=buyer';return}localStorage.removeItem('vtg_access_token');localStorage.removeItem('vtg-auth');location.href='/signin.html?role=buyer'});
 function setLang(v){lang=dict[v]?v:'en';localStorage.setItem('vtg-language',lang);document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';document.querySelectorAll('[data-i18n]').forEach(el=>{const key=el.dataset.i18n;if(t(key))el.textContent=t(key)});$('language').value=lang;$('language2').value=lang;renderProducts();renderRfqs();renderCart();renderFeed();renderChat();renderSuppliers();verify();renderDocs();renderNotes();$('crumb').textContent=t(view);document.title=t('dashboard')+' | VTG'}
 setLang(lang);renderProducts();renderRfqs();renderCart();renderFeed();renderChat();renderSuppliers();verify();renderDocs();renderNotes();renderLC();stats();calcFx();$('language2').value=lang;$('appearance').value=localStorage.getItem('vtg-theme-mode')==='manual'?(localStorage.getItem('vtg-theme')||'light'):'auto';const initial=location.hash.slice(1);if(initial&&$('page-'+initial))go(initial);
