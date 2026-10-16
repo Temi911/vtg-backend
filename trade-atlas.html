@@ -204,24 +204,68 @@ function init(){
     window.setInterval(applyGlobeAppearance,60000);
   }catch(e){console.error('VTG Trade Atlas globe failed to initialize:',e);document.getElementById('globeFallback').style.display='flex';}
  }else{console.error('VTG Trade Atlas globe library did not load.');document.getElementById('globeFallback').style.display='flex';}
- const initializeAtlasMap=()=>{if(!window.L){return false;}
-  const mapNode=document.getElementById('locationMap');if(!mapNode)return false;mapNode.innerHTML='';
-  const map=L.map(mapNode,{scrollWheelZoom:false}).setView([20,55],3);atlasMap=map;
-  let mapTiles=null,mapTheme=null,tileProviderIndex=0,tileErrorCount=0,fallbackShown=false;
-  const tileProviders=[
-   {url:'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',options:{maxZoom:20,subdomains:'abcd',attribution:'© OpenStreetMap © CARTO',crossOrigin:true}},
-   {url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',options:{maxZoom:19,subdomains:'abc',attribution:'© OpenStreetMap contributors',crossOrigin:true}},
-   {url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',options:{maxZoom:19,attribution:'Tiles © Esri',crossOrigin:true}}
-  ];
-  const showEmbeddedMapFallback=()=>{if(fallbackShown)return;fallbackShown=true;try{map.remove();}catch(_){}const node=document.getElementById('locationMap');if(node)node.innerHTML='<iframe title="Public trade hubs map" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.openstreetmap.org/export/embed.html?bbox=-18%2C-36%2C150%2C55&amp;layer=mapnik" style="display:block;width:100%;height:100%;min-height:300px;border:0" allowfullscreen></iframe>';};
-  const installTileProvider=(index)=>{if(index>=tileProviders.length){showEmbeddedMapFallback();return;}tileProviderIndex=index;tileErrorCount=0;if(mapTiles){map.removeLayer(mapTiles);mapTiles=null;}const provider=tileProviders[index];mapTiles=L.tileLayer(provider.url,{...provider.options,updateWhenIdle:true,keepBuffer:2}).addTo(map);mapTiles.on('tileerror',()=>{tileErrorCount++;if(tileErrorCount>=6&&tileProviderIndex===index)installTileProvider(index+1);});};
-  const setMapTimeTheme=()=>{const nextTheme=(document.documentElement.getAttribute('data-theme')||'dark')==='light'?'day':'night';const node=document.getElementById('locationMap');if(node)node.classList.toggle('atlasMapNight',nextTheme==='night');if(nextTheme!==mapTheme){mapTheme=nextTheme;}};
-  installTileProvider(0);setMapTimeTheme();document.addEventListener('vtg:themechange',setMapTimeTheme);window.setInterval(setMapTimeTheme,60000);
-  hubs.forEach(h=>{const marker=L.circleMarker([h.lat,h.lng],{radius:h.type==='Sea port'?3.5:3,color:h.color,fillColor:h.color,fillOpacity:.92,weight:1.2}).addTo(map);atlasMapMarkers.set(h.id,marker);marker.bindPopup('<strong>'+escapeHTML(h.name)+'</strong><br>'+escapeHTML(h.city)+'<br><small>'+escapeHTML(h.type+' · '+h.code)+'</small><br><button type="button" class="mapHubSelect" data-map-hub="'+h.id+'">View facility details</button>');marker.on('click',()=>{selectAtlasHub(h,'map');document.getElementById('selectedHub').scrollIntoView({behavior:'smooth',block:'center'});});});
-  const group=L.featureGroup(hubs.map(h=>L.marker([h.lat,h.lng])));map.fitBounds(group.getBounds().pad(.12));
-  document.getElementById('locationMap').addEventListener('click',event=>{const button=event.target.closest('[data-map-hub]');if(!button)return;const h=hubs.find(x=>x.id===button.dataset.mapHub);if(h){selectAtlasHub(h,'map');document.getElementById('selectedHub').scrollIntoView({behavior:'smooth',block:'center'});}});
-  window.setTimeout(()=>map.invalidateSize(true),250);window.setTimeout(()=>{if(!fallbackShown&&tileProviderIndex===0&&tileErrorCount>=3)installTileProvider(1);},5000);window.setTimeout(()=>{if(!fallbackShown&&tileProviderIndex===1&&tileErrorCount>=3)installTileProvider(2);},10000);window.setTimeout(()=>{if(!fallbackShown&&tileProviderIndex===2&&tileErrorCount>=3)showEmbeddedMapFallback();},15000);
-  return true;
+ const initializeAtlasMap=()=>{
+  const mapNode=document.getElementById('locationMap');
+  if(!mapNode)return false;
+  // Rebuild only the Location Map. No Google/Mapbox key or token is used.
+  const renderEmbedFallback=()=>{
+   if(!mapNode||mapNode.dataset.embedFallback==='1')return;
+   mapNode.dataset.embedFallback='1';
+   mapNode.innerHTML='<iframe title="Public trade hubs location map" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.openstreetmap.org/export/embed.html?bbox=-18%2C-36%2C150%2C55&amp;layer=mapnik" style="display:block;width:100%;height:100%;min-height:320px;border:0" allowfullscreen></iframe><p style="margin:0;padding:8px 12px;font-size:12px;color:#60717c;background:#fff">Interactive location map · OpenStreetMap</p>';
+  };
+  if(!window.L){return false;}
+  try{
+   mapNode.innerHTML='';
+   mapNode.dataset.embedFallback='0';
+   if(atlasMap){try{atlasMap.remove();}catch(_){}atlasMap=null;}
+   atlasMap=L.map(mapNode,{scrollWheelZoom:false,preferCanvas:true,worldCopyJump:true,zoomControl:true}).setView([20,55],3);
+   const tileLayer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom:19,subdomains:'abc',attribution:'© OpenStreetMap contributors',crossOrigin:true,updateWhenIdle:true,keepBuffer:2
+   }).addTo(atlasMap);
+   let tileFailures=0,embedTimer=window.setTimeout(()=>{if(tileFailures>=3)renderEmbedFallback();},9000);
+   tileLayer.on('tileerror',()=>{
+    tileFailures++;
+    if(tileFailures>=6){window.clearTimeout(embedTimer);renderEmbedFallback();}
+   });
+   const bounds=[];
+   hubs.forEach(h=>{
+    const marker=L.circleMarker([Number(h.lat),Number(h.lng)],{
+     radius:h.type==='Sea port'?5:4,color:'#ffffff',weight:1.5,fillColor:h.color||'#d3423e',fillOpacity:1
+    }).addTo(atlasMap);
+    atlasMapMarkers.set(h.id,marker);
+    marker.bindPopup('<strong>'+escapeHTML(h.name)+'</strong><br>'+escapeHTML(h.city)+'<br><small>'+escapeHTML(h.type+' · '+h.code)+'</small><br><button type="button" class="mapHubSelect" data-map-hub="'+escapeHTML(h.id)+'">View facility details</button>');
+    marker.on('click',()=>{
+     selectAtlasHub(h,'map');
+     const selected=document.getElementById('selectedHub');
+     if(selected)selected.scrollIntoView({behavior:'smooth',block:'center'});
+    });
+    bounds.push([Number(h.lat),Number(h.lng)]);
+   });
+   if(bounds.length)atlasMap.fitBounds(L.latLngBounds(bounds).pad(.12),{maxZoom:5});
+   mapNode.addEventListener('click',event=>{
+    const button=event.target.closest('[data-map-hub]');
+    if(!button)return;
+    const hub=hubs.find(x=>String(x.id)===button.dataset.mapHub);
+    if(hub){
+     selectAtlasHub(hub,'map');
+     const selected=document.getElementById('selectedHub');
+     if(selected)selected.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+   });
+   const updateMapAppearance=()=>{
+    const theme=document.documentElement.getAttribute('data-theme')||'dark';
+    mapNode.classList.toggle('atlasMapNight',theme!=='light');
+   };
+   updateMapAppearance();
+   document.addEventListener('vtg:themechange',updateMapAppearance);
+   window.setTimeout(()=>{if(atlasMap)atlasMap.invalidateSize(true);},250);
+   window.addEventListener('resize',()=>{if(atlasMap)atlasMap.invalidateSize(true);});
+   return true;
+  }catch(error){
+   console.error('VTG Location Map initialization failed:',error);
+   renderEmbedFallback();
+   return true;
+  }
  };
  if(!initializeAtlasMap()){
   const leafletFallback=document.createElement('script');leafletFallback.src='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js';leafletFallback.onload=()=>initializeAtlasMap();leafletFallback.onerror=()=>{const mapNode=document.getElementById('locationMap');if(mapNode&&!mapNode.querySelector('iframe'))mapNode.innerHTML='<iframe title="Public trade hubs map" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.openstreetmap.org/export/embed.html?bbox=-18%2C-36%2C150%2C55&amp;layer=mapnik" style="display:block;width:100%;height:100%;min-height:300px;border:0" allowfullscreen></iframe>';};document.head.appendChild(leafletFallback);
