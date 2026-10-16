@@ -39,8 +39,12 @@
       if(!window.L)throw Error('Leaflet unavailable');
       const map=L.map(node,{zoomControl:true,scrollWheelZoom:true,worldCopyJump:true,minZoom:2,maxZoom:18}).setView([17,38],2);
       const groups={countries:L.layerGroup().addTo(map),ports:L.layerGroup().addTo(map),hubs:L.layerGroup().addTo(map),routes:L.layerGroup().addTo(map)};
+      const mapStatus=document.createElement('div');
+      mapStatus.setAttribute('role','status');mapStatus.setAttribute('aria-live','polite');
+      mapStatus.style.cssText='position:absolute;z-index:500;left:12px;bottom:12px;max-width:calc(100% - 24px);padding:8px 11px;border-radius:9px;background:#102e40ed;color:#fff;font:600 11px Manrope,Arial,sans-serif;display:none;pointer-events:none';
+      node.style.position='relative';node.appendChild(mapStatus);
       let loaded=0,failed=0,fallback=false,base;
-      const watch=layer=>{layer.on('tileload',()=>{loaded++;node.dataset.mapTiles='loaded';});layer.on('tileerror',()=>{failed++;if(!loaded&&failed>=4&&!fallback){fallback=true;map.removeLayer(layer);const dark=document.documentElement.getAttribute('data-theme')==='dark';base=L.tileLayer('https://{s}.basemaps.cartocdn.com/'+(dark?'dark_all':'light_all')+'/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:19,attribution:'&copy; OpenStreetMap contributors &middot; &copy; CARTO'}).addTo(map);loaded=0;failed=0;watch(base);node.dataset.mapTiles='fallback';}});};
+      const watch=layer=>{layer.on('tileload',()=>{loaded++;node.dataset.mapTiles='loaded';mapStatus.style.display='none';});layer.on('tileerror',()=>{failed++;if(!loaded&&failed>=4&&!fallback){fallback=true;map.removeLayer(layer);mapStatus.textContent='Primary map tiles unavailable; trying the alternate public map source…';mapStatus.style.display='block';const dark=document.documentElement.getAttribute('data-theme')==='dark';base=L.tileLayer('https://{s}.basemaps.cartocdn.com/'+(dark?'dark_all':'light_all')+'/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:19,attribution:'&copy; OpenStreetMap contributors &middot; &copy; CARTO'}).addTo(map);loaded=0;failed=0;watch(base);node.dataset.mapTiles='fallback';}else if(!loaded&&fallback&&failed>=4){mapStatus.textContent='Both public map tile services are unavailable on this connection. Check your connection and reload.';mapStatus.style.display='block';}});};
       base=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'}).addTo(map);watch(base);
       const colors={countries:'#078c91',ports:'#e46b42',hubs:'#7754cf'};
       [['countries','country'],['ports','port / terminal'],['hubs','trade hub']].forEach(([key,label])=>(D[key]||[]).forEach(p=>{
@@ -53,7 +57,6 @@
         const views={africa:{center:[4,18],zoom:3},china:{center:[31,105],zoom:4},korea:{center:[36.2,127.8],zoom:6},world:{center:[17,38],zoom:2}};
         const v=views[region]||views.world;map.setView(v.center,v.zoom,{animate:true});
       }
-      document.querySelectorAll('[data-map]').forEach(btn=>{if(btn.dataset.vtgAtlasBound)return;btn.dataset.vtgAtlasBound='1';btn.addEventListener('click',()=>setRegion(btn.dataset.map));});
       document.addEventListener('vtg:themechange',event=>{if(!base||!window.L)return;const theme=event.detail?.theme||'light';if(fallback){map.removeLayer(base);base=L.tileLayer('https://{s}.basemaps.cartocdn.com/'+(theme==='dark'?'dark_all':'light_all')+'/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:19,attribution:'&copy; OpenStreetMap contributors &middot; &copy; CARTO'}).addTo(map);}});
       window.VTGBuyerAtlas={map,groups,data:D,setRegion};
       node.dataset.vtgMapInit='ready';
