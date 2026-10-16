@@ -404,9 +404,14 @@
     if (path.endsWith('/buyer-dashboard.html') || path.endsWith('/supplier-dashboard.html')) return;
     if (document.getElementById('vtgThemePresetControl')) return;
 
-    // Public preset selection is shared across all non-excluded pages.
-    var isWorkspace = false;
-    var key = 'vtg-site-theme-preset';
+    // Visitors share three presets across public pages; workspace pages retain their ten-preset system.
+    var workspacePaths = [
+      '/admin-os.html','/agent-dashboard.html','/vtg-ai-dashboard.html',
+      '/trade-os.html','/trade-workspace.html','/account-trade-feed.html','/buyer-trade-room.html',
+      '/buyer-verifications.html','/inspection-admin.html','/verification.html','/bank-trade-os.html'
+    ];
+    var isWorkspace = workspacePaths.some(function (p) { return path.endsWith(p); });
+    var key = isWorkspace ? 'vtg-user-theme-preset' : 'vtg-visitor-theme-preset';
     var presets = isWorkspace ? [
       ['executive','Executive','A calm executive workspace'],
       ['ocean-finance','Ocean Finance','Blue financial workspace'],
