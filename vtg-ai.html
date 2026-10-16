@@ -183,4 +183,23 @@ document.querySelectorAll('[data-demo]').forEach(btn=>btn.addEventListener('clic
 if(window.lucide)window.lucide.createIcons();
 </script>
 <script src="/vtg-site-navigation.js?v=20261012-theme-fix-2" defer></script>
+
+<style id="vtg-ai-preview-interface-refinement-20261016">
+:root{--vtg-ai-bg:#f4f6f8;--vtg-ai-card:#fff;--vtg-ai-ink:#20252d;--vtg-ai-muted:#687586;--vtg-ai-line:#e1e6ed;--vtg-ai-red:#a5232b}
+html[data-theme="dark"]{--vtg-ai-bg:#0b1016;--vtg-ai-card:#141b23;--vtg-ai-ink:#f3f5f7;--vtg-ai-muted:#b4c0cb;--vtg-ai-line:#2b3743;--vtg-ai-red:#ff8e86}
+body{font-family:Manrope,Arial,sans-serif;letter-spacing:-.01em}
+html[data-theme="dark"] body{background:var(--vtg-ai-bg);color:var(--vtg-ai-ink)}
+html[data-theme="dark"] .nav{background:rgba(11,16,22,.94);border-color:var(--vtg-ai-line)}
+html[data-theme="dark"] .navlinks a{color:var(--vtg-ai-muted)}
+html[data-theme="dark"] .heroPanel,html[data-theme="dark"] .feature,html[data-theme="dark"] .demo,html[data-theme="dark"] .step,html[data-theme="dark"] .bottomCta{background:var(--vtg-ai-card);border-color:var(--vtg-ai-line);color:var(--vtg-ai-ink)}
+html[data-theme="dark"] .feature h3,html[data-theme="dark"] .demoHead strong,html[data-theme="dark"] .step h3{color:var(--vtg-ai-ink)}
+html[data-theme="dark"] .feature p,html[data-theme="dark"] .demoNote,html[data-theme="dark"] .step p{color:var(--vtg-ai-muted)}
+html[data-theme="dark"] .demoBody,html[data-theme="dark"] .demoResult{background:#101820;border-color:var(--vtg-ai-line);color:var(--vtg-ai-ink)}
+html[data-theme="dark"] .demoChoice{background:#18212b;border-color:var(--vtg-ai-line);color:var(--vtg-ai-ink)}
+.feature,.demo,.step,.heroPanel{border-radius:16px;box-shadow:0 12px 34px rgba(22,31,43,.055)}
+.feature,.demoChoice,.step{transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.feature:hover,.step:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--vtg-ai-red) 36%,var(--vtg-ai-line))}
+.demoChoice:focus-visible,.btn:focus-visible,a:focus-visible{outline:3px solid color-mix(in srgb,var(--vtg-ai-red) 35%,transparent);outline-offset:3px}
+.btn{min-height:40px;border-radius:10px}
+</style>
 </body></html>
