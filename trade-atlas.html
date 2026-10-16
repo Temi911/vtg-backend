@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#101820">
 <title>Trade Atlas | Vintage Trade Global</title>
 <meta name="description" content="Explore public trade corridors, ports and logistics hubs across Africa and Asia with the VTG Trade Atlas. Private shipment details remain in authorized workspaces.">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -67,7 +68,7 @@ html[data-theme="dark"] .searchRow input{background:#091219;color:var(--text);bo
  </div>
 </section>
 <section class="section shell" id="explore"><div class="sectionHead"><div><span class="eyebrow">Africa ↔ Asia · Port and air cargo network</span><h2>Explore the trade infrastructure</h2></div><p>Port and airport names are hidden until you select a marker on the globe or map. Click a marker to open that facility’s details and location-matched photograph.</p></div><p class="mapNote">A photograph is searched only after a marker is selected. Unrelated stock photos are never substituted. Facility details are public context, not live operating status or shipment tracking.</p><div class="sourcePanel"><strong>Reference sources</strong><span>Use port and airport authorities for current operational notices, accepted cargo, schedules and access requirements.</span><div class="sourceLinks"><a href="https://nigerianports.gov.ng/" target="_blank" rel="noopener">Nigerian Ports Authority ↗</a><a href="https://ghanaports.gov.gh/" target="_blank" rel="noopener">Ghana Ports & Harbours Authority ↗</a><a href="https://en.portshanghai.com.cn/" target="_blank" rel="noopener">Shanghai International Port Group ↗</a><a href="https://www.yict.com.cn/news-publication/photo-gallery.html" target="_blank" rel="noopener">Yantian terminal photo gallery ↗</a><a href="https://ports.coscoshipping.com/en/Media/PhotoGallery/" target="_blank" rel="noopener">COSCO terminal photo gallery ↗</a><a href="https://faan.gov.ng/mmia-lagos/" target="_blank" rel="noopener">Lagos airport official photos ↗</a><a href="https://www.portbusan.go.kr/eng/02_Information/Information01.jsp" target="_blank" rel="noopener">Busan Port information ↗</a><a href="https://www.airport.kr/co_en/4333/subview.do" target="_blank" rel="noopener">Incheon Airport logistics ↗</a><a href="https://www.mof.go.kr/page/en/selectPage.do?menuSeq=1590&pageSeq=1019" target="_blank" rel="noopener">Korea Ministry of Oceans and Fisheries ↗</a></div></div></section>
-<section class="section shell" id="location-directory"><div class="sectionHead"><div><span class="eyebrow">Public directory</span><h2>Location map</h2></div><p>Browse the core public hubs. This directory is for general trade discovery, not private customer or supplier location data.</p></div><div id="locationMap" role="region" aria-label="Interactive VTG map of public trade hubs"></div><p class="mapNote">Custom-rendered schematic map — no map API key, external tile server, or live-vessel claim. Facility coordinates are approximate.</p></section>
+<section class="section shell" id="location-directory"><div class="sectionHead"><div><span class="eyebrow">Public directory</span><h2>Location map</h2></div><p>Browse the core public hubs. This directory is for general trade discovery, not private customer or supplier location data.</p></div><div id="locationMap" role="region" aria-label="Interactive VTG map of public trade hubs"></div><p class="mapNote">Real-world interactive map with country names and borders from OpenStreetMap contributors. VTG port/airport markers and illustrative trade corridors are overlaid; this is not live vessel tracking. Facility coordinates are approximate.</p></section>
 <section class="section shell" id="workspace"><div class="sectionHead"><div><span class="eyebrow">Two access levels</span><h2>Public discovery. Private trade operations.</h2></div><p>The public Atlas helps visitors understand the corridor. Your secure workspace is where transaction-specific details belong.</p></div>
 <div class="privateGrid">
  <article class="publicCard"><span class="eyebrow">For everyone</span><h3>Public Trade Atlas</h3><p>Explore the trade network before creating an account. Public information never exposes another user's shipment, documents or commercial terms.</p><div class="featureList"><div class="feature"><i data-lucide="check-circle-2"></i><span>Interactive globe and public geography</span></div><div class="feature"><i data-lucide="check-circle-2"></i><span>Public ports, airports and trade hubs</span></div><div class="feature"><i data-lucide="check-circle-2"></i><span>General trade corridor explanations</span></div><div class="feature"><i data-lucide="check-circle-2"></i><span>VTG services and account entry points</span></div></div><div class="notice">Routes shown on this public page are illustrative unless explicitly labelled with a verified live data source.</div></article>
@@ -80,6 +81,7 @@ html[data-theme="dark"] .searchRow input{background:#091219;color:var(--text);bo
 
 <script src="https://unpkg.com/globe.gl" defer></script>
 <script src="https://unpkg.com/lucide@latest" defer></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 (function(){
 'use strict';
@@ -205,33 +207,51 @@ function init(){
  const initializeAtlasMap=()=>{
   const mapNode=document.getElementById('locationMap');
   if(!mapNode)return false;
-  // Self-contained VTG map: no API key, external tile service, iframe, or map-library dependency.
-  const W=1200,H=520,left=-180,right=180,top=82,bottom=-58;
-  const xy=(lon,lat)=>({x:(Number(lon)-left)/(right-left)*W,y:(top-Number(lat))/(top-bottom)*H});
-  const poly=coords=>coords.map((p,i)=>{const q=xy(p[0],p[1]);return (i?'L':'M')+q.x.toFixed(1)+' '+q.y.toFixed(1)}).join(' ')+' Z';
-  const continents=[
-   [[-168,70],[-150,60],[-136,55],[-126,48],[-124,38],[-112,30],[-105,20],[-96,15],[-82,8],[-80,18],[-92,28],[-100,42],[-120,52],[-140,62]],
-   [[-73,12],[-58,8],[-48,-2],[-36,-10],[-40,-25],[-50,-42],[-68,-55],[-76,-32],[-80,-5]],
-   [[-18,36],[-5,37],[10,35],[28,31],[43,12],[50,2],[42,-12],[32,-28],[18,-35],[8,-33],[-2,-15],[-10,5],[-17,18]],
-   [[-10,70],[15,72],[35,65],[55,58],[80,58],[100,52],[120,48],[140,55],[160,60],[178,52],[165,35],[145,20],[125,5],[110,-5],[95,8],[78,7],[65,20],[50,30],[35,42],[20,55],[5,60]],
-   [[112,-11],[130,-10],[153,-18],[150,-38],[133,-44],[116,-32]],
-   [[-52,82],[-30,78],[-20,65],[-38,58],[-52,65]],
-   [[43,-12],[50,-15],[49,-25],[44,-26],[42,-18]]
-  ];
-  const continentSvg=continents.map(c=>'<path d="'+poly(c)+'" fill="#b9d9cc" stroke="#75a998" stroke-width="1.7" stroke-linejoin="round"/>').join('');
-  const grid=[];
-  for(let lon=-150;lon<=180;lon+=30){const a=xy(lon,top),b=xy(lon,bottom);grid.push('<path d="M'+a.x+' '+a.y+' V'+b.y+'" stroke="#9bb9c6" stroke-width="1" stroke-dasharray="3 7" opacity=".55"/>');}
-  for(let lat=-30;lat<=60;lat+=15){const a=xy(left,lat),b=xy(right,lat);grid.push('<path d="M'+a.x+' '+a.y+' H'+b.x+'" stroke="#9bb9c6" stroke-width="1" stroke-dasharray="3 7" opacity=".55"/>');}
-  const origin=hubs.find(h=>h.id==='ng-tin')||hubs[0];
-  const routeTargets=hubs.filter(h=>h.id!==origin?.id&&(/China|Korea/i.test(h.country||'')||/Airport/i.test(h.type)&&/Asia/i.test(h.region||'')));
-  const routeSvg=routeTargets.map(h=>{const a=xy(origin.lng,origin.lat),b=xy(h.lng,h.lat),mx=(a.x+b.x)/2,my=Math.min(a.y,b.y)-Math.max(24,Math.abs(a.x-b.x)*.12);return '<path d="M'+a.x.toFixed(1)+' '+a.y.toFixed(1)+' Q'+mx.toFixed(1)+' '+my.toFixed(1)+' '+b.x.toFixed(1)+' '+b.y.toFixed(1)+'" fill="none" stroke="#d3423e" stroke-width="2.8" stroke-dasharray="8 7" opacity=".86"/>';}).join('');
-  const markerSvg=hubs.map(h=>{const p=xy(h.lng,h.lat),airport=/Airport/i.test(h.type),color=airport?'#b77a13':'#c83232';return '<g class="vtgSvgHub" data-map-hub="'+escapeHTML(h.id)+'" tabindex="0" role="button" aria-label="Select '+escapeHTML(h.name)+'" style="cursor:pointer"><circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="13" fill="'+color+'" opacity=".16"/><circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="5.8" fill="'+color+'" stroke="#fff" stroke-width="2.2"/><circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="2" fill="#fff"/></g>';}).join('');
-  mapNode.innerHTML='<div class="vtg-own-map" style="position:relative;width:100%;height:100%;min-height:360px;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#f5fbfd 0%,#e2f0f4 64%,#d5e6ec 100%);border-radius:14px"><svg id="vtgLocationSvg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Interactive VTG world map showing public African and Asian trade hubs" style="display:block;width:100%;height:100%;min-height:360px"><defs><linearGradient id="vtgSea" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4fbfd"/><stop offset="1" stop-color="#d7e9ef"/></linearGradient><filter id="vtgMapShadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#547887" flood-opacity=".14"/></filter></defs><rect width="'+W+'" height="'+H+'" fill="url(#vtgSea)"/>'+grid.join('')+'<g filter="url(#vtgMapShadow)">'+continentSvg+'</g>'+routeSvg+markerSvg+'<text x="34" y="42" fill="#17384b" font-size="22" font-weight="800" letter-spacing="1.4">VTG · AFRICA — ASIA TRADE MAP</text><text x="34" y="68" fill="#456474" font-size="13">Select any marker to explore a public port or airport · Routes are illustrative</text><text x="34" y="'+(H-22)+'" fill="#456474" font-size="12">Schematic geography · Approximate facility coordinates · Not live vessel tracking</text></svg><div style="position:absolute;right:12px;top:12px;display:flex;gap:7px;flex-wrap:wrap"><button type="button" data-map-zoom="in" aria-label="Zoom in map" style="width:36px;height:36px;border:1px solid #b9cdd5;border-radius:9px;background:#fff;color:#17384b;font-size:20px;font-weight:800;cursor:pointer">+</button><button type="button" data-map-zoom="out" aria-label="Zoom out map" style="width:36px;height:36px;border:1px solid #b9cdd5;border-radius:9px;background:#fff;color:#17384b;font-size:20px;font-weight:800;cursor:pointer">−</button><button type="button" data-map-zoom="reset" aria-label="Reset map view" style="height:36px;padding:0 10px;border:1px solid #b9cdd5;border-radius:9px;background:#fff;color:#17384b;font-size:12px;font-weight:800;cursor:pointer">Reset</button></div><div style="position:absolute;left:12px;bottom:12px;display:flex;gap:7px;flex-wrap:wrap;pointer-events:none"><span style="background:#ffffffed;color:#17384b;border:1px solid #cbdde3;border-radius:99px;padding:6px 9px;font-size:11px">● Ports</span><span style="background:#ffffffed;color:#17384b;border:1px solid #cbdde3;border-radius:99px;padding:6px 9px;font-size:11px">● Airports</span><span style="background:#ffffffed;color:#8d2929;border:1px solid #e6c7c7;border-radius:99px;padding:6px 9px;font-size:11px">┄ Africa–Asia corridor</span></div></div>';
-  const svg=mapNode.querySelector('#vtgLocationSvg');
-  let zoom=1;
-  const applyZoom=()=>{const w=W/zoom,h=H/zoom;svg.setAttribute('viewBox',((W-w)/2)+' '+((H-h)/2)+' '+w+' '+h);};
-  mapNode.querySelectorAll('[data-map-zoom]').forEach(button=>button.addEventListener('click',()=>{const action=button.getAttribute('data-map-zoom');zoom=action==='reset'?1:Math.max(1,Math.min(3.5,zoom*(action==='in'?1.35:1/1.35)));applyZoom();}));
-  mapNode.querySelectorAll('[data-map-hub]').forEach(el=>{const choose=()=>{const h=hubs.find(x=>String(x.id)===el.getAttribute('data-map-hub'));if(h){selectAtlasHub(h,'map');const selected=document.getElementById('selectedHub');if(selected)selected.scrollIntoView({behavior:'smooth',block:'center'});}};el.addEventListener('click',choose);el.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();choose();}});});
+  if(!window.L){
+   mapNode.innerHTML='<div style="height:100%;min-height:300px;display:grid;place-items:center;padding:24px;text-align:center;color:#233746;background:#eef4f6"><div><strong>Interactive world map could not load.</strong><p style="margin:8px 0 0">Check your internet connection and refresh to load country names and map labels.</p></div></div>';
+   console.error('VTG Trade Atlas: Leaflet map library did not load.');
+   return false;
+  }
+  mapNode.innerHTML='';
+  mapNode.style.background='#eaf0f4';
+  const map=L.map(mapNode,{worldCopyJump:true,zoomControl:true,scrollWheelZoom:true,minZoom:2,maxZoom:18,preferCanvas:true}).setView([17,38],2);
+  atlasMap=map;
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
+   attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &middot; &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
+   subdomains:'abcd',maxZoom:20, tileSize:256
+  }).addTo(map);
+  const hubIcon=(hub)=>L.divIcon({
+   className:'vtg-atlas-marker-wrap',
+   html:'<span style="display:block;width:13px;height:13px;border-radius:50%;background:'+(hub.type==='Airport'?'#c88a18':'#c83232')+';border:2px solid #fff;box-shadow:0 1px 7px #12212b99"></span>',
+   iconSize:[13,13],iconAnchor:[6.5,6.5]
+  });
+  hubs.forEach(h=>{
+   const marker=L.marker([h.lat,h.lng],{icon:hubIcon(h),title:h.name,alt:h.name}).addTo(map);
+   marker.bindPopup('<div style="font-family:Manrope,Arial,sans-serif;min-width:170px"><strong>'+escapeHTML(h.name)+'</strong><br><span>'+escapeHTML(h.city)+'</span><br><small>'+escapeHTML(h.type)+' · '+escapeHTML(h.code)+'</small><br><button type="button" class="vtg-map-select" data-hub-id="'+escapeHTML(h.id)+'" style="margin-top:9px;border:0;border-radius:7px;padding:7px 10px;background:#c83232;color:white;font-weight:700;cursor:pointer">View hub details</button></div>');
+   marker.on('popupopen',event=>{
+    const button=event.popup.getElement()?.querySelector('[data-hub-id]');
+    if(button)button.addEventListener('click',()=>{
+     const selected=hubs.find(x=>x.id===button.getAttribute('data-hub-id'));
+     if(selected){selectAtlasHub(selected,'map');const panel=document.getElementById('selectedHub');if(panel)panel.scrollIntoView({behavior:'smooth',block:'center'});}
+    });
+   });
+   atlasMapMarkers.set(h.id,marker);
+  });
+  const origin=hubs.find(h=>h.id==='ng-tin');
+  if(origin){
+   const destinations=hubs.filter(h=>h.id!==origin.id&&(/China|Korea/i.test(h.country||'')));
+   destinations.forEach(h=>L.polyline([[origin.lat,origin.lng],[h.lat,h.lng]],{color:'#d3423e',weight:2.2,opacity:.8,dashArray:'7 8',interactive:false}).addTo(map));
+  }
+  const legend=L.control({position:'bottomleft'});
+  legend.onAdd=()=>{
+   const div=L.DomUtil.create('div','vtg-map-legend');
+   div.innerHTML='<div style="background:#fffF;padding:9px 11px;border:1px solid #cad6dc;border-radius:10px;box-shadow:0 2px 10px #132c3a1a;color:#233746;font:700 11px Manrope,Arial,sans-serif;line-height:1.9"><span style="color:#c83232">●</span> Sea ports &nbsp; <span style="color:#c88a18">●</span> Airports<br><span style="color:#d3423e">┄</span> Illustrative Africa–Asia corridor</div>';
+   return div;
+  };
+  legend.addTo(map);
+  const resizeMap=()=>map.invalidateSize({pan:false});
+  window.addEventListener('resize',resizeMap);
+  window.setTimeout(resizeMap,150);
   return true;
  };
  initializeAtlasMap();
