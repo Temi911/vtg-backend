@@ -89,6 +89,16 @@
     style.textContent = CSS + '\n' + CONTRAST_CSS;
     document.head.appendChild(style);
   }
+  function syncBrandLogos() {
+    var path = (window.location.pathname || '').toLowerCase();
+    if (path.endsWith('/buyer-dashboard.html') || path.endsWith('/supplier-dashboard.html')) return;
+    var darkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.querySelectorAll('img[src*="vtg-logo"], img[alt*="Vintage Trade Global"], img[alt="VTG"]').forEach(function (img) {
+      var src = darkMode ? '/assets/vtg-logo-light.svg' : '/assets/vtg-logo.svg';
+      if (img.getAttribute('src') !== src) img.setAttribute('src', src);
+      img.setAttribute('data-vtg-theme-logo', darkMode ? 'light-on-dark' : 'dark-on-light');
+    });
+  }
   function renderFooter() {
     var old = Array.prototype.slice.call(document.querySelectorAll('footer, .vtgCompactFooter, .site-footer, .footer'));
     var host = document.createElement('div');
@@ -390,17 +400,13 @@
   }
   function ensureThemePresets() {
     var path = (window.location.pathname || '').toLowerCase();
-    // Keep the public landing page exactly as it is, and leave these two dashboards out of this redesign.
-    if (path === '/' || path.endsWith('/frontend-v3.html') || path.endsWith('/supplier-dashboard.html') || path.endsWith('/bank-trade-os.html')) return;
+    // Buyer and supplier dashboards retain their own workspace appearance controls.
+    if (path.endsWith('/buyer-dashboard.html') || path.endsWith('/supplier-dashboard.html')) return;
     if (document.getElementById('vtgThemePresetControl')) return;
 
-    var workspacePaths = [
-      '/buyer-dashboard.html','/admin-os.html','/agent-dashboard.html','/vtg-ai-dashboard.html',
-      '/trade-os.html','/trade-workspace.html','/account-trade-feed.html','/buyer-trade-room.html',
-      '/buyer-verifications.html','/inspection-admin.html','/verification.html'
-    ];
-    var isWorkspace = workspacePaths.some(function (p) { return path.endsWith(p); });
-    var key = isWorkspace ? 'vtg-user-theme-preset' : 'vtg-visitor-theme-preset';
+    // Public preset selection is shared across all non-excluded pages.
+    var isWorkspace = false;
+    var key = 'vtg-site-theme-preset';
     var presets = isWorkspace ? [
       ['executive','Executive','A calm executive workspace'],
       ['ocean-finance','Ocean Finance','Blue financial workspace'],
@@ -486,12 +492,12 @@
 
   function ensureInterfaceStylesheet() {
     var path = (window.location.pathname || '').toLowerCase();
-    // Explicitly keep the landing page and the two excluded workspaces unchanged.
-    if (path === '/' || path.endsWith('/frontend-v3.html') || path.endsWith('/supplier-dashboard.html') || path.endsWith('/bank-trade-os.html')) return;
+    // Apply the shared interface system to all site pages except buyer/supplier dashboards.
+    if (path.endsWith('/buyer-dashboard.html') || path.endsWith('/supplier-dashboard.html')) return;
     if (document.querySelector('link[data-vtg-interface-system]')) return;
     var link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = '/vtg-interface-system.css?v=20261016-1';
+    link.href = '/vtg-interface-system.css?v=20261016-2';
     link.setAttribute('data-vtg-interface-system', '1');
     document.head.appendChild(link);
   }
@@ -501,6 +507,12 @@
     applyTimeBasedTheme();
     addStyle();
     renderFooter();
+    syncBrandLogos();
+    document.addEventListener('vtg:themechange', syncBrandLogos);
+    if (!window.__vtgLogoObserver && window.MutationObserver) {
+      window.__vtgLogoObserver = new MutationObserver(syncBrandLogos);
+      window.__vtgLogoObserver.observe(document.documentElement, {subtree:true, childList:true, attributes:true, attributeFilter:['src','data-theme']});
+    }
     ensureThemeControl();
     ensureThemePresets();
     adaptHomeAnchors();
