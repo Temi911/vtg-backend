@@ -28,27 +28,48 @@
     if(!document.getElementById('vtgLeafletAtlasCss')){const style=document.createElement('style');style.id='vtgLeafletAtlasCss';style.textContent=css;document.head.appendChild(style);}
   }
   function loadLeafletCss(url){
-    if(document.querySelector('link[data-vtg-leaflet-css]'))return Promise.resolve();
-    return new Promise(resolve=>{const link=document.createElement('link');link.rel='stylesheet';link.href=url;link.dataset.vtgLeafletCss='1';link.onload=()=>resolve();link.onerror=()=>resolve();document.head.appendChild(link);});
+    const links=Array.from(document.querySelectorAll('link[data-vtg-leaflet-css]'));
+    const existing=links.find(link=>link.href===url);
+    if(existing){
+      if(existing.dataset.vtgState==='loaded')return Promise.resolve();
+      if(existing.dataset.vtgState==='failed')return Promise.reject(Error('Leaflet stylesheet unavailable'));
+      return new Promise((resolve,reject)=>{existing.addEventListener('load',()=>resolve(),{once:true});existing.addEventListener('error',()=>reject(Error('Leaflet stylesheet unavailable')),{once:true});});
+    }
+    return new Promise((resolve,reject)=>{
+      const link=document.createElement('link');link.rel='stylesheet';link.href=url;link.dataset.vtgLeafletCss='1';
+      link.onload=()=>{link.dataset.vtgState='loaded';resolve();};
+      link.onerror=()=>{link.dataset.vtgState='failed';reject(Error('Leaflet stylesheet unavailable'));};
+      document.head.appendChild(link);
+    });
   }
   function loadScript(url,attribute){
     if(window.L)return Promise.resolve();
     const existing=document.querySelector('script['+attribute+']');
-    if(existing)return new Promise((resolve,reject)=>{if(window.L)return resolve();existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',reject,{once:true});});
-    return new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=url;script.crossOrigin='anonymous';script.setAttribute(attribute,'1');script.onload=resolve;script.onerror=reject;document.head.appendChild(script);});
+    if(existing){
+      if(existing.dataset.vtgState==='loaded'||window.L)return Promise.resolve();
+      if(existing.dataset.vtgState==='failed')return Promise.reject(Error('Leaflet script unavailable'));
+      return new Promise((resolve,reject)=>{existing.addEventListener('load',()=>resolve(),{once:true});existing.addEventListener('error',()=>reject(Error('Leaflet script unavailable')),{once:true});});
+    }
+    return new Promise((resolve,reject)=>{
+      const script=document.createElement('script');script.src=url;script.crossOrigin='anonymous';script.setAttribute(attribute,'1');
+      script.onload=()=>{script.dataset.vtgState='loaded';resolve();};
+      script.onerror=()=>{script.dataset.vtgState='failed';reject(Error('Leaflet script unavailable'));};
+      document.head.appendChild(script);
+    });
   }
   async function ensureLeaflet(){
     if(window.L)return;
-    await loadLeafletCss('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
-    try{await loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js','data-vtg-leaflet-primary');}
-    catch(_){await loadLeafletCss('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css');await loadScript('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js','data-vtg-leaflet-fallback');}
-  }
-  function loadData(){
-    if(window.VTGTradeAtlasData)return Promise.resolve(window.VTGTradeAtlasData);
-    return new Promise((resolve,reject)=>{const existing=document.querySelector('script[data-vtg-atlas-data]');if(existing){existing.addEventListener('load',()=>window.VTGTradeAtlasData?resolve(window.VTGTradeAtlasData):reject(Error('Atlas data missing')),{once:true});existing.addEventListener('error',reject,{once:true});return;}const script=document.createElement('script');script.src=DATA_URL;script.dataset.vtgAtlasData='1';script.onload=()=>window.VTGTradeAtlasData?resolve(window.VTGTradeAtlasData):reject(Error('Atlas data missing'));script.onerror=reject;document.head.appendChild(script);});
+    try{
+      await loadLeafletCss('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
+      await loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js','data-vtg-leaflet-primary');
+    }catch(_){
+      await loadLeafletCss('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css');
+      await loadScript('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js','data-vtg-leaflet-fallback');
+    }
   }
   async function open(){
     const drawer=document.getElementById('mapDrawer');if(!drawer)return;
+    if(window.VTGWorkspaceAtlas?.map){try{window.VTGWorkspaceAtlas.map.remove();}catch(_){}window.VTGWorkspaceAtlas=null;}
     ensureCss();
     drawer.innerHTML=`<div class="drawerPanel"><div class="drawerTop"><div><div class="eyebrow">AFRICA · CHINA · SOUTH KOREA</div><h2>VTG Trade Atlas</h2><p style="font-size:12px;color:var(--muted);margin:4px 0 12px">Live geographic map with real-world coordinates, ports, trade hubs and illustrative corridors.</p></div><button class="close" id="vtgLeafletClose" aria-label="Close map">×</button></div><div class="vtgMapApp"><div class="vtgMapHead"><input id="vtgLeafletSearch" placeholder="Search a country, port or trade hub (e.g. Tin Can Island)" aria-label="Search map locations"><button class="vtgMapBtn primary" id="vtgLeafletFind">Find location</button><button class="vtgMapBtn" id="vtgLeafletWorld">Reset view</button></div><div class="vtgLeafletStage"><div id="vtgLeafletMap" role="application" aria-label="Interactive map of ports and trade hubs"></div><div class="vtgMapLayerPanel"><strong>Map layers</strong><label class="vtgMapLayer">Countries <input type="checkbox" data-vlayer="countries" checked></label><label class="vtgMapLayer">Ports & terminals <input type="checkbox" data-vlayer="ports" checked></label><label class="vtgMapLayer">Trade hubs <input type="checkbox" data-vlayer="hubs" checked></label><label class="vtgMapLayer">Shipping corridors <input type="checkbox" data-vlayer="routes" checked></label></div><div class="vtgMapTools"><button id="vtgLeafletPlus" aria-label="Zoom in">+</button><button id="vtgLeafletMinus" aria-label="Zoom out">−</button><button id="vtgLeafletHome" aria-label="Reset map">⌂</button></div><div id="vtgLeafletStatus" class="vtgMapStatus" role="status" aria-live="polite">Loading real map tiles and trade locations…</div></div><div class="vtgMapLegend"><span><i style="background:#078c91"></i>Markets</span><span><i style="background:#e46b42"></i>Ports / terminals</span><span><i style="background:#7754cf"></i>Trade hubs</span><span><i style="background:#d5a33b"></i>Illustrative shipping corridors</span></div><div class="vtgMapFoot"><span id="vtgLeafletCounts">Map locations are loaded from VTG's trade-location dataset.</span><span>Drag to pan · scroll or use + / − to zoom · select a marker for details</span></div></div></div>`;
     drawer.classList.add('open');document.body.style.overflow='hidden';
