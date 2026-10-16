@@ -401,7 +401,7 @@
   function ensureThemePresets() {
     var path = (window.location.pathname || '').toLowerCase();
     // Buyer and supplier dashboards retain their own workspace appearance controls.
-    if (path.endsWith('/buyer-dashboard.html') || path.endsWith('/supplier-dashboard.html')) return;
+    if (path.endsWith('/buyer-dashboard.html') || path.endsWith('/buyer-dashboard-preview.html') || path.endsWith('/supplier-dashboard.html')) return;
     if (document.getElementById('vtgThemePresetControl')) return;
 
     // Visitors share three presets across public pages; workspace pages retain their ten-preset system.
@@ -498,7 +498,7 @@
   function ensureInterfaceStylesheet() {
     var path = (window.location.pathname || '').toLowerCase();
     // Apply the shared interface system to all site pages except buyer/supplier dashboards.
-    if (path.endsWith('/buyer-dashboard.html') || path.endsWith('/supplier-dashboard.html')) return;
+    if (path.endsWith('/buyer-dashboard.html') || path.endsWith('/buyer-dashboard-preview.html') || path.endsWith('/supplier-dashboard.html')) return;
     if (document.querySelector('link[data-vtg-interface-system]')) return;
     var link = document.createElement('link');
     link.rel = 'stylesheet';
