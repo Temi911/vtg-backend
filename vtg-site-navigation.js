@@ -390,8 +390,8 @@
   }
   function ensureThemePresets() {
     var path = (window.location.pathname || '').toLowerCase();
-    // Keep the public landing page exactly as it is, and leave these two dashboards out of this redesign.
-    if (path === '/' || path.endsWith('/frontend-v3.html') || path.endsWith('/supplier-dashboard.html') || path.endsWith('/bank-trade-os.html')) return;
+    // Visitor presets also apply to the public landing page. Keep supplier and bank dashboards excluded.
+    if (path.endsWith('/supplier-dashboard.html') || path.endsWith('/bank-trade-os.html')) return;
     if (document.getElementById('vtgThemePresetControl')) return;
 
     var workspacePaths = [
@@ -422,9 +422,9 @@
     var style = document.createElement('style');
     style.id = 'vtg-theme-presets-style';
     style.textContent = [
-      'html[data-vtg-skin="trade-classic"]{--vtg-skin-accent:#a5232b;--vtg-skin-strong:#851d24;--vtg-skin-soft:#fff0ef;--vtg-skin-link:#a5232b;--vtg-skin-dark:#ff8e86}',
-      'html[data-vtg-skin="ocean-route"]{--vtg-skin-accent:#087f9f;--vtg-skin-strong:#075d79;--vtg-skin-soft:#e5f7fb;--vtg-skin-link:#087f9f;--vtg-skin-dark:#64d8f0}',
-      'html[data-vtg-skin="graphite-port"]{--vtg-skin-accent:#526777;--vtg-skin-strong:#354956;--vtg-skin-soft:#edf2f5;--vtg-skin-link:#405d70;--vtg-skin-dark:#a8c3d3}',
+      'html[data-vtg-skin="trade-classic"]{--vtg-skin-accent:#a5232b;--vtg-skin-strong:#851d24;--vtg-skin-soft:#fff0ef;--vtg-skin-link:#a5232b;--vtg-skin-dark:#ff8e86;--navy:#8f1d17;--teal:#c0392b;--cyan:#e05a4f;--gold:#a93226}',
+      'html[data-vtg-skin="ocean-route"]{--navy:#075d79;--deep:#073746;--teal:#087f9f;--cyan:#39b9d0;--gold:#45a6bc;--vtg-skin-accent:#087f9f;--vtg-skin-strong:#075d79;--vtg-skin-soft:#e5f7fb;--vtg-skin-link:#087f9f;--vtg-skin-dark:#64d8f0;--cream:#f0f8fa;--soft:#e5f7fb}',
+      'html[data-vtg-skin="graphite-port"]{--navy:#354956;--deep:#202c34;--teal:#526777;--cyan:#7f9aaa;--gold:#637b8a;--vtg-skin-accent:#526777;--vtg-skin-strong:#354956;--vtg-skin-soft:#edf2f5;--vtg-skin-link:#405d70;--vtg-skin-dark:#a8c3d3;--cream:#f3f5f6;--soft:#edf2f5}',
       'html[data-vtg-skin="executive"]{--vtg-skin-accent:#a5232b;--vtg-skin-strong:#851d24;--vtg-skin-soft:#fff0ef;--vtg-skin-link:#a5232b;--vtg-skin-dark:#ff8e86}',
       'html[data-vtg-skin="ocean-finance"]{--vtg-skin-accent:#087f9f;--vtg-skin-strong:#075d79;--vtg-skin-soft:#e5f7fb;--vtg-skin-link:#087f9f;--vtg-skin-dark:#64d8f0}',
       'html[data-vtg-skin="emerald-trade"]{--vtg-skin-accent:#16734a;--vtg-skin-strong:#105b3a;--vtg-skin-soft:#e8f7ef;--vtg-skin-link:#16734a;--vtg-skin-dark:#79d7ac}',
@@ -449,6 +449,11 @@
       'html[data-theme="dark"][data-vtg-skin] #vtgThemePresetControl select{background:#171d24;color:#eef3f6;border-color:#46535e}',
       '#vtgFooter .vtgFooterBottom{flex-wrap:wrap!important;align-items:center!important}',
       '#vtgFooter .vtgFooterBottom>span{flex:1 1 230px}',
+      'html[data-vtg-skin] .navtools #vtgThemePresetControl{margin:0 2px;padding:0;gap:5px;flex-wrap:nowrap}',
+      'html[data-vtg-skin] .navtools #vtgThemePresetControl label{display:none}',
+      'html[data-vtg-skin] .navtools #vtgThemePresetControl select{max-width:132px;min-height:38px;border-color:rgba(255,255,255,.25);background:#171d24;color:#eef3f6}',
+      '@media(max-width:900px){html[data-vtg-skin] .navtools #vtgThemePresetControl select{max-width:110px;min-height:36px;font-size:10px}}',
+      '@media(max-width:560px){html[data-vtg-skin] .navtools #vtgThemePresetControl select{max-width:90px;min-height:34px;padding:4px 4px;font-size:9px}}',
       '@media(max-width:800px){html[data-vtg-skin] #vtgThemePresetControl{margin:8px 0 0;flex-basis:100%}}'
     ].join('\n');
     document.head.appendChild(style);
@@ -488,7 +493,11 @@
         document.querySelector('.topbar') ||
         document.querySelector('.top');
     } else {
-      host = document.querySelector('.vtg-page-nav .vtg-nav-actions') ||
+      if (path === '/' || path.endsWith('/frontend-v3.html')) {
+        host = document.querySelector('.navtools');
+      }
+      host = host ||
+        document.querySelector('.vtg-page-nav .vtg-nav-actions') ||
         document.querySelector('.vtg-page-nav') ||
         document.querySelector('header .actions') ||
         document.querySelector('header .nav-actions') ||
