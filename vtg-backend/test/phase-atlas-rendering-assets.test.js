@@ -55,3 +55,25 @@ test('buyer dashboard embeds the interactive Atlas renderer and keeps regional m
   assert.match(data, /Shanghai/);
   assert.match(data, /Busan/);
 });
+
+test('shared navigation exposes exactly three visitor themes and ten workspace themes', () => {
+  const navigation = read('vtg-site-navigation.js');
+  const visitorThemes = ['trade-classic', 'ocean-route', 'graphite-port'];
+  const workspaceThemes = ['executive', 'ocean-finance', 'emerald-trade', 'copper-ledger', 'indigo-intel', 'crimson-ops', 'mono-pro', 'sandstone', 'arctic-blue', 'midnight-harbor'];
+  for (const theme of [...visitorThemes, ...workspaceThemes]) {
+    assert.ok(navigation.includes("['" + theme + "'"), 'missing theme preset: ' + theme);
+  }
+  assert.match(navigation, /endsWith\('\/frontend-v3\.html'\)/);
+  assert.match(navigation, /endsWith\('\/supplier-dashboard\.html'\)/);
+  assert.match(navigation, /endsWith\('\/bank-trade-os\.html'\)/);
+});
+
+test('shared interface styles provide distinct light and dark card surfaces and readable text', () => {
+  const styles = read('vtg-interface-system.css');
+  assert.match(styles, /--vtg-ui-surface:#fff/);
+  assert.match(styles, /--vtg-ui-surface:#151c24/);
+  assert.match(styles, /--vtg-ui-text:#17212b/);
+  assert.match(styles, /--vtg-ui-text:#eef3f6/);
+  assert.match(styles, /background-color:var\(--vtg-ui-surface\)/);
+  assert.match(styles, /color:var\(--vtg-ui-muted\)/);
+});
