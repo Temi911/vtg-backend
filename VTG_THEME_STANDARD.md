@@ -1,25 +1,51 @@
-# VTG Automatic Theme Standard
+# VTG Theme and Interface Standard
 
-This is the required theme behavior for every Vintage Trade Global page, including new pages.
+The landing page is deliberately excluded from the redesign. The supplier dashboard and bank trade workspace are also excluded from the current interface refresh.
 
-## Theme schedule
+## Appearance schedule
 - Use the visitor's browser/device local time, never server time or a fixed Nigerian time zone.
-- Light mode from 06:00 inclusive to 18:00 exclusive.
-- Dark mode from 18:00 inclusive to 06:00 exclusive.
+- Light mode from 06:00 inclusive to 18:00 exclusive; dark mode from 18:00 inclusive to 06:00 exclusive.
 - Re-evaluate while a page remains open and when the tab becomes visible or receives focus.
+- The existing Appearance control continues to offer Automatic (local time), Light, and Dark. A manual Light/Dark selection takes precedence until reset to Automatic.
+
+## Three visitor themes
+Public pages offer three visual presets:
+1. Trade Classic — VTG red, familiar brand-forward appearance.
+2. Ocean Route — ocean blue and teal.
+3. Graphite Port — graphite and steel.
+
+## Ten workspace themes
+Workspace pages offer ten visual presets:
+1. Executive
+2. Ocean Finance
+3. Emerald Trade
+4. Copper Ledger
+5. Indigo Intelligence
+6. Crimson Operations
+7. Monochrome Pro
+8. Sandstone
+9. Arctic Blue
+10. Midnight Harbor
+
+Presets change the accent palette, links, primary controls, and focus color. The day/night schedule still controls surface and text contrast. Visitor and workspace selections are saved separately in local storage on the current browser; they are not account-synced.
 
 ## Implementation
-- Include the shared controller near the end of each HTML page:
-  `<script src="/vtg-site-navigation.js?v=20261012-theme-fix-2" defer></script>`
-- The controller sets `<html data-theme="light|dark">`, `color-scheme`, and emits `vtg:themechange`. Its Appearance control defaults to Automatic (local time), with manual Light and Dark overrides.
-- Automatic local-time appearance is the default. A user may explicitly choose Light mode or Dark mode; that manual choice is saved and takes precedence until changed back to Automatic.
-- Use CSS variables for page surfaces, text, muted text, borders, cards, forms, and navigation, and provide both `html[data-theme="light"]` and `html[data-theme="dark"]` styling where needed.
-- Preserve VTG branding, the logo, imagery, chart/map legibility, status colors, and accessible contrast in both themes.
-- If a page has custom theme styling, it must listen to the shared `data-theme` attribute rather than implementing a separate clock or saved preference.
+- The shared controller is /vtg-site-navigation.js; it sets the html data-theme attribute, color-scheme, and emits vtg:themechange.
+- The preset controller sets data-vtg-skin and stores a separate visitor/workspace preference.
+- Use CSS variables for page surfaces, text, muted text, borders, cards, forms, and navigation. Provide both light and dark styling.
+- Preserve the actual VTG logo, images, carousel structure, map controls, chart legibility, status colors, and accessible contrast.
+- Custom theme styling must follow the shared data-theme attribute rather than creating a separate clock or unrelated saved preference.
+- The landing page (/ and /frontend-v3.html), supplier-dashboard.html, and bank-trade-os.html must not receive the new preset control or new skin styling during this refresh.
+
+## Repository cleanup policy
+- Keep only code that active pages or application/runtime tests reference in the active tree.
+- Legacy copies were backed up on branch archive-backup-before-cleanup-2026-10-16 before unused legacy JavaScript and the deprecated archived landing-page copy were removed from main.
+- Keep operational documentation and restoration notes unless they are independently proven obsolete.
 
 ## Acceptance checks
-1. Set the device clock to a daytime hour and load the page: light mode is applied.
-2. Set the device clock to an evening/night hour and load the page: dark mode is applied.
-3. Keep a page open across a theme boundary: the page changes without a reload.
-4. Check forms, dropdowns, tables, dialogs, cards, navigation, and footer in both modes.
-5. Check new pages on mobile and desktop before marking them complete.
+1. Device-local daytime loads light mode; device-local nighttime loads dark mode.
+2. An open tab re-evaluates the theme at the time boundary, on focus, and when visible again.
+3. Visitors can select all three public presets; workspace users can select all ten workspace presets.
+4. Forms, dropdowns, tables, dialogs, cards, navigation, footer, and focus states remain readable in both day/night modes.
+5. Atlas must use a real interactive geographic map with real coordinates and an external map tile service; a decorative SVG is not the primary map.
+6. Check pages on mobile and desktop before marking them complete.
