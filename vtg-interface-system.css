@@ -1,0 +1,51 @@
+/* VTG shared interface system — non-landing public pages and workspaces.
+   Keep layout semantics page-owned; this file standardizes rhythm, controls, contrast, and focus. */
+:root{
+  --vtg-ui-accent:var(--vtg-skin-accent,#a5232b);
+  --vtg-ui-accent-strong:var(--vtg-skin-strong,#851d24);
+  --vtg-ui-soft:var(--vtg-skin-soft,#fff0ef);
+  --vtg-ui-radius:14px;
+  --vtg-ui-control-radius:10px;
+  --vtg-ui-shadow:0 10px 28px rgba(18,32,48,.07);
+  --vtg-ui-focus:color-mix(in srgb,var(--vtg-ui-accent) 42%,transparent);
+}
+html{scroll-behavior:smooth}
+body{font-family:Manrope,Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+img{max-width:100%}
+button,a,input,select,textarea,[role="button"]{-webkit-tap-highlight-color:transparent}
+:where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:3px solid var(--vtg-ui-focus)!important;outline-offset:2px}
+:where(button,.btn,.button,.primary-btn,.btn-primary,.btn-primary,.action-button){font-family:inherit;font-weight:700}
+:where(button,.btn,.button,.primary-btn,.btn-primary,.action-button){transition:background-color .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease,transform .16s ease}
+:where(button,.btn,.button,.primary-btn,.btn-primary,.action-button):active{transform:translateY(1px)}
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),select,textarea){font-family:inherit;border-radius:var(--vtg-ui-control-radius)}
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),select){min-height:40px}
+:where(textarea){min-height:100px;resize:vertical}
+:where(input,select,textarea):focus-visible{border-color:var(--vtg-ui-accent)!important;box-shadow:0 0 0 3px var(--vtg-ui-focus)}
+:where(button,.btn,.button,.primary-btn,.btn-primary,.action-button):disabled{cursor:not-allowed;opacity:.58;transform:none}
+:where(.card,.panel,.surface,.form-card,.info-card,.feature-card,.content-card,.faq-item,.route-card,.portCard,.marketCard,.newsCard,.service-card,.partner-card,.detail-card,.stat-card,.access-card,.application-card){border-radius:var(--vtg-ui-radius)}
+:where(.table-wrap,.table-responsive,.table-scroll,.overflow-table){max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+:where(table){max-width:100%;border-collapse:separate;border-spacing:0}
+:where(th,td){vertical-align:top}
+:where(.eyebrow,.kicker,.section-label,.sectionLabel,.overline){letter-spacing:.09em}
+:where(.status,.badge,.pill,.status-pill){max-width:100%;overflow-wrap:anywhere}
+:where(.primary,.btn-primary,.primary-btn,.btn.primary,button.primary,a.primary){background:var(--vtg-ui-accent);border-color:var(--vtg-ui-accent);color:#fff}
+:where(.primary,.btn-primary,.primary-btn,.btn.primary,button.primary,a.primary):hover{background:var(--vtg-ui-accent-strong);border-color:var(--vtg-ui-accent-strong)}
+:where(.eyebrow,.kicker,.section-label,.sectionLabel,.overline){color:var(--vtg-ui-accent)}
+html[data-theme="light"]{color-scheme:light}
+html[data-theme="dark"]{color-scheme:dark}
+html[data-theme="light"] :where(input,select,textarea){background-color:#fff;color:#17212b}
+html[data-theme="dark"] :where(input,select,textarea){background-color:#171d24;color:#eef3f6;border-color:#46535e}
+html[data-theme="light"] :where(input,textarea)::placeholder{color:#687586;opacity:1}
+html[data-theme="dark"] :where(input,textarea)::placeholder{color:#a9b6c1;opacity:1}
+html[data-theme="light"] :where(.card,.panel,.surface,.form-card,.info-card,.feature-card,.content-card,.faq-item,.route-card,.marketCard,.newsCard,.service-card,.partner-card,.detail-card,.stat-card,.access-card,.application-card){border-color:#dce4eb}
+html[data-theme="dark"] :where(.card,.panel,.surface,.form-card,.info-card,.feature-card,.content-card,.faq-item,.route-card,.marketCard,.newsCard,.service-card,.partner-card,.detail-card,.stat-card,.access-card,.application-card){border-color:#2b3640}
+html[data-vtg-skin] :where(.active,.is-active,[aria-current="page"],.tab[aria-selected="true"]){--active-accent:var(--vtg-ui-accent)}
+html[data-vtg-skin] :where(.active,[aria-current="page"],.tab[aria-selected="true"]){text-decoration-color:var(--vtg-ui-accent)}
+@media(max-width:720px){
+  :where(button,.btn,.button,.primary-btn,.btn-primary,.action-button){max-width:100%}
+  :where(.table-wrap,.table-responsive,.table-scroll,.overflow-table){margin-inline:0}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
+}
