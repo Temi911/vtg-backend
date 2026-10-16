@@ -216,10 +216,21 @@ function init(){
   mapNode.style.background='#eaf0f4';
   const map=L.map(mapNode,{worldCopyJump:true,zoomControl:true,scrollWheelZoom:true,minZoom:2,maxZoom:18,preferCanvas:true}).setView([17,38],2);
   atlasMap=map;
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
-   attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &middot; &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
-   subdomains:'abcd',maxZoom:20, tileSize:256
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+   attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+   maxZoom:19, tileSize:256, crossOrigin:true
   }).addTo(map);
+  const mapStatus=document.createElement('div');
+  mapStatus.style.cssText='position:absolute;z-index:1000;top:10px;left:50%;transform:translateX(-50%);max-width:90%;padding:8px 12px;border-radius:9px;background:#fff;color:#243746;border:1px solid #ccd8df;box-shadow:0 2px 10px #0002;font:600 12px Manrope,Arial,sans-serif;display:none';
+  mapNode.appendChild(mapStatus);
+  let loadedTiles=0,failedTiles=0;
+  map.on('baselayerchange',()=>{});
+  const tileLayer=map.eachLayer(layer=>{if(layer instanceof L.TileLayer)return layer;})||null;
+  const baseTiles=map._layers&&Object.values(map._layers).find(layer=>layer instanceof L.TileLayer);
+  if(baseTiles){
+   baseTiles.on('tileload',()=>{loadedTiles++;mapStatus.style.display='none';});
+   baseTiles.on('tileerror',()=>{failedTiles++;if(!loadedTiles){mapStatus.textContent='Map tiles are blocked or unavailable on this connection. Try again later; no API key is required.';mapStatus.style.display='block';}});
+  }
   const hubIcon=(hub)=>L.divIcon({
    className:'vtg-atlas-marker-wrap',
    html:'<span style="display:block;width:13px;height:13px;border-radius:50%;background:'+(hub.type==='Airport'?'#c88a18':'#c83232')+';border:2px solid #fff;box-shadow:0 1px 7px #12212b99"></span>',
@@ -254,7 +265,7 @@ function init(){
   window.setTimeout(resizeMap,150);
   return true;
  };
- initializeAtlasMap();
+ try{initializeAtlasMap();}catch(error){console.error('VTG map initialization failed:',error);const node=document.getElementById('locationMap');if(node)node.innerHTML='<div style="min-height:300px;display:grid;place-items:center;padding:24px;text-align:center;background:#eef4f6;color:#233746"><div><strong>The interactive map could not start.</strong><p>Please reload the page or check whether map services are blocked on this network.</p></div></div>';}
 }
 window.addEventListener('load',()=>setTimeout(init,80));
 })();
