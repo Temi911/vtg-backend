@@ -191,5 +191,23 @@ html[data-theme="light"] body #guide .item button .num {
 }
 </style>
 
+
+<style id="vtg-finance-interface-refinement-20261016">
+:root{--vtg-fin-bg:#f4f6f8;--vtg-fin-card:#fff;--vtg-fin-ink:#20252d;--vtg-fin-muted:#687586;--vtg-fin-line:#e1e6ed;--vtg-fin-red:#a5232b}
+html[data-theme="dark"]{--vtg-fin-bg:#0b1016;--vtg-fin-card:#141b23;--vtg-fin-ink:#f3f5f7;--vtg-fin-muted:#b4c0cb;--vtg-fin-line:#2b3743;--vtg-fin-red:#ff8e86}
+body{font-family:Manrope,Arial,sans-serif;letter-spacing:-.01em}
+html[data-theme="dark"] body{background:var(--vtg-fin-bg);color:var(--vtg-fin-ink)}
+html[data-theme="dark"] .nav{background:rgba(11,16,22,.94);border-color:var(--vtg-fin-line)}
+html[data-theme="dark"] .navlinks a{color:var(--vtg-fin-muted)}
+html[data-theme="dark"] .section,html[data-theme="dark"] .heroPanel,html[data-theme="dark"] .panel,html[data-theme="dark"] .guide,html[data-theme="dark"] .risk,html[data-theme="dark"] .callout{background:var(--vtg-fin-card);border-color:var(--vtg-fin-line);color:var(--vtg-fin-ink)}
+html[data-theme="dark"] .sectionHead h2,html[data-theme="dark"] .title,html[data-theme="dark"] .risk strong{color:var(--vtg-fin-ink)}
+html[data-theme="dark"] .sectionHead p,html[data-theme="dark"] .guide p,html[data-theme="dark"] .risk p,html[data-theme="dark"] .callout p{color:var(--vtg-fin-muted)}
+html[data-theme="dark"] .guide .panel,html[data-theme="dark"] .panelInner{background:#101820;border-color:var(--vtg-fin-line);color:var(--vtg-fin-ink)}
+.guide,.risk,.heroPanel{border-radius:16px;box-shadow:0 12px 34px rgba(22,31,43,.055)}
+.guide,.risk{transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease}
+.guide:hover,.risk:hover{border-color:color-mix(in srgb,var(--vtg-fin-red) 38%,var(--vtg-fin-line));transform:translateY(-2px)}
+.btn{min-height:40px;border-radius:10px}
+.btn:focus-visible,.guide:focus-visible,a:focus-visible{outline:3px solid color-mix(in srgb,var(--vtg-fin-red) 35%,transparent);outline-offset:3px}
+</style>
 </body>
 </html>
