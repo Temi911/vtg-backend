@@ -447,6 +447,8 @@
       'html[data-vtg-skin] #vtgThemePresetControl label{font-weight:800;color:inherit!important}',
       'html[data-vtg-skin] #vtgThemePresetControl select{max-width:205px;min-height:32px;padding:5px 26px 5px 9px;border:1px solid #cbd5df;border-radius:8px;background:#fff;color:#17212b;font:700 11px/1.3 Manrope,Arial,sans-serif}',
       'html[data-theme="dark"][data-vtg-skin] #vtgThemePresetControl select{background:#171d24;color:#eef3f6;border-color:#46535e}',
+      '#vtgFooter .vtgFooterBottom{flex-wrap:wrap!important;align-items:center!important}',
+      '#vtgFooter .vtgFooterBottom>span{flex:1 1 230px}',
       '@media(max-width:800px){html[data-vtg-skin] #vtgThemePresetControl{margin:8px 0 0;flex-basis:100%}}'
     ].join('\n');
     document.head.appendChild(style);
