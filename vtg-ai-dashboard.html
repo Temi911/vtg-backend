@@ -33,6 +33,35 @@ html[data-theme="light"] .heroCard{box-shadow:0 18px 50px rgba(35,58,78,.08)}htm
 @media(max-width:560px){.top{padding:10px 12px;gap:8px}.crumb{gap:8px}.crumbOverline{font-size:7px}.crumb b{font-size:12px}.topRight{gap:5px}.role{max-width:112px;padding:8px 7px;font-size:9px}.iconBtn{width:34px;height:34px;flex-basis:34px;border-radius:10px}.iconBtn svg{width:16px;height:16px}.content{padding:21px 12px 28px}.hero h1{font-size:36px}.hero p{font-size:12px}.tools{grid-template-columns:1fr 1fr;gap:8px}.tool{padding:13px;min-height:140px}.tool strong{font-size:10px}.tool span{font-size:9px}.workHead{padding:14px;align-items:flex-start}.workHead small{max-width:230px}.newChat{font-size:0;padding:10px}.newChat i{width:16px}.messages{padding:15px 12px}.composer{padding:11px}.composeBox{padding:10px}.send{padding:10px 12px;font-size:10px}.disclaimer{font-size:8px}.status{display:none}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
  .vtgToast{position:fixed;right:22px;top:88px;z-index:80;max-width:min(360px,calc(100vw - 32px));padding:13px 16px;border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:12px;background:var(--panel);color:var(--text);box-shadow:0 16px 45px rgba(0,0,0,.18);font-size:11px;line-height:1.65;opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .18s,transform .18s}.vtgToast.show{opacity:1;transform:translateY(0)}
+
+/* Contrast guard: readable copy, controls and dynamic AI replies in both themes */
+html[data-theme="dark"] body{background-color:#0b1118!important;color:#f2f5f7!important}
+html[data-theme="dark"] body :is(h1,h2,h3,h4,h5,h6,strong,b,label,legend,summary,dt,dd,figcaption,th,td){color:#f2f5f7}
+html[data-theme="dark"] body :is(p,li,small,span,div,section,article,aside,nav,a,button,output,blockquote){color:inherit}
+html[data-theme="dark"] body :is(.sideLabel,.brand small,.nav a,.nav button,.sideNote p,.hero p,.heroCard span,.sectionHead p,.tool span,.workHead small,.bubble,.bubble p,.bubble li,.bubble .fine,.composeBottom span,.disclaimer,.status,.crumb,.crumbOverline,.typing){color:#c2ced8}
+html[data-theme="dark"] body :is(.nav a.active,.nav a.active *, .hero h1,.hero h1 span,.eyebrow,.heroCard .bigIcon,.tool .ico,.avatar,.crumb b,.workHead strong,.tool strong,.heroCard strong,.iconBtn,.iconBtn svg,.newChat,.newChat *,#chatTitle){color:#f2f5f7}
+html[data-theme="dark"] body :is(input,select,textarea){background-color:#111c27;color:#f2f5f7;border-color:#405261}
+html[data-theme="dark"] body textarea::placeholder,html[data-theme="dark"] body input::placeholder{color:#aebbc6;opacity:1}
+html[data-theme="dark"] body :is(.side,.top,.tool,.workspace,.workHead,.composer,.composeBox,.bubble,.newChat,.role,.iconBtn){border-color:#344654}
+html[data-theme="dark"] body :is(.tool,.workspace,.bubble,.composeBox,.role,.iconBtn,.newChat){background-color:#111c27}
+html[data-theme="dark"] body .composer{background:#0d151e}
+html[data-theme="dark"] body .send,html[data-theme="dark"] body .send *{color:#fff!important}
+html[data-theme="dark"] body .userMsg,html[data-theme="dark"] body .userMsg *{color:#fff!important}
+html[data-theme="dark"] body .error{color:#ffb9b9!important}
+html[data-theme="light"] body{background-color:#f3f6fa!important;color:#17212b!important}
+html[data-theme="light"] body :is(h1,h2,h3,h4,h5,h6,strong,b,label,legend,summary,dt,dd,figcaption,th,td){color:#17212b}
+html[data-theme="light"] body :is(p,li,small,.sideLabel,.brand small,.nav a,.nav button,.sideNote p,.hero p,.heroCard span,.sectionHead p,.tool span,.workHead small,.bubble,.bubble p,.bubble li,.bubble .fine,.composeBottom span,.disclaimer,.status,.crumb,.crumbOverline,.typing){color:#526273}
+html[data-theme="light"] body :is(.side,.top,.tool,.workspace,.workHead,.composer,.composeBox,.bubble,.newChat,.role,.iconBtn){border-color:#dce4eb}
+html[data-theme="light"] body :is(.tool,.workspace,.bubble,.composeBox,.role,.iconBtn,.newChat){background-color:#fff}
+html[data-theme="light"] body .heroCard{background:radial-gradient(circle at 85% 15%,rgba(88,200,193,.18),transparent 36%),linear-gradient(145deg,#edf7f8,#fff)}
+html[data-theme="light"] body .heroCard :is(strong,span){color:#17212b}
+html[data-theme="light"] body .nav a.active{color:#8f252b;background:#fff0ef}
+html[data-theme="light"] body .nav a.active *{color:#8f252b}
+html[data-theme="light"] body .sideNote{background:linear-gradient(145deg,#edf8f7,#fff)}
+html[data-theme="light"] body .send,html[data-theme="light"] body .send *{color:#fff!important}
+html[data-theme="light"] body .userMsg,html[data-theme="light"] body .userMsg *{color:#fff!important}
+html[data-theme="light"] body .hero h1 span{color:#087f78;background:none;-webkit-text-fill-color:#087f78}
+html[data-theme="light"] body .eyebrow,html[data-theme="light"] body .tool .ico,html[data-theme="light"] body .avatar{color:#087f78}
 </style>
 </head>
 <body>
@@ -71,10 +100,14 @@ html[data-theme="light"] .heroCard{box-shadow:0 18px 50px rgba(35,58,78,.08)}htm
 (function(){
 const $=s=>document.querySelector(s), messages=$('#messages'), input=$('#prompt'), form=$('#chatForm'), send=$('#sendBtn'), role=$('#role');
  const root=document.documentElement;
- const getTheme=()=>{const pref=localStorage.getItem('vtg-theme-preference');if(pref==='light'||pref==='dark')return pref;const hour=new Date().getHours();return hour>=7&&hour<19?'light':'dark'};
- const applyTheme=()=>{const theme=getTheme();root.setAttribute('data-theme',theme);root.style.colorScheme=theme;const btn=$('#themeBtn');if(btn){btn.innerHTML='<i data-lucide="'+(theme==='dark'?'sun':'moon')+'"></i>';btn.setAttribute('aria-label',theme==='dark'?'Switch to light theme':'Switch to dark theme');btn.title=theme==='dark'?'Switch to light theme':'Switch to dark theme'}iconRefresh()};
+ let themeMode=localStorage.getItem('vtg-ai-theme-mode')||'auto';
+ if(!['auto','light','dark'].includes(themeMode))themeMode='auto';
+ const timeTheme=()=>{const hour=new Date().getHours();return hour>=7&&hour<19?'light':'dark'};
+ const getTheme=()=>themeMode==='auto'?timeTheme():themeMode;
+ const applyTheme=()=>{const theme=getTheme();root.setAttribute('data-theme',theme);root.style.colorScheme=theme;const btn=$('#themeBtn');if(btn){btn.innerHTML='<i data-lucide="'+(themeMode==='auto'?'sun-moon':theme==='dark'?'sun':'moon')+'"></i>';btn.setAttribute('aria-label',themeMode==='auto'?'Theme: automatic by local time. Click to choose light or dark mode':theme==='dark'?'Theme: dark. Click to change theme mode':'Theme: light. Click to change theme mode');btn.title=themeMode==='auto'?'Theme: automatic by local time':theme==='dark'?'Theme: dark':'Theme: light'}iconRefresh()};
  applyTheme();
- $('#themeBtn').addEventListener('click',()=>{const next=root.getAttribute('data-theme')==='dark'?'light':'dark';localStorage.setItem('vtg-theme-preference',next);applyTheme()});
+ $('#themeBtn').addEventListener('click',()=>{themeMode=themeMode==='auto'?'light':themeMode==='light'?'dark':'auto';localStorage.setItem('vtg-ai-theme-mode',themeMode);applyTheme()});
+ window.setInterval(()=>{if(themeMode==='auto')applyTheme()},60000);
  $('#notificationBtn').addEventListener('click',()=>{const status=$('#statusText')?.textContent||'Assistant status unavailable';const msg=status==='Assistant available'?'You’re all caught up. VTG AI is available for your trade questions.':'No new notifications. Assistant status: '+status+'.';let toast=$('#vtgToast');if(!toast){toast=document.createElement('div');toast.id='vtgToast';toast.className='vtgToast';toast.setAttribute('role','status');document.body.appendChild(toast)}toast.textContent=msg;toast.classList.add('show');window.clearTimeout(window.__vtgToastTimer);window.__vtgToastTimer=window.setTimeout(()=>toast.classList.remove('show'),3600)});
  $('#helpBtn').addEventListener('click',()=>{document.querySelector('.workspace').scrollIntoView({behavior:'smooth',block:'start'});input.focus()});
 
