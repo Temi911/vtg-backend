@@ -1,6 +1,6 @@
 /* VTG navigation. Shared header/footer, day/night mode and preset styling apply site-wide except buyer/supplier dashboards. */
 /* 2026-10-10: non-home pages use the simplified logo / Previous / Home header. */
-/* 2026-10-10: keep VTG AI in the shared footer and show a clear red active-page underline. */
+/* 2026-10-17: persist the three landing-page visitor presets across every non-buyer/supplier page, including headers and footers. */
 (function () {
   'use strict';
   var HOME = '/frontend-v3.html';
@@ -404,26 +404,11 @@
     if (path.endsWith('/buyer-dashboard.html') || path.endsWith('/buyer-dashboard-preview.html') || path.endsWith('/supplier-dashboard.html')) return;
     if (document.getElementById('vtgThemePresetControl')) return;
 
-    // Visitors share three presets across public pages; workspace pages retain their ten-preset system.
-    var workspacePaths = [
-      '/admin-os.html','/agent-dashboard.html','/vtg-ai-dashboard.html',
-      '/trade-os.html','/trade-workspace.html','/account-trade-feed.html','/buyer-trade-room.html',
-      '/buyer-verifications.html','/inspection-admin.html','/verification.html','/bank-trade-os.html'
-    ];
-    var isWorkspace = workspacePaths.some(function (p) { return path.endsWith(p); });
-    var key = isWorkspace ? 'vtg-user-theme-preset' : 'vtg-visitor-theme-preset';
-    var presets = isWorkspace ? [
-      ['executive','Executive','A calm executive workspace'],
-      ['ocean-finance','Ocean Finance','Blue financial workspace'],
-      ['emerald-trade','Emerald Trade','Green trade operations'],
-      ['copper-ledger','Copper Ledger','Warm finance and ledger'],
-      ['indigo-intel','Indigo Intelligence','Indigo research workspace'],
-      ['crimson-ops','Crimson Operations','VTG red operations'],
-      ['mono-pro','Monochrome Pro','Minimal neutral workspace'],
-      ['sandstone','Sandstone','Warm neutral workspace'],
-      ['arctic-blue','Arctic Blue','Cool high-clarity workspace'],
-      ['midnight-harbor','Midnight Harbor','Dark port operations']
-    ] : [
+    // The three visitor presets selected on the landing page follow every non-excluded page.
+    // Only buyer and supplier dashboards keep their independent workspace appearance.
+    var isWorkspace = false;
+    var key = 'vtg-visitor-theme-preset';
+    var presets = [
       ['trade-classic','Trade Classic','VTG red, clean and familiar'],
       ['ocean-route','Ocean Route','Ocean blue and teal'],
       ['graphite-port','Graphite Port','Quiet graphite and steel']
@@ -450,6 +435,15 @@
       'html[data-theme="light"][data-vtg-skin] body{background-color:#fff!important;color:#17212b!important}',
       'html[data-theme="dark"][data-vtg-skin] body{background-color:#000!important;color:#fff!important}',
       'html[data-vtg-skin] body :is(.nav,.site-nav,.topbar,.page-header,.vtg-page-nav){border-color:var(--vtg-skin-accent)!important}',
+      'html[data-vtg-skin] body :is(.nav,.site-nav,.topbar,.page-header,.vtg-page-nav) a:not(.primary):not(.btn-primary):not(.btn):not(.button),html[data-vtg-skin] body #vtgFooter .vtgFooterLinks a,html[data-vtg-skin] body #vtgFooter .vtgFooterBottom a{color:var(--vtg-skin-link)!important}',
+      'html[data-vtg-skin] body #vtgFooter{border-top:2px solid var(--vtg-skin-accent)!important}',
+      'html[data-vtg-skin] body #vtgFooter .vtgFooterLinks h4{color:var(--vtg-skin-accent)!important}',
+      'html[data-vtg-skin] body #vtgFooter [data-navkey][aria-current="page"]{color:var(--vtg-skin-accent)!important;font-weight:800!important}',
+      'html[data-vtg-skin] body #vtgFooter [data-navkey][aria-current="page"]:after{background:var(--vtg-skin-accent)!important}',
+      'html[data-vtg-skin] body #vtgFooter a:hover,html[data-vtg-skin] body :is(.nav,.site-nav,.topbar,.page-header,.vtg-page-nav) a:hover{color:var(--vtg-skin-accent)!important}',
+      'html[data-vtg-skin] body .nav a.headerEnterBtn,html[data-vtg-skin] body .hero a#heroJoin,html[data-vtg-skin] body #vtgPageNavigation .vtg-nav-actions a,html[data-vtg-skin] body #vtgPageNavigation .vtg-nav-actions button{border-color:var(--vtg-skin-accent)!important}',
+      'html[data-vtg-skin] body .nav a.headerEnterBtn,html[data-vtg-skin] body .hero a#heroJoin{background:var(--vtg-skin-accent)!important;color:#fff!important}',
+      'html[data-vtg-skin] body #vtgPageNavigation .vtg-nav-actions a:hover,html[data-vtg-skin] body #vtgPageNavigation .vtg-nav-actions button:hover{background:var(--vtg-skin-accent)!important;color:#fff!important}',
       'html[data-vtg-skin] body :is(.primary,.btn-primary,.primary-btn,.btn.primary,button.primary,a.primary){background:var(--vtg-skin-accent)!important;border-color:var(--vtg-skin-accent)!important;color:#fff!important}',
       'html[data-vtg-skin] body a:not(.primary):not(.btn-primary):not(.btn):not(#vtgFooter a):not(.vtg-page-nav a):not(.nav a):not(.site-nav a){color:var(--vtg-skin-link)}',
       'html[data-theme="light"][data-vtg-skin] body :is(input,select,textarea){background:#fff!important;color:#17212b!important;border-color:#cbd5df!important}',
