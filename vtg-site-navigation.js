@@ -1,6 +1,6 @@
 /* VTG navigation. Shared header/footer, day/night mode and preset styling apply site-wide except buyer/supplier dashboards. */
 /* 2026-10-10: non-home pages use the simplified logo / Previous / Home header. */
-/* 2026-10-17: persist the three landing-page visitor presets across every non-buyer/supplier page, including headers and footers. */
+/* 2026-10-17: persist visitor presets site-wide; enforce themed headers/footers and dark-by-default. */
 (function () {
   'use strict';
   var HOME = '/frontend-v3.html';
@@ -52,8 +52,16 @@
         'footer#vtgFooter.vtgCompactFooter .vtgFooterBottom a{display:inline-block!important;margin:0!important;padding:1px 0!important;color:#8c99a3!important;font-size:8.5px!important;line-height:1.5!important;text-decoration:none!important}',
         '@media(max-width:800px){footer#vtgFooter.vtgCompactFooter .footerIn.vtgFooterTop{grid-template-columns:1fr!important;gap:25px!important;padding:30px 16px 22px!important}footer#vtgFooter.vtgCompactFooter .vtgFooterLinks{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:20px 15px!important}footer#vtgFooter.vtgCompactFooter .vtgFooterBottom.copyright{padding:12px 16px!important;align-items:flex-start!important;flex-direction:column!important;gap:8px!important}footer#vtgFooter.vtgCompactFooter .vtgFooterBottom>div{gap:12px!important}}',
         '@media(max-width:420px){footer#vtgFooter.vtgCompactFooter .vtgFooterLinks{grid-template-columns:repeat(2,minmax(0,1fr))!important}footer#vtgFooter.vtgCompactFooter .vtgFooterBottom.copyright{font-size:8px!important}}',
-    '@media(prefers-reduced-motion:reduce){.vtgCompactFooter *,.vtg-page-nav *{transition:none!important}}'
-  ].join('\n');
+    '@media(prefers-reduced-motion:reduce){.vtgCompactFooter *,.vtg-page-nav *{transition:none!important}}',
+    'html[data-vtg-skin][data-theme="light"] body :is(.nav,.site-nav,.site-header,.siteHeader,.topbar,.top-bar,.page-header,.pageHeader,.vtg-page-nav,#vtgPageNavigation){background:#fff!important;background-color:#fff!important;color:#17212b!important;border-color:#dedede!important}',
+    'html[data-vtg-skin][data-theme="dark"] body :is(.nav,.site-nav,.site-header,.siteHeader,.topbar,.top-bar,.page-header,.pageHeader,.vtg-page-nav,#vtgPageNavigation){background:#000!important;background-color:#000!important;color:#fff!important;border-color:#303030!important}',
+    'html[data-vtg-skin][data-theme="light"] body :is(.nav,.site-nav,.site-header,.siteHeader,.topbar,.top-bar,.page-header,.pageHeader,.vtg-page-nav,#vtgPageNavigation) :is(a,button,span,strong,small){color:#17212b!important}',
+    'html[data-vtg-skin][data-theme="dark"] body :is(.nav,.site-nav,.site-header,.siteHeader,.topbar,.top-bar,.page-header,.pageHeader,.vtg-page-nav,#vtgPageNavigation) :is(a,button,span,strong,small){color:#fff!important}',
+    'html[data-vtg-skin][data-theme="light"] body footer#vtgFooter.vtgCompactFooter,html[data-vtg-skin][data-theme="light"] body footer#vtgFooter.vtgCompactFooter :is(.footerIn,.vtgFooterTop,.vtgFooterBottom,.vtgFooterLinks){background:#fff!important;background-color:#fff!important;color:#17212b!important;border-color:#dedede!important}',
+    'html[data-vtg-skin][data-theme="dark"] body footer#vtgFooter.vtgCompactFooter,html[data-vtg-skin][data-theme="dark"] body footer#vtgFooter.vtgCompactFooter :is(.footerIn,.vtgFooterTop,.vtgFooterBottom,.vtgFooterLinks){background:#000!important;background-color:#000!important;color:#fff!important;border-color:#303030!important}',
+    'html[data-vtg-skin][data-theme="light"] body footer#vtgFooter.vtgCompactFooter :is(h1,h2,h3,h4,h5,h6,p,span,a,small,strong){color:#17212b!important}',
+    'html[data-vtg-skin][data-theme="dark"] body footer#vtgFooter.vtgCompactFooter :is(h1,h2,h3,h4,h5,h6,p,span,a,small,strong){color:#fff!important}'
+  ].join('\\n');
   var CONTRAST_CSS = [
     /* Shared contrast baseline for all VTG pages; image overlays and branded dark sections retain their own palettes. */
     'html[data-theme="light"] body{background-color:#f5f7fa;color:#17212b}',
@@ -216,8 +224,8 @@
     var lastTheme = '';
     var preferenceKey = 'vtg-theme-preference';
     function readPreference() {
-      try { return window.localStorage.getItem(preferenceKey) || 'auto'; }
-      catch (error) { return 'auto'; }
+      try { return window.localStorage.getItem(preferenceKey) || 'dark'; }
+      catch (error) { return 'dark'; }
     }
     function syncTheme() {
       var now = new Date();
