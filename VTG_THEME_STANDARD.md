@@ -27,11 +27,11 @@ Workspace pages offer ten visual presets:
 9. Arctic Blue
 10. Midnight Harbor
 
-Presets change the accent palette, links, primary controls, and focus color. The day/night schedule still controls surface and text contrast. Visitor and workspace selections are saved separately in local storage on the current browser; they are not account-synced.
+Presets change the accent palette, links, primary controls, focus color, and shared header/footer accents. The three visitor presets selected on the landing page apply to every non-excluded page, including operational pages; only the buyer and supplier dashboards keep their own appearance controls. The day/night schedule still controls surface and text contrast. The visitor selection is saved in local storage for the current browser; it is not account-synced.
 
 ## Implementation
 - The shared controller is /vtg-site-navigation.js; it sets the html data-theme attribute, color-scheme, emits vtg:themechange, swaps the dark-text and light-text VTG logos, and renders the shared header/footer and appearance controls on non-excluded pages.
-- The preset controller sets data-vtg-skin and stores visitor/workspace preferences separately so visitor presets follow public pages and workspace presets follow user/workspace pages.
+- The preset controller sets data-vtg-skin and stores the shared visitor preference so the landing-page selection follows every non-excluded page, including headers and footers.
 - Use CSS variables for page surfaces, text, muted text, borders, cards, forms, and navigation. Provide both light and dark styling.
 - Preserve the actual VTG logo, images, carousel structure, map controls, chart legibility, status colors, and accessible contrast.
 - Custom theme styling must follow the shared data-theme attribute rather than creating a separate clock or unrelated saved preference.
