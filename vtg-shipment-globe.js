@@ -14,7 +14,7 @@ const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 const read=k=>{try{const v=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(v)?v:[]}catch(_){return[]}};
 function records(role){
  if(role==='supplier')return read('vtg-supplier-os-shipments-v2').map(x=>({ref:x.ref||x.id||'Shipment',goods:x.goods||'Goods not specified',origin:x.origin,destination:x.destination,status:x.status||'Not recorded',source:'supplier shipment'}));
- if(role==='bank')return read('vtg-bank-finance-cases-v2').filter(x=>x.source==='buyer-shared-desk'&&/departed|in transit|arrived|customs|delivered|at sea|shipped/i.test(String(x.stage||''))).map(x=>({ref:x.id,goods:x.goods||'Goods not specified',origin:x.corridor,destination:x.corridor,status:x.stage,source:'customer case'}));
+ if(role==='bank')return read('vtg-bank-finance-cases-v2').filter(x=>x.source==='buyer-shared-desk'&&/departed|in transit|arrived|customs|delivered|at sea|shipped/i.test(String(x.stage||''))).map(x=>{const parts=String(x.corridor||'').split(/→|↔/);return {ref:x.id,goods:x.goods||'Goods not specified',origin:parts[0]||'',destination:parts[1]||'',status:x.stage,source:'customer case'}});
  return read('vtg-shared-trades-v1').filter(x=>/departed|in transit|arrived|customs|delivered|at sea|shipped/i.test(String(x.shipmentStatus||x.shippingStatus||''))).map(x=>({ref:x.orderRef||x.id,goods:x.product||'Goods not specified',origin:x.origin,destination:x.destination,status:x.shipmentStatus||x.shippingStatus,source:'buyer order'}));
 }
 function init(){
