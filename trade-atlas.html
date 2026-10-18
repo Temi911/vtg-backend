@@ -233,14 +233,22 @@ function init(){
   const mapStatus=document.createElement('div');
   mapStatus.style.cssText='position:absolute;z-index:1000;top:10px;left:50%;transform:translateX(-50%);max-width:90%;padding:8px 12px;border-radius:9px;background:#fff;color:#243746;border:1px solid #ccd8df;box-shadow:0 2px 10px #0002;font:600 12px Manrope,Arial,sans-serif;display:none';
   mapNode.appendChild(mapStatus);
-  let loadedTiles=0,failedTiles=0;
+  let loadedTiles=0,failedTiles=0,fallbackStarted=false;
   const watchTiles=layer=>{
    layer.on('tileload',()=>{loadedTiles++;mapStatus.style.display='none';});
    layer.on('tileerror',()=>{
     failedTiles++;
-    if(!loadedTiles&&failedTiles>=4){
-     mapStatus.innerHTML='Map tiles are unavailable on this connection. <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">Open OpenStreetMap</a> or reload to retry.';
-     mapStatus.style.display='block';
+    if(!loadedTiles&&failedTiles>=4&&!fallbackStarted){
+     fallbackStarted=true;
+     mapStatus.innerHTML='Switching map tile source…';mapStatus.style.display='block';
+     try{
+      map.removeLayer(baseTiles);
+      const alternate=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+       attribution:'&copy; OpenStreetMap contributors &copy; CARTO',subdomains:'abcd',maxZoom:20
+      }).addTo(map);
+      alternate.on('tileload',()=>{loadedTiles++;mapStatus.style.display='none';});
+      alternate.on('tileerror',()=>{failedTiles++;if(!loadedTiles&&failedTiles>=8){mapStatus.innerHTML='Map tiles are unavailable on this connection. <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">Open OpenStreetMap</a> or reload to retry.';mapStatus.style.display='block';}});
+     }catch(error){mapStatus.innerHTML='Map tiles are unavailable on this connection. <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">Open OpenStreetMap</a> or reload to retry.';mapStatus.style.display='block';}
     }
    });
   };
