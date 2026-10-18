@@ -52,7 +52,7 @@
         const marker=L.circleMarker([+p.lat,+p.lon],{radius:key==='countries'?4:key==='ports'?6:7,color:'#fff',weight:1.5,fillColor:colors[key],fillOpacity:.96});
         marker.bindPopup('<div class="vtgBuyerAtlasPopup"><strong>'+esc(p.name)+'</strong><small>'+esc(p.country||'Trade market')+' · '+label+'</small><p style="margin:6px 0 0">Coordinates: '+(+p.lat).toFixed(4)+', '+(+p.lon).toFixed(4)+'</p></div>').addTo(groups[key]);
       }));
-      (D.routes||[]).forEach(r=>{const pts=(r.coords||[]).map(p=>[+p[1],+p[0]]);if(pts.length>1)L.polyline(pts,{color:'#d5a33b',weight:2.5,opacity:.85,dashArray:'7 6'}).bindTooltip(esc(r.name),{sticky:true}).addTo(groups.routes);});
+      /* Public sample corridors intentionally omitted here: private dashboard route lines are rendered by vtg-shipment-globe.js from matching order records only. */
       function setRegion(region){
         const views={africa:{center:[4,18],zoom:3},china:{center:[31,105],zoom:4},korea:{center:[36.2,127.8],zoom:6},world:{center:[17,38],zoom:2}};
         const v=views[region]||views.world;map.setView(v.center,v.zoom,{animate:true});
