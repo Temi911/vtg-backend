@@ -201,6 +201,7 @@ function init(){
     const applyGlobeAppearance=()=>{const theme=document.documentElement.getAttribute('data-theme')||'dark';globe.globeImageUrl(theme==='light'?dayTexture:nightTexture);globe.backgroundImageUrl(theme==='light'?'':'https://unpkg.com/three-globe/example/img/night-sky.png');globe.backgroundColor(theme==='light'?'#edf4f8':'#071321');el.style.background=theme==='light'?'radial-gradient(ellipse at center,#edf4f8 0%,#cbdde8 72%)':'radial-gradient(ellipse at center,#15364b 0%,#071321 70%)';};
    applyGlobeAppearance();
     document.addEventListener('vtg:themechange',applyGlobeAppearance);
+     new MutationObserver(applyGlobeAppearance).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
     window.setInterval(applyGlobeAppearance,60000);
   }catch(e){console.error('VTG Trade Atlas globe failed to initialize:',e);document.getElementById('globeFallback').style.display='flex';}
  }else{console.error('VTG Trade Atlas globe library did not load.');document.getElementById('globeFallback').style.display='flex';}
