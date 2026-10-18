@@ -19,8 +19,8 @@
     const add=()=>{
       const D=window.VTGTradeAtlasData;
       [['countries',D.points(D.countries)],['ports',D.points(D.ports)],['hubs',D.points(D.hubs)],['routes',D.lines]].forEach(([k,data])=>{if(!map.getSource('vtg-'+k))map.addSource('vtg-'+k,{type:'geojson',data})});
-      const specs=[['routes','line','#d6a23a',3],['countries','circle','#0e969f',5],['ports','circle','#e56b3f',7],['hubs','circle','#7c4dff',8]];
-      specs.forEach(([k,type,color,size])=>{const id='vtg-'+k;if(map.getLayer(id))return;map.addLayer({id,type,source:id,layout:{visibility:'none'},paint:type==='line'?{'line-color':color,'line-width':size,'line-opacity':.85}:{'circle-radius':size,'circle-color':color,'circle-stroke-color':'#fff','circle-stroke-width':1.5}})});
+      const specs=[['routes','line','#d6a23a',2.5],['countries','circle','#0e969f',2.5],['ports','circle','#e56b3f',4],['hubs','circle','#7c4dff',4.5]];
+      specs.forEach(([k,type,color,size])=>{const id='vtg-'+k;if(map.getLayer(id))return;map.addLayer({id,type,source:id,layout:{visibility:'none'},paint:type==='line'?{'line-color':color,'line-width':size,'line-opacity':.85}:{'circle-radius':size,'circle-color':color,'circle-stroke-color':'#fff','circle-stroke-width':1}})});
       window.VTGTradeAtlas={...D,map,setLayer:(k,on)=>map.getLayer('vtg-'+k)&&map.setLayoutProperty('vtg-'+k,'visibility',on?'visible':'none')};
       const bind=(layer,items,type)=>map.on('click',layer,e=>{const p=e.features?.[0]?.properties;if(!p)return;const item=items.find(x=>x.name===p.name);if(!item)return;new maplibregl.Popup({offset:12}).setLngLat([item.lon,item.lat]).setHTML(`<strong>${item.name}</strong><br><small>${item.country||'Trade market'} • ${type}</small>`).addTo(map)});
       bind('vtg-countries',D.countries,'country');bind('vtg-ports',D.ports,'port');bind('vtg-hubs',D.hubs,'hub');
