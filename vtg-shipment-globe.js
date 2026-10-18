@@ -51,10 +51,17 @@ function init(){
     .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
     .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
     .showAtmosphere(true).atmosphereColor('#55bfe8').atmosphereAltitude(.16)
-    .pointsData(points).pointLat('lat').pointLng('lng').pointColor('color').pointAltitude(.025).pointRadius(.2).pointLabel('name')
+    .pointsData(points).pointLat('lat').pointLng('lng').pointColor('color').pointAltitude(.018).pointRadius(.12).pointLabel('name')
     .arcsData(arcs).arcStartLat('startLat').arcStartLng('startLng').arcEndLat('endLat').arcEndLng('endLng').arcColor('color').arcDashLength(.52).arcDashGap(2).arcDashAnimateTime(2800).arcStroke(.6)
     .onPointClick(p=>{if(Number.isInteger(p.routeIndex))focus(p.routeIndex);globe.pointOfView({lat:p.lat,lng:p.lng,altitude:1.25},700)});
    globe.width(node.clientWidth||600).height(node.clientHeight||340).pointOfView({lat:15,lng:55,altitude:2.2},0);
+   const dayTexture='https://unpkg.com/three-globe/example/img/earth-day.jpg';
+   const nightTexture='https://unpkg.com/three-globe/example/img/earth-night.jpg';
+   const nightSky='https://unpkg.com/three-globe/example/img/night-sky.png';
+   const applyGlobeTheme=()=>{const light=document.documentElement.getAttribute('data-theme')==='light';globe.globeImageUrl(light?dayTexture:nightTexture);globe.backgroundImageUrl(light?'':nightSky);globe.backgroundColor(light?'#edf4f8':'#071321');node.style.background=light?'radial-gradient(ellipse at center,#eaf3f8 0%,#cddde7 72%)':'radial-gradient(ellipse at center,#15364b 0%,#071321 70%)';};
+   applyGlobeTheme();
+   document.addEventListener('vtg:themechange',applyGlobeTheme);
+   new MutationObserver(applyGlobeTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
    const controls=globe.controls();if(controls){controls.autoRotate=true;controls.autoRotateSpeed=.25;controls.enableDamping=true}
    window.addEventListener('resize',()=>{if(globe)globe.width(node.clientWidth||600).height(node.clientHeight||340)},{passive:true});
   }).catch(()=>{node.innerHTML='<div style="height:100%;display:grid;place-items:center;padding:22px;color:#b5c4d2;text-align:center;font-size:12px">The 3D globe library could not load on this connection. The matching geographic map below remains available.</div>'});
@@ -66,7 +73,7 @@ function init(){
   const node=panel.querySelector('#vtgShipmentMap');map=window.L.map(node,{worldCopyJump:true,zoomControl:true,scrollWheelZoom:true,minZoom:2,maxZoom:18}).setView([17,38],2);
   let tiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map),failed=0,loaded=false;
   tiles.on('tileload',()=>{loaded=true});tiles.on('tileerror',()=>{if(!loaded&&++failed===4){map.removeLayer(tiles);const alt=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:20,attribution:'&copy; OpenStreetMap contributors &copy; CARTO'}).addTo(map);alt.on('tileerror',()=>{node.insertAdjacentHTML('beforeend','<div style="padding:12px;font-size:12px">Map tiles unavailable on this connection. <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">Open OpenStreetMap</a>.</div>')})}});
-  routes.forEach((r,i)=>{const line=L.polyline([[r.from.lat,r.from.lng],[r.to.lat,r.to.lng]],{color:i===0?'#d3423e':'#607d8b',weight:i===0?5:2.5,opacity:i===0?1:.5,dashArray:'7 7'}).addTo(map);line.bindTooltip(esc(r.goods)+' · '+esc(r.status));line.on('click',()=>focus(i));mapRoutes.push(line);L.circleMarker([r.from.lat,r.from.lng],{radius:6,color:'#fff',weight:2,fillColor:'#e46b42',fillOpacity:1}).bindTooltip('Origin: '+esc(r.from.name)).addTo(map);L.circleMarker([r.to.lat,r.to.lng],{radius:6,color:'#fff',weight:2,fillColor:'#078c91',fillOpacity:1}).bindTooltip('Destination: '+esc(r.to.name)).addTo(map)});
+  routes.forEach((r,i)=>{const line=L.polyline([[r.from.lat,r.from.lng],[r.to.lat,r.to.lng]],{color:i===0?'#d3423e':'#607d8b',weight:i===0?5:2.5,opacity:i===0?1:.5,dashArray:'7 7'}).addTo(map);line.bindTooltip(esc(r.goods)+' · '+esc(r.status));line.on('click',()=>focus(i));mapRoutes.push(line);L.circleMarker([r.from.lat,r.from.lng],{radius:3.5,color:'#fff',weight:1.2,fillColor:'#e46b42',fillOpacity:1}).bindTooltip('Origin: '+esc(r.from.name)).addTo(map);L.circleMarker([r.to.lat,r.to.lng],{radius:3.5,color:'#fff',weight:1.2,fillColor:'#078c91',fillOpacity:1}).bindTooltip('Destination: '+esc(r.to.name)).addTo(map)});
   if(routes.length)focus(0);else map.setView([17,38],2);setTimeout(()=>map.invalidateSize(),180);window.addEventListener('resize',()=>map&&map.invalidateSize(),{passive:true});document.querySelectorAll('[data-view="atlas"],[data-page="logistics"],[data-view="shipments"]').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>{if(map)map.invalidateSize();if(globe){const n=panel.querySelector('#vtgShipmentGlobe');globe.width(n.clientWidth||600).height(n.clientHeight||340)}},220)));
  }).catch(()=>{panel.querySelector('#vtgShipmentMap').innerHTML='<div style="padding:22px;color:#243746;font-size:12px">Interactive map library could not load on this connection. Shipment routes remain listed above.</div>'});
 }
