@@ -136,6 +136,7 @@
       finance: ['/finance-payments.html'],
       guide: ['/trade-guide.html'],
       agent: ['/agent.html', '/agent-dashboard.html'],
+      workforce: ['/workforce-access.html', '/workforce-signin.html', '/workforce-dashboard.html', '/admin-signin.html'],
       about: ['/about-vintage.html'],
       partnerships: ['/partnerships.html', '/partnership-application.html', '/partnership-finance.html', '/partnership-logistics.html', '/partnership-strategic.html', '/partnership-supply.html', '/partnership-technology.html', '/partnership-trade.html', '/partnership-warehouse.html', '/network.html'],
       contact: ['/contact.html'],
