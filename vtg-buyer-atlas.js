@@ -49,7 +49,7 @@
       const colors={countries:'#078c91',ports:'#e46b42',hubs:'#7754cf'};
       [['countries','country'],['ports','port / terminal'],['hubs','trade hub']].forEach(([key,label])=>(D[key]||[]).forEach(p=>{
         if(!Number.isFinite(+p.lat)||!Number.isFinite(+p.lon))return;
-        const marker=L.circleMarker([+p.lat,+p.lon],{radius:key==='countries'?4:key==='ports'?6:7,color:'#fff',weight:1.5,fillColor:colors[key],fillOpacity:.96});
+        const marker=L.circleMarker([+p.lat,+p.lon],{radius:key==='countries'?2.5:key==='ports'?4:key==='hubs'?4.5:4,color:'#fff',weight:1.5,fillColor:colors[key],fillOpacity:.96});
         marker.bindPopup('<div class="vtgBuyerAtlasPopup"><strong>'+esc(p.name)+'</strong><small>'+esc(p.country||'Trade market')+' · '+label+'</small><p style="margin:6px 0 0">Coordinates: '+(+p.lat).toFixed(4)+', '+(+p.lon).toFixed(4)+'</p></div>').addTo(groups[key]);
       }));
       /* Public sample corridors intentionally omitted here: private dashboard route lines are rendered by vtg-shipment-globe.js from matching order records only. */
