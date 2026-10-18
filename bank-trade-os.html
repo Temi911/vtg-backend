@@ -155,4 +155,4 @@ function renderAll(){const open=cases.filter(c=>c.stage!=='Closed').length;$('mC
 function loadChecks(){document.querySelectorAll('[data-lccheck]').forEach(c=>c.checked=!!checks[c.dataset.lccheck])}
 renderAll();loadChecks();renderNotes();$('themeToggle').textContent='◐';$('themeToggle').setAttribute('aria-label',root.dataset.theme==='dark'?'Switch to light mode':'Switch to dark mode');$('themeToggle').title=root.dataset.theme==='dark'?'Switch to light mode':'Switch to dark mode';if(prefs.bankName)$('bankName').value=prefs.bankName;if(prefs.officerRole)$('officerRole').value=prefs.officerRole;
 })();
-</script></body></html>
+</script><script src="/vtg-shipment-globe.js?v=20261018-routes-1" defer></script></body></html>
