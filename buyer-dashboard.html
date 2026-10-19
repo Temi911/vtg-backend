@@ -554,6 +554,7 @@ $('theme').addEventListener('click',()=>{const n=document.documentElement.datase
 document.querySelectorAll('[data-group]').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.group,el=document.querySelector('[data-items="'+id+'"]'),open=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',String(!open));el.classList.toggle('closed',open)}));$('menuBtn').addEventListener('click',()=>$('sidebar').classList.toggle('open'));
 function go(v){if(!$('page-'+v))v='overview';view=v;document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+v));document.querySelectorAll('[data-view]').forEach(a=>a.classList.toggle('active',a.dataset.view===v));document.querySelectorAll('.sidebar [data-view]').forEach(a=>{if(a.dataset.view===v)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});$('crumb').textContent=t(v==='overview'?'overview':v);history.replaceState(null,'','#'+v);$('sidebar').classList.remove('open');window.scrollTo(0,0);if(v==='cart')renderCart();if(v==='messages')renderChat();if(v==='feed')renderFeed();if(v==='intelligence')loadBuyerIntelStatus()}
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();go(b.dataset.view)}));
+ if(location.hash==='#page-assistant'||location.hash==='#assistant')go('assistant');
 async function loadBuyerIntelStatus(){
  const status=$('vtgIntelStatus'),fx=$('vtgIntelFx'),tariff=$('vtgIntelTariff'),freight=$('vtgIntelFreight');
  if(!status||!fx||!tariff||!freight)return;
