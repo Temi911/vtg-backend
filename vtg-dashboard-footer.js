@@ -11,7 +11,6 @@
     ['Staff','/workforce-dashboard.html?preview=1','workforce-dashboard.html'],
     ['Agent','/agent-dashboard.html?preview=1','agent-dashboard.html'],
     ['Agent Network','/agent-network-dashboard.html','agent-network-dashboard.html'],
-    ['Trade Workspace','/trade-workspace.html','trade-workspace.html'],
     ['VTG AI','/buyer-dashboard.html?preview=1#page-assistant','vtg-ai-dashboard.html'],
   ];
   const activePath=path==='buyer-dashboard-preview.html'?'buyer-dashboard.html':path;
