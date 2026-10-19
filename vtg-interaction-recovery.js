@@ -78,7 +78,7 @@
         msg.className='formMsg ok';
         msg.textContent=mode==='login'?'Signed in successfully. Opening your VTG workspace…':'Account created successfully. Please review the VTG agreement before entering your workspace…';
       }
-      setTimeout(()=>{location.href=d.agreementRequired?'/signup-agreement.html':(mode==='signup'&&(role==='supplier'||role==='bank'))?'/verification.html':'/trade-os.html'},500);
+      const actualRole=String(d.user?.role||role||'buyer').toLowerCase();const destination=actualRole==='buyer'?'/buyer-dashboard.html':actualRole==='supplier'?'/supplier-dashboard.html':actualRole==='bank'?'/bank-trade-os.html':actualRole==='agent'?'/agent-dashboard.html':['admin','administrator'].includes(actualRole)?'/admin-dashboard-preview.html':'/workforce-dashboard.html';setTimeout(()=>{location.href=d.agreementRequired?'/signup-agreement.html':(mode==='signup'&&(actualRole==='supplier'||actualRole==='bank'))?'/verification.html':destination},500);
     }catch(err){
       if(msg){msg.className='formMsg';msg.textContent=err.message||'Request failed';}
     }
