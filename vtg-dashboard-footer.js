@@ -15,7 +15,8 @@
     ['VTG AI','/vtg-ai-dashboard.html','vtg-ai-dashboard.html'],
     ['Trade OS','/trade-os.html','trade-os.html']
   ];
-  const active=pages.find(p=>p[2]===path);
+  const activePath=path==='buyer-dashboard-preview.html'?'buyer-dashboard.html':path;
+  const active=pages.find(p=>p[2]===activePath);
   const root=document.documentElement;
   const get=(k,f='')=>{try{return localStorage.getItem(k)||f}catch(e){return f}};
   const set=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
