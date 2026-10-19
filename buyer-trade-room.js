@@ -292,7 +292,7 @@
   function boot(){style();mount()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();+Number(d.payment?.amountUsd||0).toFixed(2)+'</b>.</div><p class="buyerRoomEmpty">Continue to the Product Verification Centre to pay the inspection fee and track agent assignment.</p>',()=>modal.classList.remove('open'));
-            const b=document.createElement('button');b.className='btn primary';b.textContent='Open Product Verification Centre';b.onclick=()=>location.href='/buyer-verifications.html';document.getElementById('buyerRoomModalMsg')?.appendChild(b);
+            const b=document.createElement('button');b.className='btn primary';b.textContent='Open Product Verification Centre';b.onclick=()=>location.href='/buyer-dashboard.html#verification';document.getElementById('buyerRoomModalMsg')?.appendChild(b);
           }catch(e){document.getElementById('buyerRoomModalMsg').innerHTML='<div class="buyerOsError">'+esc(e.message)+'</div>'}
         });
     }
