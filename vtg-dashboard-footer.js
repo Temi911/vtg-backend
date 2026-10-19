@@ -13,7 +13,7 @@
     ['Agent Network','/agent-network-dashboard.html','agent-network-dashboard.html'],
     ['VTG AI','/buyer-dashboard.html?preview=1#page-assistant','vtg-ai-dashboard.html'],
   ];
-  const activePath=path==='buyer-dashboard-preview.html'?'buyer-dashboard.html':path;
+  const activePath=path;
   const active=pages.find(p=>p[2]===activePath);
   const root=document.documentElement;
   const get=(k,f='')=>{try{return localStorage.getItem(k)||f}catch(e){return f}};
