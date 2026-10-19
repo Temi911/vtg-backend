@@ -108,6 +108,11 @@
     });
   }
   function renderFooter() {
+    // Workforce & Staff Access is intentionally a standalone portal with no footer.
+    if ((window.location.pathname || '').toLowerCase().replace(/\\/+$/, '').endsWith('/workforce-access.html')) {
+      document.querySelectorAll('footer, .vtgCompactFooter, .site-footer, .footer').forEach(function (item) { item.remove(); });
+      return;
+    }
     var old = Array.prototype.slice.call(document.querySelectorAll('footer, .vtgCompactFooter, .site-footer, .footer'));
     var host = document.createElement('div');
     host.innerHTML = FOOTER_HTML;
