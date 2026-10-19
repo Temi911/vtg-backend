@@ -12,7 +12,7 @@ html[data-theme=dark]{color-scheme:dark;--bg:#0b1016;--surface:#141b23;--ink:#f3
 @media(max-width:1050px){.app{grid-template-columns:200px minmax(0,1fr)}.content{padding:22px 19px}.top{padding:12px 19px}.columns{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:680px){.app{display:block}.side{position:sticky;top:0;z-index:10;padding:9px 10px;border-right:0;border-bottom:1px solid var(--line);gap:8px}.brand{display:flex;align-items:center;justify-content:space-between;padding:0 3px 8px}.brand img{width:112px}.brand small{margin:0}.navlabel,.sidefoot{display:none}.nav{display:flex;overflow-x:auto;gap:4px}.nav button{white-space:nowrap;width:auto;padding:8px}.top{padding:10px 12px;min-height:54px}.top .crumb{display:none}.content{padding:17px 12px 30px}.heading{align-items:flex-start;flex-direction:column}.stats{gap:8px}.stat{padding:11px}.number{font-size:22px}.statTop{font-size:9px}.quick{grid-template-columns:1fr}.panelHead,.panelBody{padding-left:12px;padding-right:12px}.formGrid{grid-template-columns:1fr}.full{grid-column:auto}.actions .hideMobile{display:none}}
 </style></head>
-<body>
+<body id="vtg-dashboard-top">
 <div class="app">
 <aside class="side">
 <div class="brand"><a href="/frontend-v3.html"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><small>Agent Network Workspace</small></div>
@@ -100,4 +100,5 @@ const leads=[];const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&
 function drawLeads(){const q=document.getElementById('leadSearch').value.toLowerCase();const rows=leads.filter(x=>[x.company,x.type,x.country,x.stage].join(' ').toLowerCase().includes(q));document.getElementById('leadRows').innerHTML=rows.length?rows.map(x=>'<tr><td><strong>'+esc(x.company)+'</strong><br><span class="small">'+esc(x.category||'No category specified')+'</span></td><td>'+esc(x.type)+'</td><td>'+esc(x.country)+'</td><td><span class="pill">'+esc(x.stage)+'</span></td><td>'+esc(x.next||'Not scheduled')+'</td></tr>').join(''):'<tr><td colspan="5" class="empty">No matching entries in this browser session.</td></tr>'}
 document.getElementById('leadSearch').addEventListener('input',drawLeads);
 document.getElementById('leadForm').addEventListener('submit',e=>{e.preventDefault();const company=document.getElementById('leadCompany').value.trim();if(!document.getElementById('leadConsent').checked){document.getElementById('leadMsg').textContent='Please confirm you have permission to record and follow up this business contact.';return}leads.unshift({company,type:document.getElementById('leadType').value,country:document.getElementById('leadCountry').value,stage:document.getElementById('leadStage').value,category:document.getElementById('leadCategory').value.trim(),next:document.getElementById('leadNext').value});drawLeads();document.getElementById('leadMsg').textContent='Validated in this browser session only. Nothing has been sent to or saved on VTG servers.';e.target.reset();});
-</script></body></html>
+</script><script src="/vtg-dashboard-footer.js?v=20261019" defer></script>
+</body></html>
