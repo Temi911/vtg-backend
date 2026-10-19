@@ -136,7 +136,7 @@
       'trade-feed': ['/trade-feed.html', '/account-trade-feed.html'],
       verification: ['/product-verification.html', '/inspection-request.html', '/inspection-payment-callback.html'],
       logistics: ['/logistics-shipping.html'],
-      workspace: ['/trade-workspace.html', '/trade-os.html', '/supplier-dashboard.html', '/workspace.html'],
+      workspace: ['/trade-workspace.html', '/supplier-dashboard.html'],
       sourcing: ['/sourcing-suppliers.html', '/supplier.html'],
       finance: ['/finance-payments.html'],
       guide: ['/trade-guide.html'],
