@@ -36,8 +36,8 @@
   #vtg-shared-footer .vf-links{display:flex;align-items:center;gap:4px;flex:1;overflow-x:auto;scrollbar-width:thin}
   #vtg-shared-footer a{color:inherit;text-decoration:none;white-space:nowrap;padding:7px 8px;border-radius:7px;font-weight:700}
   #vtg-shared-footer a:hover{background:var(--soft,#fff0ef);color:var(--red,#a5232b)}
-  #vtg-shared-footer a[aria-current=page]{background:var(--soft,#fff0ef);color:var(--red,#a5232b);box-shadow:inset 0 -2px 0 var(--red,#a5232b)}
-  #vtg-shared-footer .vf-controls{display:flex;align-items:center;gap:6px;flex-shrink:0}
+  #vtg-shared-footer a[aria-current=page],#vtg-shared-footer span[aria-current=page]{background:var(--soft,#fff0ef);color:var(--red,#a5232b);box-shadow:inset 0 -2px 0 var(--red,#a5232b)}
+  #vtg-shared-footer .vf-links span[aria-current=page]{white-space:nowrap;padding:7px 8px;border-radius:7px;font-weight:800}\n  #vtg-shared-footer .vf-controls{display:flex;align-items:center;gap:6px;flex-shrink:0}
   #vtg-shared-footer select,#vtg-shared-footer button{max-width:160px;background:var(--surface,#fff);color:var(--ink,#20252d);border:1px solid var(--line,#dfe4e9);border-radius:7px;padding:7px 8px;font:inherit}
   #vtg-shared-footer button{font-weight:800;cursor:pointer}
   #vtg-shared-footer .vf-status{display:none;padding:0 16px 7px;color:var(--muted,#687586);font-size:10px}
@@ -47,7 +47,7 @@
   `;
   document.head.appendChild(style);
   const footer=document.createElement('footer');footer.id='vtg-shared-footer';footer.setAttribute('aria-label','Shared VTG dashboard controls');
-  const linkHtml=pages.map(p=>'<a href="'+p[1]+'"'+(active&&active[2]===p[2]?' aria-current="page" title="Current workspace"':'')+'>'+p[0]+'</a>').join('');
+  const linkHtml=pages.map(p=>active&&active[2]===p[2]?'<span aria-current="page" title="Current workspace">'+p[0]+'</span>':'<a href="'+p[1]+'">'+p[0]+'</a>').join('');
   footer.innerHTML='<div class="vf-main"><span class="vf-brand">VTG WORKSPACE</span><nav class="vf-links" aria-label="VTG workspaces">'+linkHtml+'</nav><div class="vf-controls"><select id="vf-theme-mode" aria-label="Appearance mode" title="Automatic by local time, light or dark"><option value="auto">Theme: Auto</option><option value="light">Theme: Light</option><option value="dark">Theme: Dark</option></select><select id="vf-skin" aria-label="Workspace theme" title="Workspace colour theme">'+skins.map(s=>'<option value="'+s[0]+'">'+s[1]+'</option>').join('')+'</select><select id="vf-language" aria-label="Language preference" title="Language preference">'+supportedLangs.map(l=>'<option value="'+l+'">Language: '+langNames[l]+'</option>').join('')+'</select><button id="vf-notifications" type="button" title="Notifications" aria-label="Notifications">♧</button></div></div><div class="vf-status" id="vf-status" role="status" aria-live="polite"></div>';
   document.body.appendChild(footer);
   const status=document.getElementById('vf-status');
