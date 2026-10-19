@@ -109,7 +109,7 @@ async function loadFeed(){
   const data=await api(API+'/feed?limit=50');
   const posts=(data.posts||[]).map(p=>({...p,kind:'social',sortDate:p.created_at}));
   let news=[];
-  try{const nr=await fetch('/api/market-intelligence/news?limit=20',{headers:{Accept:'application/json'},cache:'no-store'});if(nr.ok){const nd=await nr.json();news=(nd.items||[]).map(n=>({...n,kind:'external-news',post_type:'news',author_id:'news:'+n.id,full_name:n.source||n.domain||'External publisher',role:'news',body:n.title,external_url:n.url,sortDate:n.published||n.discovered_at,created_at:n.published||n.discovered_at,summary:n.summary,comment_count:0,reaction_count:0}));}}catch(_){}
+  try{let nr=await fetch('/api/market-intelligence/news?limit=20',{headers:{Accept:'application/json'},cache:'no-store'});let nd={};try{nd=await nr.json()}catch(_){}if(!nr.ok&&token()){nr=await fetch('/api/integrations/news',{headers:{Accept:'application/json',Authorization:'Bearer '+token()},cache:'no-store'});nd={};try{nd=await nr.json()}catch(_){}}if(nr.ok){news=(nd.items||[]).map(n=>({...n,kind:'external-news',post_type:'news',author_id:'news:'+n.id,full_name:n.source||n.domain||n.provider||'External publisher',role:'news',body:n.title||n.headline,external_url:n.url||n.link,sortDate:n.published||n.discovered_at||n.publishedAt,created_at:n.published||n.discovered_at||n.publishedAt,summary:n.summary||n.description,comment_count:0,reaction_count:0}));}}catch(_){}
   allItems=[...posts,...news].sort((a,b)=>new Date(b.sortDate||0)-new Date(a.sortDate||0));
   $('#feedStatus').textContent=allItems.length+' posts and news links';
   renderFeed();renderSuggestions();
