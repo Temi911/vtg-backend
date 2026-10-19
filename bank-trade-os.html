@@ -31,7 +31,7 @@ html[data-theme="light"][data-skin="midnight-harbor"]{--soft:#e8f4f8}
 @media(max-width:1050px){.app{grid-template-columns:210px minmax(0,1fr)}.content{padding:20px}.topbar{padding:0 20px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}}
 @media(max-width:700px){.app{display:block}.sidebar{position:fixed;left:-260px;width:248px;transition:left .2s}.sidebar.open{left:0;box-shadow:0 0 0 999px #0008}.mobilemenu{display:inline-block}.topbar{height:auto;min-height:60px;padding:12px;flex-wrap:wrap}.content{padding:15px 12px 30px}.pagehead{display:block}.demo{margin-top:10px}.metrics{gap:8px}.metric{padding:12px}.metricValue{font-size:22px}.quickgrid{grid-template-columns:1fr}.two,.detailgrid{grid-template-columns:1fr}.topactions .btn{padding:8px}.brand img{width:38px;height:38px}}
 </style></head>
-<body>
+<body id="vtg-dashboard-top">
 <div class="app">
 <aside class="sidebar" id="sidebar">
 <a class="brand" href="/trade-os.html"><img class="logo-dark" src="/assets/vtg-logo.svg" alt="VTG logo"><img class="logo-light" src="/assets/vtg-logo-light.svg" alt="" aria-hidden="true"><span><strong>VTG FINANCE OS</strong><small>Trade finance workspace</small></span></a>
@@ -155,4 +155,5 @@ function renderAll(){const open=cases.filter(c=>c.stage!=='Closed').length;$('mC
 function loadChecks(){document.querySelectorAll('[data-lccheck]').forEach(c=>c.checked=!!checks[c.dataset.lccheck])}
 renderAll();loadChecks();renderNotes();$('themeToggle').textContent='◐';$('themeToggle').setAttribute('aria-label',root.dataset.theme==='dark'?'Switch to light mode':'Switch to dark mode');$('themeToggle').title=root.dataset.theme==='dark'?'Switch to light mode':'Switch to dark mode';if(prefs.bankName)$('bankName').value=prefs.bankName;if(prefs.officerRole)$('officerRole').value=prefs.officerRole;
 })();
-</script><script src="/vtg-shipment-globe.js?v=20261018-atlas-globe-2" defer></script></body></html>
+</script><script src="/vtg-shipment-globe.js?v=20261018-atlas-globe-2" defer></script><script src="/vtg-dashboard-footer.js?v=20261019" defer></script>
+</body></html>
