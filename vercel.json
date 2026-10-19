@@ -4,7 +4,10 @@
     {
       "source": "/(.*)\\.:ext(js|css|png|jpg|jpeg|webp|svg|ico|woff2)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
       ]
     }
   ],
@@ -19,6 +22,16 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/trade-workspace.html",
+      "destination": "/signin.html",
+      "permanent": true
+    },
+    {
+      "source": "/buyer-dashboard-preview.html",
+      "destination": "/buyer-dashboard.html?preview=1",
+      "permanent": true
+    },
     {
       "source": "/",
       "destination": "/frontend-v3.html",
