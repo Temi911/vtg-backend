@@ -13,7 +13,6 @@
     ['Agent Network','/agent-network-dashboard.html','agent-network-dashboard.html'],
     ['Trade Workspace','/trade-workspace.html','trade-workspace.html'],
     ['VTG AI','/buyer-dashboard.html?preview=1#page-assistant','vtg-ai-dashboard.html'],
-    ['Trade OS','/trade-os.html?preview=1','trade-os.html']
   ];
   const activePath=path==='buyer-dashboard-preview.html'?'buyer-dashboard.html':path;
   const active=pages.find(p=>p[2]===activePath);
