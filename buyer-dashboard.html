@@ -615,12 +615,47 @@ async function loadLiveInspections(){
   let data={};try{data=await response.json()}catch(e){}
   if(!response.ok)throw new Error(data.message||'Inspection service returned '+response.status);
   const requests=Array.isArray(data.requests)?data.requests:[];
-  if(!requests.length){box.innerHTML='<div class="empty">No live inspection requests are linked to this account yet. Use “Request inspection” from a trade order when goods are ready.</div>';return}
+  if(!requests.length){box.innerHTML='<div class="empty">No live inspection requests are linked to this account yet. Use Request inspection from a trade order when goods are ready.</div>';return}
   box.innerHTML=requests.map(x=>{
    const id=esc(x.id),paid=x.payment_status==='paid',awaiting=x.status==='awaiting_buyer';
-   const status=esc(String(x.status||'pending').replaceAll('_',' '));
-   const fee=Number(x.buyer_fee_usd||0).toFixed(2);
-   return '<article class="row" style="display:block;padding:16px 0"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><strong>'+esc(x.reference||'Inspection request')+'</strong><p>'+esc(x.product_name||'Product not specified')+' · '+esc(x.quantity||'—')+' · '+esc([x.city,x.country].filter(Boolean).join(', '))+'</p><p>Agent: '+esc(x.agent_name||'Awaiting assignment')+'</p></div><span class="chip">'+status+'</span></div><p style="margin-top:8px">Inspection fee: <b>
+   const status=esc(String(x.status||'pending').replaceAll('_',' ')),fee=Number(x.buyer_fee_usd||0).toFixed(2);
+   return '<article class="row" style="display:block;padding:16px 0"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><strong>'+esc(x.reference||'Inspection request')+'</strong><p>'+esc(x.product_name||'Product not specified')+' · '+esc(x.quantity||'—')+' · '+esc([x.city,x.country].filter(Boolean).join(', '))+'</p><p>Agent: '+esc(x.agent_name||'Awaiting assignment')+'</p></div><span class="chip">'+status+'</span></div><p style="margin-top:8px">Inspection fee: $'+fee+' · <span class="chip">'+(paid?'Payment confirmed':'Payment: '+esc(x.payment_status||'unpaid'))+'</span></p>'+(x.inspection_summary?'<div class="notice">Agent report: '+esc(x.inspection_summary)+'</div>':'<p>Agent report has not been submitted yet.</p>')+'<div class="formActions" style="justify-content:flex-start"><button class="btn" type="button" data-live-evidence="'+id+'">View evidence</button>'+(paid?'':'<button class="btn primary" type="button" data-live-pay="'+id+'">Pay inspection fee</button>')+(awaiting?'<button class="btn primary" type="button" data-live-decision="approved" data-live-id="'+id+'">Approve for shipment</button><button class="btn" type="button" data-live-decision="needs_clarification" data-live-id="'+id+'">Request clarification</button><button class="btn" type="button" data-live-decision="rejected" data-live-id="'+id+'">Reject inspection</button>':'')+'</div><div class="notice" id="liveEvidence-'+id+'">Evidence details appear here when requested.</div></article>';
+  }).join('');
+ }catch(e){box.innerHTML='<div class="empty">Could not load live inspections. '+esc(e.message)+' <button class="btn" type="button" id="retryLiveInspections">Try again</button></div>';const retry=$('retryLiveInspections');if(retry)retry.onclick=loadLiveInspections}
+}
+$('refreshLiveInspections')?.addEventListener('click',loadLiveInspections);
+$('liveInspectionRows')?.addEventListener('click',async e=>{
+ const b=e.target.closest('button');if(!b)return;
+ const headers={Accept:'application/json',Authorization:'Bearer '+token};
+ try{
+  if(b.dataset.livePay){
+   b.disabled=true;const r=await fetch('/api/inspections/requests/'+encodeURIComponent(b.dataset.livePay)+'/payment/initialize',{method:'POST',headers,cache:'no-store'});let d={};try{d=await r.json()}catch(_){}
+   if(!r.ok)throw new Error(d.message||d.error?.message||'Unable to initialize inspection payment');
+   if(d.paid){say('Inspection payment is confirmed.');return loadLiveInspections()}
+   if(!d.authorizationUrl)throw new Error('Payment checkout is unavailable. Contact VTG support.');
+   location.href=d.authorizationUrl;return;
+  }
+  if(b.dataset.liveEvidence){
+   const id=b.dataset.liveEvidence,slot=$('liveEvidence-'+id);if(slot)slot.textContent='Loading evidence…';
+   const r=await fetch('/api/inspections/requests/'+encodeURIComponent(id)+'/evidence',{headers,cache:'no-store'});let d={};try{d=await r.json()}catch(_){}
+   if(!r.ok)throw new Error(d.message||'Unable to load evidence');
+   const list=d.evidence||[];
+   if(slot)slot.innerHTML='<div>Evidence ('+list.length+')</div>'+(list.length?list.map(v=>'<div style="padding:7px 0;border-bottom:1px solid var(--line)">'+esc(v.evidence_type||'Evidence')+' · '+esc(v.file_name||'File')+' · '+esc(v.created_at?new Date(v.created_at).toLocaleString():'')+' <button class="btn" type="button" data-live-download="'+esc(v.id)+'">Download</button></div>').join(''):'<div>No evidence uploaded yet.</div>');
+   return;
+  }
+  if(b.dataset.liveDownload){
+   const r=await fetch('/api/inspections/evidence/'+encodeURIComponent(b.dataset.liveDownload)+'/download',{headers,cache:'no-store'});if(!r.ok)throw new Error('Unable to download evidence');
+   const blob=await r.blob(),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='VTG-inspection-evidence';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);return;
+  }
+  if(b.dataset.liveDecision){
+   const decision=b.dataset.liveDecision;let notes='';
+   if(decision!=='approved'){notes=prompt(decision==='rejected'?'Why are you rejecting this inspection?':'What clarification do you need?')||'';if(!notes.trim())return}
+   b.disabled=true;const r=await fetch('/api/inspections/requests/'+encodeURIComponent(b.dataset.liveId)+'/decision',{method:'PATCH',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({decision,notes}),cache:'no-store'});let d={};try{d=await r.json()}catch(_){}
+   if(!r.ok)throw new Error(d.message||'Could not update inspection decision');
+   say('Inspection decision updated.');return loadLiveInspections();
+  }
+ }catch(err){say(err.message||'The inspection action could not be completed.')}finally{if(b.isConnected)b.disabled=false}
+});
 function renderLC(){const a=db.get('lc',[]);$('lcCount').textContent=a.length;$('lcRows').innerHTML=a.length?a.map((x,i)=>'<div class="row"><div class="rowMain"><strong>'+esc(x.beneficiary)+' · '+esc(x.currency)+' '+esc(x.amount)+'</strong><p>'+esc(x.country)+' · '+esc(x.type)+' · Draft saved locally</p><small>'+esc(x.reference||'No purchase reference added')+'</small></div><span class="chip">DRAFT</span></div>').join(''):'<div class="empty">No LC drafts yet. Prepare a request when your supplier quotation is ready.</div>'}
 $('lcForm').addEventListener('submit',e=>{e.preventDefault();const x=Object.fromEntries(new FormData(e.currentTarget));x.createdAt=new Date().toISOString();const a=db.get('lc',[]);a.unshift(x);db.set('lc',a);renderLC();e.currentTarget.reset();say('LC request draft saved on this device. Not sent to a bank.');});
 function renderDocs(){const items=[t('doc1')||'Commercial invoice',t('doc2')||'Packing list',t('doc3')||'Bill of lading / air waybill',t('doc4')||'Certificate of origin where required',t('doc5')||'Product conformity certificates',t('doc6')||'Customs declaration and permits'];$('docTiles').innerHTML=items.map((x,i)=>'<article class="tile"><span class="ico">0'+(i+1)+'</span><strong>'+x+'</strong><small>Checklist only · confirm destination-specific requirements.</small></article>').join('')}
