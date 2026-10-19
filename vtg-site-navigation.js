@@ -381,6 +381,7 @@
     document.addEventListener('visibilitychange', function () { if (!document.hidden) syncTheme(); });
   }
   function ensureThemeControl() {
+    if ((window.location.pathname || '').toLowerCase().replace(/\\/+$/, '').endsWith('/workforce-access.html')) return;
     if (document.getElementById('vtgThemePreference')) return;
     var wrap = document.createElement('div');
     wrap.id = 'vtgThemeControl';
@@ -414,6 +415,7 @@
   }
   function ensureThemePresets() {
     var path = (window.location.pathname || '').toLowerCase();
+    if (path.replace(/\\/+$/, '').endsWith('/workforce-access.html')) return;
     // Buyer and supplier dashboards retain their own workspace appearance controls.
     if (path.endsWith('/buyer-dashboard.html') || path.endsWith('/buyer-dashboard-preview.html') || path.endsWith('/supplier-dashboard.html')) return;
     if (document.getElementById('vtgThemePresetControl')) return;
