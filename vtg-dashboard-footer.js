@@ -4,16 +4,16 @@
   const path=(location.pathname.split('/').pop()||'frontend-v3.html').toLowerCase();
   const pages=[
     ['Home','/frontend-v3.html','frontend-v3.html'],
-    ['Buyer','/buyer-dashboard.html','buyer-dashboard.html'],
+    ['Buyer','/buyer-dashboard.html?preview=1','buyer-dashboard.html'],
     ['Supplier','/supplier-dashboard.html','supplier-dashboard.html'],
-    ['Bank','/bank-trade-os.html','bank-trade-os.html'],
+    ['Bank','/bank-trade-os.html?preview=1','bank-trade-os.html'],
     ['Admin','/admin-dashboard-preview.html','admin-dashboard-preview.html'],
     ['Staff','/workforce-dashboard.html?preview=1','workforce-dashboard.html'],
-    ['Agent','/agent-dashboard.html','agent-dashboard.html'],
+    ['Agent','/agent-dashboard.html?preview=1','agent-dashboard.html'],
     ['Agent Network','/agent-network-dashboard.html','agent-network-dashboard.html'],
     ['Trade Workspace','/trade-workspace.html','trade-workspace.html'],
-    ['VTG AI','/vtg-ai-dashboard.html','vtg-ai-dashboard.html'],
-    ['Trade OS','/trade-os.html','trade-os.html']
+    ['VTG AI','/buyer-dashboard.html?preview=1#page-assistant','vtg-ai-dashboard.html'],
+    ['Trade OS','/trade-os.html?preview=1','trade-os.html']
   ];
   const activePath=path==='buyer-dashboard-preview.html'?'buyer-dashboard.html':path;
   const active=pages.find(p=>p[2]===activePath);
