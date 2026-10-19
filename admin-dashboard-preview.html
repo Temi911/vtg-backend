@@ -42,7 +42,7 @@ html[data-skin] .btn.primary{background:var(--skin-accent)!important;border-colo
 html[data-skin] .eyebrow{color:var(--skin-accent)!important}
 html[data-skin] .nav button:hover,html[data-skin] .nav button.active{color:var(--skin-accent)!important;border-color:color-mix(in srgb,var(--skin-accent) 25%,transparent)!important}
 \n</style></head>
-<body>
+<body id="vtg-dashboard-top">
 <div class="app">
 <aside class="sidebar">
 <div class="brand"><a href="/frontend-v3.html" aria-label="VTG homepage"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><small>ADMINISTRATOR WORKSPACE</small></div>
@@ -142,4 +142,5 @@ const initialLanguage=localStorage.getItem('vtg-admin-language')||'en';if($('lan
 })();
 </script>
 
+<script src="/vtg-dashboard-footer.js?v=20261019" defer></script>
 </body></html>
