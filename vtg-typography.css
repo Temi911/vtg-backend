@@ -1,53 +1,99 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
-/* VTG Typography Standard — single type family, compact scale, consistent spacing.
-   Loaded after page styles by the shared site navigation and dashboard footer.
-   Intentionally changes typography/rhythm only; it does not alter layout, colors, or page content. */
+
+/* VTG global typography system — one family, deliberate scale, consistent rhythm.
+   Typography only: preserves page structure, brand colours, theme, and component behaviour. */
 :root{
-  --vtg-font-family:"Manrope",sans-serif;
-  --vtg-font-body:14px;
-  --vtg-font-small:12px;
-  --vtg-font-control:13px;
-  --vtg-leading-body:1.6;
+  --vtg-font-family:"Manrope",Arial,sans-serif;
+  --vtg-text-xs:0.75rem;
+  --vtg-text-sm:0.8125rem;
+  --vtg-text-base:0.9375rem;
+  --vtg-text-lg:1.0625rem;
+  --vtg-text-xl:1.25rem;
+  --vtg-text-2xl:1.5rem;
+  --vtg-text-3xl:1.875rem;
+  --vtg-text-4xl:clamp(2rem,3.2vw,2.625rem);
+  --vtg-leading-tight:1.15;
   --vtg-leading-heading:1.25;
+  --vtg-leading-body:1.65;
   --vtg-copy-measure:72ch;
+  --vtg-space-paragraph:0 0 0.85em;
 }
-html{font-family:var(--vtg-font-family)!important;font-size:14px!important;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html{
+  font-family:var(--vtg-font-family)!important;
+  font-size:16px!important;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
 body,body *:not(svg):not(svg *):not(i):not([class*="icon"]):not([class*="Icon"]):not([class*="fa-"]):not(.fa):not(.fas):not(.far):not(.fab):not(.material-icons):not(.material-symbols-outlined):not(.material-symbols-rounded):not([data-lucide]):not(.lucide){
   font-family:var(--vtg-font-family)!important;
   word-spacing:normal;
 }
-body{font-size:var(--vtg-font-body)!important;line-height:var(--vtg-leading-body)}
-p,li,dd,dt,blockquote{font-size:14px!important;line-height:1.6!important;letter-spacing:normal!important;word-spacing:normal!important}
-p{margin-block:0 12px}
-h1,h2,h3,h4,h5,h6{line-height:var(--vtg-leading-heading)!important;letter-spacing:-.025em!important;word-spacing:normal!important;text-wrap:pretty}
-h1{font-size:clamp(28px,3.2vw,36px)!important;line-height:1.18!important;margin-block:0 16px!important}
-h2{font-size:clamp(22px,2.3vw,27px)!important;margin-block:0 14px!important}
-h3{font-size:clamp(17px,1.65vw,20px)!important;margin-block:0 10px!important}
-h4{font-size:16px!important;margin-block:0 8px!important}
-h5{font-size:14px!important;margin-block:0 7px!important}
-h6{font-size:13px!important;margin-block:0 7px!important}
-.hero h1,.hero-title,.heroTitle,.hero-content h1,.hero-copy h1,.landing-hero h1,.home-hero h1,.atlas-hero h1{font-size:clamp(30px,4.3vw,50px)!important;line-height:1.12!important;letter-spacing:-.035em!important}
-.hero h2,.hero-title + h2,.hero-content h2{font-size:clamp(20px,2.2vw,27px)!important;line-height:1.3!important}
-button, input, select, textarea, [role="button"], .btn, .button, .primary-btn, .btn-primary, .action-button{font-size:13px!important;line-height:1.35!important;letter-spacing:normal!important}
-input,select,textarea{font-family:var(--vtg-font-family)!important}
-label,legend,th{font-size:12px!important;line-height:1.45!important;letter-spacing:normal!important}
-small,small *, .small,.meta,.metadata,.caption,.eyebrow,.kicker,.section-label,.sectionLabel,.overline,.helper-text,.help-text,.form-hint,.timestamp,.date-label,.status-label,.badge,.pill,.status-pill{font-size:12px!important;line-height:1.45!important;letter-spacing:normal}
-nav a,nav button,.nav a,.site-nav a,.vtg-page-nav a,.vtg-page-nav button{font-size:13px!important;line-height:1.35!important}
-table{font-size:13px!important;line-height:1.5!important}
-th,td{padding-block:9px}
-:where(.card,.panel,.surface,.tile,.modal,.modal-content,.dialog,.dialog-content,.drawer,.sheet,.form-card,.formCard,.content-card,.contentCard,.feature-card,.info-card,.stat-card,.statCard,.widget,.widget-card,.news-card,.newsCard,.market-card,.marketCard,.access-card,.application-card) :is(p,li){line-height:1.55!important}
-:where(.card,.panel,.surface,.tile,.modal,.modal-content,.dialog,.dialog-content,.drawer,.sheet,.form-card,.formCard,.content-card,.contentCard,.feature-card,.info-card,.stat-card,.statCard,.widget,.widget-card,.news-card,.newsCard,.market-card,.marketCard,.access-card,.application-card) :is(h1,h2,h3,h4,h5,h6){margin-block-end:9px!important}
-.vtgCompactFooter .vtgFooterBrand p{font-size:12px!important;line-height:1.55!important}
-.vtgCompactFooter .vtgFooterLinks h4{font-size:12px!important;line-height:1.4!important}
-.vtgCompactFooter .vtgFooterLinks a{font-size:12px!important;line-height:1.55!important}
-.vtgCompactFooter .vtgFooterBottom,.vtgCompactFooter .vtgFooterBottom span,.vtgCompactFooter .vtgFooterBottom a{font-size:11px!important;line-height:1.5!important}
-.vtg-page-nav button,.vtg-page-nav a{font-size:13px!important}
+body{font-size:var(--vtg-text-base)!important;line-height:var(--vtg-leading-body)}
+p,li,dd,dt,blockquote,figcaption{font-size:var(--vtg-text-base)!important;line-height:var(--vtg-leading-body)!important;letter-spacing:normal!important;word-spacing:normal!important}
+p{margin-block:0 0.85em}
+h1,h2,h3,h4,h5,h6{
+  line-height:var(--vtg-leading-heading)!important;
+  letter-spacing:-.025em!important;
+  word-spacing:normal!important;
+  text-wrap:pretty;
+  font-weight:800;
+}
+h1{font-size:var(--vtg-text-4xl)!important;line-height:1.12!important;margin-block:0 .55em!important;letter-spacing:-.035em!important}
+h2{font-size:var(--vtg-text-2xl)!important;line-height:1.2!important;margin-block:0 .6em!important;letter-spacing:-.03em!important}
+h3{font-size:var(--vtg-text-xl)!important;margin-block:0 .55em!important}
+h4{font-size:var(--vtg-text-lg)!important;margin-block:0 .5em!important}
+h5{font-size:var(--vtg-text-base)!important;margin-block:0 .45em!important}
+h6{font-size:var(--vtg-text-sm)!important;margin-block:0 .45em!important;letter-spacing:.01em!important}
+.hero h1,.hero-title,.heroTitle,.hero-content h1,.hero-copy h1,.landing-hero h1,.home-hero h1,.atlas-hero h1{
+  font-size:clamp(2.25rem,5vw,3.75rem)!important;
+  line-height:1.08!important;
+  letter-spacing:-.045em!important;
+}
+.hero h2,.hero-title + h2,.hero-content h2{font-size:clamp(1.375rem,2.4vw,1.875rem)!important;line-height:1.25!important}
+.lead,.intro,.hero p,.hero-copy p,.hero-content p,.heroIn p,.page-intro,.pageIntro,.subtitle,.sub-title{
+  font-size:clamp(.9375rem,1.25vw,1.0625rem)!important;
+  line-height:1.7!important;
+}
+button,input,select,textarea,[role="button"],.btn,.button,.primary-btn,.btn-primary,.action-button{
+  font-size:var(--vtg-text-sm)!important;
+  line-height:1.4!important;
+  letter-spacing:normal!important;
+}
+input,select,textarea{font-family:var(--vtg-font-family)!important;line-height:1.45!important}
+label,legend,th{font-size:var(--vtg-text-sm)!important;line-height:1.45!important;letter-spacing:normal!important}
+small,small *, .small,.meta,.metadata,.caption,.eyebrow,.kicker,.section-label,.sectionLabel,.overline,.helper-text,.help-text,.form-hint,.timestamp,.date-label,.status-label,.badge,.pill,.status-pill{
+  font-size:var(--vtg-text-xs)!important;line-height:1.5!important;letter-spacing:normal;
+}
+nav a,nav button,.nav a,.site-nav a,.vtg-page-nav a,.vtg-page-nav button{font-size:var(--vtg-text-sm)!important;line-height:1.4!important}
+table{font-size:var(--vtg-text-sm)!important;line-height:1.55!important}
+th,td{padding-block:0.65rem}
+:where(.card,.panel,.surface,.tile,.modal,.modal-content,.dialog,.dialog-content,.drawer,.sheet,.form-card,.formCard,.content-card,.contentCard,.feature-card,.info-card,.stat-card,.statCard,.widget,.widget-card,.news-card,.newsCard,.market-card,.marketCard,.access-card,.application-card,.dashboard-card,.dashboard-panel) :is(p,li){line-height:1.6!important}
+:where(.card,.panel,.surface,.tile,.modal,.modal-content,.dialog,.dialog-content,.drawer,.sheet,.form-card,.formCard,.content-card,.contentCard,.feature-card,.info-card,.stat-card,.statCard,.widget,.widget-card,.news-card,.newsCard,.market-card,.marketCard,.access-card,.application-card,.dashboard-card,.dashboard-panel) :is(h1,h2,h3,h4,h5,h6){margin-block-end:.55em!important}
+:where(.field,.form-group,.formField,.input-group) label{display:block;margin-block-end:.4rem}
+:where(.field,.form-group,.formField,.input-group) :is(input,select,textarea){letter-spacing:normal}
+:where(.stat,.stat-card,.statCard,.metric,.metric-card,.number,.stat-value){font-variant-numeric:tabular-nums}
+.vtgCompactFooter .vtgFooterBrand p{font-size:var(--vtg-text-xs)!important;line-height:1.6!important}
+.vtgCompactFooter .vtgFooterLinks h4{font-size:var(--vtg-text-sm)!important;line-height:1.45!important}
+.vtgCompactFooter .vtgFooterLinks a{font-size:var(--vtg-text-xs)!important;line-height:1.65!important}
+.vtgCompactFooter .vtgFooterBottom,.vtgCompactFooter .vtgFooterBottom span,.vtgCompactFooter .vtgFooterBottom a{font-size:var(--vtg-text-xs)!important;line-height:1.55!important}
+.vtg-page-nav button,.vtg-page-nav a{font-size:var(--vtg-text-sm)!important}
+#vtg-shared-footer{font-family:var(--vtg-font-family)!important;font-size:var(--vtg-text-xs)!important}
+#vtg-shared-footer :is(a,button,select,span){font-family:var(--vtg-font-family)!important}
+#vtg-shared-footer :is(a,button,select){font-size:var(--vtg-text-xs)!important;line-height:1.4!important}
 @media(max-width:720px){
-  html{font-size:14px!important}
-  h1{font-size:clamp(26px,7vw,32px)!important}
-  h2{font-size:clamp(21px,5vw,25px)!important}
-  .hero h1,.hero-title,.heroTitle,.hero-content h1,.hero-copy h1,.landing-hero h1,.home-hero h1,.atlas-hero h1{font-size:clamp(28px,8vw,40px)!important}
-  p,li,dd,dt,blockquote{font-size:14px!important}
-  button,input,select,textarea,[role="button"],.btn,.button,.primary-btn,.btn-primary,.action-button{font-size:13px!important}
+  html{font-size:15px!important}
+  body{font-size:var(--vtg-text-sm)!important}
+  p,li,dd,dt,blockquote,figcaption{font-size:var(--vtg-text-sm)!important;line-height:1.65!important}
+  h1{font-size:clamp(1.75rem,7.5vw,2.25rem)!important}
+  h2{font-size:clamp(1.375rem,5.5vw,1.625rem)!important}
+  h3{font-size:1.125rem!important}
+  .hero h1,.hero-title,.heroTitle,.hero-content h1,.hero-copy h1,.landing-hero h1,.home-hero h1,.atlas-hero h1{font-size:clamp(2rem,8vw,2.75rem)!important;line-height:1.1!important}
+  .lead,.intro,.hero p,.hero-copy p,.hero-content p,.heroIn p,.page-intro,.pageIntro,.subtitle,.sub-title{font-size:var(--vtg-text-sm)!important}
+  button,input,select,textarea,[role="button"],.btn,.button,.primary-btn,.btn-primary,.action-button{font-size:var(--vtg-text-sm)!important}
+  th,td{padding-block:.55rem}
+}
+@media(max-width:420px){
+  .vtgCompactFooter .vtgFooterTop{gap:20px}
+  #vtg-shared-footer{font-size:11px!important}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
