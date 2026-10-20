@@ -159,7 +159,7 @@ $('caseForm').addEventListener('submit',e=>{e.preventDefault();const id=$('fref'
 $('caseSearch').addEventListener('input',renderCases);
 let lcSelectedCase='';
 function renderLC(){
- const list=cases.filter(c=>/\\bLC\\b|letter of credit/i.test(c.instrument));
+ const list=cases.filter(c=>/\bLC\b|letter of credit/i.test(c.instrument));
  $('lcList').innerHTML=list.length?list.map(c=>'<div class="queueitem"><div class="queueicon">▣</div><div style="flex:1"><b>'+esc(c.id)+' · '+esc(c.goods)+'</b><small>'+money(c.currency,c.amount)+' · '+esc(c.corridor)+'</small><small>Preparation stage: '+esc(c.stage)+' — not an issued LC</small><button class="btn" type="button" data-lc-open="'+esc(c.id)+'">Open case</button></div></div>').join(''):'<div class="empty">No LC preparation cases. Create a case and select LC preparation.</div>';
  $('lcList').querySelectorAll('[data-lc-open]').forEach(b=>b.onclick=()=>openCase(b.dataset.lcOpen));
  const select=$('lcCaseSelect');
