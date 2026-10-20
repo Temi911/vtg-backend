@@ -2,11 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "headers": [
     {
-      "source": "/(.*)\\.:ext(js|css|png|jpg|jpeg|webp|svg|ico|woff2)",
+      "source": "/(.*)\\.(js|css|html)",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
+          "value": "public, max-age=0, must-revalidate"
         }
       ]
     }
@@ -19,6 +19,10 @@
     {
       "source": "/marketplace",
       "destination": "/marketplace.html"
+    },
+    {
+      "source": "/",
+      "destination": "/frontend-v3.html"
     }
   ],
   "redirects": [
@@ -31,11 +35,6 @@
       "source": "/buyer-dashboard-preview.html",
       "destination": "/buyer-dashboard.html?preview=1",
       "permanent": true
-    },
-    {
-      "source": "/",
-      "destination": "/frontend-v3.html",
-      "permanent": false
     }
   ]
 }
