@@ -756,7 +756,9 @@
       'html[data-theme] body svg:not([class*="logo"]):not([class*="Logo"]):not([class*="map"]):not([class*="Map"]):not([class*="chart"]):not([class*="Chart"]):not([class*="flag"]):not([class*="Flag"]):not(.keep-original-color) :is(path,line,polyline,polygon,circle,ellipse,rect){stroke:currentColor!important}',
       'html[data-theme] body svg:not([class*="logo"]):not([class*="Logo"]):not([class*="map"]):not([class*="Map"]):not([class*="chart"]):not([class*="Chart"]):not([class*="flag"]):not([class*="Flag"]):not(.keep-original-color) [fill]:not([fill="none"]){fill:currentColor!important}',
       'html[data-theme] body :is(button,a,[role="button"],.clickable,.action):not(.keep-original-color) > :is(i,svg,.icon,[class*="icon-"],[class*="Icon"]){color:var(--vtg-skin-accent,var(--vtg-skin-strong,#a5232b))!important;-webkit-text-fill-color:var(--vtg-skin-accent,var(--vtg-skin-strong,#a5232b))!important}',
-      'html[data-theme] body :is(button,a,[role="button"],.clickable,.action):not(.keep-original-color) > :is(i,svg,.icon,[class*="icon-"],[class*="Icon"]) :is(path,line,polyline,polygon,circle,ellipse,rect){stroke:currentColor!important}'
+      'html[data-theme] body :is(button,a,[role="button"],.clickable,.action):not(.keep-original-color) > :is(i,svg,.icon,[class*="icon-"],[class*="Icon"]) :is(path,line,polyline,polygon,circle,ellipse,rect){stroke:currentColor!important}',
+      'html[data-theme] body :is(#heroJoin,#joinBtn,#vtgPageNavigation #joinBtn) :is(i,svg,.icon,[class*="icon-"],[class*="Icon"],.fa,.fas,.far,.fab,.bi,.ri,.mdi){color:var(--vtg-skin-accent,var(--vtg-skin-strong,#a5232b))!important;-webkit-text-fill-color:var(--vtg-skin-accent,var(--vtg-skin-strong,#a5232b))!important;stroke:var(--vtg-skin-accent,var(--vtg-skin-strong,#a5232b))!important}',
+      'html[data-theme] body :is(#heroJoin,#joinBtn,#vtgPageNavigation #joinBtn) :is(svg,[class*="icon-"]):is(svg) :is(path,line,polyline,polygon,circle,ellipse,rect){stroke:var(--vtg-skin-accent,var(--vtg-skin-strong,#a5232b))!important;fill:var(--vtg-skin-accent,var(--vtg-skin-strong,#a5232b))!important}'
     ].join('\\n');
     document.head.appendChild(style);
   }
