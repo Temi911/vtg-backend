@@ -206,5 +206,5 @@ $('saveProfile').onclick=()=>{prefs.bankName=$('bankName').value.trim();prefs.of
 function renderAll(){const open=cases.filter(c=>c.stage!=='Closed').length;$('mCases').textContent=open;$('mDocs').textContent=isPreview?'3':'—';$('mPayments').textContent=isPreview?'2':'—';$('mRisk').textContent=isPreview?'1':'—';$('caseCount').textContent=cases.length;$('recentRows').innerHTML=rowsMarkup(cases.slice(0,4),false)||'<tr><td colspan="4">No cases yet.</td></tr>';bindCaseRows();renderCases();renderLC();renderDocs();renderPayments();renderRisk();fillMessageCases()}
 renderAll();renderNotes();if(location.hash==='#network')setView('network');$('themeToggle').textContent='◐';$('themeToggle').setAttribute('aria-label',root.dataset.theme==='dark'?'Switch to light mode':'Switch to dark mode');$('themeToggle').title=root.dataset.theme==='dark'?'Switch to light mode':'Switch to dark mode';if(prefs.bankName)$('bankName').value=prefs.bankName;if(prefs.officerRole)$('officerRole').value=prefs.officerRole;
 })();
-</script><script src="/vtg-shipment-globe.js?v=20261018-atlas-globe-2" defer></script><script src="/vtg-dashboard-footer.js?v=20261019" defer></script>
+</script><script src="/vtg-shipment-globe.js?v=20261018-atlas-globe-2" defer></script><script src="/vtg-dashboard-footer.js?v=20261020-type-system-1" defer></script>
 </body></html>
