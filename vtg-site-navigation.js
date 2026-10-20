@@ -172,7 +172,7 @@
     if (isHomePage() || isWorkspaceDashboardPage()) return true;
     var current = (window.location.pathname || '').toLowerCase();
     return Array.prototype.slice.call(document.querySelectorAll('body a[href]')).some(function (anchor) {
-      if (anchor.closest('header, footer, nav, #vtgFooter, #vtgPageNavigation, .footer, .site-footer, .navbar, .topbar')) return false;
+      if (anchor.closest('header, footer, nav, #vtgFooter, #vtgPageNavigation, .header, .footer, .site-header, .siteHeader, .site-nav, .navbar, .topbar, .top, .topline, .main-header, .page-header')) return false;
       var raw = (anchor.getAttribute('href') || '').trim();
       if (!raw || raw.charAt(0) === '#' || /^(?:mailto:|tel:|javascript:|https?:\/\/|\/\/)/i.test(raw)) return false;
       var url; try { url = new URL(raw, window.location.href); } catch (_) { return false; }
