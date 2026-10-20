@@ -737,6 +737,23 @@
     }
   }
 
+  function enforceNightFooterContrast() {
+    // Night-mode footer contrast: legacy footer rules and inline colours were overriding the visitor theme.
+    if (document.getElementById('vtg-night-footer-contrast')) return;
+    var style = document.createElement('style');
+    style.id = 'vtg-night-footer-contrast';
+    style.textContent = [
+      'html[data-theme="dark"] body footer#vtgFooter.vtgCompactFooter{background:#080b0f!important;background-color:#080b0f!important;color:#f4f7fa!important;border-top-color:#303944!important;border-color:#303944!important}',
+      'html[data-theme="dark"] body footer#vtgFooter.vtgCompactFooter .vtgFooterTop,html[data-theme="dark"] body footer#vtgFooter.vtgCompactFooter .vtgFooterBottom{background:transparent!important;color:#e7edf2!important;border-color:#303944!important}',
+      'html[data-theme="dark"] body footer#vtgFooter.vtgCompactFooter :is(p,span,h1,h2,h3,h4,h5,h6,a,small,strong,b,li,label){color:#e7edf2!important;-webkit-text-fill-color:#e7edf2!important;opacity:1!important;visibility:visible!important;text-shadow:none!important}',
+      'html[data-theme="dark"] body footer#vtgFooter.vtgCompactFooter .vtgFooterLinks h4{color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;font-weight:800!important}',
+      'html[data-theme="dark"] body footer#vtgFooter.vtgCompactFooter .vtgFooterBrand p,html[data-theme="dark"] body footer#vtgFooter.vtgCompactFooter .vtgFooterBottom,html[data-theme="dark"] body footer#vtgFooter.vtgCompactFooter .vtgFooterBottom>span{color:#cbd5df!important;-webkit-text-fill-color:#cbd5df!important}',
+      'html[data-theme="dark"] body footer#vtgFooter.vtgCompactFooter a:hover,html[data-theme="dark"] body footer#vtgFooter.vtgCompactFooter a:focus-visible{color:#ffaaa2!important;-webkit-text-fill-color:#ffaaa2!important;text-decoration:underline!important;text-underline-offset:3px!important}',
+      'html[data-theme="dark"] body footer#vtgFooter.vtgCompactFooter [data-navkey][aria-current="page"]{background:#32191c!important;color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;box-shadow:inset 3px 0 0 #ff8e86!important}'
+    ].join('\n');
+    document.head.appendChild(style);
+  }
+
   function init() {
     ensureTypographyStylesheet();
     ensureInterfaceStylesheet();
@@ -761,6 +778,7 @@
     if (vtgPublicShellPage && !isHomePage()) document.body.classList.add('vtg-public-shell-page');
     enforceLandingShellLayout();
     enforceFinalShellThemeAndSelection();
+    enforceNightFooterContrast();
     setActiveFooterLink();
     window.addEventListener('hashchange', setActiveFooterLink);
     window.addEventListener('popstate', setActiveFooterLink);
