@@ -61,6 +61,16 @@ html[data-theme="light"] .preview-banner{display:flex!important;visibility:visib
 html[data-theme="light"] .preview-banner strong{color:#17212b!important}
 html[data-theme="light"] .preview-banner p{color:#475569!important}
 
+
+/* VTG header logo visibility fix: persistent wordmark in light and dark themes. */
+.vtg-header-brand{display:flex!important;align-items:center!important;flex:0 0 auto!important;min-width:132px!important;width:150px!important;max-width:150px!important;margin-right:14px!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:30!important;overflow:visible!important}
+.vtg-header-brand img{display:block!important;width:150px!important;min-width:132px!important;max-width:150px!important;height:auto!important;max-height:42px!important;object-fit:contain!important;object-position:left center!important;visibility:visible!important;opacity:1!important;position:relative!important}
+.vtg-header-brand .logo-light{display:none!important}
+html[data-theme="dark"] .vtg-header-brand .logo-dark{display:none!important}
+html[data-theme="dark"] .vtg-header-brand .logo-light{display:block!important}
+html[data-theme="light"] .vtg-header-brand .logo-dark{display:block!important}
+html[data-theme="light"] .vtg-header-brand .logo-light{display:none!important}
+@media(max-width:760px){.vtg-header-brand{width:116px!important;min-width:116px!important;margin-right:8px!important}.vtg-header-brand img{width:116px!important;min-width:116px!important;max-width:116px!important;max-height:34px!important}}
 </style>
 </head>
 <body id="vtg-dashboard-top">
@@ -96,7 +106,7 @@ html[data-theme="light"] .preview-banner p{color:#475569!important}
   <div class="sidebar-bottom"><p>VTG trade workspace preview. Data entered here stays in this browser.</p><a href="/frontend-v3.html">← Return to VTG home</a></div>
 </aside>
 <main class="main">
-<header class="topbar">
+<header class="topbar"><a class="vtg-header-brand" href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img class="logo-dark" src="/assets/vtg-logo.svg" alt="Vintage Trade Global"><img class="logo-light" src="/assets/vtg-logo-light.svg" alt="" aria-hidden="true"></a>
   <div class="crumb"><span>VTG / Supplier workspace / </span><strong id="crumbTitle">Command centre</strong></div>
   <div class="top-controls">
     <button class="icon-btn mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button>
