@@ -189,7 +189,6 @@
   }
   function simplifyPageHeader() {
     if (isHomePage()) { document.body.classList.add('vtg-home-page'); return; }
-    if (isWorkspaceDashboardPage()) return;
     document.body.classList.add('vtg-simple-header-page');
     document.querySelectorAll('body > header, body > .topline, body > .top, body > .topbar, body > .site-header, body > .siteHeader, body > .navbar, body > .main-header, body > .page-header, body > div.header, body > div.navbar, body > div.navbar-wrap').forEach(function (el) { el.remove(); });
     if (!vtgPublicShellPage) removePublicShellElements();
