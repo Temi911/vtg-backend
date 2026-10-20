@@ -744,6 +744,23 @@
     }
   }
 
+
+  function enforceEveryPageIconTheme() {
+    if (document.getElementById('vtg-every-icon-theme')) return;
+    var style = document.createElement('style');
+    style.id = 'vtg-every-icon-theme';
+    style.textContent = [
+      'html[data-theme] body :is(i,.icon,.fa,.fas,.far,.fal,.fab,[class^="icon-"],[class*=" icon-"],[class*="Icon"],[data-lucide],.material-icons,.material-symbols-outlined,.material-symbols-rounded,.material-symbols-sharp,.bi,.ti,.ri,.mdi):not(.vtg-brand-icon):not(.keep-original-color){color:var(--vtg-skin-accent,var(--vtg-skin-strong,#a5232b))!important;-webkit-text-fill-color:var(--vtg-skin-accent,var(--vtg-skin-strong,#a5232b))!important}',
+      'html[data-theme] body :is(i,.icon,.fa,.fas,.far,.fal,.fab,[class^="icon-"],[class*=" icon-"],[class*="Icon"],.material-icons,.material-symbols-outlined,.material-symbols-rounded,.material-symbols-sharp,.bi,.ti,.ri,.mdi):not(.vtg-brand-icon):not(.keep-original-color)::before,html[data-theme] body :is(i,.icon,.fa,.fas,.far,.fal,.fab,[class^="icon-"],[class*=" icon-"],[class*="Icon"],.material-icons,.material-symbols-outlined,.material-symbols-rounded,.material-symbols-sharp,.bi,.ti,.ri,.mdi):not(.vtg-brand-icon):not(.keep-original-color)::after{color:var(--vtg-skin-accent,var(--vtg-skin-strong,#a5232b))!important;-webkit-text-fill-color:var(--vtg-skin-accent,var(--vtg-skin-strong,#a5232b))!important}',
+      'html[data-theme] body svg:not([class*="logo"]):not([class*="Logo"]):not([class*="map"]):not([class*="Map"]):not([class*="chart"]):not([class*="Chart"]):not([class*="flag"]):not([class*="Flag"]):not(.keep-original-color){color:var(--vtg-skin-accent,var(--vtg-skin-strong,#a5232b))!important}',
+      'html[data-theme] body svg:not([class*="logo"]):not([class*="Logo"]):not([class*="map"]):not([class*="Map"]):not([class*="chart"]):not([class*="Chart"]):not([class*="flag"]):not([class*="Flag"]):not(.keep-original-color) :is(path,line,polyline,polygon,circle,ellipse,rect){stroke:currentColor!important}',
+      'html[data-theme] body svg:not([class*="logo"]):not([class*="Logo"]):not([class*="map"]):not([class*="Map"]):not([class*="chart"]):not([class*="Chart"]):not([class*="flag"]):not([class*="Flag"]):not(.keep-original-color) [fill]:not([fill="none"]){fill:currentColor!important}',
+      'html[data-theme] body :is(button,a,[role="button"],.clickable,.action):not(.keep-original-color) > :is(i,svg,.icon,[class*="icon-"],[class*="Icon"]){color:var(--vtg-skin-accent,var(--vtg-skin-strong,#a5232b))!important;-webkit-text-fill-color:var(--vtg-skin-accent,var(--vtg-skin-strong,#a5232b))!important}',
+      'html[data-theme] body :is(button,a,[role="button"],.clickable,.action):not(.keep-original-color) > :is(i,svg,.icon,[class*="icon-"],[class*="Icon"]) :is(path,line,polyline,polygon,circle,ellipse,rect){stroke:currentColor!important}'
+    ].join('\\n');
+    document.head.appendChild(style);
+  }
+
   function enforceNightFooterContrast() {
     // Night-mode footer contrast: legacy footer rules and inline colours were overriding the visitor theme.
     if (document.getElementById('vtg-night-footer-contrast')) return;
@@ -795,6 +812,7 @@
     if (vtgPublicShellPage && !isHomePage()) document.body.classList.add('vtg-public-shell-page');
     enforceLandingShellLayout();
     enforceFinalShellThemeAndSelection();
+    enforceEveryPageIconTheme();
     enforceNightFooterContrast();
     setActiveFooterLink();
     window.addEventListener('hashchange', setActiveFooterLink);
