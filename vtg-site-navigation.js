@@ -108,21 +108,13 @@
     });
   }
   function renderFooter() {
-    // Workforce & Staff Access is intentionally a standalone portal with no footer.
-    if ((window.location.pathname || '').toLowerCase().replace(/\\/+$/, '').endsWith('/workforce-access.html')) {
-      document.querySelectorAll('footer, .vtgCompactFooter, .site-footer, .footer').forEach(function (item) { item.remove(); });
-      return;
+    if (isWorkspaceDashboardPage()) return;
+    if (!vtgPublicShellPage || (window.location.pathname || '').toLowerCase().replace(/\\/+$/, '').endsWith('/workforce-access.html')) {
+      document.querySelectorAll('footer, .vtgCompactFooter, .site-footer, .footer').forEach(function (item) { item.remove(); }); return;
     }
     var old = Array.prototype.slice.call(document.querySelectorAll('footer, .vtgCompactFooter, .site-footer, .footer'));
-    var host = document.createElement('div');
-    host.innerHTML = FOOTER_HTML;
-    var footer = host.firstElementChild;
-    if (old.length) {
-      old[0].replaceWith(footer);
-      old.slice(1).forEach(function (extra) { extra.remove(); });
-    } else {
-      document.body.appendChild(footer);
-    }
+    var host = document.createElement('div'); host.innerHTML = FOOTER_HTML; var footer = host.firstElementChild;
+    if (old.length) { old[0].replaceWith(footer); old.slice(1).forEach(function (extra) { extra.remove(); }); } else document.body.appendChild(footer);
   }
   function setActiveFooterLink() {
     var path = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
@@ -173,55 +165,49 @@
     while (path.length > 1 && path.charAt(path.length - 1) === '/') path = path.slice(0, -1);
     return path === '/' || path === HOME || path.endsWith('/frontend-v3.html');
   }
-  function simplifyPageHeader() {
-    if (isHomePage()) {
-      document.body.classList.add('vtg-home-page');
-      return;
-    }
-    document.body.classList.add('vtg-simple-header-page');
-    // Hide only top-level page headers; leave dashboard sidebars and page content untouched.
-    [
-      'body > header:not(#vtgPageNavigation)',
-      'body > .topline',
-      'body > .top',
-      'body > .topbar',
-      'body > .site-header',
-      'body > .siteHeader',
-      'body > .navbar',
-      'body > .main-header',
-      'body > .page-header'
-    ].forEach(function (selector) {
-      document.querySelectorAll(selector).forEach(function (el) {
-        if (el.id !== 'vtgPageNavigation') el.setAttribute('data-vtg-replaced-header', 'true');
-      });
-    });
-    document.querySelectorAll('body > div.header, body > div.navbar, body > div.navbar-wrap').forEach(function (el) {
-      if (el.querySelector('a[href="/"], a[href="' + HOME + '"]') &&
-          el.querySelector('img[alt*="Vintage Trade Global"], img[src*="vtg-logo"]')) {
-        el.setAttribute('data-vtg-replaced-header', 'true');
-      }
+  function isWorkspaceDashboardPage() {
+    var path = (window.location.pathname || '').toLowerCase();
+    return /(?:^|\/)(?:buyer-dashboard(?:-preview)?|supplier-dashboard|bank-trade-os|workforce-dashboard|agent-dashboard|agent-network-dashboard|vtg-ai-dashboard|admin-dashboard-preview|inspection-admin)\.html$/.test(path);
+  }
+  function hasDownstreamPageLinks() {
+    if (isHomePage() || isWorkspaceDashboardPage()) return true;
+    var current = (window.location.pathname || '').toLowerCase();
+    return Array.prototype.slice.call(document.querySelectorAll('body a[href]')).some(function (anchor) {
+      if (anchor.closest('header, footer, nav, #vtgFooter, #vtgPageNavigation, .footer, .site-footer, .navbar, .topbar')) return false;
+      var raw = (anchor.getAttribute('href') || '').trim();
+      if (!raw || raw.charAt(0) === '#' || /^(?:mailto:|tel:|javascript:|https?:\/\/|\/\/)/i.test(raw)) return false;
+      var url; try { url = new URL(raw, window.location.href); } catch (_) { return false; }
+      if (url.origin !== window.location.origin || !/\.html?$/i.test(url.pathname)) return false;
+      var target = url.pathname.toLowerCase();
+      return target !== current && target !== '/' && !target.endsWith('/frontend-v3.html');
     });
   }
+  var vtgPublicShellPage = hasDownstreamPageLinks();
+  function removePublicShellElements() {
+    document.querySelectorAll('#vtgPageNavigation, #vtgFooter, #vtgThemeControl, #vtgThemePresetControl, footer, .vtgCompactFooter, .site-footer, .footer').forEach(function (el) { el.remove(); });
+    document.querySelectorAll('body > header, body > .topline, body > .top, body > .topbar, body > .site-header, body > .siteHeader, body > .navbar, body > .main-header, body > .page-header, body > div.header, body > div.navbar, body > div.navbar-wrap').forEach(function (el) { el.remove(); });
+    document.body.classList.add('vtg-leaf-page');
+  }
+  function simplifyPageHeader() {
+    if (isHomePage()) { document.body.classList.add('vtg-home-page'); return; }
+    if (isWorkspaceDashboardPage()) return;
+    document.body.classList.add('vtg-simple-header-page');
+    document.querySelectorAll('body > header, body > .topline, body > .top, body > .topbar, body > .site-header, body > .siteHeader, body > .navbar, body > .main-header, body > .page-header, body > div.header, body > div.navbar, body > div.navbar-wrap').forEach(function (el) { el.remove(); });
+    if (!vtgPublicShellPage) removePublicShellElements();
+  }
   function addPageNavigation() {
-    if (isHomePage() || document.getElementById('vtgPageNavigation')) return;
-    var nav = document.createElement('nav');
-    nav.id = 'vtgPageNavigation';
-    nav.className = 'vtg-page-nav';
-    nav.setAttribute('aria-label', 'Page navigation');
-    nav.innerHTML = '<a class="vtg-nav-brand" href="' + HOME + '" aria-label="Vintage Trade Global home"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><div class="vtg-nav-actions"><button type="button" id="vtgPreviousPage" aria-label="Return to previous VTG page"><span aria-hidden="true">←</span> Previous</button><a href="' + HOME + '" aria-label="Return to VTG homepage"><span aria-hidden="true">⌂</span> Home</a></div>';
+    if (isHomePage() || isWorkspaceDashboardPage() || !vtgPublicShellPage || document.getElementById('vtgPageNavigation')) return;
+    var nav = document.createElement('header'); nav.id = 'vtgPageNavigation'; nav.className = 'nav vtg-public-header'; nav.setAttribute('aria-label', 'VTG site header');
+    nav.innerHTML = '<div class="navin"><a class="brand" href="/frontend-v3.html#top" aria-label="Vintage Trade Global"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><div class="navtools" aria-label="VTG quick access"><label class="vtg-language-wrap" aria-label="Choose site language"><span>Language</span><select id="vtgLanguagePicker" aria-label="Choose site language"><option value="en">English</option><option value="fr">Français</option><option value="zh-CN">中文</option><option value="ko">한국어</option><option value="es">Español</option><option value="ar">العربية</option></select></label><a class="headerFeatureBtn" id="atlasHeaderBtn" href="/trade-atlas.html" title="Open Trade Atlas" aria-label="Open Trade Atlas"><i data-lucide="globe-2"></i><span>Trade Atlas</span></a><a class="primary headerEnterBtn" id="joinBtn" href="/signin.html" aria-label="Enter VTG and sign in"><i data-lucide="arrow-up-right"></i><span>Enter VTG</span></a></div></div>';
+    if (!document.getElementById('vtg-public-header-style')) {
+      var style = document.createElement('style'); style.id = 'vtg-public-header-style';
+      style.textContent = '.vtg-public-header{position:sticky;top:0;z-index:100;background:rgba(13,17,23,.96);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.09);box-shadow:0 8px 30px rgba(0,0,0,.14)}.vtg-public-header .navin{max-width:1320px;margin:auto;padding:11px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:68px}.vtg-public-header .brand{display:flex;align-items:center;min-width:0}.vtg-public-header .brand img{max-height:42px;width:auto}.vtg-public-header .navtools{display:flex;align-items:center;gap:9px;margin-left:auto}.vtg-public-header .vtg-language-wrap{display:flex;align-items:center;gap:6px;color:#eef3f6;font-size:10px;font-weight:700}.vtg-public-header .vtg-language-wrap select{max-width:120px;height:38px;padding:0 8px;border:1px solid rgba(255,255,255,.18);border-radius:10px;background:#171d24;color:#eef3f6;font:700 11px Manrope,sans-serif}.vtg-public-header .headerFeatureBtn,.vtg-public-header .headerEnterBtn{height:42px;border-radius:12px;padding:0 14px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:10px;font-weight:800;text-decoration:none}.vtg-public-header .headerFeatureBtn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.045);color:#eef3f6}.vtg-public-header .headerEnterBtn{background:#c0392b;color:#fff;padding:0 17px}.vtg-public-header .headerEnterBtn *{color:#fff!important}@media(max-width:900px){.vtg-public-header .navin{padding:10px 14px;gap:10px}.vtg-public-header .brand img{max-height:38px}.vtg-public-header .navtools{gap:6px}.vtg-public-header .headerFeatureBtn,.vtg-public-header .headerEnterBtn{height:38px;padding:0 10px;font-size:9px}}@media(max-width:560px){.vtg-public-header .vtg-language-wrap span{display:none}.vtg-public-header .vtg-language-wrap select{max-width:82px;font-size:10px}.vtg-public-header .headerFeatureBtn{width:40px;padding:0}.vtg-public-header .headerFeatureBtn span{display:none}.vtg-public-header .headerEnterBtn{padding:0 10px;white-space:nowrap}}';
+      document.head.appendChild(style);
+    }
     document.body.insertBefore(nav, document.body.firstChild);
-    document.getElementById('vtgPreviousPage').addEventListener('click', function () {
-      var canReturn = false;
-      try {
-        if (document.referrer) {
-          var previous = new URL(document.referrer, window.location.href);
-          canReturn = previous.origin === window.location.origin &&
-            (previous.pathname !== window.location.pathname || previous.search !== window.location.search || previous.hash !== window.location.hash);
-        }
-      } catch (_) {}
-      if (canReturn && window.history.length > 1) window.history.back();
-      else window.location.href = HOME;
-    });
+    var picker = document.getElementById('vtgLanguagePicker');
+    if (picker) { var stored = 'en'; try { stored = localStorage.getItem('vtg-language') || 'en'; } catch (_) {} picker.value = stored === 'zh' ? 'zh-CN' : stored; picker.addEventListener('change', function () { var selected = picker.value; try { localStorage.setItem('vtg-language', selected === 'zh-CN' ? 'zh' : selected); } catch (_) {} if (selected === 'en') { document.cookie = 'googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'; document.cookie = 'googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=' + location.hostname; } else { var value = '/en/' + selected; document.cookie = 'googtrans=' + value + ';path=/;max-age=31536000;SameSite=Lax'; } location.reload(); }); }
+    if (window.lucide && window.lucide.createIcons) window.lucide.createIcons();
   }
   function applyTimeBasedTheme() {
     // VTG-wide theme policy: follow each visitor's own device-local clock.
@@ -380,6 +366,7 @@
     document.addEventListener('visibilitychange', function () { if (!document.hidden) syncTheme(); });
   }
   function ensureThemeControl() {
+    if (!isWorkspaceDashboardPage() && !vtgPublicShellPage) return;
     if ((window.location.pathname || '').toLowerCase().replace(/\\/+$/, '').endsWith('/workforce-access.html')) return;
     if (document.getElementById('vtgThemePreference')) return;
     var wrap = document.createElement('div');
@@ -413,6 +400,7 @@
     });
   }
   function ensureThemePresets() {
+    if (!isWorkspaceDashboardPage() && !vtgPublicShellPage) return;
     var path = (window.location.pathname || '').toLowerCase();
     if (path.replace(/\\/+$/, '').endsWith('/workforce-access.html')) return;
     // Buyer and supplier dashboards retain their own workspace appearance controls.
