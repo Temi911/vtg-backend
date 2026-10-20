@@ -195,14 +195,13 @@
   }
   function addPageNavigation() {
     if (isHomePage() || document.getElementById('vtgPageNavigation')) return;
-    if (isWorkspaceDashboardPage()) {
+    if (isWorkspaceDashboardPage() || !vtgPublicShellPage) {
       var workspaceNav = document.createElement('nav'); workspaceNav.id = 'vtgPageNavigation'; workspaceNav.className = 'vtg-page-nav'; workspaceNav.setAttribute('aria-label', 'Page navigation');
       workspaceNav.innerHTML = '<a class="vtg-nav-brand" href="' + HOME + '" aria-label="Vintage Trade Global home"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><div class="vtg-nav-actions"><button type="button" id="vtgPreviousPage" aria-label="Return to previous VTG page"><span aria-hidden="true">←</span> Previous</button><a href="' + HOME + '" aria-label="Return to VTG homepage"><span aria-hidden="true">⌂</span> Home</a></div>';
       document.body.insertBefore(workspaceNav, document.body.firstChild);
       document.getElementById('vtgPreviousPage').addEventListener('click', function () { var canReturn = false; try { if (document.referrer) { var previous = new URL(document.referrer, window.location.href); canReturn = previous.origin === window.location.origin && (previous.pathname !== window.location.pathname || previous.search !== window.location.search || previous.hash !== window.location.hash); } } catch (_) {} if (canReturn && window.history.length > 1) window.history.back(); else window.location.href = HOME; });
       return;
     }
-    if (!vtgPublicShellPage) return;
     var nav = document.createElement('header'); nav.id = 'vtgPageNavigation'; nav.className = 'nav vtg-public-header'; nav.setAttribute('aria-label', 'VTG site header');
     nav.innerHTML = '<div class="navin"><a class="brand" href="/frontend-v3.html#top" aria-label="Vintage Trade Global"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><div class="navtools" aria-label="VTG quick access"><label class="vtg-language-wrap" aria-label="Choose site language"><span>Language</span><select id="vtgLanguagePicker" aria-label="Choose site language"><option value="en">English</option><option value="fr">Français</option><option value="zh-CN">中文</option><option value="ko">한국어</option><option value="es">Español</option><option value="ar">العربية</option></select></label><a class="headerFeatureBtn" id="atlasHeaderBtn" href="/trade-atlas.html" title="Open Trade Atlas" aria-label="Open Trade Atlas"><i data-lucide="globe-2"></i><span>Trade Atlas</span></a><a class="primary headerEnterBtn" id="joinBtn" href="/signin.html" aria-label="Enter VTG and sign in"><i data-lucide="arrow-up-right"></i><span>Enter VTG</span></a></div></div>';
     if (!document.getElementById('vtg-public-header-style')) {
