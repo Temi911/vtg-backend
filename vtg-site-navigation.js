@@ -520,7 +520,7 @@
       'html[data-vtg-skin] #vtgThemeControl,html[data-vtg-skin] #vtgThemePresetControl{color:var(--vtg-public-ink)!important}',
       'html[data-vtg-skin] #vtgThemeControl label,html[data-vtg-skin] #vtgThemePresetControl label{color:var(--vtg-public-muted)!important}',
       'html[data-vtg-skin] #vtgThemeControl select,html[data-vtg-skin] #vtgThemePresetControl select{background:var(--vtg-public-surface)!important;color:var(--vtg-public-ink)!important;border-color:var(--vtg-public-line)!important}'
-    ].join('\\n');
+    ].join('\n');
     document.head.appendChild(style);
 
     var wrap = document.createElement('div');
