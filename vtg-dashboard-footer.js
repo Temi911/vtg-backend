@@ -4,7 +4,7 @@
   if (!document.querySelector('link[data-vtg-typography]')) {
     const typography = document.createElement('link');
     typography.rel = 'stylesheet';
-    typography.href = '/vtg-typography.css?v=20261020-3';
+    typography.href = '/vtg-typography.css?v=20261020-4';
     typography.setAttribute('data-vtg-typography', '1');
     document.head.appendChild(typography);
   }
