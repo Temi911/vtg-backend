@@ -519,7 +519,7 @@
     if (document.querySelector('link[data-vtg-typography]')) return;
     var link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = '/vtg-typography.css?v=20261020-1';
+    link.href = '/vtg-typography.css?v=20261020-2';
     link.setAttribute('data-vtg-typography', '1');
     document.head.appendChild(link);
   }
