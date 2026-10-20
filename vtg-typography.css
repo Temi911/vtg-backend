@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 /* VTG Typography Standard — single type family, compact scale, consistent spacing.
    Loaded after page styles by the shared site navigation and dashboard footer.
    Intentionally changes typography/rhythm only; it does not alter layout, colors, or page content. */
@@ -11,7 +12,7 @@
   --vtg-copy-measure:72ch;
 }
 html{font-family:var(--vtg-font-family)!important;font-size:14px!important;-webkit-text-size-adjust:100%;text-size-adjust:100%}
-body,body *:not(svg):not(svg *):not(i):not([class*="icon"]):not([class*="Icon"]):not([class*="fa-"]):not(.material-symbols-outlined):not(.lucide){
+body,body *:not(svg):not(svg *):not(i):not([class*="icon"]):not([class*="Icon"]):not([class*="fa-"]):not(.fa):not(.fas):not(.far):not(.fab):not(.material-icons):not(.material-symbols-outlined):not(.material-symbols-rounded):not([data-lucide]):not(.lucide){
   font-family:var(--vtg-font-family)!important;
   word-spacing:normal;
 }
