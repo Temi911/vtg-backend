@@ -488,7 +488,7 @@
           <span class="kicker">Trade Atlas</span>
           <h2>Explore the world of trade.</h2>
           <p>Preview the routes, ports and business locations connecting Africa and Asia. Open the VTG Trade Atlas to explore the wider trade network.</p>
-          <button class="primary" type="button" id="minimalAtlasBtn" style="margin-top:10px">Open Trade Atlas <i data-lucide="globe-2"></i></button>
+          <a class="primary" id="minimalAtlasBtn" href="/trade-atlas.html" style="display:inline-flex;align-items:center;gap:9px;margin-top:10px">Open Trade Atlas <i data-lucide="globe-2"></i></a>
         </div>
         <div class="vtgGlobeFrame">
           <img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1770723965031-65f135a58636?auto=format&fit=crop&w=1600&q=88" alt="Earth from space showing Africa and Europe">
@@ -536,10 +536,7 @@
       const link=[...document.querySelectorAll('#landing .footer a')].find(a=>/partner|agent/i.test(a.textContent||''));
       if(link) link.click(); else document.querySelector('#contact')?.scrollIntoView({behavior:'smooth',block:'center'});
     });
-    document.getElementById('minimalAtlasBtn')?.addEventListener('click',()=>{
-      const target=document.querySelector('#vtgAtlasPreview');
-      if(target) target.scrollIntoView({behavior:'smooth',block:'center'});
-    });
+    // The Atlas CTA is a real page link; do not intercept it to scroll back to its own section.
 
     const oldFooterLinks=footer?.querySelectorAll('a');
     oldFooterLinks?.forEach(a=>{
