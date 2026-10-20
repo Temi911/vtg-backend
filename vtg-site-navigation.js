@@ -515,6 +515,15 @@
     host.appendChild(wrap);
   }
 
+  function ensureTypographyStylesheet() {
+    if (document.querySelector('link[data-vtg-typography]')) return;
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/vtg-typography.css?v=20261020-1';
+    link.setAttribute('data-vtg-typography', '1');
+    document.head.appendChild(link);
+  }
+
   function ensureInterfaceStylesheet() {
     var path = (window.location.pathname || '').toLowerCase();
     // Apply the shared interface system to all site pages except buyer/supplier dashboards.
@@ -528,6 +537,7 @@
   }
 
   function init() {
+    ensureTypographyStylesheet();
     ensureInterfaceStylesheet();
     applyTimeBasedTheme();
     addStyle();
