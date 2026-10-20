@@ -115,5 +115,5 @@ window.addEventListener('storage',e=>{if(e.key==='vtg-theme-preference'||e.key==
  $('taskFilter').addEventListener('change',()=>{if($('taskFilter').value!=='all')toast('Task filters will work when the live task service is connected.')});
 const sidebar=document.querySelector('.sidebar'),overlay=$('sidebarOverlay');function closeMobileMenu(){sidebar?.classList.remove('mobileOpen');if(overlay)overlay.hidden=true;$('menuBtn')?.setAttribute('aria-expanded','false')};function openMobileMenu(){sidebar?.classList.add('mobileOpen');if(overlay)overlay.hidden=false;$('menuBtn')?.setAttribute('aria-expanded','true')};$('menuBtn').addEventListener('click',()=>sidebar?.classList.contains('mobileOpen')?closeMobileMenu():openMobileMenu());overlay?.addEventListener('click',closeMobileMenu);document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',closeMobileMenu));document.querySelectorAll('[data-link]').forEach(b=>b.addEventListener('click',closeMobileMenu));window.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileMenu()});window.addEventListener('resize',()=>{if(window.innerWidth>680)closeMobileMenu()});
 })();
-</script><script src="/vtg-dashboard-footer.js?v=20261019" defer></script>
+</script><script src="/vtg-dashboard-footer.js?v=20261020-type-system-1" defer></script>
 </body></html>
