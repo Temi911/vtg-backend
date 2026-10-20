@@ -38,6 +38,10 @@
     'body #vtgPageNavigation .brand,body #vtgPageNavigation .vtg-nav-brand{display:flex!important;align-items:center!important;justify-content:flex-start!important;flex:0 0 auto!important;min-width:132px!important;min-height:38px!important;visibility:visible!important;opacity:1!important;overflow:visible!important}',
     'body #vtgPageNavigation .brand img,body #vtgPageNavigation .vtg-nav-brand img{display:block!important;visibility:visible!important;opacity:1!important;width:132px!important;min-width:132px!important;max-width:132px!important;height:auto!important;max-height:42px!important;object-fit:contain!important;object-position:left center!important;position:relative!important;z-index:2!important}',
     'body #vtgPageNavigation .brand,body #vtgPageNavigation .brand img,body #vtgPageNavigation .vtg-nav-brand,body #vtgPageNavigation .vtg-nav-brand img{transform:none!important;clip:auto!important;clip-path:none!important;text-indent:0!important}',
+    'body .vtg-header-brand{display:flex!important;align-items:center!important;justify-content:flex-start!important;flex:0 0 auto!important;width:auto!important;min-width:132px!important;max-width:180px!important;min-height:38px!important;margin-right:14px!important;padding:0!important;visibility:visible!important;opacity:1!important;overflow:visible!important;text-indent:0!important;position:relative!important;z-index:5!important}',
+    'body .vtg-header-brand img{display:block!important;visibility:visible!important;opacity:1!important;width:150px!important;min-width:132px!important;max-width:150px!important;height:auto!important;max-height:42px!important;object-fit:contain!important;object-position:left center!important;position:relative!important;z-index:6!important}',
+    'body header.topbar,body header.top,body header.page-header,body header.site-header,body header.main-header,body .topbar,body .page-header,body .site-header,body .main-header{align-items:center!important}',
+    'body header.topbar .vtg-header-brand,body header.top .vtg-header-brand,body .topbar .vtg-header-brand{align-self:center!important}',
     '@media(max-width:800px){.vtgCompactFooter .vtgFooterTop{grid-template-columns:1fr 1fr;gap:22px;padding:30px 16px 22px}.vtgCompactFooter .vtgFooterBrand{grid-column:1/-1}.vtgCompactFooter .vtgFooterBottom{padding:14px;text-align:center}.vtgCompactFooter .vtgFooterBottom div{justify-content:center}}',
     '@media(max-width:420px){.vtgCompactFooter .vtgFooterLinks{grid-template-columns:1fr 1fr}.vtg-page-nav{padding:7px 12px}.vtg-page-nav button,.vtg-page-nav a{padding:0 9px;font-size:9px}}',
     'footer#vtgFooter.vtgCompactFooter{display:block!important;float:none!important;clear:both!important;position:relative!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;overflow:visible!important;background:#0b1016!important;color:#9eabb5!important;border-top:1px solid rgba(255,255,255,.08)!important;font-family:Manrope,Arial,sans-serif!important;font-size:initial!important;line-height:normal!important;text-align:left!important;box-shadow:none!important;border-radius:0!important}',
@@ -101,13 +105,27 @@
     document.head.appendChild(style);
   }
   function syncBrandLogos() {
-    var path = (window.location.pathname || '').toLowerCase();
-    if (path.endsWith('/buyer-dashboard.html') || path.endsWith('/buyer-dashboard-preview.html') || path.endsWith('/supplier-dashboard.html')) return;
     var darkMode = document.documentElement.getAttribute('data-theme') === 'dark';
     document.querySelectorAll('img[src*="vtg-logo"], img[alt*="Vintage Trade Global"], img[alt="VTG"]').forEach(function (img) {
       var src = darkMode ? '/assets/vtg-logo-light.svg' : '/assets/vtg-logo.svg';
       if (img.getAttribute('src') !== src) img.setAttribute('src', src);
       img.setAttribute('data-vtg-theme-logo', darkMode ? 'light-on-dark' : 'dark-on-light');
+      img.style.setProperty('display', 'block', 'important');
+      img.style.setProperty('visibility', 'visible', 'important');
+      img.style.setProperty('opacity', '1', 'important');
+    });
+  }
+  function ensureLogoInEveryHeader() {
+    var selectors = 'header.topbar,header.top,header.page-header,header.site-header,header.main-header,.topbar,.page-header,.site-header,.main-header,body > header';
+    document.querySelectorAll(selectors).forEach(function (header) {
+      if (header.closest('footer') || header.id === 'vtgPageNavigation') return;
+      if (header.querySelector('img[src*="vtg-logo"],img[alt*="Vintage Trade Global"],img[alt="VTG"],.vtg-header-brand')) return;
+      var brand = document.createElement('a');
+      brand.className = 'vtg-header-brand';
+      brand.href = HOME;
+      brand.setAttribute('aria-label', 'Vintage Trade Global home');
+      brand.innerHTML = '<img src="' + (document.documentElement.getAttribute('data-theme') === 'dark' ? '/assets/vtg-logo-light.svg' : '/assets/vtg-logo.svg') + '" alt="Vintage Trade Global">';
+      header.insertBefore(brand, header.firstChild);
     });
   }
   function renderFooter() {
@@ -672,6 +690,8 @@
     adaptHomeAnchors();
     simplifyPageHeader();
     addPageNavigation();
+    ensureLogoInEveryHeader();
+    syncBrandLogos();
     enforceShellTextContrast();
     if (vtgPublicShellPage && !isHomePage()) document.body.classList.add('vtg-public-shell-page');
     enforceLandingShellLayout();
