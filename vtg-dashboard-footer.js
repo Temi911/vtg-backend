@@ -23,6 +23,24 @@
   const activePath=path;
   const active=pages.find(p=>p[2]===activePath);
   const root=document.documentElement;
+  // Apply the same simple non-landing navigation to every dashboard as well.
+  if(!document.getElementById('vtgPageNavigation')){
+    const pageNav=document.createElement('nav');
+    pageNav.id='vtgPageNavigation';
+    pageNav.className='vtg-page-nav vtg-dashboard-page-nav';
+    pageNav.setAttribute('aria-label','Page navigation');
+    pageNav.innerHTML='<a class="vtg-nav-brand" href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><div class="vtg-nav-actions"><button type="button" id="vtgPreviousPage" aria-label="Return to previous VTG page"><span aria-hidden="true">←</span> Previous</button><a href="/frontend-v3.html" aria-label="Return to VTG homepage"><span aria-hidden="true">⌂</span> Home</a></div>';
+    const navStyle=document.createElement('style');
+    navStyle.id='vtg-dashboard-page-nav-style';
+    navStyle.textContent='#vtgPageNavigation.vtg-dashboard-page-nav{position:relative;z-index:1200;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:52px;padding:7px max(16px,calc((100vw - 1440px)/2));border-bottom:1px solid var(--line,#dfe4e9);background:var(--surface,#fff);color:var(--ink,#20252d);font-family:Manrope,Arial,sans-serif;box-sizing:border-box}#vtgPageNavigation.vtg-dashboard-page-nav *{box-sizing:border-box}#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-brand{display:flex;align-items:center;min-width:132px;margin-right:auto;text-decoration:none}#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-brand img{display:block;width:auto;max-width:132px;max-height:36px;object-fit:contain}#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px}#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-actions a,#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-actions button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;padding:0 11px;border:1px solid var(--line,#dfe4e9);border-radius:8px;background:var(--surface,#fff);color:var(--ink,#20252d);font:700 13px/1.3 Manrope,Arial,sans-serif;text-decoration:none;cursor:pointer}#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-actions a:hover,#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-actions button:hover{border-color:var(--red,#a5232b);color:var(--red,#a5232b)}@media(max-width:480px){#vtgPageNavigation.vtg-dashboard-page-nav{padding:7px 12px}#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-brand img{max-width:112px;max-height:31px}#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-actions a,#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-actions button{min-height:32px;padding:0 8px;font-size:12px}}';
+    document.head.appendChild(navStyle);
+    document.body.insertBefore(pageNav,document.body.firstChild);
+    pageNav.querySelector('#vtgPreviousPage').addEventListener('click',function(){
+      let canReturn=false;
+      try{if(document.referrer){const previous=new URL(document.referrer,location.href);canReturn=previous.origin===location.origin&&(previous.pathname!==location.pathname||previous.search!==location.search||previous.hash!==location.hash)}}catch(e){}
+      if(canReturn&&history.length>1)history.back();else location.href='/frontend-v3.html';
+    });
+  }
   const get=(k,f='')=>{try{return localStorage.getItem(k)||f}catch(e){return f}};
   const set=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
   const supportedLangs=['en','fr','zh','ko','es','ar'];
