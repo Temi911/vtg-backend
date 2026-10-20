@@ -516,7 +516,6 @@
       'html[data-vtg-skin] body :is(.primary,.btn-primary,.primary-btn,.btn.primary,button.primary,a.primary,[data-action="primary"],.headerEnterBtn,#heroJoin){background:var(--vtg-skin-accent)!important;border-color:var(--vtg-skin-accent)!important;color:#fff!important;-webkit-text-fill-color:#fff!important}',
       'html[data-vtg-skin] body :is(.active,.is-active,[aria-current="page"],[aria-selected="true"],[aria-pressed="true"],.selected,.checked){border-color:var(--vtg-skin-accent)!important;outline-color:var(--vtg-skin-accent)!important}',
       'html[data-vtg-skin] body a:not(.primary):not(.btn-primary):not(.btn):not(.button):not(.headerEnterBtn){color:var(--vtg-skin-link)!important}',
-      'html[data-vtg-skin] body :is(.hero,.heroIn,.hero-inner,.heroMedia,.hero-media,.globeStage,.tradeNetworkVisual,#vtgAtlasPreview,[style*="background-image"]){background-image:revert-layer}',
       'html[data-vtg-skin] body :is(.hero,.heroIn,.hero-inner,.heroMedia,.hero-media,.globeStage,.tradeNetworkVisual,#vtgAtlasPreview) :is(h1,h2,h3,p,.eyebrow){text-shadow:0 1px 4px rgba(0,0,0,.35)}',
       'html[data-vtg-skin] #vtgThemeControl,html[data-vtg-skin] #vtgThemePresetControl{color:var(--vtg-public-ink)!important}',
       'html[data-vtg-skin] #vtgThemeControl label,html[data-vtg-skin] #vtgThemePresetControl label{color:var(--vtg-public-muted)!important}',
