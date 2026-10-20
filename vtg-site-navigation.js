@@ -591,7 +591,7 @@
         'html[data-vtg-skin][data-theme] body :is(.muted,.subtitle,.description,.help-text,.meta,.caption,.eyebrow,.secondary-text){color:var(--vtg-public-muted)!important}',
         'html[data-vtg-skin][data-theme] body footer#vtgFooter,html[data-vtg-skin][data-theme] body footer.vtgCompactFooter,html[data-vtg-skin][data-theme] body .site-footer,html[data-vtg-skin][data-theme] body .footer{background-color:var(--vtg-public-footer)!important;color:var(--vtg-public-muted)!important;border-color:var(--vtg-public-line)!important}',
         'html[data-vtg-skin][data-theme] body footer#vtgFooter :is(h1,h2,h3,h4,h5,h6){color:var(--vtg-skin-accent)!important}'
-      ].join('\\n');
+      ].join('\n');
       document.head.appendChild(style);
     }
   }
