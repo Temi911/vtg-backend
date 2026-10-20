@@ -68,7 +68,7 @@
     'html[data-vtg-skin][data-theme="dark"] body footer#vtgFooter.vtgCompactFooter{background:#080b0f!important;background-color:#080b0f!important;color:#aeb9c2!important;border-color:#2b3640!important}',
     'html[data-vtg-skin][data-theme="light"] body footer#vtgFooter.vtgCompactFooter :is(h1,h2,h3,h4,h5,h6){color:#fff!important}html[data-vtg-skin][data-theme="light"] body footer#vtgFooter.vtgCompactFooter .vtgFooterBrand p,html[data-vtg-skin][data-theme="light"] body footer#vtgFooter.vtgCompactFooter .vtgFooterLinks a{color:#98a2b3!important}',
     'html[data-vtg-skin][data-theme="dark"] body footer#vtgFooter.vtgCompactFooter :is(h1,h2,h3,h4,h5,h6){color:#f3f6f8!important}html[data-vtg-skin][data-theme="dark"] body footer#vtgFooter.vtgCompactFooter .vtgFooterBrand p,html[data-vtg-skin][data-theme="dark"] body footer#vtgFooter.vtgCompactFooter .vtgFooterLinks a{color:#aeb9c2!important}'
-  ].join('\\n');
+  ].join('\n');
   var CONTRAST_CSS = [
     /* Shared contrast baseline for all VTG pages; image overlays and branded dark sections retain their own palettes. */
     'html[data-theme="light"] body{background-color:#f5f7fa;color:#17212b}',
