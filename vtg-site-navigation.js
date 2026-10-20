@@ -241,13 +241,15 @@
     if (window.lucide && window.lucide.createIcons) window.lucide.createIcons();
   }
   function applyTimeBasedTheme() {
+    // Visitor light/dark preference is public-site-only; workspaces keep their own controls.
+    if (isWorkspaceDashboardPage()) return;
     // VTG-wide theme policy: follow each visitor's own device-local clock.
     var root = document.documentElement;
     var lastTheme = '';
     var preferenceKey = 'vtg-theme-preference';
     function readPreference() {
-      try { return window.localStorage.getItem(preferenceKey) || 'dark'; }
-      catch (error) { return 'dark'; }
+      try { return window.localStorage.getItem(preferenceKey) || 'auto'; }
+      catch (error) { return 'auto'; }
     }
     function syncTheme() {
       var now = new Date();
@@ -397,7 +399,7 @@
     document.addEventListener('visibilitychange', function () { if (!document.hidden) syncTheme(); });
   }
   function ensureThemeControl() {
-    if (!isWorkspaceDashboardPage() && !vtgPublicShellPage) return;
+    if (isWorkspaceDashboardPage() || !vtgPublicShellPage) return;
     if (document.getElementById('vtgThemePreference')) return;
     var wrap = document.createElement('div');
     wrap.id = 'vtgThemeControl';
@@ -430,10 +432,8 @@
     });
   }
   function ensureThemePresets() {
-    if (!isWorkspaceDashboardPage() && !vtgPublicShellPage) return;
-    var path = (window.location.pathname || '').toLowerCase();
-    // Buyer and supplier dashboards retain their own workspace appearance controls.
-    if (path.endsWith('/buyer-dashboard.html') || path.endsWith('/buyer-dashboard-preview.html') || path.endsWith('/supplier-dashboard.html')) return;
+    // Visitor color presets are deliberately excluded from every dashboard.
+    if (isWorkspaceDashboardPage() || !vtgPublicShellPage) return;
     if (document.getElementById('vtgThemePresetControl')) return;
 
     // The three visitor presets selected on the landing page follow every non-excluded page.
@@ -497,8 +497,31 @@
       'html[data-vtg-skin] body :is(input,select,textarea,[contenteditable="true"]):focus{border-color:var(--vtg-skin-accent)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--vtg-skin-accent) 20%,transparent)!important}',
       '#vtgFooter .vtgFooterBottom{flex-wrap:wrap!important;align-items:center!important}',
       '#vtgFooter .vtgFooterBottom>span{flex:1 1 230px}',
-      '@media(max-width:800px){html[data-vtg-skin] #vtgThemePresetControl{margin:8px 0 0;flex-basis:100%}}'
-    ].join('\n');
+      '@media(max-width:800px){html[data-vtg-skin] #vtgThemePresetControl{margin:8px 0 0;flex-basis:100%}}',
+      '/* Public visitor theme: one persistent preset controls the complete public shell and page palette. */',
+      'html[data-theme="light"][data-vtg-skin]{--vtg-public-page:#f7f9fb;--vtg-public-surface:#fff;--vtg-public-surface-2:#eef2f6;--vtg-public-ink:#17212b;--vtg-public-muted:#526273;--vtg-public-line:#dce4eb;--vtg-public-nav:#fff;--vtg-public-footer:#eef2f6}',
+      'html[data-theme="dark"][data-vtg-skin]{--vtg-public-page:#0d1117;--vtg-public-surface:#11161d;--vtg-public-surface-2:#171d24;--vtg-public-ink:#eef3f6;--vtg-public-muted:#b9c5ce;--vtg-public-line:#2b3640;--vtg-public-nav:#0b1016;--vtg-public-footer:#080b0f}',
+      'html[data-vtg-skin] body{color:var(--vtg-public-ink)!important;background-color:var(--vtg-public-page)!important;accent-color:var(--vtg-skin-accent)!important}',
+      'html[data-vtg-skin] body :is(header,nav,.nav,.site-nav,.site-header,.siteHeader,.topbar,.top-bar,.page-header,.pageHeader,.toolbar,#vtgPageNavigation,.vtg-page-nav,.vtg-public-header){background:var(--vtg-public-nav)!important;background-color:var(--vtg-public-nav)!important;color:var(--vtg-public-ink)!important;border-color:var(--vtg-public-line)!important}',
+      'html[data-vtg-skin] body :is(header,nav,.nav,.site-nav,.site-header,.siteHeader,.topbar,.top-bar,.page-header,.pageHeader,.toolbar,#vtgPageNavigation,.vtg-page-nav,.vtg-public-header) :is(a,button,span,strong,small,label){color:var(--vtg-public-ink)!important;-webkit-text-fill-color:var(--vtg-public-ink)!important}',
+      'html[data-vtg-skin] body :is(.card,.panel,.surface,.tile,.modal,.modal-content,.dialog,.dialog-content,.dropdown-menu,.popover,.drawer,.sheet,.form-card,.formCard,.stat-card,.feature-card,.info-card,.content-card,.application-card,.market-card,.news-card,.chart-card,.widget,.widget-card,.table-wrap,.table-responsive,.faq-item,.callout,.accessCard,.access-card,.routeCard,.route-card,.selectedHub,.portCard,.portBody){background-color:var(--vtg-public-surface)!important;color:var(--vtg-public-ink)!important;border-color:var(--vtg-public-line)!important}',
+      'html[data-vtg-skin] body :is(.card,.panel,.surface,.tile,.modal,.modal-content,.dialog,.dialog-content,.dropdown-menu,.popover,.drawer,.sheet,.form-card,.formCard,.stat-card,.feature-card,.info-card,.content-card,.application-card,.market-card,.news-card,.chart-card,.widget,.widget-card,.faq-item,.callout,.accessCard,.access-card,.routeCard,.route-card,.selectedHub,.portCard,.portBody) :is(p,li,small,.muted,.description,.subtitle,.help-text,.meta,figcaption){color:var(--vtg-public-muted)!important;-webkit-text-fill-color:var(--vtg-public-muted)!important}',
+      'html[data-vtg-skin] body :is(h1,h2,h3,h4,h5,h6){color:var(--vtg-public-ink)}',
+      'html[data-vtg-skin] body :is(input,select,textarea,[contenteditable="true"],option){background:var(--vtg-public-surface)!important;color:var(--vtg-public-ink)!important;border-color:var(--vtg-public-line)!important;accent-color:var(--vtg-skin-accent)!important}',
+      'html[data-vtg-skin] body :is(input,textarea)::placeholder{color:var(--vtg-public-muted)!important}',
+      'html[data-vtg-skin] body footer#vtgFooter,html[data-vtg-skin] body footer.vtgCompactFooter,html[data-vtg-skin] body .site-footer,html[data-vtg-skin] body .footer{background:var(--vtg-public-footer)!important;background-color:var(--vtg-public-footer)!important;color:var(--vtg-public-muted)!important;border-color:var(--vtg-public-line)!important}',
+      'html[data-vtg-skin] body footer#vtgFooter :is(.vtgFooterTop,.vtgFooterBottom,.vtgFooterLinks),html[data-vtg-skin] body footer.vtgCompactFooter :is(.vtgFooterTop,.vtgFooterBottom,.vtgFooterLinks){background:transparent!important;color:var(--vtg-public-muted)!important;border-color:var(--vtg-public-line)!important}',
+      'html[data-vtg-skin] body footer#vtgFooter :is(h1,h2,h3,h4,h5,h6){color:var(--vtg-skin-accent)!important}',
+      'html[data-vtg-skin] body footer#vtgFooter :is(a,p,small,span,li){color:var(--vtg-public-muted)!important}',
+      'html[data-vtg-skin] body :is(.primary,.btn-primary,.primary-btn,.btn.primary,button.primary,a.primary,[data-action="primary"],.headerEnterBtn,#heroJoin){background:var(--vtg-skin-accent)!important;border-color:var(--vtg-skin-accent)!important;color:#fff!important;-webkit-text-fill-color:#fff!important}',
+      'html[data-vtg-skin] body :is(.active,.is-active,[aria-current="page"],[aria-selected="true"],[aria-pressed="true"],.selected,.checked){border-color:var(--vtg-skin-accent)!important;outline-color:var(--vtg-skin-accent)!important}',
+      'html[data-vtg-skin] body a:not(.primary):not(.btn-primary):not(.btn):not(.button):not(.headerEnterBtn){color:var(--vtg-skin-link)!important}',
+      'html[data-vtg-skin] body :is(.hero,.heroIn,.hero-inner,.heroMedia,.hero-media,.globeStage,.tradeNetworkVisual,#vtgAtlasPreview,[style*="background-image"]){background-image:revert-layer}',
+      'html[data-vtg-skin] body :is(.hero,.heroIn,.hero-inner,.heroMedia,.hero-media,.globeStage,.tradeNetworkVisual,#vtgAtlasPreview) :is(h1,h2,h3,p,.eyebrow){text-shadow:0 1px 4px rgba(0,0,0,.35)}',
+      'html[data-vtg-skin] #vtgThemeControl,html[data-vtg-skin] #vtgThemePresetControl{color:var(--vtg-public-ink)!important}',
+      'html[data-vtg-skin] #vtgThemeControl label,html[data-vtg-skin] #vtgThemePresetControl label{color:var(--vtg-public-muted)!important}',
+      'html[data-vtg-skin] #vtgThemeControl select,html[data-vtg-skin] #vtgThemePresetControl select{background:var(--vtg-public-surface)!important;color:var(--vtg-public-ink)!important;border-color:var(--vtg-public-line)!important}'
+    ].join('\\n');
     document.head.appendChild(style);
 
     var wrap = document.createElement('div');
