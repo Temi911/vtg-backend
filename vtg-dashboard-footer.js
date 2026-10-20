@@ -11,7 +11,7 @@
     ['Staff','/workforce-dashboard.html?preview=1','workforce-dashboard.html'],
     ['Agent','/agent-dashboard.html?preview=1','agent-dashboard.html'],
     ['Agent Network','/agent-network-dashboard.html','agent-network-dashboard.html'],
-    ['VTG AI','/buyer-dashboard.html?preview=1#page-assistant','vtg-ai-dashboard.html'],
+    ['VTG AI','/vtg-ai-dashboard.html','vtg-ai-dashboard.html'],
   ];
   const activePath=path;
   const active=pages.find(p=>p[2]===activePath);
