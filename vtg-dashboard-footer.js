@@ -1,6 +1,13 @@
 /* VTG shared dashboard utility footer — common navigation and preference bridge. */
 (function(){
   'use strict';
+  if (!document.querySelector('link[data-vtg-typography]')) {
+    const typography = document.createElement('link');
+    typography.rel = 'stylesheet';
+    typography.href = '/vtg-typography.css?v=20261020-1';
+    typography.setAttribute('data-vtg-typography', '1');
+    document.head.appendChild(typography);
+  }
   const path=(location.pathname.split('/').pop()||'frontend-v3.html').toLowerCase();
   const pages=[
     ['Home','/frontend-v3.html','frontend-v3.html'],
