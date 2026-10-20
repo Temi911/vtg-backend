@@ -432,8 +432,8 @@
     });
   }
   function ensureThemePresets() {
-    // Visitor color presets are deliberately excluded from every dashboard.
-    if (isWorkspaceDashboardPage() || !vtgPublicShellPage) return;
+    // Load the saved visitor palette on every non-dashboard page, even pages without the shared public shell.
+    if (isWorkspaceDashboardPage()) return;
     if (document.getElementById('vtgThemePresetControl')) return;
 
     // The three visitor presets selected on the landing page follow every non-excluded page.
