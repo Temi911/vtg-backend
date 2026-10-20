@@ -124,5 +124,5 @@ function drawFollowups(){const box=document.getElementById('followupRows');if(!b
 document.getElementById('leadSearch').addEventListener('input',drawLeads);
 drawLeads();
 document.getElementById('leadForm').addEventListener('submit',e=>{e.preventDefault();const company=document.getElementById('leadCompany').value.trim();if(!document.getElementById('leadConsent').checked){document.getElementById('leadMsg').textContent='Please confirm you have permission to record and follow up this business contact.';return}leads.unshift({id:'lead-'+Date.now(),company,type:document.getElementById('leadType').value,country:document.getElementById('leadCountry').value,stage:document.getElementById('leadStage').value,category:document.getElementById('leadCategory').value.trim(),next:document.getElementById('leadNext').value,notes:document.getElementById('leadNotes').value.trim(),consentConfirmed:true,createdAt:new Date().toISOString()});if(saveLeads()){drawLeads();document.getElementById('leadMsg').textContent='Lead saved in this browser only. It has not been sent to VTG servers or synced to another device.';e.target.reset();}});
-</script><script src="/vtg-dashboard-footer.js?v=20261020-type-system-1" defer></script>
+</script><script src="/vtg-dashboard-footer.js?v=20261020-universal-header-1" defer></script>
 </body></html>
