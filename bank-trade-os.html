@@ -113,7 +113,10 @@ if(!cases.length&&isPreview)cases=sampleCases.map(x=>({...x}));
 try{notes=JSON.parse(localStorage.getItem(NOTES)||'[]');if(!Array.isArray(notes))notes=[]}catch(e){notes=[]}
 try{checks=JSON.parse(localStorage.getItem(CHECKS)||'{}')}catch(e){checks={}}
 try{prefs=JSON.parse(localStorage.getItem(PREF)||'{}')}catch(e){prefs={}}
-if(prefs.theme==='light'||prefs.theme==='dark')root.dataset.theme=prefs.theme;
+function resolveBankTheme(mode){return mode==='light'||mode==='dark'?mode:((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark')}
+let themePreference='auto';try{themePreference=localStorage.getItem('vtg-theme-preference')||localStorage.getItem('vtg-theme-mode')||'auto'}catch(e){}
+if(!['auto','light','dark'].includes(themePreference))themePreference='auto';
+if(themePreference==='auto'||themePreference==='light'||themePreference==='dark')root.dataset.theme=resolveBankTheme(themePreference);else if(prefs.theme==='light'||prefs.theme==='dark')root.dataset.theme=prefs.theme;
 if(prefs.skin)root.dataset.skin=prefs.skin;
 $('skin').value=root.dataset.skin||'crimson-ops';$('skinSelect').value=$('skin').value;$('themeSelect').value=root.dataset.theme||'dark';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -136,7 +139,8 @@ function setView(view){document.querySelectorAll('[id^="view-"]').forEach(el=>el
 document.querySelectorAll('.navbtn').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
 document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.goto)));
 $('mobilemenu').onclick=()=>$('sidebar').classList.toggle('open');
-$('themeToggle').onclick=()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';$('themeSelect').value=root.dataset.theme;savePrefs()};
+$('themeToggle').onclick=()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';themePreference=root.dataset.theme;try{localStorage.setItem('vtg-theme-preference',themePreference);localStorage.setItem('vtg-theme-mode',themePreference)}catch(e){}$('themeSelect').value=root.dataset.theme;savePrefs();document.dispatchEvent(new CustomEvent('vtg:themechange',{detail:{theme:root.dataset.theme,preference:themePreference}}))};
+document.addEventListener('vtg:themechange',e=>{if(e.detail&&e.detail.theme){root.dataset.theme=e.detail.theme;themePreference=e.detail.preference||themePreference;savePrefs()}});
 $('alerts').onclick=()=>toast('No new notifications in this preview. Live bank alerts are not connected.');
 $('language').value=prefs.language||'en';$('language').onchange=()=>{prefs.language=$('language').value;try{localStorage.setItem(PREF,JSON.stringify(prefs))}catch(e){}toast('Language preference saved. Full interface translation is not connected in this preview.')};
 function savePrefs(){prefs.theme=root.dataset.theme;prefs.skin=root.dataset.skin;try{localStorage.setItem(PREF,JSON.stringify(prefs))}catch(e){}$('skin').value=root.dataset.skin;$('skinSelect').value=root.dataset.skin;$('themeSelect').value=root.dataset.theme;$('themeToggle').textContent='◐';$('themeToggle').setAttribute('aria-label',root.dataset.theme==='dark'?'Switch to light mode':'Switch to dark mode');$('themeToggle').title=root.dataset.theme==='dark'?'Switch to light mode':'Switch to dark mode'}
