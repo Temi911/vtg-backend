@@ -572,6 +572,38 @@
     }
   }
 
+  function enforceShellTextContrast() {
+    if (document.getElementById('vtg-shell-text-contrast-fix')) return;
+    var style = document.createElement('style');
+    style.id = 'vtg-shell-text-contrast-fix';
+    style.textContent = [
+      /* Explicit high-contrast text for the shared public header and footer in both themes. */
+      'html[data-theme="light"] body #vtgPageNavigation.vtg-public-header{background:#fff!important;background-color:#fff!important;color:#17212b!important;border-color:#dedede!important}',
+      'html[data-theme="light"] body #vtgPageNavigation.vtg-public-header :is(a,button,span,strong,small,label){color:#17212b!important;-webkit-text-fill-color:#17212b!important;opacity:1!important;visibility:visible!important}',
+      'html[data-theme="light"] body #vtgPageNavigation.vtg-public-header :is(.headerEnterBtn,.headerFeatureBtn){background:#a5232b!important;color:#fff!important;-webkit-text-fill-color:#fff!important;border-color:#a5232b!important}',
+      'html[data-theme="light"] body #vtgPageNavigation.vtg-public-header :is(.headerEnterBtn,.headerFeatureBtn) :is(span,svg,i){color:#fff!important;-webkit-text-fill-color:#fff!important;stroke:#fff!important}',
+      'html[data-theme="dark"] body #vtgPageNavigation.vtg-public-header{background:#000!important;background-color:#000!important;color:#fff!important;border-color:#303030!important}',
+      'html[data-theme="dark"] body #vtgPageNavigation.vtg-public-header :is(a,button,span,strong,small,label){color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important;visibility:visible!important}',
+      'html[data-theme="dark"] body #vtgPageNavigation.vtg-public-header :is(.headerEnterBtn,.headerFeatureBtn){background:#a5232b!important;color:#fff!important;-webkit-text-fill-color:#fff!important;border-color:#a5232b!important}',
+      'body footer#vtgFooter.vtgCompactFooter{background:#240b09!important;background-color:#240b09!important;color:#e6edf2!important;border-color:#56302d!important}',
+      'body footer#vtgFooter.vtgCompactFooter .vtgFooterBrand p{color:#d1d9df!important;-webkit-text-fill-color:#d1d9df!important;opacity:1!important}',
+      'body footer#vtgFooter.vtgCompactFooter .vtgFooterLinks h4{color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important}',
+      'body footer#vtgFooter.vtgCompactFooter .vtgFooterLinks a{color:#e0e7ed!important;-webkit-text-fill-color:#e0e7ed!important;opacity:1!important;visibility:visible!important}',
+      'body footer#vtgFooter.vtgCompactFooter .vtgFooterBottom,body footer#vtgFooter.vtgCompactFooter .vtgFooterBottom>span{color:#d1d9df!important;-webkit-text-fill-color:#d1d9df!important;opacity:1!important}',
+      'body footer#vtgFooter.vtgCompactFooter .vtgFooterBottom a{color:#e0e7ed!important;-webkit-text-fill-color:#e0e7ed!important;opacity:1!important}',
+      'html[data-theme="dark"] body footer#vtgFooter.vtgCompactFooter{background:#080b0f!important;background-color:#080b0f!important;color:#eef3f6!important;border-color:#303030!important}',
+      'html[data-theme="dark"] body footer#vtgFooter.vtgCompactFooter .vtgFooterBrand p,html[data-theme="dark"] body footer#vtgFooter.vtgCompactFooter .vtgFooterLinks a,html[data-theme="dark"] body footer#vtgFooter.vtgCompactFooter .vtgFooterBottom,html[data-theme="dark"] body footer#vtgFooter.vtgCompactFooter .vtgFooterBottom>span,html[data-theme="dark"] body footer#vtgFooter.vtgCompactFooter .vtgFooterBottom a{color:#d5dde4!important;-webkit-text-fill-color:#d5dde4!important;opacity:1!important}',
+      /* Dashboard utility footer has its own palette and must remain readable too. */
+      'html[data-theme="light"] body #vtg-shared-footer{background:#fff!important;color:#17212b!important;border-color:#cbd5df!important}',
+      'html[data-theme="light"] body #vtg-shared-footer :is(a,span,button,select){color:#17212b!important;-webkit-text-fill-color:#17212b!important;opacity:1!important;visibility:visible!important}',
+      'html[data-theme="dark"] body #vtg-shared-footer{background:#10161d!important;color:#f3f6f8!important;border-color:#303944!important}',
+      'html[data-theme="dark"] body #vtg-shared-footer :is(a,span,button,select){color:#f3f6f8!important;-webkit-text-fill-color:#f3f6f8!important;opacity:1!important;visibility:visible!important}',
+      'html[data-theme="light"] body #vtg-shared-footer a[aria-current="page"],html[data-theme="light"] body #vtg-shared-footer span[aria-current="page"]{background:#fbe9e8!important;color:#851d24!important;-webkit-text-fill-color:#851d24!important}',
+      'html[data-theme="dark"] body #vtg-shared-footer a[aria-current="page"],html[data-theme="dark"] body #vtg-shared-footer span[aria-current="page"]{background:#3a1d20!important;color:#ffd8d5!important;-webkit-text-fill-color:#ffd8d5!important}'
+    ].join('\n');
+    document.head.appendChild(style);
+  }
+
   function init() {
     ensureTypographyStylesheet();
     ensureInterfaceStylesheet();
@@ -589,6 +621,7 @@
     adaptHomeAnchors();
     simplifyPageHeader();
     addPageNavigation();
+    enforceShellTextContrast();
     if (vtgPublicShellPage && !isHomePage()) document.body.classList.add('vtg-public-shell-page');
     enforceLandingShellLayout();
     setActiveFooterLink();
