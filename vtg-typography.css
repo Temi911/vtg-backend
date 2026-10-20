@@ -31,7 +31,7 @@ h6{font-size:13px!important;margin-block:0 7px!important}
 button, input, select, textarea, [role="button"], .btn, .button, .primary-btn, .btn-primary, .action-button{font-size:13px!important;line-height:1.35!important;letter-spacing:normal!important}
 input,select,textarea{font-family:var(--vtg-font-family)!important}
 label,legend,th{font-size:12px!important;line-height:1.45!important;letter-spacing:normal!important}
-small,small *, .small,.meta,.metadata,.caption,.eyebrow,.kicker,.section-label,.sectionLabel,.overline,.helper-text,.help-text,.form-hint,.muted,.sub,.subtitle,.description,.timestamp,.date-label,.status-label,.badge,.pill,.status-pill{font-size:12px!important;line-height:1.45!important;letter-spacing:normal}
+small,small *, .small,.meta,.metadata,.caption,.eyebrow,.kicker,.section-label,.sectionLabel,.overline,.helper-text,.help-text,.form-hint,.timestamp,.date-label,.status-label,.badge,.pill,.status-pill{font-size:12px!important;line-height:1.45!important;letter-spacing:normal}
 nav a,nav button,.nav a,.site-nav a,.vtg-page-nav a,.vtg-page-nav button{font-size:13px!important;line-height:1.35!important}
 table{font-size:13px!important;line-height:1.5!important}
 th,td{padding-block:9px}
