@@ -108,7 +108,7 @@
     });
   }
   function renderFooter() {
-    if (!vtgPublicShellPage && !isWorkspaceDashboardPage() || (window.location.pathname || '').toLowerCase().replace(/\/+$/, '').endsWith('/workforce-access.html')) {
+    if (!vtgPublicShellPage && !isWorkspaceDashboardPage()) {
       document.querySelectorAll('footer, .vtgCompactFooter, .site-footer, .footer').forEach(function (item) { item.remove(); }); return;
     }
     var old = Array.prototype.slice.call(document.querySelectorAll('footer, .vtgCompactFooter, .site-footer, .footer'));
@@ -373,7 +373,6 @@
   }
   function ensureThemeControl() {
     if (!isWorkspaceDashboardPage() && !vtgPublicShellPage) return;
-    if ((window.location.pathname || '').toLowerCase().replace(/\/+$/, '').endsWith('/workforce-access.html')) return;
     if (document.getElementById('vtgThemePreference')) return;
     var wrap = document.createElement('div');
     wrap.id = 'vtgThemeControl';
@@ -408,7 +407,6 @@
   function ensureThemePresets() {
     if (!isWorkspaceDashboardPage() && !vtgPublicShellPage) return;
     var path = (window.location.pathname || '').toLowerCase();
-    if (path.replace(/\/+$/, '').endsWith('/workforce-access.html')) return;
     // Buyer and supplier dashboards retain their own workspace appearance controls.
     if (path.endsWith('/buyer-dashboard.html') || path.endsWith('/buyer-dashboard-preview.html') || path.endsWith('/supplier-dashboard.html')) return;
     if (document.getElementById('vtgThemePresetControl')) return;
