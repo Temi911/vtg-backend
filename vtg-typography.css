@@ -97,3 +97,29 @@ th,td{padding-block:0.65rem}
   #vtg-shared-footer{font-size:11px!important}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+
+/* Readability pass: standardise utility labels and dashboard navigation that
+   previously used tiny, page-local 6–10px values. Keep metric figures and icons
+   untouched; this only applies to interface copy and supporting labels. */
+:where(.eyebrow,.kicker,.section-label,.sectionLabel,.overline,.meta,.metadata,
+.caption,.helper-text,.help-text,.form-hint,.timestamp,.date-label,.status-label,
+.badge,.pill,.status-pill,.tag,.small,.muted,.hint,.note,.foot,.empty,
+.field-label,.fieldLabel,.nav-label,.navLabel,.side-label,.sideLabel,
+.vtgCompactFooter .vtgFooterLinks a,.vtgCompactFooter .vtgFooterBottom,
+.vtgCompactFooter .vtgFooterBottom a,.vtgCompactFooter .vtgFooterBottom span){
+  font-size:max(0.75rem, 12px)!important;
+  line-height:1.5!important;
+}
+:where(.sidebar a,.sidebar button,.side a,.side button,.dash-nav a,.dash-nav button,
+.dashboard-nav a,.dashboard-nav button,.topbar a,.topbar button,.toolbar a,.toolbar button,
+.header-actions a,.header-actions button,.actions a,.actions button){
+  font-size:0.8125rem!important;
+  line-height:1.4!important;
+}
+:where(.footer,.site-footer,.footerGrid,.footerGrid a,.footerGrid p,.footerGrid span,
+.footerGrid h4,.links a,.bottom,.bottom a,#vtg-shared-footer a,#vtg-shared-footer button){
+  line-height:1.55!important;
+}
+:where(.footerGrid a,.bottom a,.site-footer a,.footer a){font-size:max(0.75rem,12px)!important}
+:where(input,select,textarea){min-height:2.65rem}
