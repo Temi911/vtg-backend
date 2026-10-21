@@ -1,4 +1,4 @@
-/* VTG shared dashboard utility footer — common navigation and preference bridge. */
+/* VTG shared dashboard header — unified workspace controls and preferences. */
 (function(){
   'use strict';
   if (!document.querySelector('link[data-vtg-typography]')) {
@@ -23,24 +23,6 @@
   const activePath=path;
   const active=pages.find(p=>p[2]===activePath);
   const root=document.documentElement;
-  // Apply the same simple non-landing navigation to every dashboard as well.
-  if(!document.getElementById('vtgPageNavigation')){
-    const pageNav=document.createElement('nav');
-    pageNav.id='vtgPageNavigation';
-    pageNav.className='vtg-page-nav vtg-dashboard-page-nav';
-    pageNav.setAttribute('aria-label','Page navigation');
-    pageNav.innerHTML='<a class="vtg-nav-brand" href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><div class="vtg-nav-actions"><button type="button" id="vtgPreviousPage" aria-label="Return to previous VTG page"><span aria-hidden="true">←</span> Previous</button><a href="/frontend-v3.html" aria-label="Return to VTG homepage"><span aria-hidden="true">⌂</span> Home</a></div>';
-    const navStyle=document.createElement('style');
-    navStyle.id='vtg-dashboard-page-nav-style';
-    navStyle.textContent='#vtgPageNavigation.vtg-dashboard-page-nav{position:relative;z-index:1200;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:52px;padding:7px max(16px,calc((100vw - 1440px)/2));border-bottom:1px solid var(--line,#dfe4e9);background:var(--surface,#fff);color:var(--ink,#20252d);font-family:Manrope,Arial,sans-serif;box-sizing:border-box}#vtgPageNavigation.vtg-dashboard-page-nav *{box-sizing:border-box}#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-brand{display:flex;align-items:center;min-width:132px;margin-right:auto;text-decoration:none}#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-brand img{display:block;width:auto;max-width:132px;max-height:36px;object-fit:contain}#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px}#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-actions a,#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-actions button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;padding:0 11px;border:1px solid var(--line,#dfe4e9);border-radius:8px;background:var(--surface,#fff);color:var(--ink,#20252d);font:700 13px/1.3 Manrope,Arial,sans-serif;text-decoration:none;cursor:pointer}#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-actions a:hover,#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-actions button:hover{border-color:var(--red,#a5232b);color:var(--red,#a5232b)}@media(max-width:480px){#vtgPageNavigation.vtg-dashboard-page-nav{padding:7px 12px}#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-brand img{max-width:112px;max-height:31px}#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-actions a,#vtgPageNavigation.vtg-dashboard-page-nav .vtg-nav-actions button{min-height:32px;padding:0 8px;font-size:12px}}';
-    document.head.appendChild(navStyle);
-    document.body.insertBefore(pageNav,document.body.firstChild);
-    pageNav.querySelector('#vtgPreviousPage').addEventListener('click',function(){
-      let canReturn=false;
-      try{if(document.referrer){const previous=new URL(document.referrer,location.href);canReturn=previous.origin===location.origin&&(previous.pathname!==location.pathname||previous.search!==location.search||previous.hash!==location.hash)}}catch(e){}
-      if(canReturn&&history.length>1)history.back();else location.href='/frontend-v3.html';
-    });
-  }
   const get=(k,f='')=>{try{return localStorage.getItem(k)||f}catch(e){return f}};
   const set=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
   const supportedLangs=['en','fr','zh','ko','es','ar'];
@@ -52,10 +34,10 @@
   ];
   const style=document.createElement('style');
   style.textContent=`
-  #vtg-shared-footer{position:fixed;z-index:9998;left:0;right:0;bottom:0;background:var(--surface,#fff);color:var(--ink,#20252d);border-top:1px solid var(--line,#dfe4e9);box-shadow:0 -5px 22px rgba(10,20,30,.08);font:11px/1.35 Manrope,Arial,sans-serif}
+  #vtg-shared-footer{position:fixed;z-index:9998;left:0;right:0;top:0;background:var(--surface,#fff);color:var(--ink,#20252d);border-top:1px solid var(--line,#dfe4e9);box-shadow:0 -5px 22px rgba(10,20,30,.08);font:11px/1.35 Manrope,Arial,sans-serif}
   #vtg-shared-footer *{box-sizing:border-box}
   #vtg-shared-footer .vf-main{max-width:1600px;margin:auto;min-height:58px;padding:8px 16px;display:flex;align-items:center;gap:12px}
-  #vtg-shared-footer .vf-brand{font-weight:800;white-space:nowrap;color:var(--red,#a5232b)}
+  #vtg-shared-footer .vf-brand{font-weight:800;white-space:nowrap;color:var(--red,#a5232b);min-width:0}#vtg-shared-footer .vf-crumb{font-weight:700;white-space:nowrap;color:var(--ink,#20252d);margin-right:auto}#vtg-shared-footer .vf-links{display:none!important}#vtg-theme-mode{display:none!important}
   #vtg-shared-footer .vf-links{display:flex;align-items:center;gap:4px;flex:1;overflow-x:auto;scrollbar-width:thin}
   #vtg-shared-footer a{color:inherit;text-decoration:none;white-space:nowrap;padding:7px 8px;border-radius:7px;font-weight:700}
   #vtg-shared-footer a:hover{background:var(--soft,#fff0ef);color:var(--red,#a5232b)}
@@ -64,15 +46,16 @@
   #vtg-shared-footer select,#vtg-shared-footer button{max-width:160px;background:var(--surface,#fff);color:var(--ink,#20252d);border:1px solid var(--line,#dfe4e9);border-radius:7px;padding:7px 8px;font:inherit}
   #vtg-shared-footer button{font-weight:800;cursor:pointer}
   #vtg-shared-footer .vf-status{display:none;padding:0 16px 7px;color:var(--muted,#687586);font-size:10px}
-  body{padding-bottom:76px!important}
-  @media(max-width:900px){#vtg-shared-footer .vf-main{flex-wrap:wrap;gap:6px;padding:7px 10px}#vtg-shared-footer .vf-brand{display:none}#vtg-shared-footer .vf-links{flex-basis:100%;order:2}#vtg-shared-footer .vf-controls{width:100%;order:1}#vtg-shared-footer select{flex:1;max-width:none}body{padding-bottom:112px!important}}
-  @media(max-width:420px){#vtg-shared-footer .vf-controls select{min-width:0;font-size:10px;padding:7px 5px}}
+  body{padding-top:58px!important;padding-bottom:0!important}header.topbar,header.top,body>#vtg-dashboard-top>header.topbar,body>#vtg-dashboard-top>header.top{display:none!important}
+  @media(max-width:900px){#vtg-shared-footer .vf-main{flex-wrap:wrap;gap:6px;padding:7px 10px}#vtg-shared-footer .vf-controls{width:auto;max-width:100%;margin-left:auto}#vtg-shared-footer select{flex:0 1 auto;max-width:165px}body{padding-top:58px!important}}
+  @media(max-width:520px){#vtg-shared-footer .vf-main{min-height:56px}#vtg-shared-footer .vf-brand{font-size:10px}#vtg-shared-footer .vf-crumb{display:none}#vtg-shared-footer .vf-controls{gap:4px}#vtg-shared-footer select{min-width:0;max-width:118px;font-size:10px;padding:7px 5px}#vtg-shared-footer #vf-language{max-width:92px}}
   `;
   document.head.appendChild(style);
-  const footer=document.createElement('footer');footer.id='vtg-shared-footer';footer.setAttribute('aria-label','Shared VTG dashboard controls');
-  const linkHtml=pages.map(p=>active&&active[2]===p[2]?'<span aria-current="page" title="Current workspace">'+p[0]+'</span>':'<a href="'+p[1]+'">'+p[0]+'</a>').join('');
-  footer.innerHTML='<div class="vf-main"><span class="vf-brand">VTG WORKSPACE</span><nav class="vf-links" aria-label="VTG workspaces">'+linkHtml+'</nav><div class="vf-controls"><select id="vf-theme-mode" aria-label="Appearance mode" title="Automatic by local time, light or dark"><option value="auto">Theme: Auto</option><option value="light">Theme: Light</option><option value="dark">Theme: Dark</option></select><select id="vf-skin" aria-label="Workspace theme" title="Workspace colour theme">'+skins.map(s=>'<option value="'+s[0]+'">'+s[1]+'</option>').join('')+'</select><select id="vf-language" aria-label="Language preference" title="Language preference">'+supportedLangs.map(l=>'<option value="'+l+'">Language: '+langNames[l]+'</option>').join('')+'</select><button id="vf-notifications" type="button" title="Notifications" aria-label="Notifications">♧</button></div></div><div class="vf-status" id="vf-status" role="status" aria-live="polite"></div>';
-  document.body.appendChild(footer);
+  const footer=document.createElement('header');footer.id='vtg-shared-footer';footer.setAttribute('aria-label','VTG workspace header');
+  const workspace=({ 'supplier-dashboard.html':'Supplier workspace','buyer-dashboard.html':'Buyer workspace','bank-trade-os.html':'Finance workspace','agent-dashboard.html':'Agent workspace','agent-network-dashboard.html':'Agent Network','workforce-dashboard.html':'Staff & Operations','admin-dashboard-preview.html':'Admin workspace','vtg-ai-dashboard.html':'VTG AI workspace'})[path]||'VTG workspace';
+  footer.innerHTML='<div class="vf-main"><span class="vf-brand">VTG /</span><span class="vf-crumb">'+workspace+' / <strong>Command centre</strong></span><nav class="vf-links" aria-label="VTG workspaces"></nav><div class="vf-controls"><select id="vf-theme-mode" aria-label="Appearance mode" title="Automatic by local time, light or dark"><option value="auto">Theme: Auto</option><option value="light">Theme: Light</option><option value="dark">Theme: Dark</option></select><label for="vf-skin" style="font-weight:800;white-space:nowrap">Workspace theme</label><select id="vf-skin" aria-label="Workspace theme" title="Workspace colour theme">'+skins.map(s=>'<option value="'+s[0]+'">'+s[1]+'</option>').join('')+'</select><select id="vf-language" aria-label="Language preference" title="Language preference">'+supportedLangs.map(l=>'<option value="'+l+'">'+langNames[l]+'</option>').join('')+'</select><button id="vf-notifications" type="button" title="Notifications" aria-label="Notifications">♧</button><button id="vf-theme-toggle" type="button" title="Switch light or dark mode" aria-label="Switch light or dark mode">◐</button><a href="/frontend-v3.html" aria-label="Home" style="white-space:nowrap;padding:7px 8px;border:1px solid var(--line,#dfe4e9);border-radius:7px;font-weight:800">Home</a></div></div><div class="vf-status" id="vf-status" role="status" aria-live="polite"></div>';
+  document.body.insertBefore(footer,document.body.firstChild);
+  document.querySelectorAll('header.topbar,header.top').forEach(el=>{if(el!==footer)el.setAttribute('aria-hidden','true')});
   const status=document.getElementById('vf-status');
   function say(s){status.textContent=s;status.style.display='block';clearTimeout(say.t);say.t=setTimeout(()=>status.style.display='none',4500)}
   const palettes={executive:'#a5232b','ocean-finance':'#176b87','emerald-trade':'#18734d','copper-ledger':'#985b3d','indigo-intel':'#6258b8','crimson-ops':'#bd344c','mono-pro':'#586575',sandstone:'#92733e','arctic-blue':'#356fc0','midnight-harbor':'#167d99'};
@@ -116,6 +99,7 @@
   applyTheme(document.getElementById('vf-theme-mode').value,false);
   applySkin(document.getElementById('vf-skin').value,false);
   document.getElementById('vf-theme-mode').addEventListener('change',e=>{applyTheme(e.target.value);say(e.target.value==='auto'?'Appearance follows your device local time.':'Appearance set to '+e.target.value+'.')});
+  document.getElementById('vf-theme-toggle').addEventListener('click',()=>{const next=(root.dataset.theme||'light')==='dark'?'light':'dark';document.getElementById('vf-theme-mode').value=next;applyTheme(next);say('Appearance set to '+next+'.')});
   document.getElementById('vf-skin').addEventListener('change',e=>{applySkin(e.target.value);say('Workspace theme preference saved.')});
   document.getElementById('vf-language').addEventListener('change',e=>applyLanguage(e.target.value));
   ['appearance','settingsTheme'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('change',()=>{const v=el.value;if(['auto','light','dark'].includes(v)){document.getElementById('vf-theme-mode').value=v;applyTheme(v)}})});
