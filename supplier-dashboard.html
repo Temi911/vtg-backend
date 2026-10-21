@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="VTG Supplier Trade Operating System: supplier profile, products, RFQs, orders, documents and logistics workspace.">
 <meta name="theme-color" content="#a5232b"><title>Supplier Trade OS | VTG</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;750;800&display=swap" rel="stylesheet">
 <style>
 :root{color-scheme:light;--bg:#f3f5f8;--surface:#fff;--surface2:#f8fafc;--ink:#17212b;--muted:#687687;--line:#e1e6ed;--accent:#a5232b;--accent2:#821b22;--soft:#fff0ef;--green:#16734a;--amber:#94620c;--blue:#2766a8;--shadow:0 12px 32px rgba(18,31,44,.055)}
 html[data-theme=dark]{color-scheme:dark;--bg:#0b1016;--surface:#141b23;--surface2:#1a232d;--ink:#f0f4f7;--muted:#b3bfca;--line:#2b3743;--soft:#2b191c;--green:#79d7ac;--amber:#f0c36c;--blue:#8dbcf0;--shadow:0 12px 32px #0003}
@@ -71,6 +71,42 @@ html[data-theme="dark"] .vtg-header-brand .logo-light{display:block!important}
 html[data-theme="light"] .vtg-header-brand .logo-dark{display:block!important}
 html[data-theme="light"] .vtg-header-brand .logo-light{display:none!important}
 @media(max-width:760px){.vtg-header-brand{width:116px!important;min-width:116px!important;margin-right:8px!important}.vtg-header-brand img{width:116px!important;min-width:116px!important;max-width:116px!important;max-height:34px!important}}
+
+/* VTG dashboard typography system — intentionally distinct from the public Manrope website */
+:root{
+  --vtg-dash-font:"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --vtg-dash-size:14px;
+  --vtg-dash-leading:1.55;
+  --vtg-dash-heading:#17212b;
+  --vtg-dash-muted:#657384;
+  --vtg-dash-space:16px;
+}
+html,body{font-family:var(--vtg-dash-font)!important;font-size:var(--vtg-dash-size);line-height:var(--vtg-dash-leading);font-feature-settings:"cv02","cv03","cv04","cv11";-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{letter-spacing:-.008em}
+h1,h2,h3,h4,.page-title,.page-head h1,.panel-head h2,.section-title{font-family:var(--vtg-dash-font)!important;letter-spacing:-.035em;line-height:1.18;color:var(--vtg-dash-heading)}
+h1,.page-head h1{font-size:clamp(25px,2.3vw,32px);font-weight:750}
+h2,.panel-head h2,.section-title{font-size:17px;font-weight:700}
+h3,h4{font-size:14px;font-weight:700}
+p,.subtext,.page-head p{line-height:1.65}
+small,.small,.muted,.eyebrow,.stat-label{letter-spacing:.005em}
+button,input,select,textarea{font:inherit;letter-spacing:inherit}
+button,.btn{font-weight:650;line-height:1.25}
+input,select,textarea{line-height:1.45}
+table{font-size:13px;line-height:1.5;font-variant-numeric:tabular-nums}
+th{font-size:11px;font-weight:750;letter-spacing:.055em;text-transform:uppercase}
+td{line-height:1.55}
+.stat strong,.metric-value,.kpi-value{font-variant-numeric:tabular-nums;letter-spacing:-.035em}
+.page-head{gap:18px;margin-bottom:22px}
+.panel-head{gap:14px}
+.panel-head p,.panel-head small{line-height:1.55}
+.record-list,.table-wrap,.stats,.field-grid{row-gap:14px}
+@media(max-width:720px){
+  html,body{font-size:13.5px}
+  h1,.page-head h1{font-size:25px}
+  h2,.panel-head h2,.section-title{font-size:16px}
+  .page-head{margin-bottom:17px;gap:12px}
+  table{font-size:12px}
+}
 </style>
 <link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
 </head>
