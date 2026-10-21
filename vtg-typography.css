@@ -4,14 +4,14 @@
    Typography only: preserves page structure, brand colours, theme, and component behaviour. */
 :root{
   --vtg-font-family:"Manrope",Arial,sans-serif;
-  --vtg-text-xs:0.75rem;
-  --vtg-text-sm:0.8125rem;
-  --vtg-text-base:0.9375rem;
-  --vtg-text-lg:1.0625rem;
-  --vtg-text-xl:1.25rem;
-  --vtg-text-2xl:1.5rem;
-  --vtg-text-3xl:1.875rem;
-  --vtg-text-4xl:clamp(2rem,3.2vw,2.625rem);
+  --vtg-text-xs:0.6875rem;
+  --vtg-text-sm:0.75rem;
+  --vtg-text-base:0.875rem;
+  --vtg-text-lg:1rem;
+  --vtg-text-xl:1.125rem;
+  --vtg-text-2xl:1.375rem;
+  --vtg-text-3xl:1.625rem;
+  --vtg-text-4xl:clamp(1.75rem,3vw,2.25rem);
   --vtg-leading-tight:1.15;
   --vtg-leading-heading:1.25;
   --vtg-leading-body:1.65;
@@ -20,7 +20,7 @@
 }
 html{
   font-family:var(--vtg-font-family)!important;
-  font-size:16px!important;
+  font-size:15px!important;
   -webkit-text-size-adjust:100%;
   text-size-adjust:100%;
 }
@@ -45,13 +45,13 @@ h4{font-size:var(--vtg-text-lg)!important;margin-block:0 .5em!important}
 h5{font-size:var(--vtg-text-base)!important;margin-block:0 .45em!important}
 h6{font-size:var(--vtg-text-sm)!important;margin-block:0 .45em!important;letter-spacing:.01em!important}
 .hero h1,.hero-title,.heroTitle,.hero-content h1,.hero-copy h1,.landing-hero h1,.home-hero h1,.atlas-hero h1{
-  font-size:clamp(2.25rem,5vw,3.75rem)!important;
+  font-size:clamp(2rem,4.5vw,3.25rem)!important;
   line-height:1.08!important;
   letter-spacing:-.045em!important;
 }
-.hero h2,.hero-title + h2,.hero-content h2{font-size:clamp(1.375rem,2.4vw,1.875rem)!important;line-height:1.25!important}
+.hero h2,.hero-title + h2,.hero-content h2{font-size:clamp(1.25rem,2.2vw,1.625rem)!important;line-height:1.25!important}
 .lead,.intro,.hero p,.hero-copy p,.hero-content p,.heroIn p,.page-intro,.pageIntro,.subtitle,.sub-title{
-  font-size:clamp(.9375rem,1.25vw,1.0625rem)!important;
+  font-size:clamp(.875rem,1.1vw,1rem)!important;
   line-height:1.7!important;
 }
 button,input,select,textarea,[role="button"],.btn,.button,.primary-btn,.btn-primary,.action-button{
@@ -81,13 +81,13 @@ th,td{padding-block:0.65rem}
 #vtg-shared-footer :is(a,button,select,span){font-family:var(--vtg-font-family)!important}
 #vtg-shared-footer :is(a,button,select){font-size:var(--vtg-text-xs)!important;line-height:1.4!important}
 @media(max-width:720px){
-  html{font-size:15px!important}
+  html{font-size:14px!important}
   body{font-size:var(--vtg-text-sm)!important}
   p,li,dd,dt,blockquote,figcaption{font-size:var(--vtg-text-sm)!important;line-height:1.65!important}
   h1{font-size:clamp(1.75rem,7.5vw,2.25rem)!important}
   h2{font-size:clamp(1.375rem,5.5vw,1.625rem)!important}
-  h3{font-size:1.125rem!important}
-  .hero h1,.hero-title,.heroTitle,.hero-content h1,.hero-copy h1,.landing-hero h1,.home-hero h1,.atlas-hero h1{font-size:clamp(2rem,8vw,2.75rem)!important;line-height:1.1!important}
+  h3{font-size:1rem!important}
+  .hero h1,.hero-title,.heroTitle,.hero-content h1,.hero-copy h1,.landing-hero h1,.home-hero h1,.atlas-hero h1{font-size:clamp(1.75rem,7vw,2.4rem)!important;line-height:1.1!important}
   .lead,.intro,.hero p,.hero-copy p,.hero-content p,.heroIn p,.page-intro,.pageIntro,.subtitle,.sub-title{font-size:var(--vtg-text-sm)!important}
   button,input,select,textarea,[role="button"],.btn,.button,.primary-btn,.btn-primary,.action-button{font-size:var(--vtg-text-sm)!important}
   th,td{padding-block:.55rem}
@@ -108,18 +108,18 @@ th,td{padding-block:0.65rem}
 .field-label,.fieldLabel,.nav-label,.navLabel,.side-label,.sideLabel,
 .vtgCompactFooter .vtgFooterLinks a,.vtgCompactFooter .vtgFooterBottom,
 .vtgCompactFooter .vtgFooterBottom a,.vtgCompactFooter .vtgFooterBottom span){
-  font-size:max(0.75rem, 12px)!important;
+  font-size:max(0.6875rem, 11px)!important;
   line-height:1.5!important;
 }
 :where(.sidebar a,.sidebar button,.side a,.side button,.dash-nav a,.dash-nav button,
 .dashboard-nav a,.dashboard-nav button,.topbar a,.topbar button,.toolbar a,.toolbar button,
 .header-actions a,.header-actions button,.actions a,.actions button){
-  font-size:0.8125rem!important;
+  font-size:0.75rem!important;
   line-height:1.4!important;
 }
 :where(.footer,.site-footer,.footerGrid,.footerGrid a,.footerGrid p,.footerGrid span,
 .footerGrid h4,.links a,.bottom,.bottom a,#vtg-shared-footer a,#vtg-shared-footer button){
   line-height:1.55!important;
 }
-:where(.footerGrid a,.bottom a,.site-footer a,.footer a){font-size:max(0.75rem,12px)!important}
-:where(input,select,textarea){min-height:2.65rem}
+:where(.footerGrid a,.bottom a,.site-footer a,.footer a){font-size:max(0.6875rem,11px)!important}
+:where(input,select,textarea){min-height:2.4rem}
