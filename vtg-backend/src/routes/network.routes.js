@@ -1,3 +1,4 @@
+// VTG verified trade network routes; keep this module deployed with the main backend service.
 const router=require('express').Router();
 const ctrl=require('../controllers/network.controller');
 const {requireAuth,requireRole}=require('../middleware/auth');
