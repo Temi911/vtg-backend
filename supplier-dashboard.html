@@ -391,7 +391,7 @@ initPrefs();fillProfile();fillStore();initialTasks();renderAll();if(location.has
     try{
       const d=await api('/orders');const orders=Array.isArray(d.orders)?d.orders:[];
       if(!orders.length){orderRows.innerHTML='<div class="empty">No live orders have been placed with this supplier account yet.</div>';orderNotice.textContent='Connected to VTG backend. Orders are shared across buyer and supplier accounts.';return}
-      const next={pending:['confirmed'],confirmed:['lc_issued','shipped'],lc_issued:['shipped'],shipped:['in_transit','arrived'],in_transit:['arrived','customs'],arrived:['customs'],customs:[],delivered:[],cancelled:[],disputed:[]};
+      const next={pending:['confirmed'],confirmed:['shipped'],lc_issued:['shipped'],shipped:['in_transit','arrived'],in_transit:['arrived','customs'],arrived:['customs'],customs:[],delivered:[],cancelled:[],disputed:[]};
       orderRows.innerHTML=orders.map(o=>{
         const options=next[o.status]||[];
         const action=options.length?'<div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:10px"><label class="muted" for="live-order-next-'+esc(o.id)+'">Advance milestone</label><select class="control-select" id="live-order-next-'+esc(o.id)+'" data-order-next="'+esc(o.id)+'">'+options.map(s=>'<option value="'+s+'">'+s.replaceAll('_',' ')+'</option>').join('')+'</select><button class="btn primary" type="button" data-order-update="'+esc(o.id)+'">Update order</button></div>':'';
