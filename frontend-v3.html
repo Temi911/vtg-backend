@@ -393,6 +393,24 @@ html[data-theme="dark"] #landing .footer.vtgCompactFooter{background:#172329;col
 html[data-theme="dark"] #landing .vtgFooterLinks h4{color:#eaf1f1}
 html[data-theme="dark"] #landing .vtgFooterBrand p,html[data-theme="dark"] #landing .vtgFooterLinks a,html[data-theme="dark"] #landing .copyright,html[data-theme="dark"] #landing .copyright a{color:#a5b4b8}
 html[data-theme="dark"] #landing .copyright{border-color:rgba(255,255,255,.12)}
+
+/* Final theme-shell overrides: keep the redesigned landing shell from being recolored by legacy global !important rules. */
+html[data-vtg-skin][data-theme="light"] body #landing .nav{background:rgba(250,249,246,.94)!important;background-color:rgba(250,249,246,.94)!important;border-color:rgba(23,43,53,.13)!important;color:#172b35!important}
+html[data-vtg-skin][data-theme="light"] body #landing .nav :is(a,button,span){color:#172b35!important;-webkit-text-fill-color:#172b35!important}
+html[data-vtg-skin][data-theme="light"] body #landing .nav .headerEnterBtn{background:#bd302b!important;background-color:#bd302b!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
+html[data-vtg-skin][data-theme="light"] body #landing .nav .headerEnterBtn :is(span,svg,i){color:#fff!important;-webkit-text-fill-color:#fff!important;stroke:#fff!important}
+html[data-vtg-skin][data-theme="dark"] body #landing .nav{background:rgba(19,29,35,.94)!important;background-color:rgba(19,29,35,.94)!important;border-color:rgba(255,255,255,.12)!important;color:#edf2f2!important}
+html[data-vtg-skin][data-theme="dark"] body #landing .nav :is(a,button,span){color:#edf2f2!important;-webkit-text-fill-color:#edf2f2!important}
+html[data-vtg-skin][data-theme="dark"] body #landing .nav .headerEnterBtn{background:#bd302b!important;background-color:#bd302b!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
+html[data-vtg-skin][data-theme="dark"] body #landing .nav .headerEnterBtn :is(span,svg,i){color:#fff!important;-webkit-text-fill-color:#fff!important;stroke:#fff!important}
+html[data-vtg-skin][data-theme="light"] body #landing footer#vtgFooter.vtgCompactFooter{background:#f0eee8!important;background-color:#f0eee8!important;color:#22363d!important;border-color:rgba(23,43,53,.13)!important}
+html[data-vtg-skin][data-theme="light"] body #landing footer#vtgFooter.vtgCompactFooter :is(h1,h2,h3,h4,h5,h6){color:#193940!important;-webkit-text-fill-color:#193940!important}
+html[data-vtg-skin][data-theme="light"] body #landing footer#vtgFooter.vtgCompactFooter :is(p,a,span){color:#637177!important;-webkit-text-fill-color:#637177!important}
+html[data-vtg-skin][data-theme="light"] body #landing footer#vtgFooter.vtgCompactFooter a:hover{color:#bd302b!important;-webkit-text-fill-color:#bd302b!important}
+html[data-vtg-skin][data-theme="dark"] body #landing footer#vtgFooter.vtgCompactFooter{background:#172329!important;background-color:#172329!important;color:#eaf1f1!important;border-color:rgba(255,255,255,.1)!important}
+html[data-vtg-skin][data-theme="dark"] body #landing footer#vtgFooter.vtgCompactFooter :is(h1,h2,h3,h4,h5,h6){color:#eaf1f1!important;-webkit-text-fill-color:#eaf1f1!important}
+html[data-vtg-skin][data-theme="dark"] body #landing footer#vtgFooter.vtgCompactFooter :is(p,a,span){color:#a5b4b8!important;-webkit-text-fill-color:#a5b4b8!important}
+html[data-vtg-skin][data-theme="dark"] body #landing footer#vtgFooter.vtgCompactFooter a:hover{color:#f3a79e!important;-webkit-text-fill-color:#f3a79e!important}
 </style>
 </head>
 <body>
