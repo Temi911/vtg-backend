@@ -9,10 +9,12 @@ const MANAGERS = new Set(['admin','manager']);
 const WORKFORCE = new Set(['admin','manager','staff','logistics','compliance','support','finance','inspector','marketing','agent']);
 const STATUSES = new Set(['open','in_progress','blocked','completed','cancelled']);
 const PRIORITIES = new Set(['low','normal','high','urgent']);
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const isManager = user => MANAGERS.has(String(user.role || '').toLowerCase());
 const ensureWorkforce = req => { if (!WORKFORCE.has(String(req.user.role || '').toLowerCase())) throw new AppError('Workforce access is required',403,'FORBIDDEN'); };
 const bounded = (value,max=2000) => String(value ?? '').trim().slice(0,max);
 const userExists = async id => {
+  if (!UUID_RE.test(String(id || ''))) return null;
   const r = await query('SELECT id,role,is_active FROM users WHERE id=$1',[id]);
   return r.rows[0] && r.rows[0].is_active && WORKFORCE.has(String(r.rows[0].role).toLowerCase()) ? r.rows[0] : null;
 };
@@ -48,6 +50,7 @@ router.post('/tasks', asyncHandler(async (req,res) => {
 }));
 
 router.patch('/tasks/:id', asyncHandler(async (req,res) => {
+  if(!UUID_RE.test(req.params.id)) throw new AppError('Task not found',404,'NOT_FOUND');
   const existing=await query('SELECT * FROM workforce_tasks WHERE id=$1',[req.params.id]);
   const task=existing.rows[0]; if(!task) throw new AppError('Task not found',404,'NOT_FOUND');
   if(!isManager(req.user) && task.assigned_to!==req.user.id) throw new AppError('You can update only tasks assigned to you',403,'FORBIDDEN');
@@ -81,12 +84,13 @@ router.post('/handoffs', asyncHandler(async(req,res)=>{
   if(note.length<3) throw new AppError('Handoff note must contain at least 3 characters',400,'INVALID_HANDOFF');
   if(!toUser||toUser===req.user.id||!await userExists(toUser)) throw new AppError('Choose another active workforce member',400,'INVALID_RECIPIENT');
   let task=null;
-  if(taskId){const q=await query('SELECT id,assigned_to FROM workforce_tasks WHERE id=$1',[taskId]);task=q.rows[0];if(!task)throw new AppError('Task not found',404,'NOT_FOUND');if(!isManager(req.user)&&task.assigned_to!==req.user.id)throw new AppError('Only the assignee or a manager can hand off this task',403,'FORBIDDEN');}
+  if(taskId){if(!UUID_RE.test(taskId))throw new AppError('Task not found',404,'NOT_FOUND');const q=await query('SELECT id,assigned_to FROM workforce_tasks WHERE id=$1',[taskId]);task=q.rows[0];if(!task)throw new AppError('Task not found',404,'NOT_FOUND');if(!isManager(req.user)&&task.assigned_to!==req.user.id)throw new AppError('Only the assignee or a manager can hand off this task',403,'FORBIDDEN');}
   const r=await query(`INSERT INTO workforce_handoffs(task_id,reference,note,from_user,to_user) VALUES($1,$2,$3,$4,$5) RETURNING *`,[task?.id||null,reference||null,note,req.user.id,toUser]);
   await audit.log(req.user.id,'Workforce Handoff Created',`Handoff ${r.rows[0].id} to ${toUser}`,req.ip);
   res.status(201).json({handoff:r.rows[0]});
 }));
 router.patch('/handoffs/:id', asyncHandler(async(req,res)=>{
+  if(!UUID_RE.test(req.params.id))throw new AppError('Handoff not found',404,'NOT_FOUND');
   const status=bounded(req.body?.status,20);if(!['accepted','declined'].includes(status))throw new AppError('Choose accept or decline',400,'INVALID_STATUS');
   const q=await query('SELECT * FROM workforce_handoffs WHERE id=$1',[req.params.id]);const h=q.rows[0];if(!h)throw new AppError('Handoff not found',404,'NOT_FOUND');
   if(h.to_user!==req.user.id && !isManager(req.user))throw new AppError('Only the receiving member can respond to this handoff',403,'FORBIDDEN');
@@ -111,13 +115,14 @@ router.post('/approvals', asyncHandler(async(req,res)=>{
   const title=bounded(req.body?.title,180),details=bounded(req.body?.details,4000),reference=bounded(req.body?.reference,120),reviewer=bounded(req.body?.assignedReviewer,80),taskId=bounded(req.body?.taskId,80);
   if(title.length<3)throw new AppError('Approval title must contain at least 3 characters',400,'INVALID_APPROVAL');
   if(reviewer&&!await userExists(reviewer))throw new AppError('Choose an active workforce reviewer',400,'INVALID_REVIEWER');
-  if(taskId){const t=await query('SELECT id,assigned_to,created_by FROM workforce_tasks WHERE id=$1',[taskId]);if(!t.rows[0])throw new AppError('Task not found',404,'NOT_FOUND');if(!isManager(req.user)&&t.rows[0].assigned_to!==req.user.id&&t.rows[0].created_by!==req.user.id)throw new AppError('You cannot request approval for this task',403,'FORBIDDEN');}
+  if(taskId){if(!UUID_RE.test(taskId))throw new AppError('Task not found',404,'NOT_FOUND');const t=await query('SELECT id,assigned_to,created_by FROM workforce_tasks WHERE id=$1',[taskId]);if(!t.rows[0])throw new AppError('Task not found',404,'NOT_FOUND');if(!isManager(req.user)&&t.rows[0].assigned_to!==req.user.id&&t.rows[0].created_by!==req.user.id)throw new AppError('You cannot request approval for this task',403,'FORBIDDEN');}
   const r=await query(`INSERT INTO workforce_approvals(task_id,reference,title,details,requested_by,assigned_reviewer)
     VALUES($1,$2,$3,$4,$5,$6) RETURNING *`,[taskId||null,reference||null,title,details||null,req.user.id,reviewer||null]);
   await audit.log(req.user.id,'Workforce Approval Requested',`Approval ${r.rows[0].id}: ${title}`,req.ip);
   res.status(201).json({approval:r.rows[0]});
 }));
 router.patch('/approvals/:id', asyncHandler(async(req,res)=>{
+  if(!UUID_RE.test(req.params.id))throw new AppError('Approval not found',404,'NOT_FOUND');
   if(!isManager(req.user))throw new AppError('Only a manager or administrator can decide approvals',403,'FORBIDDEN');
   const status=bounded(req.body?.status,20),note=bounded(req.body?.decisionNote,2000);
   if(!['approved','rejected'].includes(status))throw new AppError('Choose approve or reject',400,'INVALID_STATUS');
