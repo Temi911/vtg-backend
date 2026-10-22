@@ -968,37 +968,37 @@ html[data-theme="dark"] #landing .footer{background:#0F1011!important}
 
 
 
-/* Corrected direction: use the clean container ship and open water as a full-bleed hero background, not a separate image card. */
+/* Hero-only background: bright blue sea and cargo ships. All following landing sections keep their own backgrounds. */
 #landing .vtgEditorialHero{
   position:relative!important;
-  min-height:clamp(620px,78vh,900px)!important;
-  background-image:linear-gradient(90deg,rgba(243,239,230,.94) 0%,rgba(243,239,230,.80) 38%,rgba(243,239,230,.25) 72%,rgba(243,239,230,.10) 100%),url('https://images.pexels.com/photos/20821680/pexels-photo-20821680.jpeg?auto=compress&cs=tinysrgb&w=2200')!important;
+  min-height:clamp(560px,72vh,820px)!important;
+  background-color:#d9eaf0!important;
+  background-image:linear-gradient(90deg,rgba(243,239,230,.90) 0%,rgba(243,239,230,.74) 36%,rgba(243,239,230,.25) 68%,rgba(243,239,230,.06) 100%),url('https://images.pexels.com/photos/32810636/pexels-photo-32810636.jpeg?auto=compress&cs=tinysrgb&w=2200')!important;
   background-position:center center!important;
   background-size:cover!important;
   background-repeat:no-repeat!important;
 }
 #landing .vtgHeroBackdrop{background:transparent!important;inset:0!important}
 #landing .vtgHeroLayout{
-  min-height:clamp(620px,78vh,900px)!important;
+  min-height:clamp(560px,72vh,820px)!important;
   grid-template-columns:minmax(0,1fr)!important;
   align-items:center!important;
-  padding-top:clamp(70px,10vh,120px)!important;
-  padding-bottom:clamp(55px,8vh,90px)!important;
+  padding-top:clamp(60px,8vh,100px)!important;
+  padding-bottom:clamp(45px,7vh,75px)!important;
 }
 #landing .vtgHeroCopy{max-width:760px!important}
 #landing .vtgHeroVisual{display:none!important}
 #landing .vtgHeroCopy h1{max-width:760px!important}
 html[data-theme="dark"] #landing .vtgEditorialHero{
-  background-image:linear-gradient(90deg,rgba(23,25,27,.93) 0%,rgba(23,25,27,.79) 42%,rgba(23,25,27,.40) 76%,rgba(23,25,27,.25) 100%),url('https://images.pexels.com/photos/20821680/pexels-photo-20821680.jpeg?auto=compress&cs=tinysrgb&w=2200')!important;
+  background-image:linear-gradient(90deg,rgba(23,25,27,.84) 0%,rgba(23,25,27,.67) 38%,rgba(23,25,27,.25) 72%,rgba(23,25,27,.08) 100%),url('https://images.pexels.com/photos/32810636/pexels-photo-32810636.jpeg?auto=compress&cs=tinysrgb&w=2200')!important;
 }
 html[data-theme="dark"] #landing .vtgHeroCopy h1{color:#F3EFE6!important}
 html[data-theme="dark"] #landing .vtgHeroCopy>p{color:#E0DCD4!important}
 html[data-theme="dark"] #landing .vtgButtonSecondary{background:rgba(23,25,27,.35)!important;color:#F3EFE6!important;border-color:rgba(243,239,230,.42)!important}
 @media(max-width:700px){
-  #landing .vtgEditorialHero{min-height:660px!important;background-position:58% center!important}
-  #landing .vtgHeroLayout{min-height:660px!important;padding:72px 20px 48px!important}
+  #landing .vtgEditorialHero{min-height:620px!important;background-position:58% center!important}
+  #landing .vtgHeroLayout{min-height:620px!important;padding:66px 20px 42px!important}
   #landing .vtgHeroCopy{max-width:100%!important}
 }
-
 </style>
 </body></html>
