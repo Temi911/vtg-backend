@@ -1067,5 +1067,24 @@ html[data-theme="light"] #landing .vtgEditorialCta .vtgCtaTextLink{
   font-weight:800!important;
 }
 
+
+/* Improve visibility of the marketplace section identifier in light mode. */
+html:not([data-theme="dark"]) #landing .vtgMarketRule,
+html[data-theme="light"] #landing .vtgMarketRule{
+  color:#4B2024!important;
+  border-color:rgba(75,32,36,.32)!important;
+}
+html:not([data-theme="dark"]) #landing .vtgMarketRule span,
+html[data-theme="light"] #landing .vtgMarketRule span{
+  color:#4B2024!important;
+  -webkit-text-fill-color:#4B2024!important;
+  font-weight:800!important;
+  opacity:1!important;
+}
+html:not([data-theme="dark"]) #landing .vtgMarketRule span:first-child,
+html[data-theme="light"] #landing .vtgMarketRule span:first-child{
+  letter-spacing:.14em!important;
+}
+
 </style>
 </body></html>
