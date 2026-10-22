@@ -157,5 +157,40 @@ const initialLanguage=localStorage.getItem('vtg-admin-language')||'en';if($('lan
 })();
 </script>
 
+
+<div id="adminReviewDialog" role="dialog" aria-modal="true" aria-labelledby="adminReviewTitle" hidden style="position:fixed;inset:0;z-index:200;background:#07101a99;display:none;align-items:center;justify-content:center;padding:18px">
+  <div style="width:min(480px,100%);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 25px 80px #0004">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><div class="eyebrow">Illustrative review</div><h2 id="adminReviewTitle" style="margin:6px 0;font-size:19px">Review item</h2></div><button class="btn" type="button" id="closeAdminReview" aria-label="Close review">Close</button></div>
+    <p id="adminReviewDescription" class="sub" style="margin:12px 0 18px"></p>
+    <label for="adminReviewNote" style="display:block;font-size:11px;font-weight:800;margin-bottom:6px">Local review note</label>
+    <textarea id="adminReviewNote" rows="3" style="width:100%;resize:vertical;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);padding:10px;font:inherit" placeholder="Record what should be checked next…"></textarea>
+    <p class="muted" style="font-size:10px">This note is saved only in this browser for preview purposes. It does not approve or change any real account or document.</p>
+    <div style="display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="cancelAdminReview">Cancel</button><button class="btn primary" type="button" id="saveAdminReview">Save local note</button></div>
+  </div>
+</div>
+
 <script src="/vtg-dashboard-footer.js?v=20261020-universal-header-1" defer></script>
+
+<script>
+(function(){
+ const $=id=>document.getElementById(id);
+ const dialog=$('adminReviewDialog'), note=$('adminReviewNote');
+ const LOG_KEY='vtg-admin-review-log-preview-v1';
+ let current=null;
+ function readLog(){try{return JSON.parse(localStorage.getItem(LOG_KEY)||'[]')}catch(e){return []}}
+ function saveLog(items){try{localStorage.setItem(LOG_KEY,JSON.stringify(items));return true}catch(e){return false}}
+ function notify(msg){let el=$('adminToast');if(!el){el=document.createElement('div');el.id='adminToast';el.className='adminToast';el.setAttribute('role','status');document.body.appendChild(el)}el.textContent=msg;el.classList.add('show');clearTimeout(window.__vtgAdminReviewToast);window.__vtgAdminReviewToast=setTimeout(()=>el.classList.remove('show'),2800)}
+ function openReview(btn){current={id:btn.dataset.adminReview,type:btn.dataset.reviewType,source:btn.dataset.reviewSource,state:btn.dataset.reviewState};$('adminReviewTitle').textContent=current.id+' · '+current.type;$('adminReviewDescription').textContent='Submitted by '+current.source+'. Current queue state: '+current.state+'. This is a sample record, not a live verification case.';note.value='';dialog.hidden=false;dialog.style.display='flex';note.focus()}
+ function closeReview(){dialog.hidden=true;dialog.style.display='none';current=null}
+ document.querySelectorAll('[data-admin-review]').forEach(btn=>btn.addEventListener('click',()=>openReview(btn)));
+ $('closeAdminReview')?.addEventListener('click',closeReview);$('cancelAdminReview')?.addEventListener('click',closeReview);
+ dialog?.addEventListener('click',e=>{if(e.target===dialog)closeReview()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&dialog&&!dialog.hidden)closeReview()});
+ $('saveAdminReview')?.addEventListener('click',()=>{if(!current)return;const entries=readLog();entries.unshift({reference:current.id,reviewType:current.type,source:current.source,queueState:current.state,note:note.value.trim(),createdAt:new Date().toISOString(),scope:'browser-local preview only'});if(!saveLog(entries)){notify('Could not save locally. Check this browser’s storage settings.');return}closeReview();notify('Local review note saved on this device.');});
+ function download(name,data){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+ $('exportAdminReviewLog')?.addEventListener('click',()=>{download('vtg-admin-review-log-preview.json',readLog());notify('Local review log exported.')});
+ $('exportAdminPreview')?.addEventListener('click',()=>{download('vtg-admin-preview-report.json',{reportType:'VTG administrator dashboard preview',generatedAt:new Date().toISOString(),environment:'preview-only',warning:'Illustrative sample values only; not live VTG operational data.',sections:['Overview','Workforce','Trade operations','Verification','Finance oversight','Reports & audit','Platform settings'],localReviewNotes:readLog()});notify('Preview report exported.')});
+})();
+</script>
+
 </body></html>
