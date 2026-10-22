@@ -435,7 +435,7 @@ html[data-vtg-skin][data-theme="dark"] body #landing footer#vtgFooter.vtgCompact
       </div>
     </div>
     <div class="vtgHeroVisual" aria-label="Cargo ship and global trade photography">
-      <img class="vtgHeroImage" src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1800&q=90" alt="Cargo ship carrying shipping containers across the sea" fetchpriority="high">
+      <img class="vtgHeroImage" src="https://images.pexels.com/photos/20821680/pexels-photo-20821680.jpeg?auto=compress&cs=tinysrgb&w=2200" alt="Large container ship loaded with colorful shipping containers sailing across the sea" fetchpriority="high">
       <div class="vtgHeroImageTint"></div>
       <div class="vtgHeroImageTag"><span class="vtgLiveDot"></span><span>Trade connects us</span><i data-lucide="globe-2"></i></div>
       <div class="vtgRouteCard">
@@ -877,6 +877,93 @@ html[data-theme="dark"] #landing .footer{background:#0F1011!important}
   #landing .vtgRouteCard{left:10px;bottom:16px;width:calc(100% - 20px);padding:14px}
   #landing .vtgHeroStamp{width:76px;height:76px;right:-5px;bottom:20px}
   #landing .vtgHeroStamp span{font-size:21px}
+}
+
+
+/* Simplified hero + consistent light/dark mode surfaces */
+#landing{
+  --vtg-paper:#F3EFE6;
+  --vtg-surface:#FBF9F4;
+  --vtg-surface-raised:#FFFFFF;
+  --vtg-ink:#17191B;
+  --vtg-muted:#696963;
+  --vtg-red:#702A30;
+  --vtg-line:rgba(23,25,27,.15);
+  background:var(--vtg-paper)!important;
+  color:var(--vtg-ink)!important;
+  color-scheme:light;
+}
+#landing .vtgHeroVisual{
+  min-height:470px;
+  aspect-ratio:1.12/1;
+  border-radius:2px 2px 54px 2px;
+  background:#D8E0DD;
+  box-shadow:0 22px 55px rgba(23,25,27,.13);
+}
+#landing .vtgHeroImage{object-position:center center}
+#landing .vtgHeroImageTint{background:linear-gradient(180deg,rgba(23,25,27,.02) 20%,rgba(23,25,27,.16) 100%)}
+#landing .vtgHeroImageTag,
+#landing .vtgRouteCard,
+#landing .vtgHeroStamp{display:none!important}
+#landing .vtgHeroLayout{grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr);gap:clamp(28px,5vw,72px)}
+#landing .vtgHeroCopy h1{color:var(--vtg-ink)!important}
+#landing .vtgHeroCopy>p{color:var(--vtg-muted)!important}
+#landing .vtgButtonSecondary{background:transparent!important;border-color:var(--vtg-line)!important;color:var(--vtg-ink)!important}
+#landing .vtgHeroProof{display:none!important}
+#landing .vtgHeroBottom{padding-top:18px}
+#landing .vtgHeroBackdrop{background:linear-gradient(135deg,rgba(180,154,112,.12),transparent 64%)!important}
+/* Keep the landing page focused on the hero, existing marketplace carousel, and shared navigation/footer. */
+#landing .vtgEditorialShowcase,
+#landing .vtgEditorialCta,
+#landing .vtgIntelPanel{display:none!important}
+/* Keep carousel geometry restrained and ensure its surfaces follow the active theme. */
+#landing #vtgProductCarousel .vtgStage{border-radius:2px;box-shadow:0 16px 40px rgba(23,25,27,.10)}
+#landing #vtgProductCarousel .vtgGroup{border-radius:2px;background:var(--vtg-surface)!important;border-color:var(--vtg-line)!important;color:var(--vtg-ink)!important}
+#landing #vtgProductCarousel .vtgGroup:hover{background:var(--vtg-surface-raised)!important;border-color:var(--vtg-red)!important}
+#landing .nav{background:color-mix(in srgb,var(--vtg-paper) 96%,transparent)!important;border-color:var(--vtg-line)!important}
+#landing .vtg-language-wrap select{background:var(--vtg-surface)!important;color:var(--vtg-ink)!important;border-color:var(--vtg-line)!important}
+#landing .headerFeatureBtn{background:transparent!important;color:var(--vtg-ink)!important;border-color:var(--vtg-line)!important}
+#landing .footer{background:#17191B!important;color:#F3EFE6!important}
+#landing .footer a,#landing .footer p,#landing .copyright{color:#C7C2B8!important}
+html[data-theme="dark"] #landing{
+  --vtg-paper:#17191B;
+  --vtg-surface:#202224;
+  --vtg-surface-raised:#292B2D;
+  --vtg-ink:#F3EFE6;
+  --vtg-muted:#C7C2B8;
+  --vtg-red:#C18A8D;
+  --vtg-line:rgba(243,239,230,.17);
+  background:var(--vtg-paper)!important;
+  color:var(--vtg-ink)!important;
+  color-scheme:dark;
+}
+html[data-theme="dark"] #landing .nav{background:rgba(23,25,27,.96)!important;border-color:var(--vtg-line)!important}
+html[data-theme="dark"] #landing .vtgEditorialHero,
+html[data-theme="dark"] #landing .vtgEditorialMarket{background:var(--vtg-paper)!important}
+html[data-theme="dark"] #landing .vtgHeroBackdrop{background:linear-gradient(135deg,rgba(180,154,112,.07),transparent 64%)!important}
+html[data-theme="dark"] #landing .vtgHeroCopy h1,
+html[data-theme="dark"] #landing .vtgMarketHeading h2{color:var(--vtg-ink)!important}
+html[data-theme="dark"] #landing .vtgHeroCopy>p,
+html[data-theme="dark"] #landing .vtgMarketHeading p,
+html[data-theme="dark"] #landing .vtgHeroBottom{color:var(--vtg-muted)!important}
+html[data-theme="dark"] #landing .vtgButtonSecondary{background:transparent!important;border-color:var(--vtg-line)!important;color:var(--vtg-ink)!important}
+html[data-theme="dark"] #landing .vtgHeroVisual{background:#26282A;box-shadow:0 22px 55px rgba(0,0,0,.25)}
+html[data-theme="dark"] #landing .vtgEditorialMarket{border-color:var(--vtg-line)!important}
+html[data-theme="dark"] #landing #vtgProductCarousel .vtgGroup,
+html[data-theme="dark"] #landing #vtgProductCarousel .vtgGroup button,
+html[data-theme="dark"] #landing #vtgProductCarousel .vtgGroup a{background:var(--vtg-surface)!important;color:var(--vtg-ink)!important;border-color:var(--vtg-line)!important}
+html[data-theme="dark"] #landing #vtgProductCarousel .vtgGroup:hover{background:var(--vtg-surface-raised)!important;border-color:var(--vtg-red)!important}
+html[data-theme="dark"] #landing .vtg-language-wrap select{background:var(--vtg-surface)!important;color:var(--vtg-ink)!important;border-color:var(--vtg-line)!important}
+html[data-theme="dark"] #landing .headerFeatureBtn{background:transparent!important;color:var(--vtg-ink)!important;border-color:var(--vtg-line)!important}
+html[data-theme="dark"] #landing .headerEnterBtn{background:#702A30!important;color:#fff!important}
+html[data-theme="dark"] #landing .footer{background:#0F1011!important}
+@media(max-width:1000px){
+  #landing .vtgHeroLayout{grid-template-columns:1fr;gap:28px}
+  #landing .vtgHeroVisual{min-height:360px;max-height:520px;aspect-ratio:1.35/1}
+}
+@media(max-width:700px){
+  #landing .vtgHeroVisual{min-height:290px;aspect-ratio:1.08/1;border-radius:2px 2px 36px 2px}
+  #landing .vtgHeroLayout{padding-top:38px;padding-bottom:30px}
 }
 
 </style>
