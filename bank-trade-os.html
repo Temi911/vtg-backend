@@ -135,7 +135,8 @@ try{cases=JSON.parse(localStorage.getItem(STORE)||'[]');if(!Array.isArray(cases)
 if(!cases.length&&isPreview)cases=sampleCases.map(x=>({...x}));
 try{notes=JSON.parse(localStorage.getItem(NOTES)||'[]');if(!Array.isArray(notes))notes=[]}catch(e){notes=[]}
 try{checks=JSON.parse(localStorage.getItem(CHECKS)||'{}')}catch(e){checks={}}
-try{prefs=JSON.parse(localStorage.getItem(PREF)||'{}')}catch(e){prefs={}}\ntry{prefs.language=localStorage.getItem('vtg-language')||prefs.language||'en'}catch(e){}
+try{prefs=JSON.parse(localStorage.getItem(PREF)||'{}')}catch(e){prefs={}}
+try{prefs.language=localStorage.getItem('vtg-language')||prefs.language||'en'}catch(e){}
 function resolveBankTheme(mode){return mode==='light'||mode==='dark'?mode:((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark')}
 let themePreference='auto';try{themePreference=localStorage.getItem('vtg-theme-preference')||localStorage.getItem('vtg-theme-mode')||'auto'}catch(e){}
 if(!['auto','light','dark'].includes(themePreference))themePreference='auto';
