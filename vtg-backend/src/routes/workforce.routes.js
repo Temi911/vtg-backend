@@ -91,8 +91,12 @@ router.patch('/handoffs/:id', asyncHandler(async(req,res)=>{
   const q=await query('SELECT * FROM workforce_handoffs WHERE id=$1',[req.params.id]);const h=q.rows[0];if(!h)throw new AppError('Handoff not found',404,'NOT_FOUND');
   if(h.to_user!==req.user.id && !isManager(req.user))throw new AppError('Only the receiving member can respond to this handoff',403,'FORBIDDEN');
   if(h.status!=='pending')throw new AppError('This handoff has already been decided',409,'ALREADY_DECIDED');
-  const r=await query('UPDATE workforce_handoffs SET status=$1,decided_at=now(),decided_by=$2 WHERE id=$3 AND status=\'pending\' RETURNING *',[status,req.user.id,h.id]);
-  if(!r.rows[0])throw new AppError('This handoff has already been decided',409,'ALREADY_DECIDED');
+  const r=await withTransaction(async client=>{
+    const changed=await client.query("UPDATE workforce_handoffs SET status=$1,decided_at=now(),decided_by=$2 WHERE id=$3 AND status='pending' RETURNING *",[status,req.user.id,h.id]);
+    if(!changed.rows[0])throw new AppError('This handoff has already been decided',409,'ALREADY_DECIDED');
+    if(status==='accepted'&&h.task_id) await client.query('UPDATE workforce_tasks SET assigned_to=$1,assigned_by=$2,updated_at=now() WHERE id=$3',[h.to_user,req.user.id,h.task_id]);
+    return changed;
+  });
   await audit.log(req.user.id,'Workforce Handoff '+status,`Handoff ${h.id}`,req.ip);
   res.json({handoff:r.rows[0]});
 }));
