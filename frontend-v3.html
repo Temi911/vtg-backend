@@ -1023,3 +1023,34 @@ html[data-theme="dark"] #landing .vtgEditorialMarket .vtgMarketSection{
   background-color:#17191B!important;
   background-image:none!important;
 }
+
+
+/* Final fix: render the ship photo as a clipped layer inside the hero, not as a section/page background. */
+#landing section#top.vtgEditorialHero{
+  position:relative!important;
+  isolation:isolate!important;
+  overflow:hidden!important;
+  background:#c9e3f0!important;
+  background-image:none!important;
+}
+#landing section#top.vtgEditorialHero::after{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:-1!important;
+  pointer-events:none!important;
+  background-image:linear-gradient(90deg,rgba(243,239,230,.78) 0%,rgba(243,239,230,.56) 32%,rgba(243,239,230,.12) 63%,rgba(243,239,230,0) 100%),url('https://images.pexels.com/photos/36195494/pexels-photo-36195494.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1100&fit=crop')!important;
+  background-position:center center!important;
+  background-size:cover!important;
+  background-repeat:no-repeat!important;
+}
+#landing section#top.vtgEditorialHero .vtgHeroBackdrop{display:none!important}
+#landing section#market.vtgEditorialMarket{
+  background:#F3EFE6!important;
+  background-image:none!important;
+}
+html[data-theme="dark"] #landing section#top.vtgEditorialHero{background:#202224!important}
+html[data-theme="dark"] #landing section#top.vtgEditorialHero::after{
+  background-image:linear-gradient(90deg,rgba(23,25,27,.80) 0%,rgba(23,25,27,.60) 36%,rgba(23,25,27,.20) 68%,rgba(23,25,27,.06) 100%),url('https://images.pexels.com/photos/36195494/pexels-photo-36195494.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1100&fit=crop')!important;
+}
+html[data-theme="dark"] #landing section#market.vtgEditorialMarket{background:#17191B!important;background-image:none!important}
