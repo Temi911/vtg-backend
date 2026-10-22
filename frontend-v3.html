@@ -435,7 +435,7 @@ html[data-vtg-skin][data-theme="dark"] body #landing footer#vtgFooter.vtgCompact
       </div>
     </div>
     <div class="vtgHeroVisual" aria-label="Cargo ship and global trade photography">
-      <img class="vtgHeroImage" src="https://images.pexels.com/photos/36195494/pexels-photo-36195494.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1100&fit=crop" alt="Large container ship loaded with colorful shipping containers sailing across the sea" fetchpriority="high">
+      <img class="vtgHeroImage" src="https://images.pexels.com/photos/3114588/pexels-photo-3114588.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1100&fit=crop" alt="Large container ship loaded with colorful shipping containers sailing across the sea" fetchpriority="high">
       <div class="vtgHeroImageTint"></div>
       <div class="vtgHeroImageTag"><span class="vtgLiveDot"></span><span>Trade connects us</span><i data-lucide="globe-2"></i></div>
       <div class="vtgRouteCard">
@@ -974,7 +974,7 @@ html[data-theme="dark"] #landing .footer{background:#0F1011!important}
   overflow:hidden!important;
   min-height:clamp(560px,72vh,820px)!important;
   background-color:#c9e3f0!important;
-  background-image:linear-gradient(90deg,rgba(243,239,230,.78) 0%,rgba(243,239,230,.56) 32%,rgba(243,239,230,.12) 63%,rgba(243,239,230,0) 100%),url('https://images.pexels.com/photos/36195494/pexels-photo-36195494.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1100&fit=crop')!important;
+  background-image:url('https://images.pexels.com/photos/3114588/pexels-photo-3114588.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1100&fit=crop')!important;
   background-position:center center!important;
   background-size:cover!important;
   background-repeat:no-repeat!important;
@@ -1000,7 +1000,7 @@ html[data-theme="dark"] #landing .footer{background:#0F1011!important}
 }
 html[data-theme="dark"] #landing section#top.vtgEditorialHero{
   background-color:#202224!important;
-  background-image:linear-gradient(90deg,rgba(23,25,27,.80) 0%,rgba(23,25,27,.60) 36%,rgba(23,25,27,.20) 68%,rgba(23,25,27,.06) 100%),url('https://images.pexels.com/photos/36195494/pexels-photo-36195494.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1100&fit=crop')!important;
+  background-image:url('https://images.pexels.com/photos/3114588/pexels-photo-3114588.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1100&fit=crop')!important;
 }
 html[data-theme="dark"] #landing section#market.vtgEditorialMarket{
   background-color:#17191B!important;
@@ -1084,6 +1084,72 @@ html[data-theme="light"] #landing .vtgMarketRule span{
 html:not([data-theme="dark"]) #landing .vtgMarketRule span:first-child,
 html[data-theme="light"] #landing .vtgMarketRule span:first-child{
   letter-spacing:.14em!important;
+}
+
+
+
+/* Clear, full-strength aerial cargo-ship hero. Keep the photo unobscured in both themes;
+   use text contrast and button surfaces rather than a wash over the image. */
+#landing section#top.vtgEditorialHero{
+  background-image:url('https://images.pexels.com/photos/3114588/pexels-photo-3114588.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1100&fit=crop')!important;
+  background-size:cover!important;
+  background-position:center 48%!important;
+  filter:none!important;
+}
+#landing section#top.vtgEditorialHero .vtgHeroCopy h1{
+  color:#14232D!important;
+  text-shadow:0 1px 2px rgba(255,255,255,.96),0 0 22px rgba(255,255,255,.72)!important;
+}
+#landing section#top.vtgEditorialHero .vtgHeroCopy>p{
+  color:#182A34!important;
+  text-shadow:0 1px 2px rgba(255,255,255,.98),0 0 18px rgba(255,255,255,.88)!important;
+  font-weight:600!important;
+}
+#landing section#top.vtgEditorialHero .vtgHeroCopy .vtgEyebrow{
+  color:#702A30!important;
+  text-shadow:0 1px 2px rgba(255,255,255,.98),0 0 12px rgba(255,255,255,.85)!important;
+  font-weight:800!important;
+}
+#landing section#top.vtgEditorialHero .vtgButtonPrimary{
+  color:#fff!important;
+  background:#702A30!important;
+  border:1px solid #702A30!important;
+  box-shadow:0 4px 16px rgba(15,25,32,.2)!important;
+}
+#landing section#top.vtgEditorialHero .vtgButtonSecondary{
+  color:#14232D!important;
+  background:rgba(255,255,255,.94)!important;
+  border:1px solid rgba(20,35,45,.7)!important;
+  box-shadow:0 4px 16px rgba(15,25,32,.12)!important;
+}
+html[data-theme="dark"] #landing section#top.vtgEditorialHero{
+  background-image:url('https://images.pexels.com/photos/3114588/pexels-photo-3114588.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1100&fit=crop')!important;
+  background-size:cover!important;
+  background-position:center 48%!important;
+  filter:none!important;
+}
+html[data-theme="dark"] #landing section#top.vtgEditorialHero .vtgHeroCopy h1{
+  color:#FFFFFF!important;
+  text-shadow:0 2px 5px rgba(0,0,0,.98),0 0 20px rgba(0,0,0,.85)!important;
+}
+html[data-theme="dark"] #landing section#top.vtgEditorialHero .vtgHeroCopy>p{
+  color:#FFFFFF!important;
+  text-shadow:0 2px 4px rgba(0,0,0,.98),0 0 18px rgba(0,0,0,.9)!important;
+  font-weight:600!important;
+}
+html[data-theme="dark"] #landing section#top.vtgEditorialHero .vtgHeroCopy .vtgEyebrow{
+  color:#FFE0B4!important;
+  text-shadow:0 2px 5px rgba(0,0,0,.98),0 0 16px rgba(0,0,0,.9)!important;
+}
+html[data-theme="dark"] #landing section#top.vtgEditorialHero .vtgButtonPrimary{
+  color:#fff!important;background:#702A30!important;border-color:#702A30!important;
+}
+html[data-theme="dark"] #landing section#top.vtgEditorialHero .vtgButtonSecondary{
+  color:#14232D!important;background:rgba(255,255,255,.96)!important;border-color:#FFFFFF!important;
+}
+@media(max-width:700px){
+  #landing section#top.vtgEditorialHero{background-position:58% center!important}
+  html[data-theme="dark"] #landing section#top.vtgEditorialHero{background-position:58% center!important}
 }
 
 </style>
