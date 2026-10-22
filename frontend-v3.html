@@ -1014,5 +1014,58 @@ html[data-theme="dark"] #landing section#top.vtgEditorialHero .vtgButtonSecondar
   #landing section#top.vtgEditorialHero .vtgHeroLayout{min-height:620px!important;padding:66px 20px 42px!important}
   #landing section#top.vtgEditorialHero .vtgHeroCopy{max-width:100%!important}
 }
+
+/* Light-mode readability pass: strengthen only the requested navigation, copy and CTA labels. */
+html:not([data-theme="dark"]) #landing #atlasHeaderBtn,
+html[data-theme="light"] #landing #atlasHeaderBtn{
+  color:#241719!important;
+  -webkit-text-fill-color:#241719!important;
+  border-color:rgba(36,23,25,.48)!important;
+  background:rgba(255,255,255,.62)!important;
+  font-weight:800!important;
+}
+html:not([data-theme="dark"]) #landing .vtgHeroCopy>p,
+html[data-theme="light"] #landing .vtgHeroCopy>p{
+  color:#292724!important;
+  text-shadow:0 1px 0 rgba(243,239,230,.38);
+}
+html:not([data-theme="dark"]) #landing .vtgHeroCopy .vtgButtonSecondary,
+html[data-theme="light"] #landing .vtgHeroCopy .vtgButtonSecondary{
+  color:#241719!important;
+  -webkit-text-fill-color:#241719!important;
+  border:1px solid rgba(36,23,25,.58)!important;
+  background:rgba(251,249,244,.88)!important;
+  font-weight:800!important;
+}
+html:not([data-theme="dark"]) #landing .vtgEditorialCta .vtgEyebrow,
+html[data-theme="light"] #landing .vtgEditorialCta .vtgEyebrow{
+  color:#F2D8B0!important;
+  -webkit-text-fill-color:#F2D8B0!important;
+  font-weight:800!important;
+  text-shadow:0 1px 8px rgba(0,0,0,.22);
+}
+html:not([data-theme="dark"]) #landing .vtgEditorialCta p,
+html[data-theme="light"] #landing .vtgEditorialCta p{
+  color:#F0EEE8!important;
+  -webkit-text-fill-color:#F0EEE8!important;
+}
+html:not([data-theme="dark"]) #landing .vtgEditorialCta .vtgButtonLight,
+html[data-theme="light"] #landing .vtgEditorialCta .vtgButtonLight{
+  color:#241719!important;
+  -webkit-text-fill-color:#241719!important;
+  background:#FFFDF8!important;
+  border:1px solid #FFFDF8!important;
+  font-weight:800!important;
+}
+html:not([data-theme="dark"]) #landing .vtgEditorialCta .vtgCtaTextLink,
+html[data-theme="light"] #landing .vtgEditorialCta .vtgCtaTextLink{
+  color:#FFF8EF!important;
+  -webkit-text-fill-color:#FFF8EF!important;
+  text-decoration:underline!important;
+  text-decoration-color:#D0B58A!important;
+  text-underline-offset:5px;
+  font-weight:800!important;
+}
+
 </style>
 </body></html>
