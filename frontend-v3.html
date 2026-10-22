@@ -253,36 +253,221 @@ body{top:0!important}
 html.translated-ltr,html.translated-rtl{margin-top:0!important}
 @media(max-width:900px){.vtg-language-wrap{gap:4px}.vtg-language-wrap span{display:none}.vtg-language-wrap select{max-width:102px;height:38px;padding:0 5px;font-size:9px}}
 </style><link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<style id="vtg-editorial-redesign">
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+:root{--vtg-paper:#f7f6f2;--vtg-white:#fff;--vtg-ink:#172b35;--vtg-muted:#62727a;--vtg-red:#bd302b;--vtg-red-dark:#98231f;--vtg-teal:#216b69;--vtg-line:rgba(23,43,53,.13);--vtg-shadow:0 22px 70px rgba(27,49,58,.13)}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif!important;background:var(--vtg-paper);color:var(--vtg-ink)}
+#landing{font-family:'DM Sans',sans-serif!important;background:var(--vtg-paper);color:var(--vtg-ink);overflow:clip}
+#landing *{font-family:'DM Sans',sans-serif}
+#landing h1,#landing h2,#landing h3,#landing .vtgEyebrow,#landing .vtgRouteCard strong,#landing .vtgHeroStamp span{font-family:'Plus Jakarta Sans',sans-serif!important}
+#landing .nav{position:relative;z-index:20;background:rgba(250,249,246,.94);border-bottom:1px solid var(--vtg-line);backdrop-filter:blur(18px);box-shadow:none}
+#landing .navin{max-width:1440px;min-height:82px;padding:14px clamp(18px,4.5vw,72px);display:flex;align-items:center;gap:24px}
+#landing .brand img{width:clamp(130px,13vw,174px);max-height:52px;object-fit:contain}
+#landing .navtools{display:flex;align-items:center;gap:12px;margin-left:auto}
+#landing .vtg-language-wrap{font-size:12px;color:var(--vtg-muted)}
+#landing .vtg-language-wrap select{border:1px solid var(--vtg-line);border-radius:999px;background:#fff;padding:10px 12px;color:var(--vtg-ink);font:inherit}
+#landing .headerFeatureBtn,#landing .headerEnterBtn{min-height:43px;padding:0 16px;border-radius:999px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:8px;transition:transform .2s ease,box-shadow .2s ease}
+#landing .headerFeatureBtn{border:1px solid var(--vtg-line);background:transparent;color:var(--vtg-ink)}
+#landing .headerEnterBtn{background:var(--vtg-red);color:white;box-shadow:0 7px 18px rgba(189,48,43,.18)}
+#landing .headerFeatureBtn:hover,#landing .headerEnterBtn:hover{transform:translateY(-2px)}
+#landing .vtgEditorialHero{position:relative;isolation:isolate;background:var(--vtg-paper);overflow:hidden;padding:0 0 0;min-height:auto}
+#landing .vtgHeroBackdrop{position:absolute;inset:0 0 0 45%;background:radial-gradient(ellipse at 80% 20%,rgba(216,177,118,.22),transparent 40%),linear-gradient(140deg,rgba(222,230,224,.42),rgba(247,246,242,0) 70%);z-index:-1}
+#landing .vtgHeroLayout{max-width:1440px;margin:0 auto;min-height:650px;padding:68px clamp(20px,5vw,76px) 58px;display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);align-items:center;gap:clamp(34px,6vw,90px)}
+#landing .vtgHeroCopy{max-width:610px;padding:8px 0 22px;position:relative;z-index:3}
+#landing .vtgEyebrow{display:inline-flex;align-items:center;gap:10px;font-size:10px;line-height:1.3;font-weight:800;letter-spacing:.16em;color:var(--vtg-red);text-transform:uppercase}
+#landing .vtgEyebrowDot{width:7px;height:7px;border-radius:50%;background:var(--vtg-red);box-shadow:0 0 0 5px rgba(189,48,43,.1)}
+#landing .vtgHeroCopy h1{font-size:clamp(46px,5.6vw,78px);line-height:1.02;letter-spacing:-.065em;font-weight:800;max-width:680px;margin:24px 0 22px;color:#18313b}
+#landing .vtgHeroCopy h1 em,#landing .vtgMarketHeading h2 em,#landing .vtgShowcaseIntro h2 em,#landing .vtgEditorialCta h2 em{font-style:normal;color:var(--vtg-red)}
+#landing .vtgHeroCopy>p{font-size:clamp(15px,1.25vw,18px);line-height:1.8;color:#596b73;max-width:535px;margin:0}
+#landing .vtgHeroActions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:30px}
+#landing .vtgButton{min-height:52px;padding:0 21px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:11px;font-size:13px;font-weight:700;text-decoration:none;transition:transform .2s ease,box-shadow .2s ease,background .2s ease}
+#landing .vtgButton svg{width:17px;height:17px}
+#landing .vtgButton:hover{transform:translateY(-2px)}
+#landing .vtgButtonPrimary{background:var(--vtg-red);color:#fff;box-shadow:0 12px 28px rgba(189,48,43,.2)}
+#landing .vtgButtonPrimary:hover{background:var(--vtg-red-dark);box-shadow:0 15px 34px rgba(189,48,43,.25)}
+#landing .vtgButtonSecondary{border:1px solid rgba(23,43,53,.18);background:rgba(255,255,255,.6);color:var(--vtg-ink)}
+#landing .vtgHeroProof{display:flex;gap:20px;flex-wrap:wrap;margin-top:36px;padding-top:22px;border-top:1px solid var(--vtg-line);color:#52656e;font-size:11px;font-weight:700}
+#landing .vtgHeroProof span{display:inline-flex;align-items:center;gap:7px}
+#landing .vtgHeroProof svg{width:15px;height:15px;color:var(--vtg-teal)}
+#landing .vtgHeroVisual{position:relative;min-height:450px;max-height:550px;aspect-ratio:1.05/1;border-radius:30px 30px 100px 30px;overflow:visible;background:#d8e0dd;box-shadow:var(--vtg-shadow);isolation:isolate}
+#landing .vtgHeroImage{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+#landing .vtgHeroImageTint{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(13,38,45,.02) 35%,rgba(10,29,35,.48) 100%),linear-gradient(115deg,rgba(13,54,57,.12),transparent 52%)}
+#landing .vtgHeroImageTag{position:absolute;top:22px;left:22px;display:flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.36);background:rgba(255,255,255,.88);color:#203940;backdrop-filter:blur(16px);border-radius:999px;padding:10px 14px;font-size:11px;font-weight:700;box-shadow:0 8px 28px rgba(15,34,40,.12)}
+#landing .vtgHeroImageTag svg{width:16px;height:16px;color:var(--vtg-teal)}
+#landing .vtgLiveDot{width:7px;height:7px;border-radius:50%;background:#2e8b73}
+#landing .vtgRouteCard{position:absolute;left:-30px;bottom:34px;width:min(330px,78%);padding:18px 20px;border-radius:20px;border:1px solid rgba(255,255,255,.68);background:rgba(255,255,255,.94);box-shadow:0 22px 54px rgba(18,43,49,.2);backdrop-filter:blur(20px)}
+#landing .vtgRouteTop{display:flex;align-items:center;gap:11px}
+#landing .vtgRouteIcon{width:40px;height:40px;display:grid;place-items:center;border-radius:13px;background:#f8e8e5;color:var(--vtg-red)}
+#landing .vtgRouteIcon svg{width:19px;height:19px}
+#landing .vtgRouteTop>span:nth-child(2){display:grid;gap:3px}
+#landing .vtgRouteTop small{font-size:8px;font-weight:800;letter-spacing:.14em;color:#718087}
+#landing .vtgRouteTop strong{font-size:17px;color:#18313b}
+#landing .vtgRouteArrow{margin-left:auto;width:17px;height:17px;color:var(--vtg-red)}
+#landing .vtgRouteLine{display:flex;align-items:center;gap:5px;margin:17px 0 10px}
+#landing .vtgRouteLine:before,#landing .vtgRouteLine:after{content:"";height:1px;background:#cbd5d4;flex:1}
+#landing .vtgRouteLine span{width:5px;height:5px;border-radius:50%;background:var(--vtg-teal)}
+#landing .vtgRoutePlaces{display:flex;justify-content:space-between;gap:20px}
+#landing .vtgRoutePlaces span{display:grid;gap:3px}
+#landing .vtgRoutePlaces span:last-child{text-align:right}
+#landing .vtgRoutePlaces b{font-size:12px;color:#213c45}
+#landing .vtgRoutePlaces small{font-size:10px;color:#74838a}
+#landing .vtgHeroStamp{position:absolute;right:-17px;bottom:45px;width:94px;height:94px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--vtg-red);color:#fff;border:6px solid var(--vtg-paper);box-shadow:0 12px 30px rgba(111,38,33,.18);transform:rotate(8deg)}
+#landing .vtgHeroStamp span{font-size:25px;font-weight:800;letter-spacing:-.07em}
+#landing .vtgHeroStamp small{font-size:6px;font-weight:800;letter-spacing:.12em}
+#landing .vtgHeroBottom{max-width:1440px;margin:0 auto;padding:0 clamp(20px,5vw,76px) 24px;display:flex;align-items:center;gap:15px;color:#718087;font-size:10px;font-weight:600;letter-spacing:.02em}
+#landing .vtgHeroBottomRule{height:1px;background:var(--vtg-line);flex:1}
+#landing .vtgEditorialMarket{background:#fff;border-top:1px solid rgba(23,43,53,.06);border-bottom:1px solid rgba(23,43,53,.08)}
+#landing .vtgMarketSection{max-width:1440px;margin:0 auto;padding:84px clamp(20px,5vw,76px) 82px}
+#landing .vtgMarketHeading{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.55fr);align-items:end;gap:35px}
+#landing .vtgEyebrowDark{color:var(--vtg-teal)}
+#landing .vtgMarketHeading h2,#landing .vtgShowcaseIntro h2{font-size:clamp(34px,4.4vw,56px);line-height:1.07;letter-spacing:-.055em;color:#19333c;margin:15px 0 0;font-weight:800}
+#landing .vtgMarketHeading p,#landing .vtgShowcaseIntro p{font-size:14px;line-height:1.8;color:var(--vtg-muted);margin:0;max-width:430px}
+#landing .vtgMarketRule{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:38px;padding:15px 0;border-top:1px solid var(--vtg-line);color:#718087;font-size:9px;font-weight:800;letter-spacing:.14em}
+#landing .vtgMarketRule span:last-child{display:flex;align-items:center;gap:8px}
+#landing .vtgMarketRule svg{width:14px;height:14px;color:var(--vtg-red)}
+#landing #vtgProductCarousel{margin-top:0}
+#landing #vtgProductCarousel .vtgStage{height:clamp(310px,38vw,500px);border-radius:24px;box-shadow:0 20px 55px rgba(23,43,53,.12)}
+#landing #vtgProductCarousel .vtgCategoryGroups{margin-top:28px}
+#landing #vtgProductCarousel .vtgGroupGrid{gap:10px}
+#landing #vtgProductCarousel .vtgGroup{border-radius:15px;padding:15px 16px;background:#fbfaf7;border-color:rgba(23,43,53,.11)}
+#landing #vtgProductCarousel .vtgGroup:hover{background:#fff;border-color:rgba(189,48,43,.42)}
+#landing .vtgEditorialShowcase{max-width:1440px;margin:0 auto;padding:100px clamp(20px,5vw,76px) 110px}
+#landing .vtgShowcaseIntro{display:flex;align-items:end;justify-content:space-between;gap:30px;margin-bottom:34px}
+#landing .vtgShowcaseIntro h2{max-width:620px}
+#landing .vtgShowcaseIntro p{max-width:330px}
+#landing .vtgShowcaseGrid{display:grid;grid-template-columns:1.15fr .85fr;grid-template-rows:250px 250px;gap:16px}
+#landing .vtgShowcaseCard{position:relative;display:block;overflow:hidden;border-radius:22px;min-height:220px;background:#cbd5d3;color:#fff;isolation:isolate;box-shadow:0 12px 30px rgba(23,43,53,.08)}
+#landing .vtgShowcaseWide{grid-row:span 2}
+#landing .vtgShowcaseCard>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .65s cubic-bezier(.2,.7,.2,1)}
+#landing .vtgShowcaseCard:hover>img{transform:scale(1.045)}
+#landing .vtgShowcaseOverlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(9,28,34,.02) 15%,rgba(8,26,31,.82) 100%)}
+#landing .vtgShowcaseContent{position:absolute;left:25px;right:25px;bottom:24px;display:grid;gap:8px}
+#landing .vtgShowcaseContent small{font-size:9px;font-weight:800;letter-spacing:.15em;color:#e5c5a2}
+#landing .vtgShowcaseContent strong{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(20px,2.4vw,30px);letter-spacing:-.04em;line-height:1.13;max-width:430px}
+#landing .vtgShowcaseContent>span{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.82)}
+#landing .vtgShowcaseContent svg{width:14px;height:14px}
+#landing .vtgEditorialCta{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:35px;margin:0 clamp(16px,3vw,42px) 40px;padding:clamp(32px,5vw,64px) clamp(24px,6vw,82px);border-radius:28px;background:#183b42;color:#fff;isolation:isolate}
+#landing .vtgCtaGlow{position:absolute;z-index:-1;right:-5%;top:-90%;width:58%;height:280%;border-radius:50%;background:radial-gradient(ellipse,rgba(73,142,130,.45),transparent 65%)}
+#landing .vtgEditorialCta .vtgEyebrow{color:#e7b4a8}
+#landing .vtgEditorialCta h2{font-size:clamp(30px,4vw,52px);line-height:1.08;letter-spacing:-.055em;max-width:660px;margin:16px 0 12px}
+#landing .vtgEditorialCta h2 em{color:#f1a79b}
+#landing .vtgEditorialCta p{font-size:13px;line-height:1.7;color:rgba(255,255,255,.72);max-width:510px;margin:0}
+#landing .vtgCtaActions{display:flex;align-items:center;gap:20px;flex-wrap:wrap;flex-shrink:0}
+#landing .vtgButtonLight{background:#fff;color:#193940}
+#landing .vtgCtaTextLink{display:inline-flex;align-items:center;gap:7px;color:#fff;font-size:12px;font-weight:700;text-decoration:none}
+#landing .vtgCtaTextLink svg{width:15px;height:15px}
+#landing .footer.vtgCompactFooter{background:#f0eee8;color:#22363d;border-top:1px solid var(--vtg-line);margin-top:0;padding-top:0}
+#landing .vtgFooterTop{max-width:1440px;margin:0 auto;padding:54px clamp(20px,5vw,76px) 42px}
+#landing .vtgFooterBrand img{max-width:170px;max-height:50px;object-fit:contain}
+#landing .vtgFooterBrand p{font-size:12px;line-height:1.7;color:#6c797d;max-width:250px;margin-top:16px}
+#landing .vtgFooterLinks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:30px}
+#landing .vtgFooterLinks h4{font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;letter-spacing:.04em;color:#193940;margin:0 0 15px}
+#landing .vtgFooterLinks a,#landing .copyright a{font-size:11px;line-height:1.65;color:#637177;text-decoration:none;transition:color .2s ease}
+#landing .vtgFooterLinks a:hover,#landing .copyright a:hover{color:var(--vtg-red)}
+#landing .copyright{max-width:1440px;margin:0 auto;padding:20px clamp(20px,5vw,76px);border-top:1px solid rgba(23,43,53,.12);color:#788387;font-size:10px}
+#landing .copyright a{margin-left:18px}
+#landing a:focus-visible,#landing button:focus-visible,#landing select:focus-visible{outline:3px solid rgba(33,107,105,.65);outline-offset:3px}
+@media(min-width:1500px){#landing .vtgHeroLayout{min-height:700px}}
+@media(max-width:980px){#landing .vtgHeroLayout{grid-template-columns:1fr 1fr;gap:32px;min-height:590px;padding-top:54px}#landing .vtgHeroCopy h1{font-size:clamp(42px,6vw,62px)}#landing .vtgHeroVisual{min-height:390px;border-bottom-right-radius:70px}#landing .vtgRouteCard{left:-18px;width:84%}#landing .vtgHeroStamp{width:76px;height:76px;right:-9px}#landing .vtgHeroStamp span{font-size:21px}#landing .vtgShowcaseGrid{grid-template-rows:220px 220px}#landing .vtgFooterLinks{gap:18px}}
+@media(max-width:700px){#landing .navin{min-height:72px;padding:12px 16px;gap:10px}#landing .brand img{width:112px}#landing .navtools{gap:7px}#landing .vtg-language-wrap{display:none}#landing .headerFeatureBtn,#landing .headerEnterBtn{padding:0 12px;min-height:40px;font-size:10px;gap:6px}#landing .headerFeatureBtn svg,#landing .headerEnterBtn svg{width:14px;height:14px}#landing .vtgHeroLayout{grid-template-columns:1fr;gap:34px;min-height:0;padding:50px 20px 35px}#landing .vtgHeroCopy{padding:0}#landing .vtgHeroCopy h1{font-size:clamp(44px,12vw,65px);margin:19px 0 17px}#landing .vtgHeroCopy>p{font-size:14px}#landing .vtgHeroActions{margin-top:23px;gap:9px}#landing .vtgButton{min-height:48px;padding:0 15px;font-size:11px}#landing .vtgHeroProof{margin-top:26px;gap:15px;font-size:10px}#landing .vtgHeroVisual{min-height:330px;aspect-ratio:1.08/1;border-radius:23px 23px 70px 23px;margin:0 8px 22px 12px}#landing .vtgHeroImageTag{top:14px;left:14px;padding:8px 11px;font-size:10px}#landing .vtgRouteCard{left:-12px;bottom:20px;padding:13px 14px;width:min(290px,82%);border-radius:16px}#landing .vtgRouteIcon{width:34px;height:34px}#landing .vtgRouteTop strong{font-size:15px}#landing .vtgRouteLine{margin:12px 0 8px}#landing .vtgHeroStamp{width:70px;height:70px;right:-11px;bottom:24px;border-width:4px}#landing .vtgHeroStamp span{font-size:18px}#landing .vtgHeroStamp small{font-size:5px}#landing .vtgHeroBottom{padding:0 20px 22px;font-size:8px;gap:9px}#landing .vtgMarketSection{padding:60px 20px 55px}#landing .vtgMarketHeading{grid-template-columns:1fr;gap:15px}#landing .vtgMarketHeading h2,#landing .vtgShowcaseIntro h2{font-size:clamp(33px,9vw,45px)}#landing .vtgMarketHeading p{font-size:13px}#landing .vtgMarketRule{margin-top:25px;font-size:8px}#landing #vtgProductCarousel .vtgStage{height:330px;border-radius:18px}#landing #vtgProductCarousel .vtgGroupGrid{grid-template-columns:1fr 1fr;gap:8px}#landing #vtgProductCarousel .vtgGroup{padding:11px 10px;gap:7px}#landing #vtgProductCarousel .vtgGroup span{font-size:10px}#landing #vtgProductCarousel .vtgGroupIcon{width:28px;height:28px}#landing #vtgProductCarousel .vtgGroup>b{width:23px;height:23px}#landing #vtgProductCarousel .vtgGroupHead{align-items:start;flex-direction:column;gap:5px}#landing .vtgEditorialShowcase{padding:68px 20px 74px}#landing .vtgShowcaseIntro{display:block;margin-bottom:24px}#landing .vtgShowcaseIntro p{margin-top:15px;font-size:13px}#landing .vtgShowcaseGrid{grid-template-columns:1fr;grid-template-rows:260px 230px 230px;gap:12px}#landing .vtgShowcaseWide{grid-row:auto}#landing .vtgShowcaseContent{left:19px;right:19px;bottom:18px}#landing .vtgShowcaseContent strong{font-size:24px}#landing .vtgEditorialCta{margin:0 12px 20px;padding:30px 23px;border-radius:22px;display:block}#landing .vtgEditorialCta h2{font-size:35px}#landing .vtgEditorialCta p{font-size:12px}#landing .vtgCtaActions{margin-top:23px;gap:16px}#landing .vtgFooterTop{padding:38px 20px 30px;display:block}#landing .vtgFooterBrand{margin-bottom:30px}#landing .vtgFooterLinks{grid-template-columns:1fr 1fr;gap:25px 18px}#landing .vtgFooterLinks h4{margin-bottom:10px}#landing .vtgFooterLinks a{font-size:11px}#landing .copyright{padding:18px 20px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}#landing .copyright a{margin:0 14px 0 0}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}#landing *{animation:none!important;transition:none!important}}
+html[data-theme="dark"] body,html[data-theme="dark"] #landing{background:#111a20;color:#edf2f2}
+html[data-theme="dark"] #landing .nav{background:rgba(19,29,35,.94);border-color:rgba(255,255,255,.12)}
+html[data-theme="dark"] #landing .headerFeatureBtn{color:#eaf1f1;border-color:rgba(255,255,255,.18)}
+html[data-theme="dark"] #landing .vtg-language-wrap select{background:#17252b;color:#eaf1f1;border-color:rgba(255,255,255,.16)}
+html[data-theme="dark"] #landing .vtgEditorialHero{background:#111a20}
+html[data-theme="dark"] #landing .vtgHeroBackdrop{background:radial-gradient(ellipse at 80% 20%,rgba(189,48,43,.13),transparent 40%),linear-gradient(140deg,rgba(39,73,72,.25),rgba(17,26,32,0) 70%)}
+html[data-theme="dark"] #landing .vtgHeroCopy h1,html[data-theme="dark"] #landing .vtgMarketHeading h2,html[data-theme="dark"] #landing .vtgShowcaseIntro h2{color:#f2f5f4}
+html[data-theme="dark"] #landing .vtgHeroCopy>p,html[data-theme="dark"] #landing .vtgMarketHeading p,html[data-theme="dark"] #landing .vtgShowcaseIntro p{color:#aab9bc}
+html[data-theme="dark"] #landing .vtgHeroProof{border-color:rgba(255,255,255,.13);color:#b5c4c6}
+html[data-theme="dark"] #landing .vtgButtonSecondary{background:rgba(255,255,255,.04);color:#edf2f2;border-color:rgba(255,255,255,.2)}
+html[data-theme="dark"] #landing .vtgHeroStamp{border-color:#111a20}
+html[data-theme="dark"] #landing .vtgEditorialMarket{background:#172329;border-color:rgba(255,255,255,.08)}
+html[data-theme="dark"] #landing .vtgMarketRule{border-color:rgba(255,255,255,.13);color:#9baeb2}
+html[data-theme="dark"] #landing #vtgProductCarousel .vtgGroup{background:#1b2b31;color:#eaf1f1;border-color:rgba(255,255,255,.1)}
+html[data-theme="dark"] #landing #vtgProductCarousel .vtgGroupIcon{background:#263a40;color:#f3a79e}
+html[data-theme="dark"] #landing .vtgEditorialShowcase{color:#eaf1f1}
+html[data-theme="dark"] #landing .vtgEditorialCta{background:#203e43}
+html[data-theme="dark"] #landing .footer.vtgCompactFooter{background:#172329;color:#eaf1f1;border-color:rgba(255,255,255,.1)}
+html[data-theme="dark"] #landing .vtgFooterLinks h4{color:#eaf1f1}
+html[data-theme="dark"] #landing .vtgFooterBrand p,html[data-theme="dark"] #landing .vtgFooterLinks a,html[data-theme="dark"] #landing .copyright,html[data-theme="dark"] #landing .copyright a{color:#a5b4b8}
+html[data-theme="dark"] #landing .copyright{border-color:rgba(255,255,255,.12)}
+</style>
 </head>
 <body>
 <div class="topline"></div>
 <div id="landing" data-vtg-redesign="1">
 <header class="nav"><div class="navin"><a class="brand " href="#top" aria-label="Vintage Trade Global"><img class="" src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><div class="navtools" aria-label="VTG quick access"><label class="vtg-language-wrap" aria-label="Choose site language"><span>Language</span><select id="vtgLanguagePicker" aria-label="Choose site language"><option value="en">English</option><option value="fr">Français</option><option value="zh-CN">中文</option><option value="ko">한국어</option><option value="es">Español</option><option value="ar">العربية</option></select></label><a class="headerFeatureBtn" id="atlasHeaderBtn" href="/trade-atlas.html" title="Open Trade Atlas" aria-label="Open Trade Atlas"><i data-lucide="globe-2"></i><span>Trade Atlas</span></a><a class="primary headerEnterBtn" id="joinBtn" href="/signin.html" aria-label="Enter VTG and sign in"><i data-lucide="arrow-up-right"></i><span>Enter VTG</span></a></div></div></header>
-<section class="hero" id="top"><div class="heroMapWrap" aria-hidden="true"><svg viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="mapGrad1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#d1417a"/><stop offset="50%" stop-color="#7c4fd1"/><stop offset="100%" stop-color="#c0392b"/></linearGradient><linearGradient id="mapGrad2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#c0392b"/><stop offset="50%" stop-color="#e05a4f"/><stop offset="100%" stop-color="#a93226"/></linearGradient><filter id="glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g opacity=".16"><path fill="url(#mapGrad1)" d="M70 150C130 90 230 80 300 120C360 150 340 210 300 230C340 250 320 300 260 300C300 330 270 380 210 370C230 410 180 440 130 420C90 460 20 440 30 380C-10 360 0 300 40 280C10 250 20 190 70 150Z"/><path fill="url(#mapGrad2)" d="M160 340C210 330 250 360 240 410C280 420 280 470 240 490C250 530 200 560 160 540C140 570 90 560 90 520C50 510 50 460 90 450C70 410 110 350 160 340Z"/><path fill="url(#mapGrad1)" d="M480 110C560 70 660 90 690 140C740 130 780 170 760 210C810 220 820 270 770 290C790 330 750 370 700 360C700 400 650 420 610 400C590 440 530 440 510 400C460 410 430 370 450 330C410 320 400 270 440 250C410 210 430 150 480 110Z"/><path fill="url(#mapGrad2)" d="M540 300C580 290 620 320 610 360C650 370 650 420 610 430C620 470 570 490 540 470C520 500 470 490 470 450C440 440 440 390 470 380C450 340 490 310 540 300Z"/><path fill="url(#mapGrad1)" d="M700 130C780 90 900 100 970 150C1040 140 1100 180 1080 230C1130 250 1130 310 1080 320C1090 360 1040 390 990 370C980 410 920 420 890 390C840 410 790 390 790 350C740 350 710 300 740 270C690 250 670 190 700 130Z"/><path fill="url(#mapGrad2)" d="M900 400C950 390 990 420 980 460C1020 470 1020 510 980 520C970 550 920 550 900 520C860 520 850 480 880 460C860 430 870 400 900 400Z"/></g><g stroke="#c0392b" stroke-width="1.2" fill="none" opacity=".38"><path d="M280 190 Q400 90 500 150"/><path d="M500 150 Q600 170 700 250"/><path d="M700 250 Q780 200 900 210"/><path d="M520 300 Q600 220 500 150"/><path d="M520 300 Q610 280 700 250"/><path d="M280 190 Q380 260 520 300"/></g><g><circle class="hubDot d1" cx="280" cy="190" r="3.6" fill="#d1417a" filter="url(#glow)"/><circle class="hubDot d2" cx="500" cy="150" r="3.6" fill="#7c4fd1" filter="url(#glow)"/><circle class="hubDot d3" cx="520" cy="300" r="3.6" fill="#a93226" filter="url(#glow)"/><circle class="hubDot d4" cx="700" cy="250" r="3.6" fill="#c0392b" filter="url(#glow)"/><circle class="hubDot d5" cx="900" cy="210" r="3.6" fill="#d1417a" filter="url(#glow)"/></g></svg></div><div class="heroIn"><div><span class="eyebrow">Vintage Trade Global • Africa • China • South Korea</span><h1>One intelligent place for trade across borders.</h1><p>VTG connects African buyers with verified suppliers, financial institutions and logistics partners across China, South Korea and global markets — bringing sourcing, verification, finance, shipping and trade intelligence into one connected platform.</p><div class="heroCore"><span><i data-lucide="store"></i> Marketplace</span><span><i data-lucide="globe-2"></i> Trade Atlas</span><span><i data-lucide="landmark"></i> Trade Finance</span><span><i data-lucide="ship"></i> Logistics</span></div><div class="heroActions"><a class="outline heroMarketplaceBtn" href="/marketplace.html"><i data-lucide="store"></i> Explore Marketplace</a></div><div class="heroStats"><div class="stat"><strong>Africa ↔ Asia</strong><span>Core trade corridor</span></div><div class="stat"><strong>Buy • Finance • Move</strong><span>Connected trade journey</span></div><div class="stat"><strong>One platform</strong><span>From sourcing to delivery</span></div></div></div><div class="visual tradeNetworkVisual" aria-label="VTG Africa to Asia trade network">
-  <div class="networkGlow"></div>
-  <svg class="networkLines" viewBox="0 0 620 430" aria-hidden="true">
-    <defs>
-      <linearGradient id="vtgRoute" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e05a4f"/><stop offset="50%" stop-color="#6cc4c9"/><stop offset="100%" stop-color="#7c4fd1"/></linearGradient>
-      <filter id="vtgRouteGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    </defs>
-    <path class="routePath" d="M105 292 C190 225 270 245 348 195 S475 122 535 104"/>
-    <path class="routePath route2" d="M105 292 C185 325 272 312 348 195 S460 170 535 104"/>
-    <circle class="routeNode" cx="105" cy="292" r="7"/><circle class="routeNode" cx="348" cy="195" r="7"/><circle class="routeNode" cx="535" cy="104" r="7"/>
-  </svg>
-  <div class="networkMapShape africa"><span></span></div>
-  <div class="networkMapShape asia"><span></span></div>
-  <div class="networkNode nodeAfrica"><i data-lucide="map-pin"></i><strong>Africa</strong><small>Buyer market</small></div>
-  <div class="networkNode nodeChina"><i data-lucide="factory"></i><strong>China</strong><small>Supplier network</small></div>
-  <div class="networkNode nodeKorea"><i data-lucide="landmark"></i><strong>South Korea</strong><small>Trade & technology</small></div>
-  <div class="networkCenter"><div class="centerIcon"><i data-lucide="globe-2"></i></div><strong>VTG Trade Network</strong><span>Source • Verify • Finance • Move</span></div>
-  <div class="networkRouteBadge"><i data-lucide="route"></i><span>Connected corridor</span><b>Africa ↔ Asia</b></div>
-</div></div></section>
-<section class="section" id="how"><div class="sectionHead"><div><span class="eyebrow">Built for real trade</span><h2>One platform. Every trade stage.</h2></div><p>Follow a clear path from finding the right product to verifying the business, arranging inspection and moving the transaction toward delivery and finance.</p></div><div class="cards"><div class="card"><div class="ico"><i data-lucide="compass"></i></div><h3>1. Discover & enquire</h3><p>Browse the VTG marketplace, open supplier catalogues and send a product enquiry with your requirements.</p><a class="outline" href="/marketplace.html" style="display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:8px 11px;font-size:9px">Open marketplace <i data-lucide="arrow-up-right"></i></a></div><div class="card"><div class="ico"><i data-lucide="shield-check"></i></div><h3>2. Verify & inspect</h3><p>Review business verification signals and, when needed, request a VTG inspection agent to check goods before shipment.</p><a class="outline" href="/product-verification.html" style="display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:8px 11px;font-size:9px">Request inspection <i data-lucide="arrow-up-right"></i></a></div><div class="card"><div class="ico"><i data-lucide="route"></i></div><h3>3. Arrange the movement</h3><p>Coordinate shipping, ports, freight and delivery information as the trade moves from supplier to destination.</p></div><div class="card"><div class="ico"><i data-lucide="badge-dollar-sign"></i></div><h3>4. Coordinate finance</h3><p>Bring the appropriate financial partner into the transaction for payment, settlement and trade-finance workflows.</p><button class="outline" type="button" onclick="document.querySelector('#network')?.scrollIntoView({behavior:'smooth',block:'start'})" style="display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:8px 11px;font-size:9px">View bank participation <i data-lucide="arrow-right"></i></button></div></div></section>
-<section class="roleExperience" id="network" aria-labelledby="roleExperienceTitle"><div class="section"><div class="roleExperienceIntro"><div><span class="eyebrow">How VTG works for you</span><h2 id="roleExperienceTitle">One trade platform. Clear roles. Connected progress.</h2></div><p>VTG brings sourcing, supplier communication, inspection, logistics and trade-finance coordination into one connected environment. Each account type has its own purpose and access.</p></div><div class="roleRows"><article class="roleRow"><div class="roleRowIcon" aria-hidden="true"><i data-lucide="shopping-bag"></i></div><div class="roleRowTitle"><span>01 / BUY SIDE</span><h3>Buyers & Importers</h3></div><div class="roleRowCopy"><p>Find products and suppliers, review business information, send enquiries and compare sourcing options. Request pre-shipment product checks, coordinate shipping and follow trade milestones from supplier to destination.</p><p class="roleOutcome">Your route: product discovery → enquiry → verification and inspection → shipment and delivery.</p></div><div class="roleRowAction"><a class="roleAccess" href="/signin.html?role=buyer">Buyer workspace <i data-lucide="arrow-up-right"></i></a></div></article><article class="roleRow"><div class="roleRowIcon" aria-hidden="true"><i data-lucide="factory"></i></div><div class="roleRowTitle"><span>02 / SELL SIDE</span><h3>Suppliers & Trading Companies</h3></div><div class="roleRowCopy"><p>Build a professional business profile and product catalogue, improve visibility to relevant buyers, respond to enquiries and coordinate inspection, export preparation and shipping information as a deal progresses.</p><p class="roleOutcome">Your route: company profile → catalogue → buyer enquiries → inspection and shipment coordination.</p></div><div class="roleRowAction"><a class="roleAccess" href="/signin.html?role=supplier">Supplier workspace <i data-lucide="arrow-up-right"></i></a></div></article><article class="roleRow"><div class="roleRowIcon" aria-hidden="true"><i data-lucide="landmark"></i></div><div class="roleRowTitle"><span>03 / FINANCIAL PARTNERS</span><h3>Banks & Financial Institutions</h3></div><div class="roleRowCopy"><p>Participate in eligible trade-finance and settlement workflows, review relevant transaction context and coordinate with trade participants. Institutional access is role-based and subject to verification; VTG does not imply automatic financing or payment approval.</p><p class="roleOutcome">Your route: institutional verification → relevant trade context → finance and settlement coordination.</p></div><div class="roleRowAction"><a class="roleAccess" href="/signin.html?role=bank">Financial institution access <i data-lucide="arrow-up-right"></i></a></div></article></div></div></section>
-<section class="market" id="market"><div class="section"><div class="sectionHead"><div><span class="eyebrow">Marketplace intelligence</span><h2>A living trade marketplace.</h2></div><p>Discover supplier storefronts and product categories, then move from browsing to a direct trade enquiry. You can also search the catalogue using a product photo.</p></div><div class="trust"><span>Verified profiles</span><span>Buyer enquiries</span><span>Supplier storefronts</span><span>Bank participation</span><span>Trade locations</span><span>Transparent transaction design</span></div><div style="margin-top:22px;display:flex;gap:10px;flex-wrap:wrap"><a class="primary" href="/marketplace.html" style="display:inline-flex;align-items:center;gap:7px">Explore Marketplace <i data-lucide="arrow-up-right"></i></a><a class="outline" href="/marketplace.html" style="display:inline-flex;align-items:center;gap:7px">Browse supplier catalogue <i data-lucide="search"></i></a><a class="outline" href="/marketplace.html#visual-search" style="display:inline-flex;align-items:center;gap:7px"><i data-lucide="scan-search"></i> Search by photo</a></div></div></section>
+<section class="hero vtgEditorialHero" id="top" aria-labelledby="vtgHeroTitle">
+  <div class="vtgHeroBackdrop" aria-hidden="true"></div>
+  <div class="heroIn vtgHeroLayout">
+    <div class="vtgHeroCopy">
+      <span class="vtgEyebrow"><span class="vtgEyebrowDot"></span> AFRICA · CHINA · THE WORLD</span>
+      <h1 id="vtgHeroTitle">Make global trade feel <em>closer.</em></h1>
+      <p>Discover products, connect with suppliers and explore the services that help move trade across borders—all through one connected starting point.</p>
+      <div class="vtgHeroActions">
+        <a class="vtgButton vtgButtonPrimary" href="/marketplace.html">Explore marketplace <i data-lucide="arrow-up-right"></i></a>
+        <a class="vtgButton vtgButtonSecondary" href="/signin.html">Enter VTG <i data-lucide="move-up-right"></i></a>
+      </div>
+      <div class="vtgHeroProof">
+        <span><i data-lucide="compass"></i> Discover</span>
+        <span><i data-lucide="shield-check"></i> Evaluate</span>
+        <span><i data-lucide="route"></i> Coordinate</span>
+      </div>
+    </div>
+    <div class="vtgHeroVisual" aria-label="Cargo ship and global trade photography">
+      <img class="vtgHeroImage" src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1800&q=90" alt="Cargo ship carrying shipping containers across the sea" fetchpriority="high">
+      <div class="vtgHeroImageTint"></div>
+      <div class="vtgHeroImageTag"><span class="vtgLiveDot"></span><span>Trade connects us</span><i data-lucide="globe-2"></i></div>
+      <div class="vtgRouteCard">
+        <div class="vtgRouteTop"><span class="vtgRouteIcon"><i data-lucide="ship"></i></span><span><small>GLOBAL TRADE CORRIDOR</small><strong>Africa ↔ Asia</strong></span><i class="vtgRouteArrow" data-lucide="arrow-up-right"></i></div>
+        <div class="vtgRouteLine"><span></span><span></span><span></span></div>
+        <div class="vtgRoutePlaces"><span><b>Lagos</b><small>Buyer markets</small></span><span><b>Guangzhou</b><small>Supplier markets</small></span></div>
+      </div>
+      <div class="vtgHeroStamp"><span>VTG</span><small>TRADE, CONNECTED</small></div>
+    </div>
+  </div>
+  <div class="vtgHeroBottom"><span>Built for the journey from discovery to delivery</span><span class="vtgHeroBottomRule"></span><span>One connected trade ecosystem</span></div>
+</section>
 
+<section class="market vtgEditorialMarket" id="market" aria-labelledby="vtgMarketTitle">
+  <div class="section vtgMarketSection">
+    <div class="vtgMarketHeading">
+      <div><span class="vtgEyebrow vtgEyebrowDark">DISCOVER WHAT MOVES BUSINESS</span><h2 id="vtgMarketTitle">Find your next <em>opportunity.</em></h2></div>
+      <p>Explore the product categories that connect buyers, suppliers and trade services across markets.</p>
+    </div>
+    <div class="vtgMarketRule"><span>THE VTG MARKETPLACE</span><span>36 CATEGORIES <i data-lucide="arrow-down-right"></i></span></div>
+  </div>
+</section>
 
-<section class="section" id="contact"><div class="sectionHead"><div><span class="eyebrow">VTG support</span><h2>Trade should feel connected.</h2></div><p>Company enquiries, complaints, supplier conversations and financial coordination belong inside the same professional environment.</p></div><div class="cards"><div class="card"><div class="ico"><i data-lucide="message-circle-more"></i></div><h3>Live enquiries</h3><p>Start a conversation with the company, supplier or financial partner connected to a transaction.</p><a class="outline" href="/marketplace.html" style="display:inline-block;margin-top:8px">Open marketplace</a></div><div class="card"><div class="ico"><i data-lucide="life-buoy"></i></div><h3>Deal support</h3><p>Give users a clear path to request help, report issues and contact VTG.</p><a class="outline" href="mailto:vintageafricatrade@gmail.com?subject=VTG%20Deal%20Support" style="display:inline-block;margin-top:8px">Contact VTG support</a></div><div class="card"><div class="ico"><i data-lucide="globe-2"></i></div><h3>Trade Atlas</h3><p>Explore trade hubs, ports and location context through the existing VTG globe and atlas experience.</p><a class="outline serviceAction" href="/trade-atlas.html">Open Trade Atlas <i data-lucide="arrow-up-right"></i></a></div><div class="card"><div class="ico"><i data-lucide="ship"></i></div><h3>Logistics &amp; Shipping</h3><p>Explore shipping coordination, route information and support for moving goods across borders.</p><a class="outline serviceAction" href="/logistics-shipping.html">Explore logistics <i data-lucide="arrow-up-right"></i></a></div><div class="card"><div class="ico"><i data-lucide="factory"></i></div><h3>Business Sourcing</h3><p>Find supplier and sourcing support for your cross-border trade requirements.</p><a class="outline serviceAction" href="/sourcing-suppliers.html">Explore sourcing <i data-lucide="arrow-up-right"></i></a></div><div class="card"><div class="ico"><i data-lucide="landmark"></i></div><h3>Finance &amp; Payments</h3><p>Review payment and trade-finance pathways for eligible transactions.</p><a class="outline serviceAction" href="/finance-payments.html">Explore finance <i data-lucide="arrow-up-right"></i></a></div><div class="card"><div class="ico"><i data-lucide="scan-search"></i></div><h3>VTG Product Verification</h3><p>Optionally have a verified VTG Agent inspect goods in China or South Korea before shipment. VTG handles the agent payment.</p><a class="primary" href="/product-verification.html" style="display:inline-block;margin-top:8px">Request verification</a></div></div></section>
+<section class="vtgEditorialShowcase" aria-labelledby="vtgShowcaseTitle">
+  <div class="vtgShowcaseIntro">
+    <span class="vtgEyebrow vtgEyebrowDark">A BETTER WAY TO BEGIN</span>
+    <h2 id="vtgShowcaseTitle">From first search to <em>next steps.</em></h2>
+    <p>Start with what you need. Find the right direction. Move forward with more context.</p>
+  </div>
+  <div class="vtgShowcaseGrid">
+    <a class="vtgShowcaseCard vtgShowcaseWide" href="/marketplace.html">
+      <img loading="lazy" src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1400&q=88" alt="Organized shipping containers at a logistics terminal">
+      <span class="vtgShowcaseOverlay"></span><span class="vtgShowcaseContent"><small>01 / PRODUCT DISCOVERY</small><strong>Start with the right product.</strong><span>Explore categories and supplier catalogues <i data-lucide="arrow-up-right"></i></span></span>
+    </a>
+    <a class="vtgShowcaseCard" href="/trade-atlas.html">
+      <img loading="lazy" src="https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?auto=format&fit=crop&w=1000&q=85" alt="Earth viewed from space">
+      <span class="vtgShowcaseOverlay"></span><span class="vtgShowcaseContent"><small>02 / TRADE LANDSCAPE</small><strong>See the bigger picture.</strong><span>Explore Trade Atlas <i data-lucide="arrow-up-right"></i></span></span>
+    </a>
+    <a class="vtgShowcaseCard" href="/product-verification.html">
+      <img loading="lazy" src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1000&q=85" alt="Industrial quality inspection and equipment">
+      <span class="vtgShowcaseOverlay"></span><span class="vtgShowcaseContent"><small>03 / TRADE CONFIDENCE</small><strong>Make informed decisions.</strong><span>Explore verification <i data-lucide="arrow-up-right"></i></span></span>
+    </a>
+  </div>
+</section>
+
+<section class="vtgEditorialCta" aria-labelledby="vtgCtaTitle">
+  <div class="vtgCtaGlow" aria-hidden="true"></div>
+  <div class="vtgCtaCopy"><span class="vtgEyebrow">YOUR NEXT TRADE STARTS HERE</span><h2 id="vtgCtaTitle">Ready to move <em>business forward?</em></h2><p>Explore the marketplace or enter your VTG workspace to continue your journey.</p></div>
+  <div class="vtgCtaActions"><a class="vtgButton vtgButtonLight" href="/marketplace.html">Explore marketplace <i data-lucide="arrow-up-right"></i></a><a class="vtgCtaTextLink" href="/signin.html">Enter VTG <i data-lucide="arrow-up-right"></i></a></div>
+</section>
 <footer class="footer vtgCompactFooter" id="vtgFooter"><div class="footerIn vtgFooterTop"><div class="vtgFooterBrand"><a href="/frontend-v3.html" aria-label="Vintage Trade Global homepage"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><p>Connecting Africa, China and the world through intelligent trade.</p></div><div class="vtgFooterLinks">
 <div><h4>Explore</h4><a data-navkey="marketplace" href="/marketplace.html">Marketplace</a><a data-navkey="atlas" href="/trade-atlas.html" id="footAtlas">Trade Atlas</a><a data-navkey="intelligence" href="/market-intelligence.html" id="footIntel">Market Intelligence</a><a data-navkey="ai" href="/vtg-ai.html" id="footAi">VTG AI</a><a data-navkey="trade-feed" href="/trade-feed.html" id="footTradeFeed">Trade Feed</a><a data-navkey="africa-markets" href="/africa-markets.html" id="footAfricaMarkets">Africa Markets</a></div>
 <div><h4>Trade</h4><a data-navkey="verification" href="/product-verification.html">Product Verification</a><a data-navkey="logistics" href="/logistics-shipping.html">Logistics &amp; Shipping</a></div>
