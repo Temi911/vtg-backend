@@ -224,7 +224,7 @@
     const hero=document.querySelector('.hero');
     const heroIn=document.querySelector('.heroIn');
     const market=document.querySelector('#market');
-    if(!landing || !hero || !heroIn || !market || landing.dataset.vtgMinimalLanding) return;
+    if(!landing || !hero || !heroIn || !market || landing.dataset.vtgMinimalLanding || landing.dataset.vtgRedesign === "1") return;
     landing.dataset.vtgMinimalLanding='1';
 
     const css=document.createElement('style');    css.id='vtgMinimalLandingStyles';
