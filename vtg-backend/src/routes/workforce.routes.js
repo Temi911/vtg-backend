@@ -59,6 +59,11 @@ router.patch('/tasks/:id', asyncHandler(async (req,res) => {
   res.json({task:r.rows[0]});
 }));
 
+router.get('/members', asyncHandler(async (req,res) => {
+  const r=await query(`SELECT id,full_name,email,role FROM users WHERE is_active=true AND role::text = ANY($1::text[]) ORDER BY full_name LIMIT 500`,[Array.from(WORKFORCE)]);
+  res.json({members:r.rows});
+}));
+
 router.get('/team', asyncHandler(async (req,res) => {
   if(!isManager(req.user)) throw new AppError('Manager access is required to view workforce members',403,'FORBIDDEN');
   const r=await query(`SELECT id,full_name,email,role FROM users WHERE is_active=true AND role::text = ANY($1::text[]) ORDER BY full_name LIMIT 500`,[Array.from(WORKFORCE)]);
