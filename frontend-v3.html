@@ -999,3 +999,27 @@ html[data-theme="dark"] #landing .vtgButtonSecondary{background:rgba(23,25,27,.3
 }
 </style>
 </body></html>
+
+/* Hard boundary: the cargo-ship photograph belongs to the opening hero only.
+   Give the marketplace section its own opaque surface so no hero imagery can show through. */
+#landing > .vtgEditorialHero,
+#landing section.vtgEditorialHero{
+  position:relative!important;
+  isolation:isolate!important;
+  overflow:hidden!important;
+  background-clip:padding-box!important;
+}
+#landing > .vtgEditorialMarket,
+#landing section.vtgEditorialMarket,
+#landing .vtgEditorialMarket .vtgMarketSection{
+  position:relative!important;
+  z-index:1!important;
+  background-color:#F3EFE6!important;
+  background-image:none!important;
+}
+html[data-theme="dark"] #landing > .vtgEditorialMarket,
+html[data-theme="dark"] #landing section.vtgEditorialMarket,
+html[data-theme="dark"] #landing .vtgEditorialMarket .vtgMarketSection{
+  background-color:#17191B!important;
+  background-image:none!important;
+}
