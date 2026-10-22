@@ -122,6 +122,9 @@ window.addEventListener('storage',e=>{if(e.key==='vtg-theme-preference'||e.key==
  };
  function showView(key){const v=views[key]||views.overview,g=workflowGuides[key]||workflowGuides.overview;$('pageTitle').textContent=v[0];$('crumbCurrent').textContent=v[0];$('eyebrow').textContent=v[1];$('pageDesc').textContent=v[2];$('panelTitle').textContent=v[3];$('panelSubtitle').textContent=v[4];document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===key));$('taskSearch').value='';$('taskFilter').value='all';$('taskSearch').disabled=true;$('taskFilter').disabled=true;$('taskSearch').placeholder='Search available after API connection';$('taskList').innerHTML='<div class="empty"><strong>'+g[0]+' · live records not connected</strong><p>'+g[2]+'</p><p><b>Required record fields:</b> '+g[1]+'</p><p>Current state: preview only. No official record has been created or changed.</p></div>'}
  document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+ // Initialise the default overview through the same guarded path as every other view.
+ // This keeps task search/status filters disabled until the authenticated live task API exists.
+ showView('overview');
  document.querySelectorAll('[data-link]').forEach(b=>b.addEventListener('click',()=>location.href=b.dataset.link));
  $('taskSearch').addEventListener('input',()=>{if($('taskSearch').value.trim())toast('Search will work when the live task service is connected.')});
  $('taskFilter').addEventListener('change',()=>{if($('taskFilter').value!=='all')toast('Task filters will work when the live task service is connected.')});
