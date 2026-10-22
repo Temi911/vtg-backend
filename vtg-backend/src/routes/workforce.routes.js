@@ -25,7 +25,7 @@ router.get('/tasks', asyncHandler(async (req,res) => {
   const status=bounded(req.query.status,30);
   if(status && status!=='all') { if(!STATUSES.has(status)) throw new AppError('Invalid task status',400,'INVALID_STATUS'); values.push(status); where.push(`t.status=$${values.length}`); }
   const search=bounded(req.query.q,120);
-  if(search) { values.push('%'+search.replace(/[\\%_]/g,'\\$&')+'%'); where.push(`(t.title ILIKE $${values.length} ESCAPE '\\\\' OR COALESCE(t.description,'') ILIKE $${values.length} ESCAPE '\\\\' OR COALESCE(t.reference,'') ILIKE $${values.length} ESCAPE '\\\\')`); }
+  if(search) { values.push('%'+search+'%'); where.push(`(t.title ILIKE $${values.length} OR COALESCE(t.description,'') ILIKE $${values.length} OR COALESCE(t.reference,'') ILIKE $${values.length})`); }
   const r=await query(`SELECT t.id,t.title,t.description,t.reference,t.status,t.priority,t.due_at,t.assigned_to,t.assigned_by,t.created_by,t.created_at,t.updated_at,
     a.full_name AS assignee_name,a.email AS assignee_email,c.full_name AS creator_name
     FROM workforce_tasks t JOIN users a ON a.id=t.assigned_to JOIN users c ON c.id=t.created_by
