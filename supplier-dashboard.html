@@ -115,8 +115,8 @@ html[data-theme="light"] .supplier-nav .groupBtn:hover,html[data-theme="light"] 
   <div class="workspace-tag">SUPPLIER WORKSPACE · PREVIEW</div>
   <nav class="supplier-nav" aria-label="Supplier tools">
     <section class="nav-group">
-      <button class="groupBtn" type="button" data-group="workspace" aria-expanded="true"><span class="nav-icon">▦</span><span>Workspace</span><span class="chev">⌄</span></button>
-      <div class="items" data-items="workspace">
+      <button class="groupBtn" type="button" data-group="workspace" aria-expanded="false"><span class="nav-icon">▦</span><span>Workspace</span><span class="chev">⌄</span></button>
+      <div class="items closed" data-items="workspace">
         <button class="nav-btn active" type="button" data-page="overview"><span class="nav-icon">▦</span>Command centre</button>
         <button class="nav-btn" type="button" data-page="tasks"><span class="nav-icon">✓</span>Tasks & notifications <span class="nav-count" id="taskCount">3</span></button>
       </div>
@@ -324,16 +324,20 @@ function applyLanguage(lang){
   const dict=languageDict[lang]||{};
   document.documentElement.lang=lang==='zh'?'zh-CN':lang;
   document.documentElement.dataset.language=lang;
-  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
-  let node;
-  while((node=walker.nextNode())){
-    if(!originalTextNodes.has(node))originalTextNodes.set(node,node.nodeValue);
-    const original=originalTextNodes.get(node);
-    let translated=original;
-    Object.keys(dict).sort((a,b)=>b.length-a.length).forEach(source=>{
-      if(translated.includes(source))translated=translated.split(source).join(dict[source]);
-    });
-    if(node.nodeValue!==translated)node.nodeValue=translated;
+  // When Google Translate is active, let it own all page text. Rewriting text nodes
+  // here can undo translated content whenever the dashboard changes views or renders records.
+  if(!(lang!=='en'&&document.querySelector('.goog-te-combo'))){
+    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+    let node;
+    while((node=walker.nextNode())){
+      if(!originalTextNodes.has(node))originalTextNodes.set(node,node.nodeValue);
+      const original=originalTextNodes.get(node);
+      let translated=original;
+      Object.keys(dict).sort((a,b)=>b.length-a.length).forEach(source=>{
+        if(translated.includes(source))translated=translated.split(source).join(dict[source]);
+      });
+      if(node.nodeValue!==translated)node.nodeValue=translated;
+    }
   }
   const titleMap={'en':'Supplier Trade OS · VTG','zh':'供应商贸易工作台 · VTG','ko':'공급업체 무역 작업 공간 · VTG','fr':'Espace commercial fournisseur · VTG'};
   document.title=titleMap[lang]||titleMap.en;
