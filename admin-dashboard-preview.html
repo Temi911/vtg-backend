@@ -53,6 +53,26 @@ html[data-theme="light"] .vtg-header-brand .logo-light{display:none!important}
 @media(max-width:760px){.vtg-header-brand{width:116px!important;min-width:116px!important;margin-right:8px!important}.vtg-header-brand img{width:116px!important;min-width:116px!important;max-width:116px!important;max-height:34px!important}}
 </style><link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
 <link rel="stylesheet" href="/vtg-dashboard-typography.css?v=20261023-premium-pass-1">
+<style>
+#section-trust-risk .trust-risk-layout{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:16px;align-items:start}
+#section-trust-risk .trust-risk-form{display:grid;gap:12px}
+#section-trust-risk .trust-risk-field,#section-trust-risk .trust-risk-filters label{display:grid;gap:6px;color:var(--muted);font-size:12px;font-weight:700}
+#section-trust-risk .trust-risk-field input,#section-trust-risk .trust-risk-field select,#section-trust-risk .trust-risk-field textarea,#section-trust-risk .trust-risk-filters select{width:100%;min-height:38px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);padding:9px 10px;font:inherit}
+#section-trust-risk .trust-risk-field textarea{resize:vertical;min-height:100px}
+#section-trust-risk .trust-risk-filters{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 14px}
+#section-trust-risk .trust-risk-list{display:grid;gap:10px}
+#section-trust-risk .trust-risk-item{border:1px solid var(--line);border-radius:12px;padding:13px;background:var(--surface);color:var(--ink)}
+#section-trust-risk .trust-risk-top{display:flex;justify-content:space-between;align-items:start;gap:10px}
+#section-trust-risk .trust-risk-item h3{margin:5px 0;font-size:14px}
+#section-trust-risk .trust-risk-item p{white-space:pre-wrap;overflow-wrap:anywhere}
+#section-trust-risk .trust-risk-severity{display:inline-flex;border-radius:999px;padding:4px 8px;background:var(--soft);color:var(--red);font-size:11px;font-weight:800;text-transform:uppercase}
+#section-trust-risk .trust-risk-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+#section-trust-risk .trust-risk-actions button{border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);padding:7px 9px;cursor:pointer}
+#section-trust-risk .trust-risk-resolution{margin-top:10px;padding:10px;border-radius:9px;background:var(--soft)}
+#section-trust-risk .trust-risk-message{margin:0 0 14px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+#section-trust-risk .trust-risk-message[data-kind="error"]{border-color:#c24141;color:var(--red)}
+@media(max-width:850px){#section-trust-risk .trust-risk-layout{grid-template-columns:1fr}}
+</style>
 </head>
 <body id="vtg-dashboard-top">
 <div class="app">
@@ -63,6 +83,7 @@ html[data-theme="light"] .vtg-header-brand .logo-light{display:none!important}
 <button data-section="workforce"><span class="ico">♙</span>Workforce</button>
 <button data-section="trade"><span class="ico">⇄</span>Trade operations</button>
 <button data-section="verification"><span class="ico">✓</span>Verification</button>
+<button data-section="trust-risk"><span class="ico">⚑</span>Trust & compliance</button>
 <button data-section="finance"><span class="ico">₦</span>Finance oversight</button>
 <button data-section="reports"><span class="ico">▤</span>Reports & audit</button>
 <button data-section="settings"><span class="ico">⚙</span>Platform settings</button>
@@ -122,6 +143,25 @@ html[data-theme="light"] .vtg-header-brand .logo-light{display:none!important}
 <div class="panel quickCard" style="margin-top:15px"><h3>Administrator review boundary</h3><p>Admins should review and escalate blockers without silently altering buyer, supplier, bank or customs records. Material changes require authorised permissions and server-side audit logging.</p></div>
 </section>
 <section class="section" id="section-verification"><div class="heading"><div><div class="eyebrow">Trust & due diligence</div><h1>Verification queue</h1><p class="sub">Sample queue for supplier, business and document review.</p></div></div><div class="panel"><div class="panelHead"><div><h2>Items awaiting review</h2><p>Demonstration records only</p></div><span class="pill warn">3 examples</span></div><div class="tableWrap"><table><thead><tr><th>Reference</th><th>Review type</th><th>Submitted by</th><th>Queue state</th><th>Preview action</th></tr></thead><tbody><tr><td>VRF-2041</td><td>Supplier registration</td><td>Supplier workspace</td><td><span class="status review">Needs review</span></td><td><button class="btn" type="button" data-admin-review="VRF-2041" data-review-type="Supplier registration" data-review-source="Supplier workspace" data-review-state="Needs review">Inspect</button></td></tr><tr><td>VRF-2037</td><td>Business address evidence</td><td>Trade network</td><td><span class="status">Awaiting document</span></td><td><button class="btn" type="button" data-admin-review="VRF-2037" data-review-type="Business address evidence" data-review-source="Trade network" data-review-state="Awaiting document">Inspect</button></td></tr><tr><td>VRF-2032</td><td>Quality certificate</td><td>Supplier workspace</td><td><span class="status review">Second review</span></td><td><button class="btn" type="button" data-admin-review="VRF-2032" data-review-type="Quality certificate" data-review-source="Supplier workspace" data-review-state="Second review">Inspect</button></td></tr></tbody></table></div></div></section>
+<section class="section" id="section-trust-risk">
+<div class="heading"><div><div class="eyebrow">Trust &amp; due diligence</div><h1>Trust &amp; Compliance Review</h1><p class="sub">Record source-backed internal risk flags and preserve reviewer decisions. This is not a legal determination.</p></div></div>
+<div id="trust-risk-message" class="trust-risk-message" role="status" aria-live="polite" hidden></div>
+<div class="trust-risk-layout">
+<section class="panel"><div class="panelHead"><div><h2>Record a risk flag</h2><p>Every flag needs an account, source and rationale.</p></div></div>
+<form id="trust-risk-form" class="trust-risk-form">
+<label class="trust-risk-field" for="trust-risk-subject">Account<select id="trust-risk-subject" required><option value="">Choose an account…</option></select></label>
+<label class="trust-risk-field" for="trust-risk-category">Category<input id="trust-risk-category" maxlength="120" required placeholder="e.g. Documentation discrepancy"></label>
+<label class="trust-risk-field" for="trust-risk-severity">Severity<select id="trust-risk-severity" required><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option></select></label>
+<label class="trust-risk-field" for="trust-risk-source">Evidence source<select id="trust-risk-source" required><option value="internal_review">Internal review</option><option value="supplier_evidence">Supplier evidence</option><option value="buyer_report">Buyer report</option><option value="shipment_issue">Shipment issue</option><option value="payment_issue">Payment issue</option><option value="official_notice">Official notice</option></select></label>
+<label class="trust-risk-field" for="trust-risk-source-reference">Source reference (optional)<input id="trust-risk-source-reference" maxlength="240" placeholder="Document, case or notice reference"></label>
+<label class="trust-risk-field" for="trust-risk-rationale">Rationale<textarea id="trust-risk-rationale" rows="4" minlength="10" maxlength="2000" required placeholder="Describe the evidence and why it needs review."></textarea></label>
+<button class="btn primary" type="submit">Record risk flag</button>
+</form></section>
+<section class="panel"><div class="panelHead"><div><h2>Risk flags</h2><p>Live records are fetched from the protected admin API.</p></div><button class="btn" id="trust-risk-refresh" type="button">Refresh</button></div>
+<div class="trust-risk-filters"><label for="trust-risk-status">Status<select id="trust-risk-status"><option value="">All statuses</option><option value="open">Open</option><option value="reviewing">Reviewing</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option></select></label><label for="trust-risk-severity-filter">Severity<select id="trust-risk-severity-filter"><option value="">All severities</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option></select></label></div>
+<div id="trust-risk-list" class="trust-risk-list" aria-live="polite">Loading trust-risk records…</div>
+</section></div>
+</section>
 <section class="section" id="section-finance">
 <div class="heading"><div><div class="eyebrow">Controlled financial oversight</div><h1>Finance oversight</h1><p class="sub">Reconciliation visibility and commission review without exposing unnecessary financial data.</p></div><button class="btn" type="button" id="exportFinanceQueues">Export sample queues</button></div>
 <div class="previewNotice"><div class="noticeIcon">ⓘ</div><div><strong>Financial actions are disabled in this preview.</strong><p>No transfers, foreign exchange, crypto transactions, letter-of-credit instructions, payout approvals or commission releases are performed here.</p></div></div>
@@ -265,4 +305,5 @@ const initialLanguage=localStorage.getItem('vtg-language')||localStorage.getItem
  $('exportAdminSettings')?.addEventListener('click',()=>download('vtg-admin-settings-preview.json',{scope:'local preview only; no live settings changed',exportedAt:new Date().toISOString(),appearance:{theme:$('skinSelect')?.value||'executive',language:$('languageSelect')?.value||'en'},reviewChecklist:readChecks()}));
 })();
 </script>
+<script src="/admin-trust-risk.js?v=20261023-trust-risk-1" defer></script>
 </body></html>
