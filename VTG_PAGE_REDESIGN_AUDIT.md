@@ -24,7 +24,9 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 - [ ] `intelligence-centre.html` — specialist intelligence workspace and data readability.
 - [~] `vtg-ai.html` — public AI preview, clear preview-only boundaries and CTA.
 - [ ] `product-verification.html`, `verification.html`, `buyer-verifications.html` — evidence, status, report and request flows.
-- [~] `logistics-shipping.html`, `finance-payments.html`, `trade-guide.html` — feature-specific layouts and information hierarchy.
+- [~] `logistics-shipping.html`, `finance-payments.html` — feature-specific layouts and information hierarchy.
+- [ ] `trade-guide.html` — trade education content and information hierarchy.
+- [~] `africa-markets.html` — market coverage cards, availability labels and responsive layout.
 
 ### Workspaces and operations
 - [ ] `buyer-dashboard.html` — workspace hierarchy, theme contrast, live feature states and navigation.
