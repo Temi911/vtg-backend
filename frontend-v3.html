@@ -1241,3 +1241,34 @@ html[data-theme="dark"] #landing #vtgProductCarousel .vtgInfo{
 
 </style>
 </body></html>
+
+
+/* Fix the landing-page “Ready to move” CTA contrast in light mode. */
+html:not([data-theme="dark"]) #landing .vtgEditorialCta,
+html[data-theme="light"] #landing .vtgEditorialCta{
+  background:linear-gradient(118deg,#702A30 0%,#3B2023 100%)!important;
+  color:#F3EFE6!important;
+}
+html:not([data-theme="dark"]) #landing .vtgEditorialCta h2,
+html[data-theme="light"] #landing .vtgEditorialCta h2{
+  color:#F3EFE6!important;
+  -webkit-text-fill-color:#F3EFE6!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+html:not([data-theme="dark"]) #landing .vtgEditorialCta h2 em,
+html[data-theme="light"] #landing .vtgEditorialCta h2 em{
+  color:#D8B88A!important;
+  -webkit-text-fill-color:#D8B88A!important;
+  opacity:1!important;
+}
+html:not([data-theme="dark"]) #landing .vtgEditorialCta .vtgEyebrow,
+html[data-theme="light"] #landing .vtgEditorialCta .vtgEyebrow{
+  color:#E8CDA5!important;
+  -webkit-text-fill-color:#E8CDA5!important;
+}
+html:not([data-theme="dark"]) #landing .vtgEditorialCta p,
+html[data-theme="light"] #landing .vtgEditorialCta p{
+  color:#F3EFE6!important;
+  -webkit-text-fill-color:#F3EFE6!important;
+}
