@@ -14,6 +14,54 @@ html[data-theme=dark]{color-scheme:dark;--bg:#0d1117;--panel:#141a21;--ink:#f2f5
 </style>
 <script>(function(){try{document.documentElement.dataset.theme=(new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark'}catch(e){}})();</script>
 <link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<style id="vtg-account-help-premium-refresh">
+/* Account help page refresh; preserve role-based support guidance and action destinations. */
+:root{--bg:#f7f5f0;--panel:#fffefa;--line:#ddd6cb;--text:#242321;--muted:#625d56;--red:#702a30}
+body{background:#f7f5f0;color:#242321}
+.topline{background:#702a30}
+.nav{background:rgba(247,245,240,.95);border-color:#ddd6cb;backdrop-filter:blur(18px)}
+.brand{color:#202326}
+.navActions{gap:8px}
+.theme{border:1px solid #ddd6cb;border-radius:9px;background:#fffefa;color:#393530}
+.hero{padding:clamp(30px,4vw,52px) 0}
+.kicker{color:#702a30;letter-spacing:.15em}
+.hero h1{font-size:clamp(34px,4.5vw,54px);line-height:1.06;letter-spacing:-.045em;color:#202326;text-wrap:balance}
+.hero p{max-width:750px;color:#625d56;line-height:1.85}
+.layout{gap:18px;align-items:start}
+.panel{border:1px solid #e0d8ce;border-radius:15px;background:#fffefa;box-shadow:0 9px 26px rgba(30,25,22,.04);padding:clamp(17px,2.5vw,24px)}
+.panel h2,.panel h3{color:#242321}
+.muted{color:#625d56;line-height:1.75}
+.roles{gap:9px}
+.role{border:1px solid #ded5cb;border-radius:11px;background:#fffefa;color:#393530;transition:background .18s,border-color .18s,color .18s}
+.role:hover,.role.active{background:#f2e9e5;border-color:#c7aaa3;color:#702a30}
+.ico{background:#f2e9e5;color:#702a30;border-radius:9px}
+.action,.actions .btn{min-height:41px;border:1px solid #d7ccc0;border-radius:9px;background:#fffefa;color:#302a26}
+.action.primary,.actions .primary{background:#702a30;border-color:#702a30;color:#fff}
+.action.primary:hover,.actions .primary:hover{background:#552126}
+.sym{color:#702a30}
+.detail{border:1px solid #e0d8ce;border-radius:11px;background:#faf6f0;color:#393530;padding:14px}
+.field label{color:#393530;font-weight:700}
+.field input,.field select,.field textarea{min-height:42px;border:1px solid #d9d0c6;border-radius:9px;background:#fffefa;color:#242321}
+.message,.note,.adminNote{border:1px solid #e2d5c9;border-radius:11px;background:#faf4ec;color:#625d56;line-height:1.75;padding:13px}
+.message.ok{background:#e8f3ec;border-color:#b7d9c4;color:#235c40}
+.error{background:#f8e9e8;border-color:#e3b9b5;color:#8c2e2a}
+.role-locked{border:1px solid #e0d8ce;border-radius:10px;background:#f2eee7;color:#625d56;padding:12px}
+html[data-theme="dark"] body{background:#17191b;color:#f3efe6}
+html[data-theme="dark"] .nav{background:rgba(23,25,27,.96);border-color:#3b3d40}
+html[data-theme="dark"] .brand,html[data-theme="dark"] .hero h1,html[data-theme="dark"] .panel h2,html[data-theme="dark"] .panel h3,html[data-theme="dark"] .field label{color:#f3efe6}
+html[data-theme="dark"] .hero p,html[data-theme="dark"] .muted{color:#c5bfb5}
+html[data-theme="dark"] .panel{background:#202326;border-color:#3b3d40}
+html[data-theme="dark"] .role,html[data-theme="dark"] .action:not(.primary),html[data-theme="dark"] .actions .btn:not(.primary),html[data-theme="dark"] .theme{background:#292b2d;border-color:#45484b;color:#f3efe6}
+html[data-theme="dark"] .role:hover,html[data-theme="dark"] .role.active,html[data-theme="dark"] .ico{background:#43282a;border-color:#65464a;color:#f2c6c2}
+html[data-theme="dark"] .detail,html[data-theme="dark"] .role-locked{background:#292b2d;border-color:#45484b;color:#d4ccc2}
+html[data-theme="dark"] .field input,html[data-theme="dark"] .field select,html[data-theme="dark"] .field textarea{background:#17191b;border-color:#45484b;color:#f3efe6}
+html[data-theme="dark"] .message,html[data-theme="dark"] .note,html[data-theme="dark"] .adminNote{background:#292522;border-color:#45403c;color:#d4ccc2}
+html[data-theme="dark"] .message.ok{background:#1e3a30;border-color:#315c49;color:#b4e4c8}
+html[data-theme="dark"] .error{background:#432627;border-color:#75413e;color:#f2c6c2}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #9b5c60;outline-offset:3px}
+@media(max-width:760px){.hero{padding-top:25px}.layout{gap:12px}.panel{padding:15px}}
+@media(prefers-reduced-motion:reduce){.role{transition:none}}
+</style>
 </head>
 <body><main class="wrap">
 
