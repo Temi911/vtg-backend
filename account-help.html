@@ -15,8 +15,8 @@ html[data-theme=dark]{color-scheme:dark;--bg:#0d1117;--panel:#141a21;--ink:#f2f5
 <script>(function(){try{document.documentElement.dataset.theme=(new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark'}catch(e){}})();</script>
 <link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
 </head>
-<body><div class="topline"></div><main class="wrap">
-<header class="nav"><a class="brand" href="/frontend-v3.html"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"><span>ACCOUNT SUPPORT</span></a><div class="navActions"><button class="theme" id="themeToggle" type="button">Switch theme</button><a href="/signin.html">← Sign in</a></div></header>
+<body><main class="wrap">
+
 <section class="hero"><div class="kicker">VTG Account Help</div><h1 id="heroTitle">Let's get you back to business.</h1><p id="heroDesc">Choose your account type so we can show the right guidance for your role. Your account details stay protected throughout recovery.</p></section>
 <div class="layout"><aside class="panel"><h2>Which account do you use?</h2><p class="muted">Help is tailored to your account and access requirements.</p><div class="roles" id="roles">
 <button class="role active" type="button" data-role="buyer"><span class="ico">B</span><span><strong>Buyer / Importer</strong><small>Africa-based buyers</small></span></button>
@@ -34,7 +34,7 @@ html[data-theme=dark]{color-scheme:dark;--bg:#0d1117;--panel:#141a21;--ink:#f2f5
 <section class="detail" id="detail" aria-live="polite"><h3 id="detailTitle"></h3><p class="muted" id="detailDesc"></p><form id="detailForm" novalidate><div id="fields"></div><button class="btn" id="submitBtn" type="submit">Continue</button></form><div class="message" id="message" role="status"></div></section>
 <p class="note" id="secureNote">For your safety, VTG never asks you to send your password or verification code to support.</p>
 </section></div>
-<footer class="footer">Need to return? <a href="/signin.html">Back to Sign In</a> · <a href="/frontend-v3.html">VTG Home</a></footer>
+
 </main>
 <script>
 (function(){
