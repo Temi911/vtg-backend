@@ -36,8 +36,8 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 - [~] `admin-dashboard-preview.html`, `agent-dashboard.html`, `agent-network-dashboard.html`, `workforce-dashboard.html` — shared dashboard typography and control polish applied; responsive and role-flow testing pending.
 - [ ] `inspection-admin.html` — inspection operations and payment-state review.
 - [~] `vtg-ai-dashboard.html` — shared dashboard typography and control polish applied; chat workflow testing pending.
-- [ ] `account-trade-feed.html` — authenticated feed interactions and posting.
-- [ ] `inspection-request.html`, `inspection-payment-callback.html` — inspection request/payment states.
+- [~] `account-trade-feed.html` — authenticated feed styling pass applied; posting/reaction tests pending.
+- [~] `inspection-request.html`, `inspection-payment-callback.html` — styling pass applied; request/payment end-to-end tests pending.
 
 ### Authentication, onboarding and account
 - [~] `signin.html` — styling pass applied; remaining authentication pages still queued.
@@ -54,7 +54,7 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 - [~] `privacy.html`, `terms.html`, `code-of-conduct.html` — long-form typography and theme contrast pass applied; content review not included.
 
 ### Minimal/utility pages
-- [ ] `network.html`, `agent.html`.
+- [~] `network.html`, `agent.html` — navigation/application styling pass applied; route and submission testing pending.
 
 ## Status legend
 - `[ ]` Not yet redesigned in this pass.
@@ -65,7 +65,7 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 - Shared typography/theme utilities and public navigation/theme handling already exist and should be reused rather than replaced with a second design system.
 - A shared dashboard typography/control refinement is committed in `vtg-dashboard-typography.css`; eight dashboard pages now cache-bust to the updated stylesheet. Dashboard colors and workspace presets remain page-owned.
 
-Page-specific styling passes are committed for `marketplace.html`, `supplier.html`, `trade-atlas.html`, `trade-feed.html`, `market-intelligence.html`, `vtg-ai.html`, `logistics-shipping.html`, `finance-payments.html`, `signin.html`, `sourcing-suppliers.html`, `africa-markets.html`, `product-verification.html`, `verification.html`, `trade-guide.html`, `buyer-verifications.html`, `intelligence-centre.html`, `signup.html`, `buyer-signup.html`, `supplier-signup.html`, `bank-signup.html`, `contact.html`, `account-help.html`, `about-vintage.html`, `partnerships.html`, `partnership-finance.html`, `partnership-logistics.html`, `partnership-application.html`, `partnership-strategic.html`, `partnership-supply.html`, `partnership-technology.html`, `partnership-trade.html`, `partnership-warehouse.html`, `privacy.html`, `terms.html`, and `code-of-conduct.html`, `signup-agreement.html`, `admin-signin.html`, `workforce-signin.html`, and `workforce-access.html`.
+Page-specific styling passes are committed for `marketplace.html`, `supplier.html`, `trade-atlas.html`, `trade-feed.html`, `market-intelligence.html`, `vtg-ai.html`, `logistics-shipping.html`, `finance-payments.html`, `signin.html`, `sourcing-suppliers.html`, `africa-markets.html`, `product-verification.html`, `verification.html`, `trade-guide.html`, `buyer-verifications.html`, `intelligence-centre.html`, `signup.html`, `buyer-signup.html`, `supplier-signup.html`, `bank-signup.html`, `contact.html`, `account-help.html`, `about-vintage.html`, `partnerships.html`, `partnership-finance.html`, `partnership-logistics.html`, `partnership-application.html`, `partnership-strategic.html`, `partnership-supply.html`, `partnership-technology.html`, `partnership-trade.html`, `partnership-warehouse.html`, `privacy.html`, `terms.html`, and `code-of-conduct.html`, `signup-agreement.html`, `admin-signin.html`, `workforce-signin.html`, and `workforce-access.html`, `account-trade-feed.html`, `inspection-request.html`, `inspection-payment-callback.html`, `network.html`, and `agent.html`.
 - Static checks across all 39 page-specific files confirm balanced style tags, correct document closing, and no added CSS after `</body>`. The shared dashboard stylesheet also passes a brace-balance check, and all eight dashboard references point to its refreshed cache version.
 - These are static source checks, not browser-rendering, accessibility-audit, or end-to-end interaction tests.
 - Visual/browser and interaction testing is still pending; do not mark these pages complete until that testing passes.
