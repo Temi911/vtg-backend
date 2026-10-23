@@ -69,7 +69,7 @@ html[data-theme="dark"] body .form,html[data-theme="dark"] body #formWrap,html[d
 
 <script>
 const f=document.getElementById('agentForm'),s=document.getElementById('submit'),st=document.getElementById('status');f.addEventListener('submit',async e=>{e.preventDefault();st.textContent='Submitting your application…';s.disabled=true;try{for(const x of f.documents.files)if(x.size>5242880)throw Error('Each document must be 5 MB or smaller.');const r=await fetch('/api/agent/applications',{method:'POST',body:new FormData(f)}),d=await r.json();if(!r.ok)throw Error(d?.error?.message||'We could not submit your application. Please try again.');document.getElementById('formWrap').style.display='none';document.getElementById('success').style.display='block';document.getElementById('ref').textContent='Application ID: '+d.reference;lucide.createIcons()}catch(x){st.textContent=x.message;s.disabled=false}});lucide.createIcons();
-</script><script src="/vtg-site-navigation.js?v=20261023-no-footer-1" defer></script>
+</script><script src="/vtg-site-navigation.js?v=20261023-no-footer-2" defer></script>
 
 <style id="vtg-agent-light-hero-contrast-20261012">
 /* Agent hero is light in light mode, so explicitly recolor every hero label and control. */
