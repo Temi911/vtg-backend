@@ -129,12 +129,19 @@
     });
   }
   function renderFooter() {
-    if (!vtgPublicShellPage && !isWorkspaceDashboardPage()) {
-      document.querySelectorAll('footer, .vtgCompactFooter, .site-footer, .footer').forEach(function (item) { item.remove(); }); return;
+    // Public pages and landing use one canonical footer. Dashboards are deliberately
+    // left alone and retain their own workspace utility/footer controls.
+    if (isWorkspaceDashboardPage()) return;
+    var old = Array.prototype.slice.call(document.querySelectorAll('footer, .vtgCompactFooter, .site-footer, .siteFooter, .footer'));
+    var host = document.createElement('div');
+    host.innerHTML = FOOTER_HTML;
+    var footer = host.firstElementChild;
+    if (old.length) {
+      old[0].replaceWith(footer);
+      old.slice(1).forEach(function (extra) { extra.remove(); });
+    } else {
+      document.body.appendChild(footer);
     }
-    var old = Array.prototype.slice.call(document.querySelectorAll('footer, .vtgCompactFooter, .site-footer, .footer'));
-    var host = document.createElement('div'); host.innerHTML = FOOTER_HTML; var footer = host.firstElementChild;
-    if (old.length) { old[0].replaceWith(footer); old.slice(1).forEach(function (extra) { extra.remove(); }); } else document.body.appendChild(footer);
   }
   function setActiveFooterLink() {
     var path = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
@@ -212,12 +219,16 @@
   function simplifyPageHeader() {
     if (isHomePage()) { document.body.classList.add('vtg-home-page'); return; }
     document.body.classList.add('vtg-simple-header-page');
-    // Remove legacy public navigation bars wherever they were nested. The shared VTG
-    // navigation is injected afterwards; workspace dashboards are excluded upstream.
-    document.querySelectorAll('body > header, body > .topline, body > .top, body > .topbar, body > .site-header, body > .siteHeader, body > .navbar, body > .main-header, body > .page-header, body > div.header, body > div.navbar, body > div.navbar-wrap, header.topbar, header.top, header.page-header, header.site-header, header.main-header, .topbar, .site-header, .siteHeader, .main-header, .page-header, .navbar-wrap').forEach(function (el) {
-      if (el.id !== 'vtgPageNavigation' && !el.closest('footer')) el.remove();
-    });
-    if (!vtgPublicShellPage) removePublicShellElements();
+    if (isWorkspaceDashboardPage()) return;
+    // Strip each legacy page header, including headers nested inside wrappers, before
+    // inserting the single canonical VTG interior header (logo + Previous + Home).
+    document.querySelectorAll('header, .site-header, .siteHeader, .main-header, .page-header, .pageHeader, .topbar, .top-bar, .topline, .navbar-wrap, .header-wrap, .header-container, .header-inner, .headerIn, .main-nav, .site-nav, .siteNav, .navigation-header, .vtg-old-header')
+      .forEach(function (el) {
+        if (el.id === 'vtgPageNavigation' || el.closest('footer, #vtgFooter')) return;
+        // Do not remove a page section merely because it contains the word "header";
+        // only remove known header/navigation structures or semantic header elements.
+        el.remove();
+      });
   }
   function addPageNavigation() {
     // Every non-landing page uses the same restrained header: VTG logo on the
