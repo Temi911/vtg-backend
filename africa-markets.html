@@ -49,5 +49,5 @@ html[data-theme=dark]{color-scheme:dark;--bg:#0d1117;--surface:#151b23;--ink:#ee
  fetch('/api/africa/markets',{headers:{Accept:'application/json'},cache:'no-store'}).then(async r=>{const d=await r.json();if(!r.ok)throw new Error(d.error?.message||'Market catalogue unavailable');if(d.status!=='planning_data'||d.liveProviderData!==false||!Array.isArray(d.markets))throw new Error('The market catalogue returned an unexpected response.');markets=d.markets;render()}).catch(err=>{count.textContent='Catalogue unavailable';list.innerHTML='<div class="state">We could not load the market catalogue. '+esc(err.message)+'<br><br><button type="button" id="retry">Try again</button></div>';document.getElementById('retry').addEventListener('click',()=>location.reload())});
 })();
 </script>
-<script src="/vtg-site-navigation.js?v=20261023-no-footer-1" defer></script>
+<script src="/vtg-site-navigation.js?v=20261023-no-footer-2" defer></script>
 </body></html>
