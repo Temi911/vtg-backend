@@ -40,7 +40,7 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 ### Authentication, onboarding and account
 - [~] `signin.html` — styling pass applied; remaining authentication pages still queued.
 - [~] `signup.html` — styling pass applied; flow verification pending.
-- [ ] `signup-agreement.html`, `admin-signin.html`, `workforce-signin.html`, `workforce-access.html`.
+- [~] `signup-agreement.html`, `admin-signin.html`, `workforce-signin.html`, `workforce-access.html` — styling pass applied; authentication and role access testing pending.
 - [~] `buyer-signup.html`, `supplier-signup.html`, `bank-signup.html` — role-specific forms preserved; visual and submission testing pending.
 - [~] `account-help.html`, `contact.html` — styling pass applied; form/action verification pending.
 - [~] `partnership-application.html` — styling pass applied; form submission still needs verification.
@@ -61,8 +61,8 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 
 ## Status
 - Shared typography/theme utilities and public navigation/theme handling already exist and should be reused rather than replaced with a second design system.
-- Page-specific styling passes are committed for `marketplace.html`, `supplier.html`, `trade-atlas.html`, `trade-feed.html`, `market-intelligence.html`, `vtg-ai.html`, `logistics-shipping.html`, `finance-payments.html`, `signin.html`, `sourcing-suppliers.html`, `africa-markets.html`, `product-verification.html`, `verification.html`, `trade-guide.html`, `buyer-verifications.html`, `intelligence-centre.html`, `signup.html`, `buyer-signup.html`, `supplier-signup.html`, `bank-signup.html`, `contact.html`, `account-help.html`, `about-vintage.html`, `partnerships.html`, `partnership-finance.html`, `partnership-logistics.html`, `partnership-application.html`, `partnership-strategic.html`, `partnership-supply.html`, `partnership-technology.html`, `partnership-trade.html`, `partnership-warehouse.html`, `privacy.html`, `terms.html`, and `code-of-conduct.html`.
-- Static checks on these thirty-five pages confirm the new style blocks are balanced and are not accidentally placed after `</body>`.
+- Page-specific styling passes are committed for `marketplace.html`, `supplier.html`, `trade-atlas.html`, `trade-feed.html`, `market-intelligence.html`, `vtg-ai.html`, `logistics-shipping.html`, `finance-payments.html`, `signin.html`, `sourcing-suppliers.html`, `africa-markets.html`, `product-verification.html`, `verification.html`, `trade-guide.html`, `buyer-verifications.html`, `intelligence-centre.html`, `signup.html`, `buyer-signup.html`, `supplier-signup.html`, `bank-signup.html`, `contact.html`, `account-help.html`, `about-vintage.html`, `partnerships.html`, `partnership-finance.html`, `partnership-logistics.html`, `partnership-application.html`, `partnership-strategic.html`, `partnership-supply.html`, `partnership-technology.html`, `partnership-trade.html`, `partnership-warehouse.html`, `privacy.html`, `terms.html`, and `code-of-conduct.html`, `signup-agreement.html`, `admin-signin.html`, `workforce-signin.html`, and `workforce-access.html`.
+- Static checks on these thirty-nine pages confirm the new style blocks are balanced and are not accidentally placed after `</body>`.
 - Visual/browser and interaction testing is still pending; do not mark these pages complete until that testing passes.
 - The latest styling commits are on the redesign branch only. A new Vercel deployment was blocked by the account's daily deployment API limit (HTTP 402, retry after 24 hours); the currently deployed preview does not include the newest page-specific changes yet.
 - The inventory is not a claim that every page has been individually redesigned or visually tested. Remaining pages must be worked through and verified in batches.
