@@ -1272,3 +1272,45 @@ html[data-theme="light"] #landing .vtgEditorialCta p{
   color:#F3EFE6!important;
   -webkit-text-fill-color:#F3EFE6!important;
 }
+
+
+/* Keep the three landing-page showcase labels legible in light mode.
+   The cards sit over photography, so use a deliberate dark image gradient rather than theme-dependent text. */
+html:not([data-theme="dark"]) #landing .vtgShowcaseCard,
+html[data-theme="light"] #landing .vtgShowcaseCard{
+  color:#FFFFFF!important;
+  background:#29201F!important;
+}
+html:not([data-theme="dark"]) #landing .vtgShowcaseCard .vtgShowcaseOverlay,
+html[data-theme="light"] #landing .vtgShowcaseCard .vtgShowcaseOverlay{
+  display:block!important;
+  opacity:1!important;
+  background:linear-gradient(180deg,rgba(23,25,27,.06) 0%,rgba(23,25,27,.24) 35%,rgba(23,25,27,.91) 100%)!important;
+}
+html:not([data-theme="dark"]) #landing .vtgShowcaseCard .vtgShowcaseContent,
+html[data-theme="light"] #landing .vtgShowcaseCard .vtgShowcaseContent{
+  z-index:2!important;
+  opacity:1!important;
+  visibility:visible!important;
+  color:#FFFFFF!important;
+  text-shadow:0 1px 5px rgba(0,0,0,.4)!important;
+}
+html:not([data-theme="dark"]) #landing .vtgShowcaseCard .vtgShowcaseContent small,
+html[data-theme="light"] #landing .vtgShowcaseCard .vtgShowcaseContent small{
+  color:#E8CDA5!important;
+  -webkit-text-fill-color:#E8CDA5!important;
+  opacity:1!important;
+}
+html:not([data-theme="dark"]) #landing .vtgShowcaseCard .vtgShowcaseContent strong,
+html[data-theme="light"] #landing .vtgShowcaseCard .vtgShowcaseContent strong{
+  color:#FFFFFF!important;
+  -webkit-text-fill-color:#FFFFFF!important;
+  opacity:1!important;
+}
+html:not([data-theme="dark"]) #landing .vtgShowcaseCard .vtgShowcaseContent>span,
+html[data-theme="light"] #landing .vtgShowcaseCard .vtgShowcaseContent>span,
+html:not([data-theme="light"]) #landing .vtgShowcaseCard .vtgShowcaseContent>span{
+  color:#F3EFE6!important;
+  -webkit-text-fill-color:#F3EFE6!important;
+  opacity:1!important;
+}
