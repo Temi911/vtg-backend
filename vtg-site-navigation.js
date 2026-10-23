@@ -4,6 +4,7 @@
 (function () {
   'use strict';
   var HOME = '/frontend-v3.html';
+  var FOOTER_ID = 'vtgFooter';
   // No shared footer template; frontend-v3.html owns the only footer.
  
   var CSS = [
