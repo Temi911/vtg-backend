@@ -202,7 +202,8 @@
       return target !== current && target !== '/' && !target.endsWith('/frontend-v3.html');
     });
   }
-  var vtgPublicShellPage = hasDownstreamPageLinks();
+  // One canonical public shell on every non-dashboard page. Do not infer shell eligibility from page links: legacy/leaf pages also receive the shared header and footer.
+  var vtgPublicShellPage = !isWorkspaceDashboardPage();
   function removePublicShellElements() {
     document.querySelectorAll('#vtgPageNavigation, #vtgFooter, #vtgThemeControl, #vtgThemePresetControl, footer, .vtgCompactFooter, .site-footer, .footer').forEach(function (el) { el.remove(); });
     document.querySelectorAll('body > header, body > .topline, body > .top, body > .topbar, body > .site-header, body > .siteHeader, body > .navbar, body > .main-header, body > .page-header, body > div.header, body > div.navbar, body > div.navbar-wrap').forEach(function (el) { el.remove(); });
@@ -211,7 +212,11 @@
   function simplifyPageHeader() {
     if (isHomePage()) { document.body.classList.add('vtg-home-page'); return; }
     document.body.classList.add('vtg-simple-header-page');
-    document.querySelectorAll('body > header, body > .topline, body > .top, body > .topbar, body > .site-header, body > .siteHeader, body > .navbar, body > .main-header, body > .page-header, body > div.header, body > div.navbar, body > div.navbar-wrap').forEach(function (el) { el.remove(); });
+    // Remove legacy public navigation bars wherever they were nested. The shared VTG
+    // navigation is injected afterwards; workspace dashboards are excluded upstream.
+    document.querySelectorAll('body > header, body > .topline, body > .top, body > .topbar, body > .site-header, body > .siteHeader, body > .navbar, body > .main-header, body > .page-header, body > div.header, body > div.navbar, body > div.navbar-wrap, header.topbar, header.top, header.page-header, header.site-header, header.main-header, .topbar, .site-header, .siteHeader, .main-header, .page-header, .navbar-wrap').forEach(function (el) {
+      if (el.id !== 'vtgPageNavigation' && !el.closest('footer')) el.remove();
+    });
     if (!vtgPublicShellPage) removePublicShellElements();
   }
   function addPageNavigation() {
