@@ -121,3 +121,56 @@ html[data-vtg-skin][data-theme] body :is(.active,.is-active,[aria-current="page"
 html[data-vtg-skin][data-theme] body :is(input,select,textarea,[contenteditable="true"],button,[role="button"],[role="tab"]):focus-visible{outline:2px solid var(--vtg-ui-accent)!important;outline-offset:2px}
 html[data-theme="light"][data-vtg-skin] body :is(.status,.badge,.pill,.status-pill,.tag){text-shadow:none}
 @media(max-width:720px){:where(button,.btn,.button,.primary-btn,.btn-primary,.action-button){max-width:100%}}
+
+
+/* VTG premium public-page polish: shared rhythm and surfaces without replacing page layouts. */
+html[data-vtg-skin] body.vtg-public-shell-page {
+  font-family: Manrope, Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+html[data-vtg-skin] body.vtg-public-shell-page :is(main, .main-content, .page-content, .pageContent, .content-wrap, .content-section, .section, .container) {
+  scroll-margin-top: 84px;
+}
+html[data-vtg-skin] body.vtg-public-shell-page :is(h1, h2, h3) {
+  letter-spacing: -.025em;
+  text-wrap: balance;
+}
+html[data-vtg-skin] body.vtg-public-shell-page :is(p, li, .description, .subtitle) {
+  line-height: 1.7;
+}
+html[data-vtg-skin] body.vtg-public-shell-page :is(.card, .panel, .surface, .feature-card, .info-card, .content-card, .route-card, .marketCard, .newsCard, .service-card, .partner-card, .detail-card, .stat-card, .faq-item) {
+  border-radius: 16px;
+  border-color: var(--vtg-ui-border, #DDD6CB);
+  box-shadow: 0 8px 28px rgba(24, 27, 29, .045);
+  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+@media (hover:hover) and (prefers-reduced-motion:no-preference) {
+  html[data-vtg-skin] body.vtg-public-shell-page :is(.card, .panel, .surface, .feature-card, .info-card, .content-card, .route-card, .marketCard, .newsCard, .service-card, .partner-card, .detail-card, .stat-card, .faq-item):hover {
+    border-color: color-mix(in srgb, var(--vtg-ui-accent, #702A30) 32%, var(--vtg-ui-border, #DDD6CB));
+    box-shadow: 0 14px 36px rgba(24, 27, 29, .085);
+    transform: translateY(-2px);
+  }
+}
+html[data-vtg-skin] body.vtg-public-shell-page :is(button, .btn, .button, .action-button, [role="button"]) {
+  min-height: 40px;
+  border-radius: 10px;
+  font-weight: 650;
+}
+html[data-vtg-skin] body.vtg-public-shell-page :is(input, select, textarea) {
+  min-height: 42px;
+  border-radius: 10px;
+}
+html[data-vtg-skin] body.vtg-public-shell-page :is(input[type="checkbox"], input[type="radio"]) {
+  min-height: 0;
+}
+html[data-vtg-skin] body.vtg-public-shell-page :is(.eyebrow, .kicker, .section-label, .sectionLabel, .overline) {
+  letter-spacing: .11em;
+}
+@media (max-width: 720px) {
+  html[data-vtg-skin] body.vtg-public-shell-page :is(h1) { line-height: 1.12; }
+  html[data-vtg-skin] body.vtg-public-shell-page :is(.card, .panel, .surface, .feature-card, .info-card, .content-card) { border-radius: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-vtg-skin] body.vtg-public-shell-page * { transition-duration: .01ms !important; }
+}
