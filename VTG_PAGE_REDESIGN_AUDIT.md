@@ -15,16 +15,16 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 
 ### Core entry and discovery
 - [ ] `frontend-v3.html` — landing page; correct CSS placement, CTA/card contrast, validate carousel and responsive layout.
-- [ ] `marketplace.html` — product discovery, search, filters, listing cards, empty/error states.
-- [ ] `supplier.html` — supplier profile, credibility/evidence presentation, contact journey.
+- [~] `marketplace.html` — product discovery, search, filters, listing cards, empty/error states.
+- [~] `supplier.html` — supplier profile, credibility/evidence presentation, contact journey.
 - [ ] `sourcing-suppliers.html` — supplier discovery and sourcing journey.
-- [ ] `trade-atlas.html` — Atlas map/globe, route hierarchy, map controls and responsive states.
-- [ ] `trade-feed.html` — public read/like/follow presentation and mobile feed layout.
-- [ ] `market-intelligence.html` — intelligence cards, news density, responsive data display.
+- [~] `trade-atlas.html` — Atlas map/globe, route hierarchy, map controls and responsive states.
+- [~] `trade-feed.html` — public read/like/follow presentation and mobile feed layout.
+- [~] `market-intelligence.html` — intelligence cards, news density, responsive data display.
 - [ ] `intelligence-centre.html` — specialist intelligence workspace and data readability.
-- [ ] `vtg-ai.html` — public AI preview, clear preview-only boundaries and CTA.
+- [~] `vtg-ai.html` — public AI preview, clear preview-only boundaries and CTA.
 - [ ] `product-verification.html`, `verification.html`, `buyer-verifications.html` — evidence, status, report and request flows.
-- [ ] `logistics-shipping.html`, `finance-payments.html`, `africa-markets.html`, `trade-guide.html` — feature-specific layouts and information hierarchy.
+- [~] `logistics-shipping.html`, `finance-payments.html`, `africa-markets.html`, `trade-guide.html` — feature-specific layouts and information hierarchy.
 
 ### Workspaces and operations
 - [ ] `buyer-dashboard.html` — workspace hierarchy, theme contrast, live feature states and navigation.
@@ -54,7 +54,7 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 
 ## Status
 - Shared typography/theme utilities and public navigation/theme handling already exist and should be reused rather than replaced with a second design system.
-- Page-specific styling passes are now committed for `marketplace.html`, `supplier.html`, `trade-atlas.html`, `trade-feed.html`, `market-intelligence.html`, `vtg-ai.html`, `logistics-shipping.html`, `finance-payments.html`, and `signin.html`.
+- Page-specific styling passes are committed for `marketplace.html`, `supplier.html`, `trade-atlas.html`, `trade-feed.html`, `market-intelligence.html`, `vtg-ai.html`, `logistics-shipping.html`, `finance-payments.html`, and `signin.html`.
 - Static checks on those nine pages confirm the new style blocks are balanced and are not accidentally placed after `</body>`.
 - Visual/browser and interaction testing is still pending; do not mark these pages complete until that testing passes.
 - The latest styling commits are on the redesign branch only. A new Vercel deployment was blocked by the account's daily deployment API limit (HTTP 402, retry after 24 hours); the currently deployed preview does not include the newest page-specific changes yet.
