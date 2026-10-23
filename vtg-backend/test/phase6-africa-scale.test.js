@@ -54,6 +54,6 @@ test('Africa market page is wired to the API and includes safe status and naviga
   assert.match(page, /liveProviderData!==false/);
   assert.match(page, /marketStatus===\x27foundation\x27/);
   assert.match(page, /vtg-site-navigation\.js/);
-  assert.match(page, /id="footAfricaMarkets"|Africa Markets/);
+  assert.match(page, /<title>Africa Market Coverage \| VTG<\/title>/);
   assert.match(server, /app\.use\('\/api\/africa',africaMarketRoutes\)/);
 });
