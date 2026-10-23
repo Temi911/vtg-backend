@@ -85,6 +85,56 @@ html[data-theme="dark"] body .hero .heroIn>div:first-child p {color:#c1cbd3!impo
 html[data-theme="light"] body .route,html[data-theme="light"] body .route>div,html[data-theme="light"] body .cap,html[data-theme="light"] body .section .card{background:#fff!important;border-color:#e2e7eb!important;color:#243441!important}html[data-theme="light"] body .route :is(h2,p,.eyebrow,.note,.stop),html[data-theme="light"] body .cap :is(h2,h3,p),html[data-theme="light"] body .section .card :is(h2,h3,p,span,strong,b){color:#243441!important}html[data-theme="light"] body .route .note{color:#586574!important}html[data-theme="light"] body .route .stop{background:#f7f1ef!important;border-color:#e2d5d1!important}html[data-theme="dark"] body .route,html[data-theme="dark"] body .route>div,html[data-theme="dark"] body .cap,html[data-theme="dark"] body .section .card{background:#11161d!important;border-color:#34404b!important;color:#eef3f6!important}html[data-theme="dark"] body .route :is(h2,p,.eyebrow,.note,.stop),html[data-theme="dark"] body .cap :is(h2,h3,p),html[data-theme="dark"] body .section .card :is(h2,h3,p,span,strong,b){color:#eef3f6!important}html[data-theme="dark"] body .route .note{color:#c1cbd3!important}html[data-theme="dark"] body .route .stop{background:#18212a!important;border-color:#34404b!important}
 </style>
 <link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<style id="vtg-logistics-premium-refresh">
+/* Logistics journey page: clarify stages and route cards without changing operational claims or links. */
+:root{--bg:#f7f5f0;--panel:#fffefa;--line:#ddd6cb;--text:#242321;--muted:#625d56;--red:#702a30;--red-soft:#f2e9e5;--gold:#b49a70}
+body{background:#f7f5f0;color:#242321}
+.wrap{max-width:1280px}
+.top{background:#702a30}
+.back{display:inline-flex;align-items:center;min-height:38px;padding:0 12px;border:1px solid #ddd6cb;border-radius:9px;background:#fffefa;color:#702a30;text-decoration:none}
+.back:hover{background:#f2e9e5}
+.hero{padding:clamp(30px,4vw,52px) 0 clamp(36px,5vw,62px);gap:clamp(24px,4vw,54px);align-items:center}
+.eyebrow{color:#702a30;letter-spacing:.15em}
+.hero h1{font-size:clamp(35px,4.7vw,58px);line-height:1.05;letter-spacing:-.045em;color:#202326;text-wrap:balance}
+.hero p{max-width:680px;color:#625d56;line-height:1.85;font-size:14px}
+.btn{min-height:42px;border:1px solid #d7ccc0;border-radius:10px;background:#fffefa;color:#302a26;padding:12px 17px}
+.btn.primary{background:#702a30;border-color:#702a30;color:#fff}
+.btn.primary:hover{background:#552126}
+.visual{border:1px solid #ded4c8;border-radius:18px;overflow:hidden;box-shadow:0 20px 54px rgba(40,30,24,.08)}
+.section{padding-block:clamp(36px,5vw,62px)}
+.head h2{color:#242321;letter-spacing:-.035em}
+.head p{color:#625d56;line-height:1.8}
+.journey{gap:14px}
+.stage{border:1px solid #e0d8ce;border-radius:15px;background:#fffefa;box-shadow:0 8px 24px rgba(30,25,22,.035);padding:20px}
+.num{background:#f2e9e5;color:#702a30;border-radius:9px}
+.stage h3,.detailCard h3,.faqItem h3{color:#242321}
+.stage p,.cap,.note,.detailBody p,.faqItem p{color:#625d56;line-height:1.75}
+.route{border:1px solid #e0d8ce;border-radius:16px;background:#fffefa;padding:clamp(18px,3vw,28px)}
+.stops{gap:10px}
+.stop{border:1px solid #e4d9ce;border-radius:11px;background:#faf6f0;color:#393530;padding:14px}
+.arrow{color:#702a30}
+.note,.infoBand{border:1px solid #e2d5c9;border-radius:12px;background:#faf4ec;color:#625d56}
+.cta{border:1px solid #ded4c8;border-radius:18px;background:linear-gradient(115deg,#f2e8df,#fffefa)}
+.cta h2{color:#242321}
+.cta p{color:#625d56;line-height:1.75}
+.detailGrid,.faqGrid{gap:15px}
+.detailCard,.faqItem{overflow:hidden;border:1px solid #e0d8ce;border-radius:15px;background:#fffefa;box-shadow:0 8px 24px rgba(30,25,22,.035)}
+.detailBody{padding:19px}
+.tag{background:#f2e9e5;color:#702a30;border-radius:6px}
+.infoList{gap:10px}
+.infoItem{border:1px solid #e4d9ce;border-radius:10px;background:#faf6f0;color:#393530;padding:12px}
+html[data-theme="dark"] body{background:#17191b;color:#f3efe6}
+html[data-theme="dark"] .back,html[data-theme="dark"] .stage,html[data-theme="dark"] .route,html[data-theme="dark"] .detailCard,html[data-theme="dark"] .faqItem{background:#202326;border-color:#3b3d40}
+html[data-theme="dark"] .hero h1,html[data-theme="dark"] .head h2,html[data-theme="dark"] .stage h3,html[data-theme="dark"] .detailCard h3,html[data-theme="dark"] .faqItem h3,html[data-theme="dark"] .cta h2{color:#f3efe6}
+html[data-theme="dark"] .hero p,html[data-theme="dark"] .head p,html[data-theme="dark"] .stage p,html[data-theme="dark"] .cap,html[data-theme="dark"] .note,html[data-theme="dark"] .detailBody p,html[data-theme="dark"] .faqItem p,html[data-theme="dark"] .cta p{color:#c5bfb5}
+html[data-theme="dark"] .back,html[data-theme="dark"] .btn:not(.primary){background:#292b2d;color:#f3efe6;border-color:#45484b}
+html[data-theme="dark"] .num,html[data-theme="dark"] .tag{background:#43282a;color:#f2c6c2}
+html[data-theme="dark"] .stop,html[data-theme="dark"] .infoItem{background:#292b2d;border-color:#45484b;color:#d4ccc2}
+html[data-theme="dark"] .note,html[data-theme="dark"] .infoBand{background:#292522;border-color:#45403c;color:#d4ccc2}
+html[data-theme="dark"] .cta{background:linear-gradient(115deg,#292522,#202326);border-color:#45403c}
+@media(max-width:760px){.hero{padding-top:26px}.section{padding-block:34px}.stage,.detailBody{padding:15px}.visual{border-radius:14px}}
+@media(prefers-reduced-motion:reduce){.btn{transition:none}}
+</style>
 </head><body><div class="top"></div><main class="wrap">
 <a class="back" href="/frontend-v3.html">← Back to VTG</a>
 <section class="hero"><div><span class="eyebrow">VTG Logistics &amp; Shipping</span><h1>Move goods across borders with a clearer journey.</h1><p>VTG brings the moving parts of cross-border trade into one clearer journey—from supplier readiness and pre-shipment checks to freight planning, port milestones, customs documentation and final delivery coordination. Built around trade between Africa, China, South Korea and wider global markets, the platform helps buyers, suppliers and logistics partners work from a more consistent shipment record.</p></div><div class="visual"><img src="https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&w=1800&q=85" alt="Container cargo moving through an international shipping terminal" loading="eager" fetchpriority="high"><span>FROM ORIGIN HANDLING TO DESTINATION DELIVERY</span></div></section>
