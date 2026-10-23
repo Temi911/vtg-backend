@@ -15,9 +15,9 @@ test('current VTG landing page preserves the approved trade-house layout and key
   assert.match(html, /vtgShowcaseCard/);
   assert.match(html, /vtgEditorialCta/);
   assert.match(html, /id="vtgFooter"/);
-  assert.match(html, /href="\\/marketplace\\.html"/);
-  assert.match(html, /href="\\/trade-atlas\\.html"/);
-  assert.match(html, /href="\\/vtg-ai\\.html"/);
+  assert.ok(html.includes('href="/marketplace.html"'));
+  assert.ok(html.includes('href="/trade-atlas.html"'));
+  assert.ok(html.includes('href="/vtg-ai.html"'));
 });
 
 test('frontend includes trade calculator, cart and currency conversion hooks', () => {
