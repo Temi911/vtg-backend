@@ -87,6 +87,77 @@ html[data-theme="dark"] body .hero .heroIn>div:first-child p {color:#c1cbd3!impo
 html[data-theme="light"] body .evidence,html[data-theme="light"] body .evidenceCard,html[data-theme="light"] body .form{background:#fff!important;border-color:#e2e7eb!important;color:#243441!important}html[data-theme="light"] body .evidence :is(h2,h3,p,.eyebrow),html[data-theme="light"] body .evidenceCard :is(h3,p),html[data-theme="light"] body .form :is(h3,p,.formIntro){color:#243441!important}html[data-theme="light"] body .hero .btn,html[data-theme="light"] body .hero a.btn{background:#c0392b!important;color:#fff!important}html[data-theme="light"] body .hero .btn.secondary,html[data-theme="light"] body .hero .btn.ghost{background:transparent!important;color:#243441!important;border-color:#b8c2cc!important}html[data-theme="dark"] body .evidence,html[data-theme="dark"] body .evidenceCard,html[data-theme="dark"] body .form{background:#11161d!important;border-color:#34404b!important;color:#eef3f6!important}html[data-theme="dark"] body .evidence :is(h2,h3,p,.eyebrow),html[data-theme="dark"] body .evidenceCard :is(h3,p),html[data-theme="dark"] body .form :is(h3,p,.formIntro){color:#eef3f6!important}html[data-theme="dark"] body .evidence p,html[data-theme="dark"] body .evidenceCard p,html[data-theme="dark"] body .form .formIntro{color:#c1cbd3!important}html[data-theme="dark"] body .form .btn{background:#c0392b!important;color:#fff!important}
 </style>
 <link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<style id="vtg-product-verification-premium-refresh">
+/* Product verification and inspection request page: clarify evidence and form hierarchy without changing fees or workflow. */
+:root{--bg:#f7f5f0;--panel:#fffefa;--line:#ddd6cb;--text:#242321;--muted:#625d56;--red:#702a30;--gold:#b49a70}
+body{background:#f7f5f0;color:#242321}
+.nav{background:rgba(247,245,240,.95);border-color:#ddd6cb;backdrop-filter:blur(18px)}
+.logo{color:#202326}
+.back{border:1px solid #ddd6cb;border-radius:9px;background:#fffefa;color:#702a30}
+.hero{padding:clamp(34px,5vw,66px) 0}
+.heroIn{gap:clamp(24px,4vw,54px);align-items:center}
+.eyebrow{color:#702a30;letter-spacing:.15em}
+.hero h1{font-size:clamp(35px,4.7vw,58px);line-height:1.05;letter-spacing:-.045em;color:#202326;text-wrap:balance}
+.hero p{max-width:720px;color:#625d56;line-height:1.85;font-size:14px}
+.btn{min-height:42px;border:1px solid #d7ccc0;border-radius:10px;background:#fffefa;color:#302a26;padding:12px 17px}
+.btn:first-child,.btn.primary{background:#702a30;border-color:#702a30;color:#fff}
+.btn.secondary{background:#fffefa;color:#302a26}
+.section{padding-block:clamp(36px,5vw,62px)}
+.head h2{color:#242321;letter-spacing:-.035em}
+.head p{color:#625d56;line-height:1.8}
+.trustStrip{gap:12px}
+.trustItem{border:1px solid #e0d8ce;border-radius:13px;background:#fffefa;padding:16px}
+.trustItem strong{color:#242321}
+.trustItem p,.trustItem span{color:#625d56;line-height:1.7}
+.icon{background:#f2e9e5;color:#702a30;border-radius:9px}
+.process{gap:14px}
+.step{border:1px solid #e0d8ce;border-radius:14px;background:#fffefa;padding:18px}
+.stepNum{background:#f2e9e5;color:#702a30;border-radius:8px}
+.step h3{color:#242321}
+.step p{color:#625d56;line-height:1.75}
+.checkLayout{gap:18px}
+.photo{border:1px solid #e0d8ce;border-radius:15px;overflow:hidden;background:#eee7dd}
+.checkList{border:1px solid #e0d8ce;border-radius:15px;background:#fffefa;padding:18px}
+.checkItem{border-color:#eee7df;color:#393530;line-height:1.7}
+.plainNote,.caveat,.formNote{border:1px solid #e2d5c9;border-radius:11px;background:#faf4ec;color:#625d56;line-height:1.75;padding:14px}
+.evidenceGrid{gap:14px}
+.evidenceCard{border:1px solid #e0d8ce;border-radius:14px;background:#fffefa;overflow:hidden}
+.evidenceCard h3{color:#242321}
+.evidenceCard p{color:#625d56;line-height:1.75}
+.requestSection{background:#f0ece5;border-block:1px solid #e2d9cf}
+.requestGrid{gap:20px;align-items:start}
+.requestIntro h2{color:#242321}
+.requestIntro p{color:#625d56;line-height:1.8}
+.requestFacts{gap:10px}
+.fact{border:1px solid #e0d8ce;border-radius:11px;background:#fffefa;padding:13px}
+.fact strong{color:#242321}
+.fact span{color:#625d56}
+.form{border:1px solid #ded4c8;border-radius:18px;background:#fffefa;box-shadow:0 18px 48px rgba(30,25,22,.06);padding:clamp(18px,3vw,28px)}
+.formIntro h3{color:#242321}
+.formIntro p{color:#625d56;line-height:1.75}
+.fields{gap:13px}
+.field label{color:#393530;font-weight:700}
+.field input,.field select,.field textarea{min-height:43px;border:1px solid #d9d0c6;border-radius:9px;background:#fffefa;color:#242321}
+.options{gap:9px}
+.options label{border:1px solid #e0d8ce;border-radius:10px;background:#faf6f0;color:#625d56}
+.fee,.quoteBox{border:1px solid #e2d5c9;border-radius:12px;background:#faf4ec;color:#393530;padding:15px}
+.muted{color:#746d65}
+.notice,.status{border:1px solid #e0d8ce;border-radius:11px;background:#fffefa;color:#625d56;padding:13px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid #9b5c60;outline-offset:3px}
+html[data-theme="dark"] body{background:#17191b;color:#f3efe6}
+html[data-theme="dark"] .nav{background:rgba(23,25,27,.96);border-color:#3b3d40}
+html[data-theme="dark"] .hero h1,html[data-theme="dark"] .head h2,html[data-theme="dark"] .trustItem strong,html[data-theme="dark"] .step h3,html[data-theme="dark"] .evidenceCard h3,html[data-theme="dark"] .requestIntro h2,html[data-theme="dark"] .fact strong,html[data-theme="dark"] .formIntro h3{color:#f3efe6}
+html[data-theme="dark"] .hero p,html[data-theme="dark"] .head p,html[data-theme="dark"] .trustItem p,html[data-theme="dark"] .trustItem span,html[data-theme="dark"] .step p,html[data-theme="dark"] .evidenceCard p,html[data-theme="dark"] .requestIntro p,html[data-theme="dark"] .fact span,html[data-theme="dark"] .formIntro p,html[data-theme="dark"] .muted{color:#c5bfb5}
+html[data-theme="dark"] .trustItem,html[data-theme="dark"] .step,html[data-theme="dark"] .checkList,html[data-theme="dark"] .evidenceCard,html[data-theme="dark"] .fact,html[data-theme="dark"] .form,html[data-theme="dark"] .notice,html[data-theme="dark"] .status{background:#202326;border-color:#3b3d40}
+html[data-theme="dark"] .stepNum,html[data-theme="dark"] .icon{background:#43282a;color:#f2c6c2}
+html[data-theme="dark"] .checkItem{color:#d4ccc2;border-color:#3b3d40}
+html[data-theme="dark"] .plainNote,html[data-theme="dark"] .caveat,html[data-theme="dark"] .formNote,html[data-theme="dark"] .fee,html[data-theme="dark"] .quoteBox{background:#292522;border-color:#45403c;color:#d4ccc2}
+html[data-theme="dark"] .requestSection{background:#1d2022;border-color:#3b3d40}
+html[data-theme="dark"] .field input,html[data-theme="dark"] .field select,html[data-theme="dark"] .field textarea{background:#17191b;border-color:#45484b;color:#f3efe6}
+html[data-theme="dark"] .options label{background:#292b2d;border-color:#45484b;color:#d4ccc2}
+html[data-theme="dark"] .btn.secondary,html[data-theme="dark"] .back{background:#292b2d;border-color:#45484b;color:#f3efe6}
+@media(max-width:760px){.hero{padding-block:30px}.section{padding-block:34px}.form{border-radius:15px;padding:17px}}
+</style>
 </head>
 <body>
 
