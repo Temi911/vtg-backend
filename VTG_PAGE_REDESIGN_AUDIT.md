@@ -30,11 +30,13 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 - [~] `africa-markets.html` — market coverage cards, availability labels and responsive layout.
 
 ### Workspaces and operations
-- [ ] `buyer-dashboard.html` — workspace hierarchy, theme contrast, live feature states and navigation.
-- [ ] `supplier-dashboard.html` — supplier operations, shipment/evidence views and navigation.
-- [ ] `bank-trade-os.html` — finance workspace, LC/payment/risk information and Atlas entry points.
-- [ ] `admin-dashboard-preview.html`, `inspection-admin.html`, `agent-dashboard.html`, `agent-network-dashboard.html`, `workforce-dashboard.html` — operational dashboards, responsive data tables and action states.
-- [ ] `vtg-ai-dashboard.html`, `account-trade-feed.html` — authenticated AI/feed experiences.
+- [~] `buyer-dashboard.html` — workspace hierarchy, theme contrast, live feature states and navigation.
+- [~] `supplier-dashboard.html` — supplier operations, shipment/evidence views and navigation.
+- [~] `bank-trade-os.html` — finance workspace, LC/payment/risk information and Atlas entry points.
+- [~] `admin-dashboard-preview.html`, `agent-dashboard.html`, `agent-network-dashboard.html`, `workforce-dashboard.html` — shared dashboard typography and control polish applied; responsive and role-flow testing pending.
+- [ ] `inspection-admin.html` — inspection operations and payment-state review.
+- [~] `vtg-ai-dashboard.html` — shared dashboard typography and control polish applied; chat workflow testing pending.
+- [ ] `account-trade-feed.html` — authenticated feed interactions and posting.
 - [ ] `inspection-request.html`, `inspection-payment-callback.html` — inspection request/payment states.
 
 ### Authentication, onboarding and account
@@ -61,8 +63,10 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 
 ## Status
 - Shared typography/theme utilities and public navigation/theme handling already exist and should be reused rather than replaced with a second design system.
-- Page-specific styling passes are committed for `marketplace.html`, `supplier.html`, `trade-atlas.html`, `trade-feed.html`, `market-intelligence.html`, `vtg-ai.html`, `logistics-shipping.html`, `finance-payments.html`, `signin.html`, `sourcing-suppliers.html`, `africa-markets.html`, `product-verification.html`, `verification.html`, `trade-guide.html`, `buyer-verifications.html`, `intelligence-centre.html`, `signup.html`, `buyer-signup.html`, `supplier-signup.html`, `bank-signup.html`, `contact.html`, `account-help.html`, `about-vintage.html`, `partnerships.html`, `partnership-finance.html`, `partnership-logistics.html`, `partnership-application.html`, `partnership-strategic.html`, `partnership-supply.html`, `partnership-technology.html`, `partnership-trade.html`, `partnership-warehouse.html`, `privacy.html`, `terms.html`, and `code-of-conduct.html`, `signup-agreement.html`, `admin-signin.html`, `workforce-signin.html`, and `workforce-access.html`.
-- Static checks on these thirty-nine pages confirm the new style blocks are balanced and are not accidentally placed after `</body>`.
+- A shared dashboard typography/control refinement is committed in `vtg-dashboard-typography.css`; eight dashboard pages now cache-bust to the updated stylesheet. Dashboard colors and workspace presets remain page-owned.
+
+Page-specific styling passes are committed for `marketplace.html`, `supplier.html`, `trade-atlas.html`, `trade-feed.html`, `market-intelligence.html`, `vtg-ai.html`, `logistics-shipping.html`, `finance-payments.html`, `signin.html`, `sourcing-suppliers.html`, `africa-markets.html`, `product-verification.html`, `verification.html`, `trade-guide.html`, `buyer-verifications.html`, `intelligence-centre.html`, `signup.html`, `buyer-signup.html`, `supplier-signup.html`, `bank-signup.html`, `contact.html`, `account-help.html`, `about-vintage.html`, `partnerships.html`, `partnership-finance.html`, `partnership-logistics.html`, `partnership-application.html`, `partnership-strategic.html`, `partnership-supply.html`, `partnership-technology.html`, `partnership-trade.html`, `partnership-warehouse.html`, `privacy.html`, `terms.html`, and `code-of-conduct.html`, `signup-agreement.html`, `admin-signin.html`, `workforce-signin.html`, and `workforce-access.html`.
+- Static checks on these forty-four pages confirm the new style blocks are balanced and are not accidentally placed after `</body>`.
 - Visual/browser and interaction testing is still pending; do not mark these pages complete until that testing passes.
 - The latest styling commits are on the redesign branch only. A new Vercel deployment was blocked by the account's daily deployment API limit (HTTP 402, retry after 24 hours); the currently deployed preview does not include the newest page-specific changes yet.
 - The inventory is not a claim that every page has been individually redesigned or visually tested. Remaining pages must be worked through and verified in batches.
