@@ -44,6 +44,54 @@ html[data-theme="dark"] .story .check{color:#fff!important;border-color:rgba(255
 </style>
 <script>(function(){try{var pref=localStorage.getItem('vtg-theme-preference');var saved=localStorage.getItem('vtg-theme');var theme=pref==='light'||pref==='dark'?pref:(saved==='light'||saved==='dark'?saved:((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark'));document.documentElement.setAttribute('data-theme',theme)}catch(e){document.documentElement.setAttribute('data-theme',(new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark')}})();</script>
 <link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<style id="vtg-registration-premium-refresh-buyer-signup">
+/* Registration journey refinement; preserve role-specific fields, validation, verification and submission handlers. */
+:root{--reg-bg:#f7f5f0;--reg-panel:#fffefa;--reg-line:#ddd6cb;--reg-text:#242321;--reg-muted:#625d56;--reg-red:#702a30}
+body{background:var(--reg-bg);color:var(--reg-text)}
+.topline{background:#702a30}
+.story{border-radius:20px;overflow:hidden}
+.storyContent,.storyCopy{line-height:1.8}
+.kicker,.eyebrow{color:#702a30;letter-spacing:.14em}
+.story h1,.storyContent h1{font-size:clamp(32px,4vw,50px);line-height:1.07;letter-spacing:-.04em;text-wrap:balance}
+.trustline,.benefits{gap:10px}
+.trustmark,.benefit{border:1px solid rgba(221,214,203,.85);border-radius:11px}
+.mainpanel,.formPanel{border:1px solid var(--reg-line);border-radius:20px;background:var(--reg-panel);box-shadow:0 20px 58px rgba(40,30,24,.07);padding:clamp(20px,3vw,36px)}
+.brandName{color:#202326}
+.heading h1,.intro h1,.intro h2{color:#242321;letter-spacing:-.035em}
+.heading p,.intro p,.hint,.footnote{color:#625d56;line-height:1.75}
+.step,.track{border-color:#e0d8ce}
+.stepNumber{background:#f2e9e5;color:#702a30;border-radius:8px}
+.roles{gap:9px}
+.role{border:1px solid #ded5cb;border-radius:12px;background:#fffefa;color:#393530;transition:background .18s,border-color .18s,color .18s}
+.role:hover,.role.active{background:#f2e9e5;border-color:#c7aaa3;color:#702a30}
+.roleIcon{background:#f2e9e5;color:#702a30;border-radius:9px}
+.formTop{border-color:#e9e0d6}
+.roleTag{border-radius:7px;background:#f2e9e5;color:#702a30}
+.secureTag{border:1px solid #b7d9c4;border-radius:7px;background:#e8f3ec;color:#235c40}
+.field label{color:#393530;font-weight:700}
+.field input,.field select,.field textarea,.phoneRow input,.verifyRow input,.passwordRow input{min-height:43px;border:1px solid #d9d0c6;border-radius:9px;background:#fffefa;color:#242321}
+.field input::placeholder,.field textarea::placeholder{color:#746d65}
+.notice,.message{border:1px solid #e2d5c9;border-radius:11px;background:#faf4ec;color:#625d56;line-height:1.7;padding:13px 15px}
+.checkline{color:#625d56;line-height:1.7}
+.actionButton,.primary{min-height:43px;border:1px solid #702a30;border-radius:10px;background:#702a30;color:#fff}
+.actionButton:hover,.primary:hover{background:#552126}
+.miniButton{border:1px solid #d7ccc0;border-radius:8px;background:#f7f3ed;color:#393530}
+.message.ok,.ok{background:#e8f3ec;border-color:#b7d9c4;color:#235c40}
+.bottomLinks a,.privacy a{color:#702a30}
+html[data-theme="dark"] body{background:#17191b;color:#f3efe6}
+html[data-theme="dark"] .mainpanel,html[data-theme="dark"] .formPanel{background:#202326;border-color:#3b3d40}
+html[data-theme="dark"] .brandName,html[data-theme="dark"] .heading h1,html[data-theme="dark"] .intro h1,html[data-theme="dark"] .intro h2,html[data-theme="dark"] .field label{color:#f3efe6}
+html[data-theme="dark"] .heading p,html[data-theme="dark"] .intro p,html[data-theme="dark"] .hint,html[data-theme="dark"] .footnote,html[data-theme="dark"] .checkline{color:#c5bfb5}
+html[data-theme="dark"] .role,html[data-theme="dark"] .field input,html[data-theme="dark"] .field select,html[data-theme="dark"] .field textarea,html[data-theme="dark"] .phoneRow input,html[data-theme="dark"] .verifyRow input,html[data-theme="dark"] .passwordRow input{background:#17191b;border-color:#45484b;color:#f3efe6}
+html[data-theme="dark"] .role:hover,html[data-theme="dark"] .role.active,html[data-theme="dark"] .roleTag,html[data-theme="dark"] .stepNumber,html[data-theme="dark"] .roleIcon{background:#43282a;border-color:#65464a;color:#f2c6c2}
+html[data-theme="dark"] .secureTag,html[data-theme="dark"] .message.ok,html[data-theme="dark"] .ok{background:#1e3a30;border-color:#315c49;color:#b4e4c8}
+html[data-theme="dark"] .notice,html[data-theme="dark"] .message{background:#292522;border-color:#45403c;color:#d4ccc2}
+html[data-theme="dark"] .miniButton{background:#292b2d;border-color:#45484b;color:#f3efe6}
+html[data-theme="dark"] .bottomLinks a,html[data-theme="dark"] .privacy a{color:#e2be91}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #9b5c60;outline-offset:3px}
+@media(max-width:760px){.story,.mainpanel,.formPanel{border-radius:15px}.mainpanel,.formPanel{padding:18px}}
+@media(prefers-reduced-motion:reduce){.role{transition:none}}
+</style>
 </head>
 <body>
 
