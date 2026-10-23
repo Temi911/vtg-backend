@@ -23,9 +23,10 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 - [~] `market-intelligence.html` — intelligence cards, news density, responsive data display.
 - [ ] `intelligence-centre.html` — specialist intelligence workspace and data readability.
 - [~] `vtg-ai.html` — public AI preview, clear preview-only boundaries and CTA.
-- [ ] `product-verification.html`, `verification.html`, `buyer-verifications.html` — evidence, status, report and request flows.
+- [~] `product-verification.html`, `verification.html` — evidence, status, report and request flows; styling pass applied, interactions still need verification.
+- [ ] `buyer-verifications.html` — evidence, status, report and request flows.
 - [~] `logistics-shipping.html`, `finance-payments.html` — feature-specific layouts and information hierarchy.
-- [ ] `trade-guide.html` — trade education content and information hierarchy.
+- [~] `trade-guide.html` — trade education content and information hierarchy.
 - [~] `africa-markets.html` — market coverage cards, availability labels and responsive layout.
 
 ### Workspaces and operations
@@ -56,8 +57,8 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 
 ## Status
 - Shared typography/theme utilities and public navigation/theme handling already exist and should be reused rather than replaced with a second design system.
-- Page-specific styling passes are committed for `marketplace.html`, `supplier.html`, `trade-atlas.html`, `trade-feed.html`, `market-intelligence.html`, `vtg-ai.html`, `logistics-shipping.html`, `finance-payments.html`, `signin.html`, `sourcing-suppliers.html`, and `africa-markets.html`.
-- Static checks on those eleven pages confirm the new style blocks are balanced and are not accidentally placed after `</body>`.
+- Page-specific styling passes are committed for `marketplace.html`, `supplier.html`, `trade-atlas.html`, `trade-feed.html`, `market-intelligence.html`, `vtg-ai.html`, `logistics-shipping.html`, `finance-payments.html`, `signin.html`, `sourcing-suppliers.html`, `africa-markets.html`.
+- Static checks on these fourteen pages confirm the new style blocks are balanced and are not accidentally placed after `</body>`.
 - Visual/browser and interaction testing is still pending; do not mark these pages complete until that testing passes.
 - The latest styling commits are on the redesign branch only. A new Vercel deployment was blocked by the account's daily deployment API limit (HTTP 402, retry after 24 hours); the currently deployed preview does not include the newest page-specific changes yet.
 - The inventory is not a claim that every page has been individually redesigned or visually tested. Remaining pages must be worked through and verified in batches.
