@@ -860,6 +860,29 @@
     ].join('\n');
   }
 
+
+  function enforceFooterNoBrownNoPill() {
+    /* Final footer authority: match the landing page's charcoal footer.
+       Keep the current-page cue as a restrained red underline only—never a tan/brown fill or badge. */
+    var style = document.getElementById('vtg-footer-no-brown-no-pill');
+    if (!style) {
+      style = document.createElement('style');
+      style.id = 'vtg-footer-no-brown-no-pill';
+      document.head.appendChild(style);
+    }
+    style.textContent = [
+      'html body #vtgFooter,html body footer#vtgFooter.vtgCompactFooter,html body #vtg-shared-footer{background:#17191B!important;background-color:#17191B!important;color:#F3EFE6!important;border-top:1px solid rgba(243,239,230,.14)!important;box-shadow:none!important}',
+      'html body #vtgFooter :is(.vtgFooterTop,.vtgFooterBottom,.footerIn,.copyright),html body #vtg-shared-footer :is(.vtgFooterTop,.vtgFooterBottom,.footerIn,.copyright){background:transparent!important;background-color:transparent!important;border-color:rgba(243,239,230,.12)!important}',
+      'html body #vtgFooter :is(p,span,a,small,li,label,strong,b),html body #vtg-shared-footer :is(p,span,a,small,li,label,strong,b){background:transparent!important;color:#C7C2B8!important;-webkit-text-fill-color:#C7C2B8!important;text-shadow:none!important}',
+      'html body #vtgFooter .vtgFooterLinks h4,html body #vtg-shared-footer .vtgFooterLinks h4{color:#F3EFE6!important;-webkit-text-fill-color:#F3EFE6!important}',
+      'html body #vtgFooter a:hover,html body #vtgFooter a:focus-visible,html body #vtg-shared-footer a:hover,html body #vtg-shared-footer a:focus-visible{background:transparent!important;color:#FF8E86!important;-webkit-text-fill-color:#FF8E86!important;text-decoration:underline!important;text-decoration-color:#FF8E86!important;text-underline-offset:4px!important;box-shadow:none!important}',
+      'html body #vtgFooter [data-navkey][aria-current="page"],html body #vtg-shared-footer [data-navkey][aria-current="page"],html body #vtgFooter a[aria-current="page"],html body #vtg-shared-footer a[aria-current="page"]{position:relative!important;display:inline-block!important;background:transparent!important;background-color:transparent!important;color:#FF8E86!important;-webkit-text-fill-color:#FF8E86!important;border:0!important;border-radius:0!important;box-shadow:none!important;font-weight:800!important;text-decoration:none!important;padding-left:0!important;padding-right:0!important}',
+      'html body #vtgFooter [data-navkey][aria-current="page"]:after,html body #vtg-shared-footer [data-navkey][aria-current="page"]:after{content:""!important;display:block!important;position:absolute!important;left:0!important;right:0!important;bottom:-4px!important;height:2px!important;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;background:#FF8E86!important;color:transparent!important;box-shadow:none!important}',
+      'html body #vtgFooter [data-navkey][aria-current="page"]:before,html body #vtg-shared-footer [data-navkey][aria-current="page"]:before{content:none!important;display:none!important}',
+      'html body #vtgFooter [data-navkey][aria-current="page"]:after{font-size:0!important;letter-spacing:0!important}'
+    ].join('\\n');
+  }
+
   function init() {
     ensureTypographyStylesheet();
     ensureInterfaceStylesheet();
@@ -888,6 +911,7 @@
     enforceEveryPageIconTheme();
     enforceNightFooterContrast();
     enforceSharedPublicShellPalette();
+    enforceFooterNoBrownNoPill();
     enforceCanonicalLandingHeader();
     setActiveFooterLink();
     window.addEventListener('hashchange', setActiveFooterLink);
