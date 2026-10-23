@@ -216,18 +216,73 @@
       });
   }
   function addPageNavigation() {
-    // Reuse the actual landing-page header on every public page. Dashboards are
-    // excluded by init() and keep their own workspace navigation.
-    if (isHomePage() || document.getElementById('vtgPageNavigation') || isWorkspaceDashboardPage()) return;
+    if (isHomePage()) return;
+
+    function goPrevious() {
+      var canReturn = false;
+      try {
+        if (document.referrer) {
+          var previous = new URL(document.referrer, window.location.href);
+          canReturn = previous.origin === window.location.origin &&
+            (previous.pathname !== window.location.pathname || previous.search !== window.location.search || previous.hash !== window.location.hash);
+        }
+      } catch (_) {}
+      if (canReturn && window.history.length > 1) window.history.back();
+      else window.location.href = HOME;
+    }
+
+    // Dashboards keep their native workspace header and controls. Add Previous
+    // beside the existing Home link rather than replacing the dashboard header.
+    if (isWorkspaceDashboardPage()) {
+      var actions = document.querySelector('.topactions, .header-actions, .headerActions, .top-actions');
+      if (actions && !document.getElementById('vtgPreviousPage')) {
+        var previousButton = document.createElement('button');
+        previousButton.type = 'button';
+        previousButton.id = 'vtgPreviousPage';
+        previousButton.className = 'btn';
+        previousButton.textContent = '← Previous';
+        previousButton.setAttribute('aria-label', 'Return to previous page');
+        previousButton.addEventListener('click', goPrevious);
+        var homeLink = actions.querySelector('a[href="/frontend-v3.html"], a[href="/"]');
+        if (homeLink) actions.insertBefore(previousButton, homeLink);
+        else actions.insertBefore(previousButton, actions.firstChild);
+      }
+      return;
+    }
+
+    if (document.getElementById('vtgPageNavigation')) return;
     var header = document.createElement('header');
     header.id = 'vtgPageNavigation';
     header.className = 'nav vtgCanonicalLandingHeader vtg-public-header';
     header.setAttribute('aria-label', 'VTG site navigation');
-    header.innerHTML = '<div class="navin"><a class="brand" href="' + HOME + '#top" aria-label="Vintage Trade Global"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><div class="navtools" aria-label="VTG quick access"><a class="headerFeatureBtn" id="atlasHeaderBtn" href="/trade-atlas.html" title="Open Trade Atlas" aria-label="Open Trade Atlas"><i data-lucide="globe-2"></i><span>Trade Atlas</span></a><a class="primary headerEnterBtn" id="joinBtn" href="/signin.html" aria-label="Enter VTG and sign in"><i data-lucide="arrow-up-right"></i><span>Enter VTG</span></a></div></div>';
+    header.innerHTML = '<div class="navin"><a class="brand" href="' + HOME + '#top" aria-label="Vintage Trade Global home"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><div class="navtools vtg-page-nav-actions"><button type="button" id="vtgPreviousPage" aria-label="Return to previous page"><span aria-hidden="true">←</span><span>Previous</span></button><a href="' + HOME + '" aria-label="Return to VTG homepage"><span aria-hidden="true">⌂</span><span>Home</span></a></div></div>';
     document.body.insertBefore(header, document.body.firstChild);
-    if (window.lucide && typeof window.lucide.createIcons === 'function') {
-      try { window.lucide.createIcons(); } catch (_) {}
+    var actions = header.querySelector('.vtg-page-nav-actions');
+    if (actions) {
+      actions.style.display = 'flex';
+      actions.style.alignItems = 'center';
+      actions.style.justifyContent = 'flex-end';
+      actions.style.gap = '8px';
+      actions.style.marginLeft = 'auto';
+      actions.querySelectorAll('a,button').forEach(function (control) {
+        control.style.display = 'inline-flex';
+        control.style.alignItems = 'center';
+        control.style.justifyContent = 'center';
+        control.style.gap = '6px';
+        control.style.minHeight = '36px';
+        control.style.padding = '0 12px';
+        control.style.border = '1px solid var(--line, #dedede)';
+        control.style.borderRadius = '8px';
+        control.style.background = 'transparent';
+        control.style.color = 'inherit';
+        control.style.font = '600 12px/1.2 Manrope, Arial, sans-serif';
+        control.style.textDecoration = 'none';
+        control.style.cursor = 'pointer';
+        control.style.whiteSpace = 'nowrap';
+      });
     }
+    var previous = document.getElementById('vtgPreviousPage');
+    if (previous) previous.addEventListener('click', goPrevious);
   }
   function enforceCanonicalLandingHeader() {
     if (isHomePage() || isWorkspaceDashboardPage()) return;
