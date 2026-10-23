@@ -1,5 +1,5 @@
-/* VTG navigation. Shared header/footer, day/night mode and preset styling apply site-wide except buyer/supplier dashboards. */
-/* 2026-10-23: every public page uses the landing page's actual header and footer markup; dashboards are excluded. */
+/* VTG navigation. Shared public navigation and theme controls apply site-wide; only the landing page retains a footer. */
+/* 2026-10-23: landing page is the sole page with a footer. */
 /* 2026-10-17: persist visitor presets site-wide; enforce themed headers/footers and dark-by-default. */
 (function () {
   'use strict';
@@ -129,19 +129,13 @@
     });
   }
   function renderFooter() {
-    // Public pages and landing use one canonical footer. Dashboards are deliberately
-    // left alone and retain their own workspace utility/footer controls.
-    if (isWorkspaceDashboardPage()) return;
-    var old = Array.prototype.slice.call(document.querySelectorAll('footer, .vtgCompactFooter, .site-footer, .siteFooter, .footer'));
-    var host = document.createElement('div');
-    host.innerHTML = FOOTER_HTML;
-    var footer = host.firstElementChild;
-    if (old.length) {
-      old[0].replaceWith(footer);
-      old.slice(1).forEach(function (extra) { extra.remove(); });
-    } else {
-      document.body.appendChild(footer);
-    }
+    // The landing page keeps its own footer. Every other page, including dashboards,
+    // has all footer elements removed and receives no shared footer.
+    if (isHomePage()) return;
+    var selectors = 'footer, #vtgFooter, #vtg-shared-footer, .vtgCompactFooter, .site-footer, .siteFooter, .footerGrid, .dashboard-footer, .dashboardFooter';
+    Array.prototype.slice.call(document.querySelectorAll(selectors)).forEach(function (node) {
+      if (node && !node.closest('#landing')) node.remove();
+    });
   }
   function setActiveFooterLink() {
     var path = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
