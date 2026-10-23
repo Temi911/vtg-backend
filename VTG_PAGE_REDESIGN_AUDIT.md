@@ -14,7 +14,7 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 ## Page inventory and redesign queue
 
 ### Core entry and discovery
-- [ ] `frontend-v3.html` — landing page; correct CSS placement, CTA/card contrast, validate carousel and responsive layout.
+- [~] `frontend-v3.html` — landing-page redesign and CSS placement/contrast fixes are already committed; verify hero artwork, 36-category carousel, 3-second rotation, links and responsive layout.
 - [~] `marketplace.html` — product discovery, search, filters, listing cards, empty/error states.
 - [~] `supplier.html` — supplier profile, credibility/evidence presentation, contact journey.
 - [~] `sourcing-suppliers.html` — supplier discovery and sourcing journey.
@@ -70,4 +70,5 @@ Page-specific styling passes are committed for `marketplace.html`, `supplier.htm
 - These are static source checks, not browser-rendering, accessibility-audit, or end-to-end interaction tests.
 - Visual/browser and interaction testing is still pending; do not mark these pages complete until that testing passes.
 - The latest styling commits are on the redesign branch only. A new Vercel deployment was blocked by the account's daily deployment API limit (HTTP 402, retry after 24 hours); the currently deployed preview does not include the newest page-specific changes yet.
-- The inventory is not a claim that every page has been individually redesigned or visually tested. Remaining pages must be worked through and verified in batches.
+- The repository inventory contains 54 HTML pages. All pages are now accounted for in the redesign queue: 45 have page-specific styling passes, the landing page has its existing redesign/fix pass, and eight dashboard pages receive the shared dashboard typography/control refinement.
+- This is not a declaration of completion. Browser rendering, mobile layouts, light/dark presets, links, forms, API-backed workflows and role access still need end-to-end verification in batches.
