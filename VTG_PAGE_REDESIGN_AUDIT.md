@@ -35,7 +35,8 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 - [ ] `inspection-request.html`, `inspection-payment-callback.html` — inspection request/payment states.
 
 ### Authentication, onboarding and account
-- [ ] `signin.html`, `signup.html`, `signup-agreement.html`, `admin-signin.html`, `workforce-signin.html`, `workforce-access.html`.
+- [~] `signin.html` — styling pass applied; remaining authentication pages still queued.
+- [ ] `signup.html`, `signup-agreement.html`, `admin-signin.html`, `workforce-signin.html`, `workforce-access.html`.
 - [ ] `buyer-signup.html`, `supplier-signup.html`, `bank-signup.html`.
 - [ ] `account-help.html`, `contact.html`, `partnership-application.html`.
 
@@ -46,7 +47,15 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 ### Minimal/utility pages
 - [ ] `network.html`, `agent.html`.
 
+## Status legend
+- `[ ]` Not yet redesigned in this pass.
+- `[~]` A page-specific styling pass has been committed; still needs rendered desktop/mobile, light/dark, link and interaction verification.
+- `[x]` Fully verified in the rendered site.
+
 ## Status
 - Shared typography/theme utilities and public navigation/theme handling already exist and should be reused rather than replaced with a second design system.
-- Latest CSS-document-closing fix is deployed to the redesign preview.
-- The inventory is not a claim that every page has been individually redesigned or visually tested. Each group must be worked through and verified in batches.
+- Page-specific styling passes are now committed for `marketplace.html`, `supplier.html`, `trade-atlas.html`, `trade-feed.html`, `market-intelligence.html`, `vtg-ai.html`, `logistics-shipping.html`, `finance-payments.html`, and `signin.html`.
+- Static checks on those nine pages confirm the new style blocks are balanced and are not accidentally placed after `</body>`.
+- Visual/browser and interaction testing is still pending; do not mark these pages complete until that testing passes.
+- The latest styling commits are on the redesign branch only. A new Vercel deployment was blocked by the account's daily deployment API limit (HTTP 402, retry after 24 hours); the currently deployed preview does not include the newest page-specific changes yet.
+- The inventory is not a claim that every page has been individually redesigned or visually tested. Remaining pages must be worked through and verified in batches.
