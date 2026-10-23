@@ -65,6 +65,72 @@
 }
 </style>
 <link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<style id="vtg-marketplace-premium-refresh">
+/* Page-specific premium refresh. Preserve catalogue data, search, enquiry logic and the existing hero artwork. */
+:root{--navy:#202326;--deep:#17191b;--red:#702a30;--red-dark:#552126;--bg:#f7f5f0;--white:#fffefa;--ink:#242321;--muted:#625d56;--line:#ddd6cb;--soft:#f2e9e5;--shadow:0 18px 48px rgba(30,25,22,.07)}
+body{background:var(--bg);color:var(--ink)}
+.nav{background:rgba(247,245,240,.94);border-color:var(--line);backdrop-filter:blur(18px)}
+.navin{max-width:1320px;padding-top:15px;padding-bottom:15px}
+.navlinks{gap:clamp(12px,1.8vw,24px);font-size:11px;color:#514b45}
+.navlinks a{transition:color .18s ease}
+.navlinks a:hover{color:var(--red)}
+.shell{max-width:1320px;padding:30px 26px 82px}
+.hero{position:relative;overflow:hidden;isolation:isolate;min-height:360px;align-items:center;gap:clamp(24px,4vw,60px);padding:clamp(30px,5vw,66px);border:1px solid #ded4c8;border-radius:24px;background:linear-gradient(112deg,#fffefa 0%,#f5eee5 56%,#e9e0d4 100%);box-shadow:0 24px 65px rgba(43,34,29,.08)}
+.hero>div:first-child{position:relative;z-index:2;max-width:690px}
+.hero .eyebrow,.sectionIntro .eyebrow{color:#702a30;font-size:10px;letter-spacing:.16em}
+.hero h1{max-width:700px;font-size:clamp(34px,4.5vw,60px);line-height:1.05;letter-spacing:-.045em;color:#202326;margin:14px 0 18px;text-wrap:balance}
+.hero p{max-width:650px;color:#625d56;font-size:14px;line-height:1.8}
+.heroArt{border-radius:18px;min-height:250px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.28);background-position:center;background-size:cover}
+.btn{min-height:42px;border-radius:10px;padding:12px 17px;font-size:11px;letter-spacing:.01em}
+.btn.primary{background:#702a30;border-color:#702a30;color:#fff}
+.btn.primary:hover{background:#552126;border-color:#552126}
+.btn.outline{background:rgba(255,254,250,.86);border-color:#cfc2b6;color:#302a26}
+.trustbar{gap:12px;margin:22px 0 42px}
+.trustitem{border:1px solid var(--line);border-radius:15px;background:#fffefa;padding:18px;box-shadow:0 8px 24px rgba(30,25,22,.035)}
+.trusticon{color:#702a30;background:#f3e8e4;border-radius:10px}
+.trustitem strong{color:#292522;font-size:12px}
+.trustitem span{color:#6d665f;line-height:1.6}
+.sectionIntro{align-items:end;gap:24px;margin:40px 0 20px}
+.sectionIntro h2{font-size:clamp(24px,3vw,36px);letter-spacing:-.035em;color:#242321}
+.sectionIntro>p{max-width:460px;color:#625d56;line-height:1.75;font-size:12px}
+.searchpanel{border:1px solid var(--line);border-radius:18px;background:#fffefa;box-shadow:0 12px 34px rgba(30,25,22,.045);padding:clamp(18px,2.5vw,28px)}
+.searchheading{color:#242321}
+.searchbar input,.searchbar select{min-height:46px;border-radius:10px;border-color:#d9d0c6;background:#fffefa;color:#242321}
+.categoryTile{border:1px solid var(--line);border-radius:14px;background:#fffefa;transition:transform .18s,border-color .18s,box-shadow .18s}
+.categoryTile:hover{transform:translateY(-2px);border-color:#b98c86;box-shadow:0 12px 26px rgba(43,34,29,.07)}
+.card{overflow:hidden;border:1px solid #e1d9cf;border-radius:16px;background:#fffefa;box-shadow:0 9px 28px rgba(30,25,22,.045);transition:transform .18s,border-color .18s,box-shadow .18s}
+.card:hover{transform:translateY(-3px);border-color:#c7aaa3;box-shadow:0 18px 38px rgba(30,25,22,.09)}
+.photo{background:#f0ece5}
+.photo img{object-fit:contain}
+.cardbody{padding:19px}
+.category{color:#702a30;background:#f4e9e5;border-radius:6px;letter-spacing:.07em}
+.card h3{color:#242321;font-size:16px;line-height:1.4;letter-spacing:-.02em}
+.desc{color:#625d56;line-height:1.7}
+.price{color:#702a30;font-size:17px;font-weight:800}
+.unit{color:#746d65;font-size:10px}
+.supplier{color:#625d56;border-top:1px solid #eee7df;padding-top:12px}
+.verified{color:#286b54;background:#e8f3ec;border-radius:6px}
+.cardactions{gap:8px}
+.empty,.notice{border-radius:14px}
+.modal .box{border:1px solid #ddd6cb;border-radius:18px;background:#fffefa;box-shadow:0 24px 70px rgba(0,0,0,.2)}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid #9b5c60;outline-offset:3px}
+html[data-theme="dark"] body{background:#17191b;color:#f3efe6}
+html[data-theme="dark"] .nav{background:rgba(23,25,27,.95);border-color:#3b3d40}
+html[data-theme="dark"] .navlinks{color:#d0c8be}
+html[data-theme="dark"] .hero{background:linear-gradient(112deg,#222426,#292522 65%,#302728);border-color:#45403c}
+html[data-theme="dark"] .hero h1,html[data-theme="dark"] .sectionIntro h2,html[data-theme="dark"] .searchheading,html[data-theme="dark"] .trustitem strong,html[data-theme="dark"] .card h3{color:#f3efe6}
+html[data-theme="dark"] .hero p,html[data-theme="dark"] .sectionIntro>p,html[data-theme="dark"] .desc,html[data-theme="dark"] .supplier,html[data-theme="dark"] .trustitem span{color:#c5bfb5}
+html[data-theme="dark"] .trustitem,html[data-theme="dark"] .searchpanel,html[data-theme="dark"] .categoryTile,html[data-theme="dark"] .card,html[data-theme="dark"] .modal .box{background:#202326;border-color:#3b3d40}
+html[data-theme="dark"] .searchbar input,html[data-theme="dark"] .searchbar select{background:#17191b;color:#f3efe6;border-color:#45484b}
+html[data-theme="dark"] .photo{background:#292b2d}
+html[data-theme="dark"] .btn.outline{background:#292b2d;color:#f3efe6;border-color:#4b4d50}
+html[data-theme="dark"] .category{background:#43282a;color:#f2c6c2}
+html[data-theme="dark"] .price{color:#e2be91}
+html[data-theme="dark"] .supplier{border-color:#3b3d40}
+html[data-theme="dark"] .verified{background:#1e3a30;color:#b4e4c8}
+@media(max-width:760px){.shell{padding:18px 14px 52px}.hero{min-height:0;padding:26px 20px;border-radius:18px}.heroArt{min-height:180px}.trustbar{margin:16px 0 30px}.sectionIntro{align-items:start}.cardbody{padding:15px}.navin{padding-left:14px;padding-right:14px}}
+@media(prefers-reduced-motion:reduce){.card,.categoryTile,.navlinks a{transition:none}}
+</style>
 </head>
 <body>
 <div class="top"></div>
