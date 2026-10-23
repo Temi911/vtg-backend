@@ -123,7 +123,7 @@
     // The landing page keeps its own footer. Every other page, including dashboards,
     // has all footer elements removed and receives no shared footer.
     if (isHomePage()) return;
-    var selectors = 'footer, #vtgFooter, #vtg-shared-footer, .vtgCompactFooter, .site-footer, .siteFooter, .footerGrid, .dashboard-footer, .dashboardFooter';
+    var selectors = 'footer, #vtgFooter, #vtg-shared-footer, .vtgCompactFooter, .site-footer, .siteFooter, .footer, .footerGrid, .dashboard-footer, .dashboardFooter';
     Array.prototype.slice.call(document.querySelectorAll(selectors)).forEach(function (node) {
       if (node && !node.closest('#landing')) node.remove();
     });
