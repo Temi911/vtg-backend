@@ -43,11 +43,12 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 - [ ] `signup-agreement.html`, `admin-signin.html`, `workforce-signin.html`, `workforce-access.html`.
 - [~] `buyer-signup.html`, `supplier-signup.html`, `bank-signup.html` — role-specific forms preserved; visual and submission testing pending.
 - [~] `account-help.html`, `contact.html` — styling pass applied; form/action verification pending.
-- [ ] `partnership-application.html`.
+- [~] `partnership-application.html` — styling pass applied; form submission still needs verification.
 
 ### Company, partnerships and legal
 - [~] `about-vintage.html` — editorial styling pass applied; responsive review pending.
-- [ ] `partnerships.html`, `partnership-finance.html`, `partnership-logistics.html`, `partnership-strategic.html`, `partnership-supply.html`, `partnership-technology.html`, `partnership-trade.html`, `partnership-warehouse.html`.
+- [~] `partnerships.html`, `partnership-finance.html`, `partnership-logistics.html` — styling pass applied; responsive and link review pending.
+- [ ] `partnership-strategic.html`, `partnership-supply.html`, `partnership-technology.html`, `partnership-trade.html`, `partnership-warehouse.html`.
 - [ ] `privacy.html`, `terms.html`, `code-of-conduct.html`.
 
 ### Minimal/utility pages
@@ -60,8 +61,8 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 
 ## Status
 - Shared typography/theme utilities and public navigation/theme handling already exist and should be reused rather than replaced with a second design system.
-- Page-specific styling passes are committed for `marketplace.html`, `supplier.html`, `trade-atlas.html`, `trade-feed.html`, `market-intelligence.html`, `vtg-ai.html`, `logistics-shipping.html`, `finance-payments.html`, `signin.html`, `sourcing-suppliers.html`, `africa-markets.html`, `product-verification.html`, `verification.html`, `trade-guide.html`, `buyer-verifications.html`, `intelligence-centre.html`, `signup.html`, `buyer-signup.html`, `supplier-signup.html`, `bank-signup.html`, `contact.html`, `account-help.html`, and `about-vintage.html`.
-- Static checks on these twenty-three pages confirm the new style blocks are balanced and are not accidentally placed after `</body>`.
+- Page-specific styling passes are committed for `marketplace.html`, `supplier.html`, `trade-atlas.html`, `trade-feed.html`, `market-intelligence.html`, `vtg-ai.html`, `logistics-shipping.html`, `finance-payments.html`, `signin.html`, `sourcing-suppliers.html`, `africa-markets.html`, `product-verification.html`, `verification.html`, `trade-guide.html`, `buyer-verifications.html`, `intelligence-centre.html`, `signup.html`, `buyer-signup.html`, `supplier-signup.html`, `bank-signup.html`, `contact.html`, `account-help.html`, `about-vintage.html`, `partnerships.html`, `partnership-finance.html`, `partnership-logistics.html`, and `partnership-application.html`.
+- Static checks on these twenty-seven pages confirm the new style blocks are balanced and are not accidentally placed after `</body>`.
 - Visual/browser and interaction testing is still pending; do not mark these pages complete until that testing passes.
 - The latest styling commits are on the redesign branch only. A new Vercel deployment was blocked by the account's daily deployment API limit (HTTP 402, retry after 24 hours); the currently deployed preview does not include the newest page-specific changes yet.
 - The inventory is not a claim that every page has been individually redesigned or visually tested. Remaining pages must be worked through and verified in batches.
