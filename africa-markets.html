@@ -66,12 +66,7 @@ html[data-theme="dark"] .port{background:#292b2d;border-color:#45484b;color:#d4c
 </main>
 <script>
 (function(){
- const root=document.documentElement,themeButton=document.getElementById('theme-toggle');
- function autoTheme(){return new Date().getHours()>=6&&new Date().getHours()<18?'light':'dark'}
- let manual=localStorage.getItem('vtg_theme_override');
- root.dataset.theme=manual==='light'||manual==='dark'?manual:autoTheme();
- themeButton.textContent='Use '+(root.dataset.theme==='light'?'dark':'light')+' theme';
- themeButton.addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='light'?'dark':'light';manual=root.dataset.theme;localStorage.setItem('vtg_theme_override',manual);themeButton.textContent='Use '+(manual==='light'?'dark':'light')+' theme'});
+ // Appearance is controlled by the shared VTG site navigation/theme controller.
  const list=document.getElementById('markets'),search=document.getElementById('search'),status=document.getElementById('status'),count=document.getElementById('count');
  let markets=[];
  const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
