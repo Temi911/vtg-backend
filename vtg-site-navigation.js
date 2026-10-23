@@ -761,7 +761,7 @@
       'html[data-theme="dark"] body #vtg-shared-footer :is(a,span,button,select){color:#f3f6f8!important;-webkit-text-fill-color:#f3f6f8!important;opacity:1!important;visibility:visible!important}',
       'html[data-theme="light"] body #vtg-shared-footer a[aria-current="page"],html[data-theme="light"] body #vtg-shared-footer span[aria-current="page"]{background:#fbe9e8!important;color:#851d24!important;-webkit-text-fill-color:#851d24!important}',
       'html[data-theme="dark"] body #vtg-shared-footer a[aria-current="page"],html[data-theme="dark"] body #vtg-shared-footer span[aria-current="page"]{background:#3a1d20!important;color:#ffd8d5!important;-webkit-text-fill-color:#ffd8d5!important}'
-    ].join('\\n');
+    ].join('\n');
     document.head.appendChild(style);
   }
 
