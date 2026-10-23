@@ -12,6 +12,47 @@ html[data-theme=dark]{color-scheme:dark;--bg:#0d1117;--surface:#151b23;--ink:#ee
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif;line-height:1.55}.wrap{max-width:1180px;margin:auto;padding:28px 22px 56px}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:26px}.eyebrow{text-transform:uppercase;letter-spacing:.13em;font-size:11px;font-weight:800;color:var(--accent)}h1{font-size:clamp(30px,5vw,48px);letter-spacing:-.04em;line-height:1.12;margin:8px 0 14px}h2{font-size:20px;margin:0 0 8px}p{margin:0 0 12px}.muted{color:var(--muted)}button,select,input{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}button{font-weight:800;cursor:pointer}button:hover{border-color:var(--accent)}.hero{padding:clamp(22px,4vw,42px);border:1px solid var(--line);border-radius:24px;background:var(--surface);box-shadow:0 14px 38px #00000008}.notice{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--soft);margin-top:22px}.notice strong{display:block;margin-bottom:3px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:24px 0 14px}.toolbar input{flex:1;min-width:210px}.count{margin-left:auto;font-size:12px;font-weight:800;color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.market{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;min-width:0;display:flex;flex-direction:column;gap:14px}.market-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.market h2{font-size:21px}.badge{font-size:10px;text-transform:uppercase;letter-spacing:.04em;font-weight:800;padding:6px 9px;border-radius:999px;white-space:nowrap}.foundation{color:var(--foundation);background:var(--foundation-bg)}.planned{color:var(--planned);background:var(--planned-bg)}.meta{display:grid;grid-template-columns:1fr 1fr;gap:9px}.meta div{padding:10px;border-radius:10px;background:var(--bg);min-width:0}.meta small{display:block;color:var(--muted);font-size:11px;font-weight:700}.meta b{font-size:13px;overflow-wrap:anywhere}.ports{display:flex;gap:7px;flex-wrap:wrap}.port{font-size:11px;border:1px solid var(--line);border-radius:8px;padding:5px 8px}.footnote{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;margin-top:auto}.state{padding:24px;text-align:center;border:1px dashed var(--line);border-radius:14px;color:var(--muted);grid-column:1/-1}.bottom-note{margin-top:22px;font-size:12px;color:var(--muted)}@media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.wrap{padding:18px 14px 38px}.grid{grid-template-columns:1fr}.top{align-items:flex-start}.count{margin-left:0;width:100%}.market{padding:17px}}
 </style>
 <link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<style id="vtg-africa-markets-premium-refresh">
+/* Africa market coverage directory refresh; market availability labels and source content remain unchanged. */
+:root{--bg:#f7f5f0;--panel:#fffefa;--line:#ddd6cb;--text:#242321;--muted:#625d56;--red:#702a30;--gold:#b49a70}
+body{background:#f7f5f0;color:#242321}
+.wrap{max-width:1240px}
+.top{background:#702a30}
+.hero{padding:clamp(30px,4vw,52px) 0 26px}
+.eyebrow{color:#702a30;letter-spacing:.15em}
+h1{color:#202326;font-size:clamp(34px,4.5vw,54px);line-height:1.05;letter-spacing:-.045em;text-wrap:balance}
+.hero p{max-width:800px;color:#625d56;line-height:1.85;font-size:14px}
+.notice{border:1px solid #e2d5c9;border-radius:12px;background:#faf4ec;color:#625d56;line-height:1.75;padding:15px 17px}
+.toolbar{gap:12px;padding:14px;border:1px solid #e0d8ce;border-radius:13px;background:#fffefa;box-shadow:0 8px 24px rgba(30,25,22,.035)}
+.toolbar input,.toolbar select{min-height:42px;border:1px solid #d9d0c6;border-radius:9px;background:#fffefa;color:#242321}
+.count{color:#625d56}
+.grid{gap:15px}
+.market{overflow:hidden;border:1px solid #e0d8ce;border-radius:15px;background:#fffefa;box-shadow:0 8px 24px rgba(30,25,22,.035);transition:transform .18s,border-color .18s,box-shadow .18s}
+.market:hover{transform:translateY(-2px);border-color:#c7aaa3;box-shadow:0 15px 34px rgba(30,25,22,.07)}
+.market-head{border-color:#eee7df;background:#faf6f0}
+.market h2,.market h3{color:#242321;letter-spacing:-.02em}
+.market p,.meta{color:#625d56;line-height:1.75}
+.badge{border:1px solid #e0c9c4;border-radius:7px;background:#f2e9e5;color:#702a30}
+.foundation{background:#e8f3ec;color:#286b54}
+.planned{background:#f6edda;color:#7b5b24}
+.ports{gap:7px}
+.port{border:1px solid #e4d9ce;border-radius:7px;background:#faf6f0;color:#625d56;padding:6px 8px}
+.footnote,.bottom-note{border:1px solid #e0d8ce;border-radius:12px;background:#fffefa;color:#625d56;line-height:1.75;padding:14px 16px}
+.state{color:#625d56}
+html[data-theme="dark"] body{background:#17191b;color:#f3efe6}
+html[data-theme="dark"] h1,html[data-theme="dark"] .market h2,html[data-theme="dark"] .market h3{color:#f3efe6}
+html[data-theme="dark"] .hero p,html[data-theme="dark"] .count,html[data-theme="dark"] .market p,html[data-theme="dark"] .meta,html[data-theme="dark"] .footnote,html[data-theme="dark"] .bottom-note,html[data-theme="dark"] .state{color:#c5bfb5}
+html[data-theme="dark"] .notice{background:#292522;border-color:#45403c;color:#d4ccc2}
+html[data-theme="dark"] .toolbar,html[data-theme="dark"] .market,html[data-theme="dark"] .footnote,html[data-theme="dark"] .bottom-note{background:#202326;border-color:#3b3d40}
+html[data-theme="dark"] .market-head{background:#292b2d;border-color:#3b3d40}
+html[data-theme="dark"] .toolbar input,html[data-theme="dark"] .toolbar select{background:#17191b;color:#f3efe6;border-color:#45484b}
+html[data-theme="dark"] .badge{background:#43282a;color:#f2c6c2;border-color:#65464a}
+html[data-theme="dark"] .foundation{background:#1e3a30;color:#b4e4c8}
+html[data-theme="dark"] .planned{background:#41351e;color:#efd39a}
+html[data-theme="dark"] .port{background:#292b2d;border-color:#45484b;color:#d4ccc2}
+@media(max-width:760px){.hero{padding-top:26px}.toolbar{padding:11px}.grid{gap:12px}}
+@media(prefers-reduced-motion:reduce){.market{transition:none}}
+</style>
 </head>
 <body><main class="wrap">
 
@@ -20,24 +61,12 @@ html[data-theme=dark]{color-scheme:dark;--bg:#0d1117;--surface:#151b23;--ink:#ee
 <div class="toolbar"><input id="search" type="search" placeholder="Search country, region, currency or port" aria-label="Search markets"><select id="status" aria-label="Filter by market status"><option value="">All statuses</option><option value="foundation">Foundation market</option><option value="planned">Planned markets</option></select><span class="count" id="count" aria-live="polite">Loading markets…</span></div>
 <section class="grid" id="markets" aria-live="polite"><div class="state">Loading the market catalogue…</div></section>
 <p class="bottom-note">Before a market is launched, VTG must verify local regulatory sources, freight and inland partners, support coverage, country-specific payment and landed-cost requirements, and any local representatives. This page does not constitute legal, customs or tax advice.</p>
-<footer style="margin:34px calc(50% - 50vw) 0;padding:28px max(22px,calc((100vw - 1136px)/2));background:var(--surface);border-top:1px solid var(--line)">
- <div style="max-width:1136px;margin:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px" class="footer-grid">
-  <div><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global" style="width:58px;height:44px;object-fit:contain"><p class="muted" style="font-size:12px;margin-top:8px">Connecting Africa, China and the world through intelligent trade.</p></div>
-  <div><strong>Explore</strong><p style="margin-top:10px;font-size:13px"><a href="/marketplace.html">Marketplace</a></p><p style="font-size:13px"><a href="/trade-atlas.html">Trade Atlas</a></p><p style="font-size:13px"><a href="/market-intelligence.html">Market Intelligence</a></p><p style="font-size:13px"><a href="/trade-feed.html">Trade Feed</a></p><p style="font-size:13px"><a href="/africa-markets.html">Africa Markets</a></p></div>
-  <div><strong>Trade</strong><p style="margin-top:10px;font-size:13px"><a href="/product-verification.html">Product Verification</a></p><p style="font-size:13px"><a href="/logistics-shipping.html">Logistics &amp; Shipping</a></p><p style="font-size:13px"><a href="/signin.html">Sign in</a></p></div>
-  <div><strong>Company</strong><p style="margin-top:10px;font-size:13px"><a href="/about-vintage.html">About VTG</a></p><p style="font-size:13px"><a href="/partnerships.html">Partnerships</a></p><p style="font-size:13px"><a href="/contact.html">Contact VTG</a></p></div>
- </div><div style="max-width:1136px;margin:22px auto 0;padding-top:14px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)">© 2026 Vintage Trade Global • Powered by Folayele Global Resources Limited <span style="float:right"><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/code-of-conduct.html">Code of Conduct</a></span></div>
-</footer>
+
 <style>@media(max-width:650px){.footer-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}</style>
 </main>
 <script>
 (function(){
- const root=document.documentElement,themeButton=document.getElementById('theme-toggle');
- function autoTheme(){return new Date().getHours()>=6&&new Date().getHours()<18?'light':'dark'}
- let manual=localStorage.getItem('vtg_theme_override');
- root.dataset.theme=manual==='light'||manual==='dark'?manual:autoTheme();
- themeButton.textContent='Use '+(root.dataset.theme==='light'?'dark':'light')+' theme';
- themeButton.addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='light'?'dark':'light';manual=root.dataset.theme;localStorage.setItem('vtg_theme_override',manual);themeButton.textContent='Use '+(manual==='light'?'dark':'light')+' theme'});
+ // Appearance is controlled by the shared VTG site navigation/theme controller.
  const list=document.getElementById('markets'),search=document.getElementById('search'),status=document.getElementById('status'),count=document.getElementById('count');
  let markets=[];
  const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -56,5 +85,5 @@ html[data-theme=dark]{color-scheme:dark;--bg:#0d1117;--surface:#151b23;--ink:#ee
  fetch('/api/africa/markets',{headers:{Accept:'application/json'},cache:'no-store'}).then(async r=>{const d=await r.json();if(!r.ok)throw new Error(d.error?.message||'Market catalogue unavailable');if(d.status!=='planning_data'||d.liveProviderData!==false||!Array.isArray(d.markets))throw new Error('The market catalogue returned an unexpected response.');markets=d.markets;render()}).catch(err=>{count.textContent='Catalogue unavailable';list.innerHTML='<div class="state">We could not load the market catalogue. '+esc(err.message)+'<br><br><button type="button" id="retry">Try again</button></div>';document.getElementById('retry').addEventListener('click',()=>location.reload())});
 })();
 </script>
-<script src="/vtg-site-navigation.js?v=20261020-universal-header-1" defer></script>
+<script src="/vtg-site-navigation.js?v=20261023-no-footer-2" defer></script>
 </body></html>

@@ -1,4 +1,24 @@
 <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>VTG Inspection Control</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet"><style>:root{font-family:Manrope,Arial,sans-serif;color:#23100e;background:#f5f8f9}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1200px;margin:auto;padding:24px}.top{display:flex;justify-content:space-between;align-items:center}.top img{width:160px}.card{background:#fff;border:1px solid #dce5e8;border-radius:15px;padding:18px;margin:14px 0}.row{display:flex;justify-content:space-between;gap:15px;align-items:center}.tag{display:inline-block;font-size:10px;font-weight:800;padding:5px 8px;border-radius:99px;background:#edf1f2;text-transform:uppercase}.tag.paid{background:#e6f7ee}.tag.pending{background:#fff4d6}.tag.unpaid{background:#fdecec}.tag.ready{background:#e8f1ff}.btn{border:0;border-radius:8px;padding:9px 12px;background:#8f1d17;color:#fff;font-weight:800;cursor:pointer}.btn.alt{background:#edf1f2;color:#22343b}.btn:disabled{opacity:.5;cursor:not-allowed}.muted{color:#667085;font-size:12px;line-height:1.6}.item{border:1px solid #dce5e8;border-radius:11px;padding:14px;margin-top:9px}.select{padding:8px;border:1px solid #dce5e8;border-radius:8px;max-width:260px}.state{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.actions{margin-top:11px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}@media(max-width:650px){.row{align-items:flex-start;flex-direction:column}.wrap{padding:14px}.select{max-width:100%;width:100%}}</style><link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<style id="vtg-inspection-admin-premium-refresh">
+/* Inspection control desk refinement; preserve payment gating, agent assignment and admin API actions. */
+.wrap{width:min(1180px,calc(100% - 32px));padding:clamp(20px,4vw,40px) 0 70px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}
+.top img{display:block;width:auto;max-width:150px;max-height:40px;object-fit:contain}
+.card{padding:clamp(16px,2.5vw,24px);border-radius:15px;box-shadow:0 10px 28px rgba(22,31,43,.05)}
+.card h1,.card h2{letter-spacing:-.03em}
+.row{gap:12px}
+.item{padding:14px;margin:10px 0;border-radius:12px}
+.tag{display:inline-flex;align-items:center;min-height:26px;padding:5px 9px;border-radius:7px;font-size:10px;font-weight:800}
+.btn{font-weight:700;transition:filter .16s,transform .16s}
+.btn:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.btn:focus-visible,.select:focus-visible,a:focus-visible{outline:2px solid var(--r,#9b5c60);outline-offset:2px}
+.select{min-height:40px;max-width:100%;font:inherit}
+.muted{line-height:1.7}
+html[data-theme="light"] .card{box-shadow:0 10px 28px rgba(22,31,43,.045)}
+html[data-theme="dark"] .card{box-shadow:0 12px 34px rgba(0,0,0,.18)}
+@media(max-width:640px){.wrap{width:calc(100% - 24px);padding-top:18px}.top{align-items:flex-start}.card{padding:15px}.row{align-items:flex-start}}
+@media(prefers-reduced-motion:reduce){.btn{transition:none}}
+</style>
 </head><body><main class="wrap"><div class="top"><a href="/"><img src="/assets/vtg-logo.svg" alt="VTG"></a><a href="/" class="btn alt">VTG</a></div><section class="card"><h1>Inspection Control Centre</h1><p class="muted">Manage payment-gated agent assignment, inspection progress and agent payouts.</p><div id="msg" class="muted"></div></section><section class="card"><h2>Inspection requests</h2><div id="requests">Loading…</div></section><section class="card"><h2>Agent network</h2><div id="agents">Loading…</div></section></main><script>const $=s=>document.querySelector(s),token=()=>localStorage.getItem('vtg_access_token')||'';async function api(p,o={}){o.headers=Object.assign({'Authorization':'Bearer '+token()},o.headers||{});return fetch('/api'+p,o)}function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function payLabel(s){s=String(s||'unpaid').toLowerCase();return s==='paid'?'Paid':s==='pending'?'Pending':'Unpaid'}function payClass(s){s=String(s||'unpaid').toLowerCase();return s==='paid'?'paid':s==='pending'?'pending':'unpaid'}async function load(){try{const[q,a]=await Promise.all([api('/inspections/admin/queue'),api('/inspections/admin/agents')]);if(!q.ok||!a.ok){$('#msg').innerHTML='Admin access is required. <a class="btn alt" href="/admin-signin.html?next=%2Finspection-admin.html">Sign in as administrator ↗</a>';return}const qd=await q.json(),ad=await a.json();render(qd.requests||[],ad.agents||[])}catch(e){$('#msg').textContent='Could not load the inspection control centre.'}}function render(list,agents){
 const approved=agents.filter(a=>a.status==='approved');
 $('#agents').innerHTML=agents.map(a=>'<div class="item"><b>'+esc(a.full_name)+'</b> <span class="tag">'+esc(a.status)+'</span><div class="muted">'+esc(a.city)+', '+esc(a.country)+' • '+esc(a.regions_served||'')+' • '+Number(a.experience_years||0)+' years</div><div class="actions">'+(a.status==='pending'?'<button class="btn" data-agent-status-id="'+esc(a.id)+'" data-status="approved">Approve agent</button>':'')+(a.status==='approved'?'<button class="btn alt" data-agent-status-id="'+esc(a.id)+'" data-status="suspended">Suspend</button>':'')+'</div></div>').join('')||'<p class="muted">No agents.</p>';
@@ -15,7 +35,7 @@ else if(button.dataset.payoutId){const reference=prompt('Enter payout reference 
 $('#msg').textContent='Update saved.';await load()
 }catch(e){$('#msg').textContent=e.message||'Action failed. Please try again.';button.disabled=false}}
 document.addEventListener('click',e=>{const button=e.target.closest('[data-agent-status-id],[data-assign-id],[data-payout-id]');if(button)runAction(button)});
-load();</script><script src="/vtg-site-navigation.js?v=20261020-universal-header-1" defer></script>
+load();</script><script src="/vtg-site-navigation.js?v=20261023-no-footer-2" defer></script>
 
 <style id="vtg-inspection-admin-theme-20261016">
 :root{--r:#a5232b;--bg:#f4f6f8;--card:#fff;--ink:#20252d;--muted:#687586;--line:#e1e6ed;--soft:#fff0ef}

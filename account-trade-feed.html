@@ -38,13 +38,75 @@ html[data-theme="light"] body select option{background:#fff!important;color:#182
 </style>
 
 <link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<style id="vtg-account-trade-feed-premium-refresh">
+/* Premium public trade-feed shell; interaction handlers and feed content remain page-owned. */
+:root{--bg:#f7f5f0;--panel:#fffefa;--line:#ddd6cb;--text:#242321;--muted:#625d56;--red:#702a30;--red-soft:#f2e9e5}
+body{background:#f7f5f0;color:#242321}
+.wrap{max-width:1380px}
+.nav{background:rgba(247,245,240,.95);border-bottom:1px solid #ddd6cb;backdrop-filter:blur(18px)}
+.brand{color:#202326}
+.navlinks{color:#514b45}
+.navlinks a:hover{color:#702a30}
+.intro{padding-top:clamp(34px,5vw,64px);padding-bottom:28px;align-items:end;gap:24px}
+.eyebrow{color:#702a30;letter-spacing:.15em}
+.intro h1{font-size:clamp(32px,4vw,52px);line-height:1.07;letter-spacing:-.045em;color:#202326;text-wrap:balance}
+.intro p{max-width:760px;color:#625d56;line-height:1.8;font-size:13px}
+.liveflag{border:1px solid #d9cfc3;border-radius:999px;background:#fffefa;color:#625d56;padding:10px 13px}
+.layout{gap:18px;align-items:start}
+.panel{border:1px solid #e0d8ce;border-radius:16px;background:#fffefa;box-shadow:0 10px 28px rgba(30,25,22,.045)}
+.sidebox,.composer,.rightbox{padding:19px}
+.side-title{color:#242321;letter-spacing:-.02em}
+.filter{border:1px solid transparent;border-radius:9px;color:#625d56;transition:background .18s,border-color .18s,color .18s}
+.filter:hover{background:#f5eee7}
+.filter.active{background:#f2e9e5;border-color:#e0c9c4;color:#702a30}
+.side-note,.muted,.posttime{color:#746d65}
+.composer-head{gap:12px}
+.avatar{border:1px solid #d7c7ba;background:#f2e6df;color:#702a30}
+.composer-title{color:#242321}
+.public-feed-note,.compose-notice{border:1px solid #e5d8cc;border-radius:10px;background:#f8f2eb;color:#625d56}
+.compose-tools{gap:8px}
+.post{border:1px solid #e0d8ce;border-radius:16px;background:#fffefa;box-shadow:0 8px 24px rgba(30,25,22,.035);transition:border-color .18s,box-shadow .18s}
+.post:hover{border-color:#c7aaa3;box-shadow:0 14px 34px rgba(30,25,22,.07)}
+.posthead{gap:12px}
+.author{color:#242321}
+.verified{color:#286b54;background:#e8f3ec;border-radius:5px}
+.typepill{border:1px solid #e0d5c9;border-radius:6px;background:#f5eee7;color:#625d56}
+.postbody{color:#393530;line-height:1.8}
+.postlink{color:#702a30}
+.media-grid{border-radius:12px;overflow:hidden}
+.statsline{border-top:1px solid #eee7df;color:#746d65}
+.postactions{border-top:1px solid #eee7df}
+.postactions button{border-radius:8px;color:#625d56}
+.postactions button:hover,.postactions .liked{background:#f2e9e5;color:#702a30}
+.comments{border-top:1px solid #eee7df}
+.comment{border-radius:10px;background:#f7f3ed;color:#393530}
+.comment-form input,.comment-form textarea{border:1px solid #d9d0c6;border-radius:9px;background:#fffefa;color:#242321}
+.suggestion{border:1px solid #e5ddd4;border-radius:12px;background:#faf7f2}
+.suggestion-info,.trend{color:#625d56}
+.empty{border:1px dashed #d6cabe;border-radius:14px;background:#fffefa;color:#625d56}
+.toast{border-radius:10px;box-shadow:0 12px 34px rgba(0,0,0,.16)}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #9b5c60;outline-offset:3px}
+html[data-theme="dark"] body{background:#17191b;color:#f3efe6}
+html[data-theme="dark"] .nav{background:rgba(23,25,27,.96);border-color:#3b3d40}
+html[data-theme="dark"] .brand,html[data-theme="dark"] .intro h1,html[data-theme="dark"] .side-title,html[data-theme="dark"] .composer-title,html[data-theme="dark"] .author{color:#f3efe6}
+html[data-theme="dark"] .navlinks,html[data-theme="dark"] .intro p,html[data-theme="dark"] .side-note,html[data-theme="dark"] .muted,html[data-theme="dark"] .posttime,html[data-theme="dark"] .postbody{color:#c5bfb5}
+html[data-theme="dark"] .panel,html[data-theme="dark"] .post,html[data-theme="dark"] .empty{background:#202326;border-color:#3b3d40}
+html[data-theme="dark"] .liveflag,html[data-theme="dark"] .suggestion{background:#202326;border-color:#3b3d40;color:#c5bfb5}
+html[data-theme="dark"] .filter{color:#c5bfb5}
+html[data-theme="dark"] .filter:hover,html[data-theme="dark"] .filter.active,html[data-theme="dark"] .postactions button:hover,html[data-theme="dark"] .postactions .liked{background:#43282a;border-color:#65464a;color:#f2c6c2}
+html[data-theme="dark"] .public-feed-note,html[data-theme="dark"] .compose-notice,html[data-theme="dark"] .comment{background:#292522;border-color:#45403c;color:#d4ccc2}
+html[data-theme="dark"] .typepill{background:#292b2d;border-color:#45484b;color:#d4ccc2}
+html[data-theme="dark"] .postlink{color:#e2be91}
+html[data-theme="dark"] .verified{background:#1e3a30;color:#b4e4c8}
+html[data-theme="dark"] .statsline,html[data-theme="dark"] .postactions,html[data-theme="dark"] .comments{border-color:#3b3d40}
+html[data-theme="dark"] .comment-form input,html[data-theme="dark"] .comment-form textarea{background:#17191b;border-color:#45484b;color:#f3efe6}
+html[data-theme="dark"] .suggestion-info,html[data-theme="dark"] .trend{color:#c5bfb5}
+@media(max-width:760px){.intro{padding-top:28px}.layout{gap:12px}.panel{border-radius:13px}.sidebox,.composer,.rightbox{padding:14px}}
+@media(prefers-reduced-motion:reduce){.post,.filter{transition:none}}
+</style>
 </head>
 <body>
-<header><div class="wrap nav">
-<a class="brand" href="/" aria-label="Vintage Trade Global"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a>
-<nav class="navlinks"><a href="/">Home</a><a href="/marketplace.html">Marketplace</a><a href="/trade-feed.html">Public group</a><a href="/signin.html">My workspace</a></nav>
-<div class="navactions"><a class="btn ghost" href="/signin.html">My workspace <i data-lucide="arrow-up-right" class="icon"></i></a><button class="btn primary" id="signInBtn">Sign in</button></div>
-</div></header>
+
 <main class="wrap">
 <section class="intro"><div><div class="eyebrow">VTG social trade network</div><h1>Your trade network, in one place.</h1><p>Publish updates, share product offers, discuss trade opportunities and build relationships with buyers, suppliers and financial institutions.</p></div><div class="liveflag"><i></i><span id="feedStatus">Connecting to the trade network</span></div></section>
 <div class="layout">
@@ -82,7 +144,7 @@ html[data-theme="light"] body select option{background:#fff!important;color:#182
 <section class="panel rightbox"><h3>Trust reminder</h3><p class="side-note">A profile, advert, follower count or news post is not proof that a company or financial institution is licensed. Verify identity, regulatory status and payment instructions independently.</p></section>
 </aside>
 </div>
-<footer class="footer"><span>© <span id="year"></span> Vintage Trade Global · Social Trade Network</span><span>Account feed · Respectful, relevant and responsible trade communication.</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a></span></footer>
+
 </main>
 <div class="toast" id="toast" role="status"></div>
 <script>
@@ -148,7 +210,7 @@ function updateComposer(){const logged=!!token();$('#composerTitle').textContent
 $('#year').textContent=new Date().getFullYear();updateComposer();iconRefresh();
 (async()=>{await loadFollowing();await loadFeed();renderSuggestions()})();
 </script>
-<script src="/vtg-site-navigation.js?v=20261020-universal-header-1" defer></script>
+<script src="/vtg-site-navigation.js?v=20261023-no-footer-2" defer></script>
 
 <style id="vtg-trade-feed-light-contrast-20261012">
 /* Light-mode contrast for feed status, category filters and supplier-advert navigation. */

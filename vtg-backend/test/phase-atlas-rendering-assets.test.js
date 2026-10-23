@@ -62,13 +62,19 @@ test('shared navigation exposes exactly three visitor themes and ten workspace t
   const navigation = read('vtg-site-navigation.js');
   const visitorThemes = ['trade-classic', 'ocean-route', 'graphite-port'];
   const workspaceThemes = ['executive', 'ocean-finance', 'emerald-trade', 'copper-ledger', 'indigo-intel', 'crimson-ops', 'mono-pro', 'sandstone', 'arctic-blue', 'midnight-harbor'];
-  for (const theme of [...visitorThemes, ...workspaceThemes]) {
-    assert.ok(navigation.includes("['" + theme + "'"), 'missing theme preset: ' + theme);
+  for (const theme of visitorThemes) {
+    assert.ok(navigation.includes("['" + theme + "'"), 'missing visitor theme preset: ' + theme);
+  }
+  // Workspace presets are owned by dashboard controls, not the public navigation controller.
+  const dashboard = read('admin-dashboard-preview.html');
+  for (const theme of workspaceThemes) {
+    assert.ok(dashboard.includes('value="' + theme + '"'), 'missing workspace theme option: ' + theme);
   }
   assert.match(navigation, /endsWith\('\/frontend-v3\.html'\)/);
   assert.match(navigation, /endsWith\('\/supplier-dashboard\.html'\)/);
-  assert.match(navigation, /endsWith\('\/bank-trade-os\.html'\)/);
-  assert.match(navigation, /data-navkey="ai" href="\/vtg-ai\.html" id="footAi">VTG AI<\/a>/);
+  assert.match(navigation, /bank-trade-os\|trade-os/);
+  const landing = read('frontend-v3.html');
+  assert.match(landing, /data-navkey="ai" href="\/vtg-ai\.html" id="footAi">VTG AI<\/a>/);
   assert.match(navigation, /ai: \['\/vtg-ai\.html', '\/vtg-ai-dashboard\.html'\]/);
 });
 

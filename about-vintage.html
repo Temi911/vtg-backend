@@ -44,9 +44,61 @@ html[data-theme="dark"] body .sectionHead .eyebrow{color:#ff777d!important}
 </style>
 <script>(function(){try{document.documentElement.dataset.theme=((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark')}catch(e){}})();</script>
 <link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<style id="vtg-about-premium-refresh">
+/* About VTG editorial refresh; preserve company narrative, corridor imagery and existing links. */
+:root{--bg:#f7f5f0;--panel:#fffefa;--line:#ddd6cb;--text:#242321;--muted:#625d56;--red:#702a30;--gold:#b49a70}
+body{background:#f7f5f0;color:#242321}
+.top{background:#702a30}
+.wrap{max-width:1280px}
+.back{display:inline-flex;align-items:center;min-height:38px;padding:0 12px;border:1px solid #ddd6cb;border-radius:9px;background:#fffefa;color:#702a30}
+.hero{padding:clamp(28px,4vw,48px) 0 clamp(38px,5vw,64px)}
+.heroGrid{gap:clamp(24px,4vw,54px);align-items:center}
+.eyebrow{color:#702a30;letter-spacing:.15em}
+.hero h1{font-size:clamp(36px,4.8vw,60px);line-height:1.04;letter-spacing:-.045em;color:#202326;text-wrap:balance}
+.lead{max-width:700px;color:#625d56;font-size:14px;line-height:1.85}
+.heroImg{border:1px solid #ded4c8;border-radius:18px;overflow:hidden;box-shadow:0 22px 58px rgba(40,30,24,.08)}
+.btn{min-height:42px;border:1px solid #d7ccc0;border-radius:10px;background:#fffefa;color:#302a26;padding:12px 17px}
+.btn.primary{background:#702a30;border-color:#702a30;color:#fff}
+.btn.primary:hover{background:#552126}
+.section{padding-block:clamp(36px,5vw,62px)}
+.section.alt{background:#f0ece5;border-block:1px solid #e2d9cf}
+.sectionHead h2{color:#242321;letter-spacing:-.035em}
+.sectionHead p{color:#625d56;line-height:1.8}
+.grid{gap:15px}
+.card{border:1px solid #e0d8ce;border-radius:15px;background:#fffefa;box-shadow:0 8px 24px rgba(30,25,22,.035);transition:transform .18s,border-color .18s,box-shadow .18s}
+.card:hover{transform:translateY(-2px);border-color:#c7aaa3;box-shadow:0 15px 34px rgba(30,25,22,.07)}
+.copy h3{color:#242321}
+.copy p{color:#625d56;line-height:1.8}
+.icon{background:#f2e9e5;color:#702a30;border-radius:10px}
+.flow{gap:11px}
+.step{border:1px solid #e0d8ce;border-radius:12px;background:#fffefa;color:#393530;padding:14px}
+.step strong,.step h3{color:#242321}
+.two{gap:18px}
+.featureImage{border:1px solid #e0d8ce;border-radius:15px;overflow:hidden;background:#eee7dd}
+.callout,.notice{border:1px solid #e2d5c9;border-radius:12px;background:#faf4ec;color:#625d56;line-height:1.75;padding:15px}
+.corridor{border:1px solid #ded4c8;border-radius:16px;background:linear-gradient(115deg,#fffefa,#f0e7dd);padding:clamp(18px,3vw,28px)}
+.node{border:1px solid #e0d8ce;border-radius:10px;background:#fffefa;color:#393530;padding:12px}
+.accordion{border:1px solid #e0d8ce;border-radius:14px;background:#fffefa;overflow:hidden}
+.accItem{border-color:#e9e0d6}
+.accBtn{color:#242321}
+.accPanel{color:#625d56;line-height:1.8}
+.footer{background:#202326;color:#f3efe6}
+.footer a{color:#e2be91}
+html[data-theme="dark"] body{background:#17191b;color:#f3efe6}
+html[data-theme="dark"] .hero h1,html[data-theme="dark"] .sectionHead h2,html[data-theme="dark"] .copy h3,html[data-theme="dark"] .step strong,html[data-theme="dark"] .step h3,html[data-theme="dark"] .accBtn{color:#f3efe6}
+html[data-theme="dark"] .lead,html[data-theme="dark"] .sectionHead p,html[data-theme="dark"] .copy p,html[data-theme="dark"] .accPanel{color:#c5bfb5}
+html[data-theme="dark"] .back,html[data-theme="dark"] .card,html[data-theme="dark"] .step,html[data-theme="dark"] .accordion,html[data-theme="dark"] .node{background:#202326;border-color:#3b3d40;color:#d4ccc2}
+html[data-theme="dark"] .section.alt{background:#1d2022;border-color:#3b3d40}
+html[data-theme="dark"] .icon{background:#43282a;color:#f2c6c2}
+html[data-theme="dark"] .callout,html[data-theme="dark"] .notice{background:#292522;border-color:#45403c;color:#d4ccc2}
+html[data-theme="dark"] .corridor{background:linear-gradient(115deg,#292522,#202326);border-color:#45403c}
+html[data-theme="dark"] .btn:not(.primary){background:#292b2d;border-color:#45484b;color:#f3efe6}
+@media(max-width:760px){.hero{padding-top:25px}.section{padding-block:34px}.heroImg{border-radius:14px}}
+@media(prefers-reduced-motion:reduce){.card{transition:none}}
+</style>
 </head>
 <body>
-<header class="top"><div class="wrap"><a class="back" href="/">← Return to Home</a></div></header>
+
 
 <main>
 <section class="hero"><div class="wrap heroGrid">
@@ -81,14 +133,9 @@ html[data-theme="dark"] body .sectionHead .eyebrow{color:#ff777d!important}
 </div></div></section>
 </main>
 
-<footer class="footer aboutDarkFooter"><div class="wrap"><div class="footerGrid">
-<div class="brand"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"><p>Connecting Africa, China, South Korea and global markets through a smarter trade ecosystem.</p></div>
-<div><h4>Explore</h4><a href="/#market">Marketplace</a><a href="/#vtgAtlasPreview">Trade Atlas</a><a href="/#vtgIntelLaunch">Market Intelligence</a></div>
-<div><h4>Trade</h4><a href="/product-verification.html">Product Verification</a><a href="/partnerships.html#logistics">Logistics & Shipping</a><a href="/signin.html">Sign in</a></div>
-<div><h4>Company</h4><a href="/about-vintage.html">About VTG</a><a href="/partnerships.html">Partnerships</a><a href="/contact.html">Contact VTG</a></div>
-</div><div class="bottom"><span>© Vintage Trade Global</span><span><a href="/privacy.html" style="display:inline;margin-right:14px">Privacy</a><a href="/terms.html" style="display:inline;margin-right:14px">Terms</a><a href="/code-of-conduct.html" style="display:inline">Code of Conduct</a></span></div></div></footer>
+
 <script src="/page-visuals.js"></script>
-<script src="/vtg-site-navigation.js?v=20261020-universal-header-1" defer></script>
+<script src="/vtg-site-navigation.js?v=20261023-no-footer-1" defer></script>
 </body></html><script>
 (function(){
 document.querySelectorAll('.accBtn').forEach(function(btn){

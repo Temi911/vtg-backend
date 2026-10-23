@@ -55,8 +55,72 @@ html[data-theme="dark"] body .hero .heroIn>div:first-child p {color:#c1cbd3!impo
 html[data-theme="dark"] body .form,html[data-theme="dark"] body #formWrap,html[data-theme="dark"] body .step,html[data-theme="dark"] body .workflow>div,html[data-theme="dark"] body .timeline>div,html[data-theme="dark"] body .role,html[data-theme="dark"] body .section .card{background:#11161d!important;border-color:#34404b!important;color:#eef3f6!important}html[data-theme="dark"] body .form :is(h2,h3,h4,p,span,b,strong,small,label),html[data-theme="dark"] body .step :is(h3,p,small),html[data-theme="dark"] body .timeline :is(b,span),html[data-theme="dark"] body .section :is(h2,h3,p,li){color:#eef3f6!important}html[data-theme="dark"] body .form :is(input,select,textarea){background:#0d1117!important;color:#eef3f6!important;border-color:#465360!important;-webkit-text-fill-color:#eef3f6!important}html[data-theme="dark"] body .form :is(input,textarea)::placeholder{color:#aab6c0!important;opacity:1!important}html[data-theme="light"] body .hero{background:linear-gradient(135deg,#fff 0%,#f8f1f0 100%)!important;color:#201311!important}html[data-theme="light"] body .hero h1,html[data-theme="light"] body .hero p{color:#201311!important}html[data-theme="light"] body .hero p{color:#5b626b!important}html[data-theme="light"] body .ghost{color:#201311!important;border-color:#c9d0d6!important}
 </style>
 <link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<style id="vtg-agent-application-premium-refresh">
+/* Agent application editorial refresh; preserve eligibility requirements, consent, form fields and submission logic. */
+:root{--bg:#f7f5f0;--panel:#fffefa;--line:#ddd6cb;--text:#242321;--muted:#625d56;--red:#702a30}
+body{background:#f7f5f0;color:#242321}
+.nav{background:rgba(247,245,240,.95);border-color:#ddd6cb;backdrop-filter:blur(18px)}
+.logo{color:#202326}
+.back{border:1px solid #ddd6cb;border-radius:9px;background:#fffefa;color:#702a30}
+.hero{padding:clamp(34px,5vw,66px) 0}
+.heroIn{gap:clamp(24px,4vw,54px);align-items:center}
+.ey{color:#702a30;letter-spacing:.15em}
+.hero h1{font-size:clamp(35px,4.7vw,58px);line-height:1.05;letter-spacing:-.045em;color:#202326;text-wrap:balance}
+.hero p{max-width:700px;color:#625d56;line-height:1.85;font-size:14px}
+.btn{min-height:42px;border:1px solid #d7ccc0;border-radius:10px;background:#fffefa;color:#302a26;padding:12px 17px}
+.btn.primary{background:#702a30;border-color:#702a30;color:#fff}
+.btn.primary:hover{background:#552126}
+.btn.ghost{background:transparent;border-color:#d7ccc0;color:#302a26}
+.tags{gap:8px}
+.tags span{border:1px solid #e0d8ce;border-radius:7px;background:#fffefa;color:#625d56;padding:7px 10px}
+.section{padding-block:clamp(36px,5vw,62px)}
+.head h2{color:#242321;letter-spacing:-.035em}
+.head p{color:#625d56;line-height:1.8}
+.role,.item,.step,.adv,.example,.locations,.standards,.checks{border:1px solid #e0d8ce;border-radius:14px;background:#fffefa}
+.role{padding:18px}
+.role h3,.item h3,.step h3,.adv h3{color:#242321}
+.role p,.item p,.step p,.adv p,.example p{color:#625d56;line-height:1.75}
+.workflow{gap:13px}
+.n{background:#f2e9e5;color:#702a30;border-radius:8px}
+.route{border:1px solid #ded4c8;border-radius:14px;background:#faf6f0;color:#393530;padding:15px}
+.dark{border:1px solid #3b3d40;border-radius:16px;background:#202326;color:#f3efe6}
+.dark h2,.dark h3{color:#f3efe6}
+.dark p,.dark li{color:#c5bfb5}
+.locations,.standards,.checks{padding:18px}
+.check{color:#286b54}
+.apply{background:#f0ece5;border-block:1px solid #e2d9cf;padding-block:clamp(36px,5vw,62px)}
+.applyGrid{gap:20px;align-items:start}
+.applyIntro h2{color:#242321}
+.applyIntro p{color:#625d56;line-height:1.8}
+.timeline{border-left:2px solid #d8c3b7}
+.form{border:1px solid #ded4c8;border-radius:18px;background:#fffefa;box-shadow:0 18px 48px rgba(30,25,22,.06);padding:clamp(18px,3vw,28px)}
+.fields{gap:13px}
+.field label{color:#393530;font-weight:700}
+.field input,.field select,.field textarea{min-height:43px;border:1px solid #d9d0c6;border-radius:9px;background:#fffefa;color:#242321}
+.hint{color:#746d65;line-height:1.7}
+.consent{color:#625d56;line-height:1.7}
+.submit{min-height:43px;border:1px solid #702a30;border-radius:10px;background:#702a30;color:#fff}
+.status{border:1px solid #e2d5c9;border-radius:11px;background:#faf4ec;color:#625d56;line-height:1.75;padding:13px}
+.success{border:1px solid #b7d9c4;border-radius:12px;background:#e8f3ec;color:#235c40}
+.footer{background:#202326;color:#f3efe6}
+.footer a{color:#e2be91}
+html[data-theme="dark"] body{background:#17191b;color:#f3efe6}
+html[data-theme="dark"] .nav{background:rgba(23,25,27,.96);border-color:#3b3d40}
+html[data-theme="dark"] .logo,html[data-theme="dark"] .hero h1,html[data-theme="dark"] .head h2,html[data-theme="dark"] .role h3,html[data-theme="dark"] .item h3,html[data-theme="dark"] .step h3,html[data-theme="dark"] .adv h3,html[data-theme="dark"] .applyIntro h2{color:#f3efe6}
+html[data-theme="dark"] .hero p,html[data-theme="dark"] .head p,html[data-theme="dark"] .role p,html[data-theme="dark"] .item p,html[data-theme="dark"] .step p,html[data-theme="dark"] .adv p,html[data-theme="dark"] .example p,html[data-theme="dark"] .applyIntro p,html[data-theme="dark"] .hint,html[data-theme="dark"] .consent{color:#c5bfb5}
+html[data-theme="dark"] .role,html[data-theme="dark"] .item,html[data-theme="dark"] .step,html[data-theme="dark"] .adv,html[data-theme="dark"] .example,html[data-theme="dark"] .locations,html[data-theme="dark"] .standards,html[data-theme="dark"] .checks,html[data-theme="dark"] .form{background:#202326;border-color:#3b3d40}
+html[data-theme="dark"] .tags span,html[data-theme="dark"] .route{background:#292b2d;border-color:#45484b;color:#d4ccc2}
+html[data-theme="dark"] .n{background:#43282a;color:#f2c6c2}
+html[data-theme="dark"] .apply{background:#1d2022;border-color:#3b3d40}
+html[data-theme="dark"] .field input,html[data-theme="dark"] .field select,html[data-theme="dark"] .field textarea{background:#17191b;border-color:#45484b;color:#f3efe6}
+html[data-theme="dark"] .status{background:#292522;border-color:#45403c;color:#d4ccc2}
+html[data-theme="dark"] .success{background:#1e3a30;border-color:#315c49;color:#b4e4c8}
+html[data-theme="dark"] .back,html[data-theme="dark"] .btn:not(.primary){background:#292b2d;border-color:#45484b;color:#f3efe6}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #9b5c60;outline-offset:3px}
+@media(max-width:760px){.hero{padding-top:28px}.section,.apply{padding-block:34px}.form{border-radius:15px;padding:17px}}
+</style>
 </head><body>
-<header class="nav"><a class="logo" href="/"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><a class="back" href="/"><i data-lucide="arrow-left"></i> Return to Home</a></header>
+
 <section class="hero"><div class="heroIn"><span class="ey">VTG Agent Network</span><h1>Become a VTG Trade Agent.</h1><p>Help buyers trade with greater confidence through local inspection, supplier coordination and pre-shipment verification across the VTG network.</p><div class="actions"><a class="btn primary" href="#apply">Apply to Become an Agent <i data-lucide="arrow-right"></i></a><a class="btn ghost" href="#workflow">See How It Works <i data-lucide="route"></i></a></div><div class="tags"><span>China</span><span>South Korea</span><span>Verified assignments</span><span>Professional network</span></div></div></section>
 <main>
 <section class="section"><div class="role"><div><span class="ey">The role</span><h2>Be the trusted local connection behind global trade.</h2><p>A VTG Trade Agent supports buyers when they need someone on the ground to inspect products, verify supplier readiness, document what was seen and coordinate the next step.</p></div><div class="list"><div class="item"><div class="n">01</div><div><h3>Product inspection</h3><p>Visit a supplier or location and inspect goods against the assignment provided by VTG.</p></div></div><div class="item"><div class="n">02</div><div><h3>Photo & evidence</h3><p>Capture clear, genuine photographs and observations for the buyer's review.</p></div></div><div class="item"><div class="n">03</div><div><h3>Supplier coordination</h3><p>Communicate professionally with suppliers and coordinate information needed before shipment.</p></div></div><div class="item"><div class="n">04</div><div><h3>Shipment readiness</h3><p>Help confirm assigned goods are ready for the next stage of the trade journey.</p></div></div></div></div></section><div class="footerPagePhoto"><img src="https://sinobridge-sourcing.com/_next/image?q=75&url=%2Fimages%2Fsourcing_suppliers.jpg&w=3840" alt="Trade professionals inspecting products in a warehouse" loading="eager" fetchpriority="high"></div>
@@ -66,10 +130,10 @@ html[data-theme="dark"] body .form,html[data-theme="dark"] body #formWrap,html[d
 <section class="section"><div class="dark"><span class="ey">Network coverage</span><h2>Trusted people on the ground where trade happens.</h2><p>The initial network focuses on major trade markets in China and South Korea. Agent availability can eventually appear directly inside the Trade Atlas.</p><div class="locations"><span>Guangzhou</span><span>Shenzhen</span><span>Yiwu</span><span>Shanghai</span><span>Ningbo</span><span>Qingdao</span><span>Seoul</span><span>Busan</span><span>Incheon</span></div></div></section>
 <section class="section"><div class="standards"><div><span class="ey">Trust & conduct</span><h2>Our agents represent VTG's standard of trust.</h2><p>Every applicant is reviewed before approval. Agents must provide accurate information, protect confidential trade information and act professionally when representing an assignment.</p></div><div class="checks"><div class="check"><i data-lucide="check"></i>Truthful inspection reports</div><div class="check"><i data-lucide="camera"></i>Genuine photographic evidence</div><div class="check"><i data-lucide="lock"></i>Confidentiality</div><div class="check"><i data-lucide="scale"></i>Declare conflicts</div><div class="check"><i data-lucide="ban"></i>No undisclosed commissions</div><div class="check"><i data-lucide="shield-check"></i>Professional compliance</div></div></div></section>
 <section class="section apply" id="apply"><div class="applyGrid"><div class="applyIntro"><span class="ey">Agent application</span><h2>Tell VTG about yourself.</h2><p>VTG Trade Agents must be physically resident in either China or South Korea. Your nationality does not determine eligibility; the important requirement is that you are based in the country you select and can carry out assignments there.</p><div class="timeline"><div><b>01 · Submit</b><span>Application sent to VTG.</span></div><div><b>02 · Review</b><span>Our team reviews your information.</span></div><div><b>03 · Contact</b><span>VTG replies by email.</span></div><div><b>04 · Onboard</b><span>Approved agents receive next steps.</span></div></div></div><div class="form"><div id="formWrap"><h3>VTG Trade Agent Application</h3><form id="agentForm" enctype="multipart/form-data"><div class="fields"><div class="field"><label>Full name</label><input name="name" required></div><div class="field"><label>Email</label><input name="email" type="email" required></div><div class="field"><label>Country of residence</label><select name="country" required><option value="">Select country</option><option>China</option><option>South Korea</option></select></div><div class="field"><label>City / province</label><input name="city" required placeholder="Where you currently live"></div><div class="field"><label>Phone / WhatsApp</label><input name="phone" required></div><div class="field"><label>Company / Organization</label><input name="company"></div><div class="field"><label>Occupation / role</label><input name="occupation" required></div><div class="field"><label>How long have you lived there?</label><select name="residenceDuration" required><option value="">Select</option><option>Less than 1 year</option><option>1–3 years</option><option>4–7 years</option><option>8–15 years</option><option>16+ years</option></select></div><div class="field"><label>Relevant experience</label><select name="experience" required><option value="">Select</option><option>Less than 1 year</option><option>1–3 years</option><option>4–7 years</option><option>8–15 years</option><option>16+ years</option></select></div><div class="field full"><label>What goods can you inspect?</label><input name="goods" placeholder="Electronics, machinery, textiles, furniture, cosmetics, food..." required></div><div class="field full"><label>Areas of expertise</label><input name="expertise" placeholder="Inspection, sourcing, logistics, customs..." required></div><div class="field full"><label>Markets / locations you can cover</label><input name="markets" required></div><div class="field full"><label>Languages spoken</label><input name="languages" required></div><div class="field full"><label>Why do you want to become a VTG Agent?</label><textarea name="why" required></textarea></div><div class="field full"><label>Supporting documents (optional)</label><input name="documents" type="file" accept=".pdf,.jpg,.jpeg,.png" multiple><span class="hint">PDF, JPG or PNG; maximum 5 MB per file.</span></div></div><label class="consent"><input type="checkbox" required><span>I agree to the <a href="/code-of-conduct.html" target="_blank">VTG Code of Conduct</a> and confirm the information submitted is accurate.</span></label><button class="submit" id="submit" type="submit">Submit Agent Application <i data-lucide="arrow-right"></i></button><div class="status" id="status"></div></form></div><div class="success" id="success"><div class="successIcon"><i data-lucide="check"></i></div><h3>Application received.</h3><p>Your application has been submitted for review. VTG will contact you through the email address you provided.</p><span class="ref" id="ref"></span></div></div></div></section></main>
-<footer class="footer"><div class="footerGrid"><div><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"><p>Connecting Africa, China and the world through intelligent trade.</p></div><div class="links"><div><h4>Explore</h4><a href="/#market">Marketplace</a><a href="/#vtgAtlasPreview">Trade Atlas</a><a href="/#vtgIntelLaunch">Market Intelligence</a></div><div><h4>Trade</h4><a href="/#how">How VTG Works</a><a href="/product-verification.html">Product Verification</a><a href="/partnerships.html#logistics">Logistics & Shipping</a><a href="/signin.html">Sign in</a></div><div><h4>Business</h4><a href="/sourcing-suppliers.html">Sourcing & Suppliers</a><a href="/finance-payments.html">Finance & Payments</a><a href="/trade-guide.html">Trade Guide</a><a href="/agent.html">Become an Agent</a></div><div><h4>Company</h4><a href="/about-vintage.html">About VTG</a><a href="/partnerships.html">Partnerships</a><a href="/contact.html">Contact VTG</a></div></div></div><div class="bottom"><span>© 2026 Vintage Trade Global • Powered by Folayele Global Resources Limited</span><div><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/code-of-conduct.html">Code of Conduct</a></div></div></footer>
+
 <script>
 const f=document.getElementById('agentForm'),s=document.getElementById('submit'),st=document.getElementById('status');f.addEventListener('submit',async e=>{e.preventDefault();st.textContent='Submitting your application…';s.disabled=true;try{for(const x of f.documents.files)if(x.size>5242880)throw Error('Each document must be 5 MB or smaller.');const r=await fetch('/api/agent/applications',{method:'POST',body:new FormData(f)}),d=await r.json();if(!r.ok)throw Error(d?.error?.message||'We could not submit your application. Please try again.');document.getElementById('formWrap').style.display='none';document.getElementById('success').style.display='block';document.getElementById('ref').textContent='Application ID: '+d.reference;lucide.createIcons()}catch(x){st.textContent=x.message;s.disabled=false}});lucide.createIcons();
-</script><script src="/vtg-site-navigation.js?v=20261020-universal-header-1" defer></script>
+</script><script src="/vtg-site-navigation.js?v=20261023-no-footer-2" defer></script>
 
 <style id="vtg-agent-light-hero-contrast-20261012">
 /* Agent hero is light in light mode, so explicitly recolor every hero label and control. */
