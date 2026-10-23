@@ -21,10 +21,10 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 - [~] `trade-atlas.html` — Atlas map/globe, route hierarchy, map controls and responsive states.
 - [~] `trade-feed.html` — public read/like/follow presentation and mobile feed layout.
 - [~] `market-intelligence.html` — intelligence cards, news density, responsive data display.
-- [ ] `intelligence-centre.html` — specialist intelligence workspace and data readability.
+- [~] `intelligence-centre.html` — specialist intelligence workspace and data readability.
 - [~] `vtg-ai.html` — public AI preview, clear preview-only boundaries and CTA.
 - [~] `product-verification.html`, `verification.html` — evidence, status, report and request flows; styling pass applied, interactions still need verification.
-- [ ] `buyer-verifications.html` — evidence, status, report and request flows.
+- [~] `buyer-verifications.html` — evidence, status, report and request flows.
 - [~] `logistics-shipping.html`, `finance-payments.html` — feature-specific layouts and information hierarchy.
 - [~] `trade-guide.html` — trade education content and information hierarchy.
 - [~] `africa-markets.html` — market coverage cards, availability labels and responsive layout.
@@ -57,7 +57,7 @@ Scope: preserve existing routes, business logic, role journeys, and integrations
 
 ## Status
 - Shared typography/theme utilities and public navigation/theme handling already exist and should be reused rather than replaced with a second design system.
-- Page-specific styling passes are committed for `marketplace.html`, `supplier.html`, `trade-atlas.html`, `trade-feed.html`, `market-intelligence.html`, `vtg-ai.html`, `logistics-shipping.html`, `finance-payments.html`, `signin.html`, `sourcing-suppliers.html`, `africa-markets.html`, `product-verification.html`, `verification.html`, and `trade-guide.html`.
+- Page-specific styling passes are committed for `marketplace.html`, `supplier.html`, `trade-atlas.html`, `trade-feed.html`, `market-intelligence.html`, `vtg-ai.html`, `logistics-shipping.html`, `finance-payments.html`, `signin.html`, `sourcing-suppliers.html`, `africa-markets.html`, `product-verification.html`, `verification.html`, `trade-guide.html`, `buyer-verifications.html`, and `intelligence-centre.html`.
 - Static checks on these fourteen pages confirm the new style blocks are balanced and are not accidentally placed after `</body>`.
 - Visual/browser and interaction testing is still pending; do not mark these pages complete until that testing passes.
 - The latest styling commits are on the redesign branch only. A new Vercel deployment was blocked by the account's daily deployment API limit (HTTP 402, retry after 24 hours); the currently deployed preview does not include the newest page-specific changes yet.
