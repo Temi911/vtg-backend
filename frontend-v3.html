@@ -1152,5 +1152,37 @@ html[data-theme="dark"] #landing section#top.vtgEditorialHero .vtgButtonSecondar
   html[data-theme="dark"] #landing section#top.vtgEditorialHero{background-position:58% center!important}
 }
 
+
+
+/* Carousel overlay label contrast: keep “VTG Marketplace” readable over every rotating image and in both themes. */
+#landing #vtgProductCarousel .vtgInfo{
+  z-index:5!important;
+  color:#FFFFFF!important;
+  background:rgba(14,24,31,.84)!important;
+  border:1px solid rgba(255,255,255,.28)!important;
+  border-radius:3px!important;
+  padding:16px 18px!important;
+  backdrop-filter:blur(8px)!important;
+  -webkit-backdrop-filter:blur(8px)!important;
+  text-shadow:none!important;
+  opacity:1!important;
+}
+#landing #vtgProductCarousel .vtgInfo *,
+#landing #vtgProductCarousel .vtgInfo strong,
+#landing #vtgProductCarousel .vtgInfo span,
+#landing #vtgProductCarousel .vtgInfo p{
+  color:#FFFFFF!important;
+  -webkit-text-fill-color:#FFFFFF!important;
+  opacity:1!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.45)!important;
+}
+html[data-theme="dark"] #landing #vtgProductCarousel .vtgInfo{
+  background:rgba(8,15,20,.9)!important;
+  border-color:rgba(255,255,255,.34)!important;
+}
+@media(max-width:700px){
+  #landing #vtgProductCarousel .vtgInfo{padding:12px 14px!important}
+}
+
 </style>
 </body></html>
