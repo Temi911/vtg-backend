@@ -271,7 +271,7 @@
       'html[data-theme="dark"] #vtgPageNavigation.vtgCanonicalLandingHeader .headerEnterBtn{background:#702A30!important;color:#F3EFE6!important;-webkit-text-fill-color:#F3EFE6!important}',
       '@media(max-width:800px){#vtgPageNavigation.vtgCanonicalLandingHeader .navin{min-height:58px!important;padding:9px 16px!important;gap:10px!important}#vtgPageNavigation.vtgCanonicalLandingHeader .brand img{max-width:150px!important;max-height:34px!important}}',
       '@media(max-width:560px){#vtgPageNavigation.vtgCanonicalLandingHeader .navin{padding:8px 12px!important}#vtgPageNavigation.vtgCanonicalLandingHeader .navtools{gap:6px!important}#vtgPageNavigation.vtgCanonicalLandingHeader .headerFeatureBtn,#vtgPageNavigation.vtgCanonicalLandingHeader .headerEnterBtn{min-height:38px!important;padding:0 10px!important;font-size:9px!important}#vtgPageNavigation.vtgCanonicalLandingHeader .headerFeatureBtn{width:40px!important;padding:0!important}#vtgPageNavigation.vtgCanonicalLandingHeader .headerFeatureBtn span{display:none!important}#vtgPageNavigation.vtgCanonicalLandingHeader .headerEnterBtn span{display:inline!important}}'
-    ].join('\\n');
+    ].join('\n');
   }
   function applyTimeBasedTheme() {
     // Visitor light/dark preference is public-site-only; workspaces keep their own controls.
