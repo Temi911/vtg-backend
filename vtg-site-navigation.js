@@ -222,11 +222,11 @@
     if (isWorkspaceDashboardPage()) return;
     // Strip each legacy page header, including headers nested inside wrappers, before
     // inserting the single canonical VTG interior header (logo + Previous + Home).
-    document.querySelectorAll('header, .site-header, .siteHeader, .main-header, .page-header, .pageHeader, .topbar, .top-bar, .topline, .navbar-wrap, .header-wrap, .header-container, .header-inner, .headerIn, .main-nav, .site-nav, .siteNav, .navigation-header, .vtg-old-header')
+    document.querySelectorAll('header, nav, .nav, .navin, .navbar, .navigation, .site-navigation, .site-header, .siteHeader, .main-header, .page-header, .pageHeader, .topbar, .top-bar, .topline, .navbar-wrap, .header-wrap, .header-container, .header-inner, .headerIn, .main-nav, .site-nav, .siteNav, .navigation-header, .vtg-old-header, body > .top, body > .back')
       .forEach(function (el) {
-        if (el.id === 'vtgPageNavigation' || el.closest('footer, #vtgFooter')) return;
-        // Do not remove a page section merely because it contains the word "header";
-        // only remove known header/navigation structures or semantic header elements.
+        if (el.id === 'vtgPageNavigation' || el.closest('#vtgPageNavigation, footer, #vtgFooter')) return;
+        // Legacy public-page navigation commonly uses generic .nav/.navbar classes,
+        // not semantic <header> tags. Remove those old shells before inserting ours.
         el.remove();
       });
   }
