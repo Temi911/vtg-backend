@@ -97,7 +97,7 @@
       'Bags, Luggage & Travel':'https://images.pexels.com/photos/34629931/pexels-photo-34629931.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
       'Retail & Commercial Equipment':'https://images.pexels.com/photos/1366594/pexels-photo-1366594.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
       'Hotel, Restaurant & Catering Equipment':'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=88',
-      'Factory & Production Supplies':'https://images.pexels.com/photos/11432049/pexels-photo-11432049.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Factory & Production Supplies':'https://images.pexels.com/photos/13974251/pexels-photo-13974251.jpeg?auto=compress&cs=tinysrgb&w=1600',
       'Marine & Port Equipment':'https://images.pexels.com/photos/13025947/pexels-photo-13025947.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
       'Logistics, Transport & Warehousing Equipment':'https://images.pexels.com/photos/24244234/pexels-photo-24244234.jpeg?auto=compress&cs=tinysrgb&w=1600',
       'Building Materials':'https://images.pexels.com/photos/9026149/pexels-photo-9026149.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
