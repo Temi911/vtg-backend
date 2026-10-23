@@ -15,6 +15,54 @@ main .directory{padding:10px 0 55px}.sectionHead{display:flex;justify-content:sp
 @media(max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{padding-top:38px}.admin{align-items:flex-start;flex-direction:column}}@media(max-width:600px){.grid{grid-template-columns:1fr}.card{min-height:0}.nav{min-height:62px;align-items:flex-start;padding:12px 0;flex-wrap:wrap}.brand img{width:120px}.navActions{width:100%;justify-content:flex-start}.navActions a,.navActions select{padding:8px;font-size:10px}.themeChoice{font-size:9px}.wrap{width:calc(100% - 26px)}}
 
 </style><link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<style id="vtg-account-premium-refresh-workforce-access">
+/* Account, consent and staff access pages share accessible VTG surfaces; role gates and authentication logic remain untouched. */
+:root{--bg:#f7f5f0;--panel:#fffefa;--line:#ddd6cb;--text:#242321;--muted:#625d56;--red:#702a30}
+body{background:#f7f5f0;color:#242321}
+.top,.topline{background:#702a30}
+.wrap,.shell{width:min(1120px,calc(100% - 32px));margin:0 auto;padding:clamp(22px,4vw,44px) 0 70px}
+.brand,.logo{color:#202326}
+.brandPanel{border:1px solid #ded4c8;border-radius:18px;background:linear-gradient(135deg,#fffefa,#f0e7dd);box-shadow:0 18px 48px rgba(40,30,24,.07)}
+.brandPanel h1,.brandPanel h2{color:#202326}
+.brandPanel p,.desc,.leftFoot,.foot{color:#625d56;line-height:1.8}
+.formPanel,.card{border:1px solid #e0d8ce;border-radius:16px;background:#fffefa;box-shadow:0 10px 28px rgba(30,25,22,.045);padding:clamp(18px,3vw,28px)}
+h1,h2,h3,.title,.label{color:#242321;letter-spacing:-.025em}
+.eyebrow,.ey,.kicker{color:#702a30;letter-spacing:.14em}
+.lead,.intro,.note,.footnote{color:#625d56;line-height:1.8}
+.section{border-color:#e9e0d6}
+.check{border:1px solid #e0d8ce;border-radius:10px;background:#faf6f0;color:#393530;padding:12px}
+.actions,.adminActions{gap:9px}
+.btn,.submit{min-height:41px;border:1px solid #d7ccc0;border-radius:10px;background:#fffefa;color:#302a26;padding:11px 15px}
+.btn.primary,.submit{background:#702a30;border-color:#702a30;color:#fff}
+.btn.primary:hover,.submit:hover{background:#552126}
+.btn.outline{background:transparent;color:#702a30;border-color:#c7aaa3}
+.field label{color:#393530;font-weight:700}
+.field input,.field select,.field textarea{min-height:43px;border:1px solid #d9d0c6;border-radius:9px;background:#fffefa;color:#242321}
+.message,.msg,.note,.notice{border:1px solid #e2d5c9;border-radius:11px;background:#faf4ec;color:#625d56;line-height:1.75;padding:13px}
+.message.ok,.msg.ok,.ok{background:#e8f3ec;border-color:#b7d9c4;color:#235c40}
+.secure{border:1px solid #b7d9c4;border-radius:9px;background:#e8f3ec;color:#235c40;padding:10px}
+.directory{gap:14px}
+.cardTop{border-color:#eee7df}
+.glyph{background:#f2e9e5;color:#702a30;border-radius:10px}
+.tag{border-radius:6px;background:#f2e9e5;color:#702a30}
+.cardFoot{border-color:#eee7df;color:#625d56}
+.previewLink{color:#702a30}
+.adminPreview{border:1px solid #e0d8ce;border-radius:12px;background:#faf6f0}
+html[data-theme="dark"] body{background:#17191b;color:#f3efe6}
+html[data-theme="dark"] .brand,html[data-theme="dark"] .logo,html[data-theme="dark"] h1,html[data-theme="dark"] h2,html[data-theme="dark"] h3,html[data-theme="dark"] .title,html[data-theme="dark"] .label{color:#f3efe6}
+html[data-theme="dark"] .brandPanel,html[data-theme="dark"] .formPanel,html[data-theme="dark"] .card{background:#202326;border-color:#3b3d40}
+html[data-theme="dark"] .brandPanel h1,html[data-theme="dark"] .brandPanel h2{color:#f3efe6}
+html[data-theme="dark"] .brandPanel p,html[data-theme="dark"] .desc,html[data-theme="dark"] .leftFoot,html[data-theme="dark"] .foot,html[data-theme="dark"] .lead,html[data-theme="dark"] .intro,html[data-theme="dark"] .note,html[data-theme="dark"] .footnote{color:#c5bfb5}
+html[data-theme="dark"] .check,html[data-theme="dark"] .adminPreview{background:#292b2d;border-color:#45484b;color:#d4ccc2}
+html[data-theme="dark"] .field input,html[data-theme="dark"] .field select,html[data-theme="dark"] .field textarea{background:#17191b;border-color:#45484b;color:#f3efe6}
+html[data-theme="dark"] .message,html[data-theme="dark"] .msg,html[data-theme="dark"] .note,html[data-theme="dark"] .notice{background:#292522;border-color:#45403c;color:#d4ccc2}
+html[data-theme="dark"] .message.ok,html[data-theme="dark"] .msg.ok,html[data-theme="dark"] .ok,html[data-theme="dark"] .secure{background:#1e3a30;border-color:#315c49;color:#b4e4c8}
+html[data-theme="dark"] .glyph,html[data-theme="dark"] .tag{background:#43282a;border-color:#65464a;color:#f2c6c2}
+html[data-theme="dark"] .previewLink,html[data-theme="dark"] .btn.outline{color:#e2be91}
+html[data-theme="dark"] .btn:not(.primary):not(.outline){background:#292b2d;border-color:#45484b;color:#f3efe6}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #9b5c60;outline-offset:3px}
+@media(max-width:760px){.wrap,.shell{width:calc(100% - 26px);padding-top:22px;padding-bottom:50px}.formPanel,.card{padding:16px;border-radius:13px}}
+</style>
 </head>
 <body>
 
