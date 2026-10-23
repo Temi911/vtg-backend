@@ -103,7 +103,7 @@ test('buyer dashboard labels provider readiness honestly and checks the authenti
   assert.ok(html.includes('Preview mode: provider status has not been verified'));
   assert.ok(html.includes('does not discover the correct duty or tax rate'));
   assert.ok(html.includes('Treat all market inputs as unverified'));
-  assert.ok(html.includes("if(v==='intelligence')loadBuyerIntelStatus()"));
+  assert.ok(html.includes("if(v==='intelligence'){loadBuyerIntelStatus();loadIntelNews()}"));
   assert.ok(html.includes('Trade intelligence evidence status'));
   assert.ok(html.includes('Trade assumptions are not shipment facts'));
   assert.ok(html.includes('Check intelligence sources'));
