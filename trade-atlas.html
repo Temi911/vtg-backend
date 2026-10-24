@@ -139,6 +139,18 @@ html[data-theme="light"] button:focus-visible,html[data-theme="light"] a:focus-v
 @media(max-width:760px){.atlasTop{padding-top:32px}.headline{align-items:flex-start}.shell{padding-inline:15px}.globeStage{border-radius:15px}.portGrid{gap:12px}.portBody{padding:14px}}
 @media(prefers-reduced-motion:reduce){.portCard,.btn{transition:none}}
 </style>
+<style id="vtg-atlas-shared-theme-fix">
+html[data-theme="light"] .globeStage{background:radial-gradient(ellipse at center,#fff 0%,#eaf2f7 58%,#d4e3ec 100%)!important;border-color:#c8d7e1!important;box-shadow:0 18px 55px rgba(24,50,67,.12)!important}
+html[data-theme="light"] .stageLabel,html[data-theme="light"] .stageHint,html[data-theme="light"] .globeFallback{color:#203747!important}
+html[data-theme="light"] .roundBtn{background:#ffffffed!important;color:#203747!important;border-color:#b8cbd7!important}
+html[data-theme="light"] .globeLegend .legendItem{background:#ffffffdf!important;border-color:#c8d7e1!important;color:#203747!important}
+html[data-theme="light"] .selectedHub{background:#fff!important;border-color:#cbd8e0!important;color:#17212b!important}
+html[data-theme="light"] .selectedHub p,html[data-theme="light"] .selectedHub h3{color:#203747!important}
+html[data-theme="light"] .photoStatus{border-color:#b9cad5!important;color:#536475!important}
+html[data-theme="light"] #locationMap .leaflet-tile{filter:none!important}
+html[data-theme="dark"] .globeStage{background:radial-gradient(ellipse at center,#15364b 0%,#071321 70%)!important;border-color:#263b49!important}
+html[data-theme="dark"] #locationMap .leaflet-tile{filter:brightness(.72) invert(1) contrast(.86) hue-rotate(180deg) saturate(.72)!important}
+</style>
 </head>
 <body>
 <main>
