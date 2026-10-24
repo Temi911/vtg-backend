@@ -1,47 +1,48 @@
-# VTG Site-Wide QA Status — 2026-10-23
+# VTG Site-Wide QA Status — 2026-10-24
 
-Repository: `Temi911/vtg-backend`
-Reviewed ref: `redesign/landing-page-visual-refresh`
-Reviewed commit: `fe72344dd845d0c58a1f4ead3319fa3f3939d76d`
+Repository: `Temi911/vtg-backend`  
+Reviewed ref: `redesign/landing-page-visual-refresh`  
+Reviewed commit: `89ea435790a2f63bc37ef42a32664198c85c75ac`  
 Pull request: [#16 — Complete VTG landing page visual rebuild](https://github.com/Temi911/vtg-backend/pull/16)
 
-## Scope and limits
+## Current validation summary
 
-This is a source-level audit plus selected HTTP route probes, not a rendered-browser or end-to-end acceptance sign-off. The connected browser tool could not access the originating browser context. The Vercel deployment list reports the current branch deployment as `READY`, but the Vercel fetch connector subsequently failed to resolve that deployment for a fresh recheck. Do not mark visual, mobile, accessibility, or API-backed interactions as passed on this evidence alone.
+- GitHub Actions run [#1209](https://github.com/Temi911/vtg-backend/actions/runs/40001321472) completed successfully for the reviewed commit. The Node test suite, locked dependency installation, and clean PostgreSQL migration step all passed.
+- The current Vercel preview deployment is reported as `READY`: [deployment details](https://vercel.com/olanrewajutope80-7999s-projects/vtg-backended/4PXNQHyoCgjdmMz7eQXxXazHuaSB).
+- Fresh HTTP fetches against that deployment returned **200 OK** for the landing page (`/frontend-v3.html`), marketplace (`/marketplace.html`), Trade Atlas (`/trade-atlas.html`), VTG AI (`/vtg-ai.html`), supplier dashboard (`/supplier-dashboard.html`), buyer dashboard (`/buyer-dashboard.html`), bank workspace (`/bank-trade-os.html`), admin preview (`/admin-dashboard-preview.html`), and `/vtg-site-navigation.js?v=20261023-no-footer-2`.
+- These checks establish successful build/test status and HTTP availability only. They do not establish that all pages render correctly or that all client-side/API-backed workflows work.
 
-## Checks completed
+## Source audit
 
-- [x] Enumerated the repository tree (323 tracked files; 54 HTML pages in the source audit).
-- [x] Parsed local `href`, `src`, and `action` references across all 54 HTML pages and compared them with tracked repository paths.
-- [x] Confirmed no unresolved hard-coded local HTML-page references in the checked pages.
-- [x] Confirmed no unresolved hard-coded local asset references in the checked pages after accounting for runtime-generated template references and routes.
-- [x] Confirmed no references to obsolete `/trade-os.html` or missing `/trade-atlas-launcher.js` in the reviewed redesign pages.
-- [x] Confirmed `/marketplace` is an intentional alias rewritten to `/marketplace.html` in `vercel.json`.
-- [x] Confirmed `/` is rewritten to `/frontend-v3.html`.
-- [x] Reviewed landing page script references: `visual-enhancer.js`, `vtg-cart-calculator.js`, `vtg-weather.js`, `vtg-country-intelligence.js`, `vtg-market-news.js`, `vtg-interaction-recovery.js`, `vtg-map-atlas-ui.js`, and `vtg-site-navigation.js`.
-- [x] Rechecked the canonical buyer, supplier, bank and admin page source. The canonical bank workspace is `/bank-trade-os.html`; neither `/bank-dashboard-preview.html` nor `/map-enhancer.js` is referenced by the reviewed landing/dashboard source, so their direct 404 probes are not confirmed broken inbound links.
-- [x] Selected preview HTTP probes previously returned 200 for `/marketplace.html`, `/trade-atlas.html`, `/vtg-ai.html`, `/supplier-dashboard.html`, `/buyer-dashboard.html`, `/bank-trade-os.html`, `/admin-dashboard-preview.html`, and `/africa-markets.html`.
-- [x] Latest GitHub Actions run [#1208](https://github.com/Temi911/vtg-backend/actions/runs/39979085929) completed successfully on commit `fe72344dd845d0c58a1f4ead3319fa3f3939d76d).
-- [x] Latest Vercel deployment listing reports state `READY` for commit `fe72344dd845d0c58a1f4ead3319fa3f3939d76d`.
+- [x] Enumerated the reviewed commit's Git tree: **350 tracked files, including 54 HTML pages and 171 JavaScript files**.
+- [x] Parsed local `href`, `src`, and `action` references across the 54 HTML pages and compared them with tracked paths in the source audit.
+- [x] Found no unresolved hard-coded local HTML-page references in the audited pages.
+- [x] Found no unresolved hard-coded local asset references after accounting for runtime-generated template references and routes.
+- [x] Confirmed no references to obsolete `/trade-os.html` or missing `/trade-atlas-launcher.js` in the reviewed pages.
+- [x] Confirmed `/marketplace` is intentionally rewritten to `/marketplace.html` in `vercel.json`, and `/` is rewritten to `/frontend-v3.html`.
+- [x] Confirmed the canonical bank workspace is `/bank-trade-os.html`. The reviewed landing/dashboard source does not reference `/bank-dashboard-preview.html` or `/map-enhancer.js`; their absence is not evidence of a broken inbound link.
+- [x] Confirmed the latest commit changed this QA report only; the page source audited in its parent commit remains unchanged.
 
-## Still required before calling the site complete
+## Remaining acceptance checks
 
-- [ ] Re-establish live preview access and repeat selected HTTP probes against the current deployment.
-- [ ] Rendered desktop and mobile checks across all 54 pages.
-- [ ] Public visitor theme and light/dark contrast checks.
-- [ ] Dashboard theme, language, navigation and role-flow checks.
-- [ ] Landing-page hero, 36-category carousel, three-second rotation and CTA checks.
-- [ ] Supplier, buyer and bank dashboard direct-preview checks, including actual interactions.
-- [ ] Trade Atlas map tiles, coordinates, route selection and mobile controls.
-- [ ] Browser-console, missing-network-asset and accessibility checks.
-- [ ] Authentication, API health, database, storage, email and role-ownership checks.
-- [ ] End-to-end inspection/payment, LC, document and shipment acceptance tests.
-- [ ] Final production deployment and regression verification.
+- [ ] Rendered desktop and mobile review across the site, including responsive layout and image cropping.
+- [ ] Public visitor theme presets and light/dark contrast checks across public pages.
+- [ ] Dashboard theme, language, navigation, and role-flow checks.
+- [ ] Landing hero, all 36 marketplace categories, carousel rotation timing, and CTA interaction checks.
+- [ ] Supplier, buyer, and bank dashboard direct-preview checks with actual controls exercised.
+- [ ] Trade Atlas map tiles, selected coordinates, route selection, and mobile controls.
+- [ ] Browser-console errors, missing network assets, keyboard navigation, and accessibility checks.
+- [ ] Authentication, API health, database, storage, email, and role-ownership checks.
+- [ ] End-to-end inspection/payment, letter-of-credit, document, and shipment acceptance tests.
+- [ ] Production deployment and regression verification after explicit approval.
 
-## Deployment and safety notes
+## Known verification limitation
 
-- Production `main` was not changed by this audit.
+The connected browser-control tool cannot access the originating browser context in this session. Therefore rendered visual, console, mobile, and end-to-end browser checks remain open. The Vercel preview is reachable through HTTP fetch and the selected routes above return 200, but that is not a substitute for interactive browser acceptance testing.
+
+## Release guardrails
+
+- Production `main` was not changed.
 - Railway was not changed.
-- No page was deleted; inbound references were checked before proposing any cleanup.
-- A Vercel deployment marked `READY` confirms deployment state only, not functional correctness.
-- Do not promote the redesign to production until browser and end-to-end acceptance checks pass.
+- No page was deleted; existing landing-page links and carousels remain protected during QA.
+- Do not merge or promote this redesign to production until the remaining acceptance checks pass and the user explicitly approves release.
