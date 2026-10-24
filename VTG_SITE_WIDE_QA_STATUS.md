@@ -46,3 +46,11 @@ The connected browser-control tool cannot access the originating browser context
 - Railway was not changed.
 - No page was deleted; existing landing-page links and carousels remain protected during QA.
 - Do not merge or promote this redesign to production until the remaining acceptance checks pass and the user explicitly approves release.
+
+## Atlas and theme consistency fixes — 2026-10-24
+
+- Limited the shared public appearance selector to the landing page. Interior public pages inherit the persisted landing-page appearance preference and do not offer a second theme selector; dashboard appearance controls remain dashboard-owned.
+- Added light-mode contrast and background overrides for the Trade Atlas 3D globe stage, its labels, controls, legend, selected-location panel and map tiles.
+- Added shared-theme styling to the buyer Atlas map, workspace Atlas drawer and dashboard shipment-globe panel. Dark mode uses dark surrounding surfaces and a darkened map-tile treatment; light mode uses a bright map stage and readable labels.
+- Audited the active Atlas source files: the public Trade Atlas uses Globe.gl plus Leaflet/OpenStreetMap; workspace and buyer maps use public OpenStreetMap tiles. These implementations do not require a paid map API key. If an API-key prompt still appears, verify the exact page/deployment and clear stale browser cache; the active map source may not be the source currently being rendered.
+- Verification limitation: Vercel reports the latest preview deployment as READY, but the connected preview-fetch tool cannot access that deployment alias in this session. Interactive visual verification remains open. The most recent Node test run was cancelled during rapid branch updates, so the final commit must complete CI before acceptance.
