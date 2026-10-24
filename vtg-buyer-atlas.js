@@ -4,6 +4,11 @@
   const DATA_URL='/vtg-trade-atlas.js?v=20261016-buyer-map';
   let pendingRegion=null;
   const css=`
+    html[data-theme="light"] .vtgBuyerAtlasMap{background:#eaf0f4!important;color:#17384b!important}
+    html[data-theme="light"] .vtgBuyerAtlasMap .leaflet-tile{filter:none!important}
+    html[data-theme="dark"] .vtgBuyerAtlasMap{background:#0b1117!important;color:#edf3f7!important}
+    html[data-theme="dark"] .vtgBuyerAtlasMap .leaflet-tile{filter:brightness(.72) invert(1) contrast(.86) hue-rotate(180deg) saturate(.72)!important}
+
     .vtgBuyerAtlasMap{width:100%;height:100%;min-height:320px;background:#eaf0f4}
     .vtgBuyerAtlasMap .leaflet-container{width:100%;height:100%;min-height:320px;font:12px Manrope,Arial,sans-serif}
     .vtgBuyerAtlasPopup{min-width:145px;color:#1d3441;font:12px/1.5 Manrope,Arial,sans-serif}
