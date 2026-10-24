@@ -474,7 +474,7 @@
     document.addEventListener('visibilitychange', function () { if (!document.hidden) syncTheme(); });
   }
   function ensureThemeControl() {
-    if (isWorkspaceDashboardPage() || !vtgPublicShellPage) return;
+    if (isWorkspaceDashboardPage() || !isHomePage() || !vtgPublicShellPage) return;
     if (document.getElementById('vtgThemePreference')) return;
     var wrap = document.createElement('div');
     wrap.id = 'vtgThemeControl';
