@@ -1,0 +1,97 @@
+/* VTG dashboard typography: a distinct, data-friendly system separate from the public site's Manrope */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{
+  --vtg-dash-font:"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --vtg-dash-body:13px;
+  --vtg-dash-line:1.55;
+  --vtg-dash-heading:#17212b;
+}
+html body{
+  font-family:var(--vtg-dash-font)!important;
+  font-size:var(--vtg-dash-body);
+  line-height:var(--vtg-dash-line);
+  letter-spacing:-.008em;
+  font-feature-settings:"cv02","cv03","cv04","cv11";
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+html body h1,html body h2,html body h3,html body h4,
+html body .page-title,html body .page-head h1,html body .heading h1,
+html body .panel-head h2,html body .section-title{
+  font-family:var(--vtg-dash-font)!important;
+  letter-spacing:-.035em;
+  line-height:1.2;
+}
+html body h1,html body .page-head h1,html body .heading h1{font-size:clamp(22px,2.1vw,28px);font-weight:750}
+html body h2,html body .panel-head h2,html body .section-title{font-size:15px;font-weight:700}
+html body h3,html body h4{font-size:13px;font-weight:700}
+html body p,html body .subtext,html body .page-head p,html body .sub{line-height:1.65}
+html body small,html body .small,html body .muted,html body .eyebrow,html body .stat-label{letter-spacing:.005em}
+html body button,html body input,html body select,html body textarea{font-family:var(--vtg-dash-font);font-size:inherit;letter-spacing:inherit}
+html body button,html body .btn{font-weight:650;line-height:1.3}
+html body input,html body select,html body textarea{line-height:1.45}
+html body table{font-size:12px;line-height:1.5;font-variant-numeric:tabular-nums}
+html body th{font-size:10px;font-weight:750;letter-spacing:.045em;text-transform:uppercase}
+html body td{line-height:1.55}
+html body .stat strong,html body .metric-value,html body .kpi-value{font-variant-numeric:tabular-nums;letter-spacing:-.035em}
+html body .page-head{gap:18px;margin-bottom:22px}
+html body .panel-head{gap:14px}
+html body .panel-head p,html body .panel-head small{line-height:1.55}
+html body .record-list,html body .table-wrap,html body .stats,html body .field-grid{row-gap:14px}
+@media(max-width:720px){
+  html body{font-size:12.5px}
+  html body h1,html body .page-head h1,html body .heading h1{font-size:25px}
+  html body h2,html body .panel-head h2,html body .section-title{font-size:16px}
+  html body .page-head{margin-bottom:17px;gap:12px}
+  html body table{font-size:12px}
+}
+
+/* Dashboard-wide refinement: data-friendly spacing and control polish without overriding workspace skin colours. */
+:root{
+  --vtg-dash-radius:14px;
+  --vtg-dash-control-radius:9px;
+}
+html body :is(.card,.panel,.stat,.metric,.widget,.widget-card,.toolPanel,.formPanel,.form-panel,.tableWrap,.table-wrap,.chart,.chart-card,.quickCard,.quickLink,.task,.task-card,.roleRow,.role-row,.adminPreview,.previewNotice){
+  border-radius:var(--vtg-dash-radius);
+}
+html body :is(.panel,.card,.widget,.widget-card,.toolPanel,.formPanel,.form-panel,.chart-card,.quickCard,.quickLink,.task-card,.adminPreview,.previewNotice){
+  transition:border-color .16s ease,box-shadow .16s ease;
+}
+html body :is(.btn,button,[role="button"],.utilityBtn,.iconBtn,.themeIconBtn,.homeBtn,.miniButton){
+  border-radius:var(--vtg-dash-control-radius);
+  font-weight:650;
+}
+html body :is(input,select,textarea){
+  min-height:38px;
+  border-radius:var(--vtg-dash-control-radius);
+}
+html body input[type="checkbox"],html body input[type="radio"]{min-height:0}
+html body :is(.panelHead,.panel-head,.cardTop,.formTop,.sectionHead,.section-head){
+  gap:12px;
+}
+html body :is(.stat,.metric,.quickCard,.quickLink,.task,.task-card,.roleRow,.role-row){
+  overflow-wrap:anywhere;
+}
+html body :is(.tableWrap,.table-wrap,.table-responsive,.table-scroll){
+  overflow-x:auto;
+  overscroll-behavior-inline:contain;
+  scrollbar-width:thin;
+}
+html body :is(th,td){vertical-align:middle}
+html body :is(.pill,.tag,.status,.badge,.status-pill){border-radius:7px}
+html body :is(a,button,input,select,textarea,[tabindex]):focus-visible{
+  outline:2px solid var(--vtg-dash-focus,#9b5c60);
+  outline-offset:2px;
+}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+  html body :is(.panel,.card,.widget,.widget-card,.toolPanel,.formPanel,.form-panel,.chart-card,.quickCard,.quickLink,.task-card,.adminPreview):hover{
+    box-shadow:0 10px 28px rgba(0,0,0,.07);
+  }
+}
+@media(max-width:720px){
+  html body :is(.panel,.card,.widget,.widget-card,.toolPanel,.formPanel,.form-panel){border-radius:12px}
+  html body :is(.panel-head,.panelHead,.sectionHead,.section-head){gap:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  html body :is(.panel,.card,.widget,.widget-card,.toolPanel,.formPanel,.form-panel,.chart-card,.quickCard,.quickLink,.task-card,.adminPreview){transition:none}
+}
