@@ -161,7 +161,7 @@ html[data-theme="light"] .supplier-nav .groupBtn:hover,html[data-theme="light"] 
       </div>
     </section>
   </nav>
-  <div class="sidebar-bottom"><p>VTG supplier workspace preview. Data entered here stays in this browser.</p><a href="/frontend-v3.html">← Return to VTG home</a></div>
+  <div class="sidebar-bottom"><p>VTG supplier workspace preview. Data entered here stays in this browser.</p><a href="#page-overview" data-supplier-home>← Supplier overview</a></div>
 </aside>
 <main class="main">
 <header class="topbar"><a class="vtg-header-brand" href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img class="logo-dark" src="/assets/vtg-logo.svg" alt="Vintage Trade Global"><img class="logo-light" src="/assets/vtg-logo-light.svg" alt="" aria-hidden="true"></a>
@@ -175,7 +175,7 @@ html[data-theme="light"] .supplier-nav .groupBtn:hover,html[data-theme="light"] 
     <select class="control-select" id="languageSelect" aria-label="Language preference"><option value="en">English</option><option value="fr">Français</option><option value="zh">中文</option><option value="ko">한국어</option></select>
     <button class="icon-btn" id="notificationBtn" aria-label="Notifications" title="Notifications">♧<span class="dot"></span></button>
     <button class="icon-btn" id="themeToggle" aria-label="Switch light or dark mode" title="Switch light or dark mode">◐</button>
-    <a class="top-btn" href="/frontend-v3.html">Home</a>
+    <a class="top-btn" href="#page-overview" data-supplier-home>Supplier overview</a>
   </div>
 </header>
 <div class="content">
@@ -546,4 +546,35 @@ initPrefs();fillProfile();fillStore();initialTasks();renderAll();if(location.has
   const sc=document.createElement('script');sc.src='https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';sc.async=true;document.head.appendChild(sc);
 })();
 </script>
+
+<script id="supplier-preview-isolation">
+/* Shared supplier preview: prevent navigation to other VTG pages. */
+(function(){
+  const dashboardPath = new URL('/supplier-dashboard.html', location.origin).pathname;
+  document.addEventListener('click', function(event){
+    const link = event.target.closest('a[href]');
+    if(!link) return;
+    const raw = link.getAttribute('href') || '';
+    if(raw.startsWith('#') || raw.startsWith('javascript:') || link.hasAttribute('download')) return;
+    let target;
+    try { target = new URL(raw, location.href); } catch (_) { return; }
+    if(target.origin !== location.origin || target.pathname === dashboardPath || target.pathname === location.pathname) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    let notice = document.getElementById('supplierPreviewNotice');
+    if(!notice){
+      notice = document.createElement('div');
+      notice.id = 'supplierPreviewNotice';
+      notice.setAttribute('role','status');
+      notice.style.cssText='position:fixed;z-index:9999;right:18px;bottom:18px;max-width:340px;padding:13px 16px;border-radius:10px;background:#17212b;color:#fff;font:12px/1.5 Arial,sans-serif;box-shadow:0 8px 28px #0004';
+      document.body.appendChild(notice);
+    }
+    notice.textContent='This shared preview is limited to the VTG Supplier Dashboard.';
+    notice.style.display='block';
+    clearTimeout(window.__supplierPreviewNoticeTimer);
+    window.__supplierPreviewNoticeTimer=setTimeout(()=>notice.style.display='none',3200);
+  }, true);
+})();
+</script>
+
 </body></html>
