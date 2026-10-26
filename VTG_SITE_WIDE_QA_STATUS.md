@@ -54,3 +54,31 @@ The connected browser-control tool cannot access the originating browser context
 - Added shared-theme styling to the buyer Atlas map, workspace Atlas drawer and dashboard shipment-globe panel. Dark mode uses dark surrounding surfaces and a darkened map-tile treatment; light mode uses a bright map stage and readable labels.
 - Audited the active Atlas source files: the public Trade Atlas uses Globe.gl plus Leaflet/OpenStreetMap; workspace and buyer maps use public OpenStreetMap tiles. These implementations do not require a paid map API key. If an API-key prompt still appears, verify the exact page/deployment and clear stale browser cache; the active map source may not be the source currently being rendered.
 - Verification limitation: Vercel reports the latest preview deployment as READY, but the connected preview-fetch tool cannot access that deployment alias in this session. Interactive visual verification remains open. The most recent Node test run was cancelled during rapid branch updates, so the final commit must complete CI before acceptance.
+
+
+## Phase 4 — Site-wide page and navigation review (2026-10-26)
+
+### Scope and evidence
+- Reviewed branch source for the 54 HTML pages and 171 JavaScript files in the 350-file repository tree at commit `e715e778e005f17332c939bbc11a7a0ee4b7c3b4`.
+- Re-read the active source for the supplier, buyer, bank, and admin workspaces; Trade Atlas; marketplace; and VTG AI.
+- Fetched the Vercel preview over HTTP for 13 representative routes: marketplace, Trade Atlas, VTG AI, supplier preview, buyer workspace, bank workspace, admin preview, Trade Feed, Market Intelligence, supplier profile, and buyer/supplier/bank registration. All 13 returned HTTP 200 with page titles, including `/supplier-dashboard.html?preview=1`.
+- The preview fetch is HTTP-level evidence only. It does not prove JavaScript execution, successful rendering, API connectivity, or that interactive controls work.
+
+### Findings
+1. **Preview navigation remains client-side only.** The supplier preview script rewrites known Home links and blocks ordinary anchor clicks that leave the supplier preview. It does not secure the other public URLs against direct entry, and client-side event handling is not an access-control boundary. Do not share it as a confidential or access-restricted environment.
+2. **Workspace source still contains landing-page destinations.** The supplier, buyer, bank, and admin HTML include links to `/frontend-v3.html`; the supplier preview script rewrites certain links at runtime when `?preview=1` is present. This behaviour still requires an interactive browser test, especially for injected footer links and non-anchor navigation.
+3. **Live workspace behaviour remains unverified.** The supplier dashboard contains API-backed orders/quotes and preview-mode handling; buyer/bank dashboards also contain external script/API integrations. HTTP 200 alone does not establish that these integrations are healthy.
+4. **No new broken local route was confirmed by the representative HTTP checks.** Do not treat this partial route sample as a fresh 54-page full-link audit.
+
+### Acceptance checklist
+- [x] Inventory HTML and JavaScript file counts from the current reviewed commit.
+- [x] Representative HTTP availability checks for 13 key public/workspace routes.
+- [x] Static review of the main workspace navigation source and supplier preview guard.
+- [ ] Fresh rendered desktop/mobile review across all page groups.
+- [ ] Exercise Home/Previous, dashboard navigation, forms, carousels, theme/language controls, and key API-backed actions in a real browser.
+- [ ] Check browser console, failed network requests, keyboard focus, and accessibility.
+- [ ] Verify backend/API health and role-based authorization for real user accounts.
+- [ ] Replace client-side-only supplier preview isolation with an explicitly approved hosting/authentication boundary if the link must genuinely restrict access to the supplier workspace.
+
+### Phase 4 disposition
+This phase is **audit-in-progress, not site-wide acceptance**. The current preview returned HTTP 200 for the representative routes, but interactive browser acceptance is still blocked by unavailable browser control. No speculative page redesigns were applied. No merge to `main`, production promotion, or Railway changes were performed.
