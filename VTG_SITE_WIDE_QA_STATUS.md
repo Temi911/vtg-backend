@@ -82,3 +82,13 @@ The connected browser-control tool cannot access the originating browser context
 
 ### Phase 4 disposition
 This phase is **audit-in-progress, not site-wide acceptance**. The current preview returned HTTP 200 for the representative routes, but interactive browser acceptance is still blocked by unavailable browser control. No speculative page redesigns were applied. No merge to `main`, production promotion, or Railway changes were performed.
+
+
+## Supplier preview isolation correction (2026-10-26)
+
+- Added a standalone supplier preview bundle under `supplier-preview/`: an isolated `index.html`, local copies of the dashboard typography styles, shipment-globe script, shared dashboard footer script, and VTG logo assets.
+- Rebased the preview page's local asset references so the bundle can be deployed with `supplier-preview` as its own Vercel project root. Added a scoped Vercel API rewrite for the existing Railway API and a route alias from `/supplier-dashboard.html` to the preview root.
+- Removed the preview page's visible Home and sign-in link destinations from the isolated copy and added navigation guards for off-page links, form navigation, and `window.open` calls. These guards improve preview behaviour but are not security controls by themselves.
+- Static validation: isolated HTML contains no remaining `href="/frontend-v3.html"`, `href="/signin.html"`, or root-relative CSS/JS/SVG asset references.
+- **Deployment blocker:** attempted to create a separate Vercel project named `vtg-supplier-preview` in the known team, rooted at `supplier-preview`, with deployment disabled until the source bundle is ready. Vercel returned HTTP 403: project creation is not permitted for the current connection. No project was created and no shareable isolated URL exists yet.
+- **Status:** source bundle prepared; true URL-level isolation is not complete until a user with Vercel project-creation permission creates the separate project (root directory `supplier-preview`) and deploys the current redesign branch. Do not share the original main-site preview as if it were isolated. No changes were made to the existing main Vercel project, production deployment, or Railway.
