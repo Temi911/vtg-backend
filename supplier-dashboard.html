@@ -156,7 +156,7 @@ html[data-theme] :is(button,a,input,select,textarea,[role="button"]):focus-visib
 <body id="vtg-dashboard-top">
 <div class="app">
 <aside class="sidebar" id="sidebar" aria-label="Supplier navigation">
-  <a class="brand" href="/frontend-v3.html"><img class="logo-dark" src="/assets/vtg-logo.svg" alt="VTG logo"><img class="logo-light" src="/assets/vtg-logo-light.svg" alt="" aria-hidden="true"><span><strong>VINTAGE TRADE GLOBAL</strong><small>SUPPLIER TRADE OS</small></span></a>
+  <a class="brand" href="#vtg-dashboard-top" aria-label="Supplier dashboard preview"><img class="logo-dark" src="/assets/vtg-logo.svg" alt="VTG logo"><img class="logo-light" src="/assets/vtg-logo-light.svg" alt="" aria-hidden="true"><span><strong>VINTAGE TRADE GLOBAL</strong><small>SUPPLIER TRADE OS</small></span></a>
   <div class="workspace-tag">SUPPLIER WORKSPACE · PREVIEW</div>
   <nav class="supplier-nav" aria-label="Supplier tools">
     <section class="nav-group">
@@ -206,10 +206,10 @@ html[data-theme] :is(button,a,input,select,textarea,[role="button"]):focus-visib
       </div>
     </section>
   </nav>
-  <div class="sidebar-bottom"><p>VTG supplier workspace preview. Data entered here stays in this browser.</p><a href="/frontend-v3.html">← Return to VTG home</a></div>
+  <div class="sidebar-bottom"><p>VTG supplier workspace preview. Data entered here stays in this browser.</p><a href="#vtg-dashboard-top">↑ Supplier preview</a></div>
 </aside>
 <main class="main">
-<header class="topbar"><a class="vtg-header-brand" href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img class="logo-dark" src="/assets/vtg-logo.svg" alt="Vintage Trade Global"><img class="logo-light" src="/assets/vtg-logo-light.svg" alt="" aria-hidden="true"></a>
+<header class="topbar"><a class="vtg-header-brand" href="#vtg-dashboard-top" aria-label="Supplier dashboard preview home"><img class="logo-dark" src="/assets/vtg-logo.svg" alt="Vintage Trade Global"><img class="logo-light" src="/assets/vtg-logo-light.svg" alt="" aria-hidden="true"></a>
   <div class="crumb"><span>VTG / Supplier workspace / </span><strong id="crumbTitle">Command centre</strong></div>
   <div class="top-controls">
     <button class="icon-btn mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button>
@@ -591,4 +591,62 @@ initPrefs();fillProfile();fillStore();initialTasks();renderAll();if(location.has
   const sc=document.createElement('script');sc.src='https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';sc.async=true;document.head.appendChild(sc);
 })();
 </script>
+
+<script id="vtg-supplier-preview-isolation">
+(function(){
+  'use strict';
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('preview') !== '1') return;
+  const message = 'This shared link is limited to the Supplier dashboard preview.';
+  function showNotice(){
+    const sharedStatus = document.getElementById('vf-status');
+    if (sharedStatus) {
+      sharedStatus.textContent = message;
+      sharedStatus.style.display = 'block';
+      return;
+    }
+    let notice = document.getElementById('supplier-preview-isolation-notice');
+    if (!notice) {
+      notice = document.createElement('div');
+      notice.id = 'supplier-preview-isolation-notice';
+      notice.setAttribute('role','status');
+      notice.setAttribute('aria-live','polite');
+      notice.style.cssText = 'position:fixed;z-index:10000;left:16px;right:16px;bottom:16px;max-width:520px;margin:auto;padding:12px 16px;border:1px solid #a5232b;border-radius:10px;background:#fff;color:#17212b;box-shadow:0 8px 28px #0003;font:600 13px/1.5 Manrope,Arial,sans-serif';
+      document.body.appendChild(notice);
+    }
+    notice.textContent = message;
+  }
+  function isolateNavigation(){
+    document.querySelectorAll('a[href="/frontend-v3.html"], a[href="/frontend-v3.html/"]').forEach(function(link){
+      link.setAttribute('href','#vtg-dashboard-top');
+      link.setAttribute('aria-label','Back to top of supplier preview');
+      if (/return to vtg home|\bhome\b/i.test(link.textContent)) link.textContent = '↑ Supplier preview';
+    });
+    const sharedHome = document.querySelector('#vtg-shared-footer a[aria-label="Home"]');
+    if (sharedHome) {
+      sharedHome.setAttribute('href','#vtg-dashboard-top');
+      sharedHome.setAttribute('aria-label','Back to top of supplier preview');
+      sharedHome.textContent = 'Top';
+    }
+    const nav = document.querySelector('#vtg-shared-footer .vf-links');
+    if (nav) nav.remove();
+  }
+  document.addEventListener('click', function(event){
+    const link = event.target && event.target.closest ? event.target.closest('a[href]') : null;
+    if (!link) return;
+    const href = link.getAttribute('href') || '';
+    if (href.charAt(0) === '#' || /^javascript:/i.test(href)) return;
+    let target;
+    try { target = new URL(href, window.location.href); } catch (_) { return; }
+    if (target.origin !== window.location.origin || target.pathname !== window.location.pathname || target.searchParams.get('preview') !== '1') {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      showNotice();
+    }
+  }, true);
+  isolateNavigation();
+  new MutationObserver(isolateNavigation).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
 </body></html>
