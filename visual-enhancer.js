@@ -70,42 +70,42 @@
     ];
 
     const images={
-      'Cars & Automobiles':'https://hips.hearstapps.com/hmg-prod/images/5ae0e9e1-a5de-4176-9a47-9bfb397e9d22.jpeg?crop=0.74945xw%3A1xh%3Bcenter%2Ctop&resize=1200%3A%2A',
-      'Motorcycles, Tricycles & Mobility':'https://factoryorder.oss-cn-chengdu.aliyuncs.com/uploads/admin/2022/04/07/200CC250CC300CCclassicalandhotsellingmodels%289%29_30885.jpg',
-      'Bicycles & Personal Mobility':'https://assets.newatlas.com/dims4/default/ea73d8b/2147483647/strip/true/crop/1620x1080%2B0%2B0/resize/1620x1080%21/format/webp/quality/85/?url=https%3A%2F%2Fnewatlas-brightspot.s3.amazonaws.com%2Farchive%2F506A7544.jpg',
-      'Medical Supplies & Healthcare':'https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&w=1600&q=85',
-      'Agriculture & Farm Products':'https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=1600&q=88',
-      'Clothing & Textiles':'https://img77.uenicdn.com/image/upload/v1729534275/business/13874156-b69f-4e6a-8ff7-b376e22cf6f9.jpg',
-      'Footwear':'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1600&q=90',
-      'Fashion & Accessories':'https://images.unsplash.com/photo-1611085583191-a3b181a88401?auto=format&fit=crop&w=1600&q=88',
-      'Watches & Wearables':'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1600&q=88',
-      'Electronics & Technology':'https://knjiznica-trzic.splet.arnes.si/files/2024/09/Phones-1.jpg',
-      'Home & Furniture':'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1600&q=88',
-      'Kitchen & Home Appliances':'https://i.postimg.cc/W4xx6fsb/IMG-0708.jpg',
-      'Beauty & Personal Care':'https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1600&q=85',
-      'Food & Beverages':'https://supplier-offers-media-production.s3.eu-central-1.amazonaws.com/5bebefe9-0732-11f1-818e-0a58a9feac02.png',
-      'Construction Equipment & Machinery':'https://cdn.prod.website-files.com/66fc1033a0da8fd78b2a4365/67a22915cb3ecbc7698dea23_thumbnail.jpeg',
-      'Tools & Hardware':'https://crownksa.com/static/images/categories/hardware-banner.jpg',
-      'Industrial Machinery & Equipment':'https://gbres.dfcfw.com/Files/iimage/20250104/BB2DB91D06947BB58683EC4A915EBE2B_w1080h720.jpg',
-      'Steel, Iron & Metal Products':'https://irp-cdn.multiscreensite.com/9fec2152/dms3rep/multi/Cartagena-bodega-chipa-Agofer-e1201e26.JPG',
-      'Solar & Renewable Energy':'https://www.sunners.com.br/images/equipamentos-de-energia-solar-fotovoltaica-01.webp',
-      'Plumbing, Water & Sanitary':'https://hilitebmt.com/static/2fcdba86c15cc1f4f70cb20e38f94f3d/3564b/sanitary-items.jpg',
-      'Packaging & Printing':'https://images.ctfassets.net/cma41nsiygxr/65KW26r0jd0J8WPmf2jtrk/fdc314fdceb622ca4e39df42e848504c/box_cat-boxes-for-objects_3.jpg',
-      'Office & Business Supplies':'https://eu.evocdn.io/dealer/1898/content/media/Content_Pages/large-office-supplies-stationery-1.jpg',
-      'Baby & Children Products':'https://static.ticimax.cloud/cdn-cgi/image/width%3D-%2Cquality%3D99/6806/uploads/blog/cocuklarin-hayal-dunyasinda-yolculuk-toy-4eae.jpg',
-      'Cleaning & Household Supplies':'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1600&q=88',
-      'Bags, Luggage & Travel':'https://images.unsplash.com/photo-1612902456551-333ac5afa26e?auto=format&fit=crop&w=1600&q=88',
-      'Retail & Commercial Equipment':'https://img.waimaoniu.net/2456/2456-202509291705011260.jpg',
-      'Hotel, Restaurant & Catering Equipment':'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1600&q=88',
-      'Factory & Production Supplies':'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1600&q=88',
-      'Marine & Port Equipment':'https://multimedia.elpais.com.co/2023/07_julio/500_empresas/img_editorial/art1.jpg',
-      'Logistics, Transport & Warehousing Equipment':'https://www.klikovacdoo.com/images/Hale-i-magacini/Galerija/Hale_i_magacini_003.jpg',
-      'Building Materials':'https://ferreteriachacabuco.cl/cdn/shop/articles/fd27443c-f441-4964-938e-c24e25948095.png?v=1772467913&width=1500',
-      'Electrical & Power Equipment':'https://specap.com/_next/image?dpl=dpl_GR1mkvn39potgZieQaYjJ6YZHFpS&q=75&url=%2Fimages%2Fblog%2Fpower-electronics.webp&w=3840',
-      'Telecommunications & Networking':'https://www.nokia.com/sites/default/files/2024-05/resrcid34724_7750_sr_-2se-001-1920x1080.jpg?height=774&width=1376',
-      'Industrial Materials':'https://raw-material.stinternational.org/resources/hero-industrial.jpg',
-      'General Merchandise':'https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1600&q=88',
-      'Import, Export & Trade Services':'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1600&q=88'
+      'Cars & Automobiles':'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1600&q=88',
+      'Motorcycles, Tricycles & Mobility':'https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=1600&q=88',
+      'Bicycles & Personal Mobility':'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=1600&q=88',
+      'Medical Supplies & Healthcare':'https://images.pexels.com/photos/6129899/pexels-photo-6129899.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Agriculture & Farm Products':'https://images.pexels.com/photos/11678438/pexels-photo-11678438.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Clothing & Textiles':'https://images.pexels.com/photos/9824794/pexels-photo-9824794.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Footwear':'https://images.pexels.com/photos/2442892/pexels-photo-2442892.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Fashion & Accessories':'https://images.pexels.com/photos/28973056/pexels-photo-28973056.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Watches & Wearables':'https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=1600&q=88',
+      'Electronics & Technology':'https://images.pexels.com/photos/36169770/pexels-photo-36169770.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Home & Furniture':'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1600&q=88',
+      'Kitchen & Home Appliances':'https://images.pexels.com/photos/7027760/pexels-photo-7027760.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Beauty & Personal Care':'https://images.pexels.com/photos/7795760/pexels-photo-7795760.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Food & Beverages':'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=88',
+      'Construction Equipment & Machinery':'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1600&q=88',
+      'Tools & Hardware':'https://images.pexels.com/photos/5184907/pexels-photo-5184907.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Industrial Machinery & Equipment':'https://images.pexels.com/photos/31352672/pexels-photo-31352672.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Steel, Iron & Metal Products':'https://images.pexels.com/photos/15508177/pexels-photo-15508177.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Solar & Renewable Energy':'https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=1600&q=88',
+      'Plumbing, Water & Sanitary':'https://images.pexels.com/photos/28178448/pexels-photo-28178448.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Packaging & Printing':'https://images.unsplash.com/photo-1580674285054-bed31e145f59?auto=format&fit=crop&w=1600&q=88',
+      'Office & Business Supplies':'https://images.pexels.com/photos/8099483/pexels-photo-8099483.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Baby & Children Products':'https://images.pexels.com/photos/6849268/pexels-photo-6849268.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Cleaning & Household Supplies':'https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=1600&q=88',
+      'Bags, Luggage & Travel':'https://images.pexels.com/photos/34629931/pexels-photo-34629931.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Retail & Commercial Equipment':'https://images.pexels.com/photos/1366594/pexels-photo-1366594.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Hotel, Restaurant & Catering Equipment':'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=88',
+      'Factory & Production Supplies':'https://images.pexels.com/photos/13974251/pexels-photo-13974251.jpeg?auto=compress&cs=tinysrgb&w=1600',
+      'Marine & Port Equipment':'https://images.pexels.com/photos/13025947/pexels-photo-13025947.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Logistics, Transport & Warehousing Equipment':'https://images.pexels.com/photos/24244234/pexels-photo-24244234.jpeg?auto=compress&cs=tinysrgb&w=1600',
+      'Building Materials':'https://images.pexels.com/photos/9026149/pexels-photo-9026149.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Electrical & Power Equipment':'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=1600&q=88',
+      'Telecommunications & Networking':'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=88',
+      'Industrial Materials':'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&w=1600&q=88',
+      'General Merchandise':'https://images.pexels.com/photos/28846853/pexels-photo-28846853.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop',
+      'Import, Export & Trade Services':'https://images.pexels.com/photos/36778671/pexels-photo-36778671.jpeg?auto=compress&cs=tinysrgb&w=1600&h=1000&fit=crop'
     };
 
     const style=document.createElement('style');
@@ -224,7 +224,7 @@
     const hero=document.querySelector('.hero');
     const heroIn=document.querySelector('.heroIn');
     const market=document.querySelector('#market');
-    if(!landing || !hero || !heroIn || !market || landing.dataset.vtgMinimalLanding) return;
+    if(!landing || !hero || !heroIn || !market || landing.dataset.vtgMinimalLanding || landing.dataset.vtgRedesign === "1") return;
     landing.dataset.vtgMinimalLanding='1';
 
     const css=document.createElement('style');    css.id='vtgMinimalLandingStyles';

@@ -7,13 +7,17 @@ const app = require('../src/server');
 const htmlPath = path.join(__dirname, '..', '..', 'frontend-v3.html');
 const html = fs.readFileSync(htmlPath, 'utf8');
 
-test('current VTG frontend exposes the core trade interface', () => {
-  assert.match(html, /id="newsDrawer"/);
-  assert.match(html, /id="mapDrawer"/);
-  assert.match(html, /id="authForm"/);
-  assert.match(html, /data-role="buyer"/);
-  assert.match(html, /data-role="supplier"/);
-  assert.match(html, /data-role="bank"/);
+test('current VTG landing page preserves the approved trade-house layout and key routes', () => {
+  assert.match(html, /id="landing"/);
+  assert.match(html, /class="nav"/);
+  assert.match(html, /vtgProductCarousel/);
+  assert.match(html, /vtgEditorialShowcase/);
+  assert.match(html, /vtgShowcaseCard/);
+  assert.match(html, /vtgEditorialCta/);
+  assert.match(html, /id="vtgFooter"/);
+  assert.ok(html.includes('href="/marketplace.html"'));
+  assert.ok(html.includes('href="/trade-atlas.html"'));
+  assert.ok(html.includes('href="/vtg-ai.html"'));
 });
 
 test('frontend includes trade calculator, cart and currency conversion hooks', () => {

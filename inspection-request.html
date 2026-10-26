@@ -34,19 +34,85 @@ footer.vtgCompactFooter .vtgFooterBottom div{display:flex;gap:16px}
 @media(max-width:430px){footer.vtgCompactFooter .vtgFooterLinks{grid-template-columns:1fr 1fr}footer.vtgCompactFooter .vtgFooterBottom{font-size:8px}}
 </style>
 <link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<style id="vtg-inspection-request-premium-refresh">
+/* Product verification and inspection request page: clarify evidence and form hierarchy without changing fees or workflow. */
+:root{--bg:#f7f5f0;--panel:#fffefa;--line:#ddd6cb;--text:#242321;--muted:#625d56;--red:#702a30;--gold:#b49a70}
+body{background:#f7f5f0;color:#242321}
+.nav{background:rgba(247,245,240,.95);border-color:#ddd6cb;backdrop-filter:blur(18px)}
+.logo{color:#202326}
+.back{border:1px solid #ddd6cb;border-radius:9px;background:#fffefa;color:#702a30}
+.hero{padding:clamp(34px,5vw,66px) 0}
+.heroIn{gap:clamp(24px,4vw,54px);align-items:center}
+.eyebrow{color:#702a30;letter-spacing:.15em}
+.hero h1{font-size:clamp(35px,4.7vw,58px);line-height:1.05;letter-spacing:-.045em;color:#202326;text-wrap:balance}
+.hero p{max-width:720px;color:#625d56;line-height:1.85;font-size:14px}
+.btn{min-height:42px;border:1px solid #d7ccc0;border-radius:10px;background:#fffefa;color:#302a26;padding:12px 17px}
+.btn:first-child,.btn.primary{background:#702a30;border-color:#702a30;color:#fff}
+.btn.secondary{background:#fffefa;color:#302a26}
+.section{padding-block:clamp(36px,5vw,62px)}
+.head h2{color:#242321;letter-spacing:-.035em}
+.head p{color:#625d56;line-height:1.8}
+.trustStrip{gap:12px}
+.trustItem{border:1px solid #e0d8ce;border-radius:13px;background:#fffefa;padding:16px}
+.trustItem strong{color:#242321}
+.trustItem p,.trustItem span{color:#625d56;line-height:1.7}
+.icon{background:#f2e9e5;color:#702a30;border-radius:9px}
+.process{gap:14px}
+.step{border:1px solid #e0d8ce;border-radius:14px;background:#fffefa;padding:18px}
+.stepNum{background:#f2e9e5;color:#702a30;border-radius:8px}
+.step h3{color:#242321}
+.step p{color:#625d56;line-height:1.75}
+.checkLayout{gap:18px}
+.photo{border:1px solid #e0d8ce;border-radius:15px;overflow:hidden;background:#eee7dd}
+.checkList{border:1px solid #e0d8ce;border-radius:15px;background:#fffefa;padding:18px}
+.checkItem{border-color:#eee7df;color:#393530;line-height:1.7}
+.plainNote,.caveat,.formNote{border:1px solid #e2d5c9;border-radius:11px;background:#faf4ec;color:#625d56;line-height:1.75;padding:14px}
+.evidenceGrid{gap:14px}
+.evidenceCard{border:1px solid #e0d8ce;border-radius:14px;background:#fffefa;overflow:hidden}
+.evidenceCard h3{color:#242321}
+.evidenceCard p{color:#625d56;line-height:1.75}
+.requestSection{background:#f0ece5;border-block:1px solid #e2d9cf}
+.requestGrid{gap:20px;align-items:start}
+.requestIntro h2{color:#242321}
+.requestIntro p{color:#625d56;line-height:1.8}
+.requestFacts{gap:10px}
+.fact{border:1px solid #e0d8ce;border-radius:11px;background:#fffefa;padding:13px}
+.fact strong{color:#242321}
+.fact span{color:#625d56}
+.form{border:1px solid #ded4c8;border-radius:18px;background:#fffefa;box-shadow:0 18px 48px rgba(30,25,22,.06);padding:clamp(18px,3vw,28px)}
+.formIntro h3{color:#242321}
+.formIntro p{color:#625d56;line-height:1.75}
+.fields{gap:13px}
+.field label{color:#393530;font-weight:700}
+.field input,.field select,.field textarea{min-height:43px;border:1px solid #d9d0c6;border-radius:9px;background:#fffefa;color:#242321}
+.options{gap:9px}
+.options label{border:1px solid #e0d8ce;border-radius:10px;background:#faf6f0;color:#625d56}
+.fee,.quoteBox{border:1px solid #e2d5c9;border-radius:12px;background:#faf4ec;color:#393530;padding:15px}
+.muted{color:#746d65}
+.notice,.status{border:1px solid #e0d8ce;border-radius:11px;background:#fffefa;color:#625d56;padding:13px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid #9b5c60;outline-offset:3px}
+html[data-theme="dark"] body{background:#17191b;color:#f3efe6}
+html[data-theme="dark"] .nav{background:rgba(23,25,27,.96);border-color:#3b3d40}
+html[data-theme="dark"] .hero h1,html[data-theme="dark"] .head h2,html[data-theme="dark"] .trustItem strong,html[data-theme="dark"] .step h3,html[data-theme="dark"] .evidenceCard h3,html[data-theme="dark"] .requestIntro h2,html[data-theme="dark"] .fact strong,html[data-theme="dark"] .formIntro h3{color:#f3efe6}
+html[data-theme="dark"] .hero p,html[data-theme="dark"] .head p,html[data-theme="dark"] .trustItem p,html[data-theme="dark"] .trustItem span,html[data-theme="dark"] .step p,html[data-theme="dark"] .evidenceCard p,html[data-theme="dark"] .requestIntro p,html[data-theme="dark"] .fact span,html[data-theme="dark"] .formIntro p,html[data-theme="dark"] .muted{color:#c5bfb5}
+html[data-theme="dark"] .trustItem,html[data-theme="dark"] .step,html[data-theme="dark"] .checkList,html[data-theme="dark"] .evidenceCard,html[data-theme="dark"] .fact,html[data-theme="dark"] .form,html[data-theme="dark"] .notice,html[data-theme="dark"] .status{background:#202326;border-color:#3b3d40}
+html[data-theme="dark"] .stepNum,html[data-theme="dark"] .icon{background:#43282a;color:#f2c6c2}
+html[data-theme="dark"] .checkItem{color:#d4ccc2;border-color:#3b3d40}
+html[data-theme="dark"] .plainNote,html[data-theme="dark"] .caveat,html[data-theme="dark"] .formNote,html[data-theme="dark"] .fee,html[data-theme="dark"] .quoteBox{background:#292522;border-color:#45403c;color:#d4ccc2}
+html[data-theme="dark"] .requestSection{background:#1d2022;border-color:#3b3d40}
+html[data-theme="dark"] .field input,html[data-theme="dark"] .field select,html[data-theme="dark"] .field textarea{background:#17191b;border-color:#45484b;color:#f3efe6}
+html[data-theme="dark"] .options label{background:#292b2d;border-color:#45484b;color:#d4ccc2}
+html[data-theme="dark"] .btn.secondary,html[data-theme="dark"] .back{background:#292b2d;border-color:#45484b;color:#f3efe6}
+@media(max-width:760px){.hero{padding-block:30px}.section{padding-block:34px}.form{border-radius:15px;padding:17px}}
+</style>
 </head>
-<body><header class="nav"><a class="logo" href="/frontend-v3.html"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><a class="back" href="/product-verification.html"><i data-lucide="arrow-left"></i> Back to Product Verification</a></header><section class="hero"><div class="heroIn"><span class="eyebrow">VTG Buyer Service</span><h1>Inspection request.</h1><p>Share the product and supplier details for an optional pre-shipment inspection in China or South Korea. Review the fee before creating the request.</p></div></section><main><section class="requestSection" id="request"><div class="requestGrid"><div class="requestIntro"><span class="eyebrow">Start an inspection request</span><h2>Check the goods before they ship.</h2><p>Product verification is an optional, separately charged buyer service for eligible requests in China or South Korea. Sign in with your VTG Buyer / Importer account to calculate the fee and submit a request.</p><div class="requestFacts"><div class="fact"><i data-lucide="map-pin"></i><span>Available origin options: China and South Korea.</span></div><div class="fact"><i data-lucide="wallet"></i><span>VTG displays the estimated fee before you create the request.</span></div><div class="fact"><i data-lucide="user-check"></i><span>Agent assignment follows the configured request and payment workflow.</span></div></div><figure class="requestPhoto"><img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=85" alt="Technician examining industrial equipment during a quality check" loading="lazy"><figcaption><strong>Inspection evidence, before dispatch</strong>Use the request form to describe the product checks and evidence you need from the assigned agent.</figcaption></figure><p style="font-size:11px;margin-top:24px">Need help before requesting? <a href="/contact.html" style="color:var(--red);font-weight:800">Contact VTG support <i data-lucide="arrow-up-right" style="width:12px;height:12px;vertical-align:middle"></i></a></p></div>
+<body><section class="hero"><div class="heroIn"><span class="eyebrow">VTG Buyer Service</span><h1>Inspection request.</h1><p>Share the product and supplier details for an optional pre-shipment inspection in China or South Korea. Review the fee before creating the request.</p></div></section><main><section class="requestSection" id="request"><div class="requestGrid"><div class="requestIntro"><span class="eyebrow">Start an inspection request</span><h2>Check the goods before they ship.</h2><p>Product verification is an optional, separately charged buyer service for eligible requests in China or South Korea. Sign in with your VTG Buyer / Importer account to calculate the fee and submit a request.</p><div class="requestFacts"><div class="fact"><i data-lucide="map-pin"></i><span>Available origin options: China and South Korea.</span></div><div class="fact"><i data-lucide="wallet"></i><span>VTG displays the estimated fee before you create the request.</span></div><div class="fact"><i data-lucide="user-check"></i><span>Agent assignment follows the configured request and payment workflow.</span></div></div><figure class="requestPhoto"><img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=85" alt="Technician examining industrial equipment during a quality check" loading="lazy"><figcaption><strong>Inspection evidence, before dispatch</strong>Use the request form to describe the product checks and evidence you need from the assigned agent.</figcaption></figure><p style="font-size:11px;margin-top:24px">Need help before requesting? <a href="/contact.html" style="color:var(--red);font-weight:800">Contact VTG support <i data-lucide="arrow-up-right" style="width:12px;height:12px;vertical-align:middle"></i></a></p></div>
 <form class="form" id="inspectionForm"><h3>Inspection details</h3><p class="formIntro">Enter the details you know. Your inspection request is created only after you submit it through the VTG workflow.</p>
 <div class="fields"><div class="field"><label for="country">Origin country</label><select id="country" required><option>China</option><option>South Korea</option></select></div><div class="field"><label for="city">Supplier city</label><input id="city" placeholder="e.g. Guangzhou" required></div><div class="field"><label for="productName">Product name</label><input id="productName" placeholder="Product or item name" required></div><div class="field"><label for="category">Product category</label><select id="category"><option value="clothing">Clothing & Shoes</option><option value="bags">Bags & Luggage</option><option value="electronics">Electronics</option><option value="phones-tablets">Phones & Tablets</option><option value="furniture">Furniture</option><option value="appliances">Appliances</option><option value="machinery">Machinery</option><option value="general-merchandise">General Merchandise</option></select></div><div class="field"><label for="quantity">Quantity</label><input id="quantity" type="number" min="1" value="100" required></div><div class="field"><label for="level">Inspection level</label><select id="level"><option value="basic">Basic</option><option value="standard" selected>Standard</option><option value="advanced">Advanced</option></select></div><div class="field"><label for="supplierName">Supplier name</label><input id="supplierName" placeholder="Supplier / factory name"></div><div class="field"><label for="supplierAddress">Supplier address</label><input id="supplierAddress" placeholder="Factory or warehouse address"></div><div class="field full"><label for="checks">What should the agent check?</label><textarea id="checks" placeholder="Model, colour, quantity, packaging, labels, accessories, visible defects, etc."></textarea></div></div>
 <div class="options"><label><input id="video" type="checkbox"> Short video evidence (+$5)</label><label><input id="urgent" type="checkbox"> Urgent request (+$10)</label></div>
 <button class="btn" id="quoteBtn" type="button"><i data-lucide="calculator"></i> Calculate fee</button>
 <div id="quoteBox" class="quoteBox hidden"><div class="muted">Estimated buyer fee</div><div id="quote" class="fee">$0.00</div><div id="breakdown" class="muted"></div><div class="notice">Payment is processed through the configured VTG payment provider. An agent is assigned only after the applicable payment and workflow checks are confirmed.</div><button class="btn" id="requestBtn" type="button" style="margin-top:13px"><i data-lucide="clipboard-check"></i> Create inspection request</button><button class="btn hidden" id="payBtn" type="button" style="margin-top:10px"><i data-lucide="credit-card"></i> Pay inspection fee</button></div>
-<div id="msg" class="status" role="status" aria-live="polite"></div></form></div></section></main><footer class="footer vtgCompactFooter" id="vtgFooter"><div class="footerIn vtgFooterTop"><div class="vtgFooterBrand"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"><p>Connecting Africa, China and the world through intelligent trade.</p></div><div class="vtgFooterLinks">
-<div><h4>Explore</h4><a href="/frontend-v3.html#market">Marketplace</a><a href="/frontend-v3.html#vtgAtlasPreview">Trade Atlas</a><a href="/vtg-ai.html">VTG AI</a><a href="/frontend-v3.html#market">Market Intelligence</a></div>
-<div><h4>Trade</h4><a href="/product-verification.html">Product Verification</a><a href="/logistics-shipping.html">Logistics &amp; Shipping</a><a href="/signin.html">Sign in</a></div>
-<div><h4>Business</h4><a href="/sourcing-suppliers.html">Sourcing & Suppliers</a><a href="/finance-payments.html">Finance & Payments</a><a href="/trade-guide.html">Trade Guide</a><a href="/agent.html">Become an Agent</a></div>
-<div><h4>Company</h4><a href="/about-vintage.html">About VTG</a><a href="/partnerships.html">Partnerships</a><a href="/contact.html">Contact VTG</a></div>
-</div></div><div class="copyright vtgFooterBottom"><span>© 2026 Vintage Trade Global • Powered by Folayele Global Resources Limited</span><div><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/code-of-conduct.html">Code of Conduct</a></div></div></footer>
+<div id="msg" class="status" role="status" aria-live="polite"></div></form></div></section></main>
 <script>
 const $=s=>document.querySelector(s),token=()=>localStorage.getItem('vtg_access_token')||'';
 async function api(p,o={}){o.headers=Object.assign({'Content-Type':'application/json','Authorization':'Bearer '+token()},o.headers||{});return fetch('/api/inspections'+p,o)}
@@ -57,5 +123,5 @@ $('#payBtn').onclick=async()=>{const b=$('#payBtn');b.disabled=true;$('#msg').te
 if(window.lucide)lucide.createIcons();
 </script>
 
-<script src="/vtg-site-navigation.js?v=20261020-universal-header-1" defer></script>
+<script src="/vtg-site-navigation.js?v=20261023-no-footer-2" defer></script>
 </body></html>

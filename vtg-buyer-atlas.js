@@ -4,6 +4,11 @@
   const DATA_URL='/vtg-trade-atlas.js?v=20261016-buyer-map';
   let pendingRegion=null;
   const css=`
+    html[data-theme="light"] .vtgBuyerAtlasMap{background:#eaf0f4!important;color:#17384b!important}
+    html[data-theme="light"] .vtgBuyerAtlasMap .leaflet-tile{filter:none!important}
+    html[data-theme="dark"] .vtgBuyerAtlasMap{background:#0b1117!important;color:#edf3f7!important}
+    html[data-theme="dark"] .vtgBuyerAtlasMap .leaflet-tile{filter:brightness(.72) invert(1) contrast(.86) hue-rotate(180deg) saturate(.72)!important}
+
     .vtgBuyerAtlasMap{width:100%;height:100%;min-height:320px;background:#eaf0f4}
     .vtgBuyerAtlasMap .leaflet-container{width:100%;height:100%;min-height:320px;font:12px Manrope,Arial,sans-serif}
     .vtgBuyerAtlasPopup{min-width:145px;color:#1d3441;font:12px/1.5 Manrope,Arial,sans-serif}
@@ -43,9 +48,20 @@
       mapStatus.setAttribute('role','status');mapStatus.setAttribute('aria-live','polite');
       mapStatus.style.cssText='position:absolute;z-index:500;left:12px;bottom:12px;max-width:calc(100% - 24px);padding:8px 11px;border-radius:9px;background:#102e40ed;color:#fff;font:600 11px Manrope,Arial,sans-serif;display:none;pointer-events:none';
       node.style.position='relative';node.appendChild(mapStatus);
-      let loaded=0,failed=0,base,fallbackStarted=false;
-      const watch=layer=>{layer.on('tileload',()=>{loaded++;node.dataset.mapTiles='loaded';mapStatus.style.display='none';});layer.on('tileerror',()=>{failed++;if(!loaded&&failed>=4&&!fallbackStarted){fallbackStarted=true;node.dataset.mapTiles='fallback';mapStatus.textContent='Trying an alternate map tile source…';mapStatus.style.display='block';try{map.removeLayer(base);const alt=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:20,attribution:'&copy; OpenStreetMap contributors &copy; CARTO'}).addTo(map);alt.on('tileload',()=>{loaded++;node.dataset.mapTiles='loaded';mapStatus.style.display='none';});alt.on('tileerror',()=>{failed++;if(!loaded&&failed>=8){node.dataset.mapTiles='unavailable';mapStatus.innerHTML='Map tiles are unavailable on this connection. <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener" style="color:#fff;text-decoration:underline">Open OpenStreetMap</a> or reload to retry.';mapStatus.style.display='block';}});}catch(error){node.dataset.mapTiles='unavailable';mapStatus.textContent='Map tiles are unavailable on this connection.';mapStatus.style.display='block';}}});};
-      base=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'}).addTo(map);watch(base);
+      let loaded=0,failed=0;
+      const watch=layer=>{
+        layer.on('tileload',()=>{loaded++;node.dataset.mapTiles='loaded';mapStatus.style.display='none';});
+        layer.on('tileerror',()=>{
+          failed++;
+          if(!loaded&&failed>=4){
+            node.dataset.mapTiles='unavailable';
+            mapStatus.innerHTML='Map tiles are unavailable on this connection. <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener" style="color:#fff;text-decoration:underline">Open OpenStreetMap</a> or reload to retry.';
+            mapStatus.style.display='block';
+          }
+        });
+      };
+      const base=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'}).addTo(map);
+      watch(base);
       const colors={countries:'#078c91',ports:'#e46b42',hubs:'#7754cf'};
       [['countries','country'],['ports','port / terminal'],['hubs','trade hub']].forEach(([key,label])=>(D[key]||[]).forEach(p=>{
         if(!Number.isFinite(+p.lat)||!Number.isFinite(+p.lon))return;
@@ -67,7 +83,7 @@
     }).catch(error=>{
       console.error('VTG buyer Atlas failed to initialize:',error);
       node.dataset.vtgMapInit='failed';
-      node.innerHTML='<div style="min-height:320px;display:grid;place-items:center;padding:24px;text-align:center;background:#eef4f6;color:#233746"><div><strong>Interactive map could not load on this connection.</strong><p>Check your internet connection and reopen the Atlas. This map uses public OpenStreetMap/CARTO services and does not require a paid API key.</p><a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">Open OpenStreetMap</a></div></div>';
+      node.innerHTML='<div style="min-height:320px;display:grid;place-items:center;padding:24px;text-align:center;background:#eef4f6;color:#233746"><div><strong>Interactive map could not load on this connection.</strong><p>Check your internet connection and reopen the Atlas. This map uses public OpenStreetMap tiles and does not require a paid API key.</p><a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">Open OpenStreetMap</a></div></div>';
     });
   }
   window.addEventListener('vtg:buyer-map-region',event=>{const region=event.detail?.region;if(window.VTGBuyerAtlas?.setRegion)window.VTGBuyerAtlas.setRegion(region);else pendingRegion=region;});

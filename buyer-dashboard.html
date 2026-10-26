@@ -454,7 +454,7 @@ html[data-theme="dark"] .sidebar .count{background:#34404b;color:#f5f7f9}
 #page-overview .commandCopy{max-width:880px;padding:clamp(24px,4vw,46px)}
 </style>
 <link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
-<link rel="stylesheet" href="/vtg-dashboard-typography.css?v=20261021-1">
+<link rel="stylesheet" href="/vtg-dashboard-typography.css?v=20261023-premium-pass-1">
 <style>
 .topbar{display:grid;grid-template-columns:minmax(132px,160px) minmax(140px,1fr) auto;align-items:center;gap:14px;min-height:76px;height:auto;padding:12px clamp(14px,2.5vw,34px)}
 .topbar>.vtg-header-brand{width:100%!important;min-width:0!important;max-width:160px!important;margin:0!important}.topbar>.vtg-header-brand img{width:100%!important;min-width:0!important;max-width:160px!important;max-height:38px!important}
@@ -463,6 +463,51 @@ html[data-theme="dark"] .sidebar .count{background:#34404b;color:#f5f7f9}
 .topbar .iconBtn{flex:0 0 36px;width:36px;height:36px}.topbar .homeBtn{white-space:nowrap}.sidebar .items.closed{display:none}.sidebar .groupBtn .chev{transition:transform .18s}.sidebar .groupBtn[aria-expanded="false"] .chev{transform:rotate(-90deg)}
 @media(max-width:1120px){.topbar{grid-template-columns:minmax(118px,145px) minmax(110px,1fr);gap:10px}.topbar .actions{grid-column:1/-1;grid-row:2;justify-content:flex-end;padding-top:2px}.topbar>.crumb{justify-self:end}.topbar>.vtg-header-brand{grid-column:1;grid-row:1}}
 @media(max-width:790px){.topbar{display:flex;flex-wrap:wrap;gap:8px;min-height:0;padding:10px 12px}.topbar>.vtg-header-brand{width:116px!important;max-width:116px!important;min-width:116px!important}.topbar>.vtg-header-brand img{width:116px!important;max-width:116px!important;max-height:32px!important}.topbar>div[style*="display:flex"]{flex:1;justify-content:flex-end;gap:8px!important}.topbar .crumb{font-size:9px}.topbar .actions{width:100%;justify-content:flex-start;gap:6px}.topbar .workspace-theme-label{display:none}.topbar .workspace-theme-select{max-width:130px;flex:1}.topbar #language{max-width:96px;flex:0 1 96px}.topbar .homeBtn{display:inline-flex;align-items:center;min-height:36px;padding:0 10px}.topbar .iconBtn{width:34px;height:34px;flex-basis:34px}}
+
+/* VTG dashboard contrast assurance: respect each workspace's existing theme presets. */
+html[data-theme="light"]{
+  --bg:#F7F5F0;--panel:#FFFEFA;--surface:#FFFEFA;--panel2:#EEE9E0;--surface2:#EEE9E0;
+  --ink:#242321;--muted:#625D56;--line:#DDD6CB;
+}
+html[data-theme="dark"]{
+  --bg:#17191B;--panel:#202326;--surface:#202326;--panel2:#282B2F;--surface2:#282B2F;
+  --ink:#F3EFE6;--muted:#C5BFB5;--line:#3B3D40;
+}
+html[data-theme] body{background:var(--bg)!important;color:var(--ink)!important}
+html[data-theme] body :is(main,.main,.content,.workspace,.workspace-main,.page-content,.pageContent,.content-area,.dashboard-content){color:var(--ink)}
+html[data-theme="light"] body :is(.main,.content,.workspace,.workspace-main,.page-content,.pageContent,.content-area,.dashboard-content,.topbar){color:#242321}
+html[data-theme="dark"] body :is(.main,.content,.workspace,.workspace-main,.page-content,.pageContent,.content-area,.dashboard-content,.topbar){color:#F3EFE6}
+html[data-theme] body :is(.card,.panel,.surface,.widget,.widget-card,.stat-card,.metric-card,.kpi-card,.chart-card,.form-card,.formCard,.content-card,.contentCard,.info-card,.feature-card,.settings-card,.settings-panel,.table-wrap,.table-responsive,.modal,.modal-content,.dialog,.dialog-content,.list-card,.product-card,.productCard,.order-card,.request-card,.document-card,.shipment-card,.message-card,.trade-card,.feed-card,.chartPanel,.summary-card){
+  color:var(--ink)!important;border-color:var(--line)!important;
+}
+html[data-theme="light"] body :is(.card,.panel,.surface,.widget,.widget-card,.stat-card,.metric-card,.kpi-card,.chart-card,.form-card,.formCard,.content-card,.contentCard,.info-card,.feature-card,.settings-card,.settings-panel,.table-wrap,.table-responsive,.modal,.modal-content,.dialog,.dialog-content,.list-card,.product-card,.productCard,.order-card,.request-card,.document-card,.shipment-card,.message-card,.trade-card,.feed-card,.chartPanel,.summary-card){
+  background-color:var(--panel,var(--surface,#FFFEFA))!important;color:#242321!important;
+}
+html[data-theme="dark"] body :is(.card,.panel,.surface,.widget,.widget-card,.stat-card,.metric-card,.kpi-card,.chart-card,.form-card,.formCard,.content-card,.contentCard,.info-card,.feature-card,.settings-card,.settings-panel,.table-wrap,.table-responsive,.modal,.modal-content,.dialog,.dialog-content,.list-card,.product-card,.productCard,.order-card,.request-card,.document-card,.shipment-card,.message-card,.trade-card,.feed-card,.chartPanel,.summary-card){
+  background-color:var(--panel,var(--surface,#202326))!important;color:#F3EFE6!important;
+}
+html[data-theme] body :is(.card,.panel,.surface,.widget,.widget-card,.stat-card,.metric-card,.kpi-card,.chart-card,.form-card,.formCard,.content-card,.contentCard,.info-card,.feature-card,.settings-card,.settings-panel,.modal,.modal-content,.dialog,.dialog-content,.list-card,.product-card,.productCard,.order-card,.request-card,.document-card,.shipment-card,.message-card,.trade-card,.feed-card,.summary-card) :is(h1,h2,h3,h4,h5,h6,p,span,label,li,dt,dd,th,td,legend){
+  opacity:1;visibility:visible;
+}
+html[data-theme="light"] body :is(.muted,.meta,.subtitle,.description,.help-text,.hint,.field-help,.caption,.secondary,.subtle,.text-muted,.form-text){color:#625D56!important;-webkit-text-fill-color:#625D56}
+html[data-theme="dark"] body :is(.muted,.meta,.subtitle,.description,.help-text,.hint,.field-help,.caption,.secondary,.subtle,.text-muted,.form-text){color:#C5BFB5!important;-webkit-text-fill-color:#C5BFB5}
+html[data-theme="light"] body :is(input,select,textarea,[contenteditable="true"]){background:#FFFEFA!important;color:#242321!important;border-color:#DDD6CB!important}
+html[data-theme="dark"] body :is(input,select,textarea,[contenteditable="true"]){background:#202326!important;color:#F3EFE6!important;border-color:#3B3D40!important}
+html[data-theme="light"] body :is(input,textarea)::placeholder{color:#625D56!important;opacity:1}
+html[data-theme="dark"] body :is(input,textarea)::placeholder{color:#C5BFB5!important;opacity:1}
+html[data-theme="light"] body :is(table,th,td,fieldset,hr){border-color:#DDD6CB}
+html[data-theme="dark"] body :is(table,th,td,fieldset,hr){border-color:#3B3D40}
+html[data-theme="light"] body a:not(.btn):not(.button):not(.primary){text-decoration-color:rgba(112,42,48,.45)}
+html[data-theme="dark"] body a:not(.btn):not(.button):not(.primary){color:#E2BE91}
+html[data-theme] .vtg-header-brand{visibility:visible!important;opacity:1!important;display:flex!important;flex:0 0 auto!important;overflow:visible!important}
+html[data-theme] .vtg-header-brand img{visibility:visible!important;opacity:1!important;object-fit:contain!important}
+html[data-theme="light"] .vtg-header-brand .logo-dark{display:block!important}
+html[data-theme="light"] .vtg-header-brand .logo-light{display:none!important}
+html[data-theme="dark"] .vtg-header-brand .logo-dark{display:none!important}
+html[data-theme="dark"] .vtg-header-brand .logo-light{display:block!important}
+html[data-theme] .brand .logo-dark,html[data-theme] .brand .logo-light{visibility:visible;opacity:1;object-fit:contain}
+html[data-theme] :is(button,a,input,select,textarea,[role="button"]):focus-visible{outline:2px solid var(--accent,#702A30)!important;outline-offset:2px}
+
 </style></head><body id="vtg-dashboard-top"><div class="topline"></div><div class="app">
 <aside class="sidebar" id="sidebar"><a class="brand" href="/frontend-v3.html"><img class="logo logo-dark" src="/assets/vtg-logo.svg" alt="VTG"><img class="logo logo-light" src="/assets/vtg-logo-light.svg" alt="" aria-hidden="true"><span><strong>VINTAGE TRADE GLOBAL</strong><small>BUYER WORKSPACE</small></span></a><div class="workspace-tag" aria-label="Buyer workspace">BUYER WORKSPACE · TRADE DESK</div><div class="label" data-i18n="workspace">Workspace</div><nav>
 <div><button class="groupBtn" data-group="work" aria-expanded="false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="14" width="7" height="7"/></svg><span data-i18n="overview">Overview</span><span class="chev">⌄</span></button><div class="items closed" data-items="work"><a href="#overview" data-view="overview" class="active">▦ <span data-i18n="dashboard">Dashboard</span></a></div></div>

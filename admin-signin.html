@@ -6,6 +6,54 @@
 <style>
 :root{color-scheme:light;--bg:#eef1f4;--panel:#fff;--ink:#20252c;--muted:#657181;--line:#dfe4e9;--red:#b52b31;--soft:#f9eeee}html[data-theme=dark]{color-scheme:dark;--bg:#0b1016;--panel:#151b23;--ink:#f4f6f8;--muted:#b7c1cc;--line:#303944;--red:#ff938b;--soft:#2a191c}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font:14px Manrope,Arial,sans-serif;display:grid;place-items:center;padding:22px}.shell{width:min(960px,100%);min-height:590px;display:grid;grid-template-columns:1fr 1fr;background:var(--panel);border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:0 28px 80px #10182018}.brandPanel{padding:38px;background:linear-gradient(145deg,#111820,#242a32 65%,#561e23);color:#f7f8fa;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}.brandPanel:after{content:"";position:absolute;width:370px;height:370px;border:1px solid #ffffff24;border-radius:50%;right:-190px;bottom:-160px;box-shadow:0 0 0 34px #ffffff08,0 0 0 70px #ffffff06}.brand{display:flex;align-items:center;gap:12px;font-size:12px;font-weight:800;letter-spacing:.09em}.logo{width:48px;height:48px;background:#fff;border-radius:12px;padding:6px;display:grid;place-items:center}.logo img{width:100%;height:100%;object-fit:contain}.label{font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#ffaaa1}.brandPanel h1{font-size:clamp(32px,4vw,48px);line-height:1.08;letter-spacing:-.055em;margin:16px 0}.brandPanel p{max-width:370px;color:#d6dce2;font-size:13px;line-height:1.8}.foot{font-size:10px;color:#c5cdd4}.formPanel{padding:clamp(28px,5vw,58px);display:flex;flex-direction:column;justify-content:center;position:relative}.actions{position:absolute;top:18px;right:20px;display:flex;gap:8px}.actions button,.actions a{border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--muted);font:700 10px Manrope,sans-serif;padding:9px 10px;text-decoration:none;cursor:pointer}.kicker{color:var(--red);font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase}.formPanel h2{font-size:30px;letter-spacing:-.05em;margin:10px 0}.intro{color:var(--muted);font-size:12px;line-height:1.75;margin:0 0 25px}label{display:block;font-size:11px;font-weight:800;margin:15px 0 7px}.field{width:100%;border:1px solid var(--line);border-radius:11px;background:var(--panel);color:var(--ink);padding:13px;font:12px Manrope,sans-serif;min-height:46px}.field:focus{outline:3px solid #b52b3120;border-color:var(--red)}.submit{margin-top:22px;width:100%;border:0;border-radius:11px;min-height:48px;background:var(--red);color:#fff;font:800 12px Manrope,sans-serif;cursor:pointer}.message{min-height:38px;margin-top:12px;color:var(--red);font-size:11px;line-height:1.6}.note{border-top:1px solid var(--line);padding-top:18px;color:var(--muted);font-size:10px;line-height:1.7}@media(max-width:680px){body{padding:10px}.shell{grid-template-columns:1fr;min-height:auto;border-radius:17px}.brandPanel{padding:23px;min-height:210px}.brandPanel h1{font-size:30px;margin:12px 0 8px}.brandPanel p{margin:0}.foot{display:none}.formPanel{padding:30px 23px}.actions{top:12px;right:12px}.formPanel h2{font-size:27px}}
 </style><link rel="stylesheet" href="/vtg-typography.css?v=20261020-4" data-vtg-typography="1">
+<style id="vtg-account-premium-refresh-admin-signin">
+/* Account, consent and staff access pages share accessible VTG surfaces; role gates and authentication logic remain untouched. */
+:root{--bg:#f7f5f0;--panel:#fffefa;--line:#ddd6cb;--text:#242321;--muted:#625d56;--red:#702a30}
+body{background:#f7f5f0;color:#242321}
+.top,.topline{background:#702a30}
+.wrap,.shell{width:min(1120px,calc(100% - 32px));margin:0 auto;padding:clamp(22px,4vw,44px) 0 70px}
+.brand,.logo{color:#202326}
+.brandPanel{border:1px solid #ded4c8;border-radius:18px;background:linear-gradient(135deg,#fffefa,#f0e7dd);box-shadow:0 18px 48px rgba(40,30,24,.07)}
+.brandPanel h1,.brandPanel h2{color:#202326}
+.brandPanel p,.desc,.leftFoot,.foot{color:#625d56;line-height:1.8}
+.formPanel,.card{border:1px solid #e0d8ce;border-radius:16px;background:#fffefa;box-shadow:0 10px 28px rgba(30,25,22,.045);padding:clamp(18px,3vw,28px)}
+h1,h2,h3,.title,.label{color:#242321;letter-spacing:-.025em}
+.eyebrow,.ey,.kicker{color:#702a30;letter-spacing:.14em}
+.lead,.intro,.note,.footnote{color:#625d56;line-height:1.8}
+.section{border-color:#e9e0d6}
+.check{border:1px solid #e0d8ce;border-radius:10px;background:#faf6f0;color:#393530;padding:12px}
+.actions,.adminActions{gap:9px}
+.btn,.submit{min-height:41px;border:1px solid #d7ccc0;border-radius:10px;background:#fffefa;color:#302a26;padding:11px 15px}
+.btn.primary,.submit{background:#702a30;border-color:#702a30;color:#fff}
+.btn.primary:hover,.submit:hover{background:#552126}
+.btn.outline{background:transparent;color:#702a30;border-color:#c7aaa3}
+.field label{color:#393530;font-weight:700}
+.field input,.field select,.field textarea{min-height:43px;border:1px solid #d9d0c6;border-radius:9px;background:#fffefa;color:#242321}
+.message,.msg,.note,.notice{border:1px solid #e2d5c9;border-radius:11px;background:#faf4ec;color:#625d56;line-height:1.75;padding:13px}
+.message.ok,.msg.ok,.ok{background:#e8f3ec;border-color:#b7d9c4;color:#235c40}
+.secure{border:1px solid #b7d9c4;border-radius:9px;background:#e8f3ec;color:#235c40;padding:10px}
+.directory{gap:14px}
+.cardTop{border-color:#eee7df}
+.glyph{background:#f2e9e5;color:#702a30;border-radius:10px}
+.tag{border-radius:6px;background:#f2e9e5;color:#702a30}
+.cardFoot{border-color:#eee7df;color:#625d56}
+.previewLink{color:#702a30}
+.adminPreview{border:1px solid #e0d8ce;border-radius:12px;background:#faf6f0}
+html[data-theme="dark"] body{background:#17191b;color:#f3efe6}
+html[data-theme="dark"] .brand,html[data-theme="dark"] .logo,html[data-theme="dark"] h1,html[data-theme="dark"] h2,html[data-theme="dark"] h3,html[data-theme="dark"] .title,html[data-theme="dark"] .label{color:#f3efe6}
+html[data-theme="dark"] .brandPanel,html[data-theme="dark"] .formPanel,html[data-theme="dark"] .card{background:#202326;border-color:#3b3d40}
+html[data-theme="dark"] .brandPanel h1,html[data-theme="dark"] .brandPanel h2{color:#f3efe6}
+html[data-theme="dark"] .brandPanel p,html[data-theme="dark"] .desc,html[data-theme="dark"] .leftFoot,html[data-theme="dark"] .foot,html[data-theme="dark"] .lead,html[data-theme="dark"] .intro,html[data-theme="dark"] .note,html[data-theme="dark"] .footnote{color:#c5bfb5}
+html[data-theme="dark"] .check,html[data-theme="dark"] .adminPreview{background:#292b2d;border-color:#45484b;color:#d4ccc2}
+html[data-theme="dark"] .field input,html[data-theme="dark"] .field select,html[data-theme="dark"] .field textarea{background:#17191b;border-color:#45484b;color:#f3efe6}
+html[data-theme="dark"] .message,html[data-theme="dark"] .msg,html[data-theme="dark"] .note,html[data-theme="dark"] .notice{background:#292522;border-color:#45403c;color:#d4ccc2}
+html[data-theme="dark"] .message.ok,html[data-theme="dark"] .msg.ok,html[data-theme="dark"] .ok,html[data-theme="dark"] .secure{background:#1e3a30;border-color:#315c49;color:#b4e4c8}
+html[data-theme="dark"] .glyph,html[data-theme="dark"] .tag{background:#43282a;border-color:#65464a;color:#f2c6c2}
+html[data-theme="dark"] .previewLink,html[data-theme="dark"] .btn.outline{color:#e2be91}
+html[data-theme="dark"] .btn:not(.primary):not(.outline){background:#292b2d;border-color:#45484b;color:#f3efe6}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #9b5c60;outline-offset:3px}
+@media(max-width:760px){.wrap,.shell{width:calc(100% - 26px);padding-top:22px;padding-bottom:50px}.formPanel,.card{padding:16px;border-radius:13px}}
+</style>
 </head>
 <body><main class="shell"><section class="brandPanel"><div class="brand"><span class="logo"><img src="/assets/vtg-logo.svg" alt="VTG"></span><span>VTG ADMINISTRATION<br><span style="font-size:9px;font-weight:600;letter-spacing:.04em;color:#d0d8df">RESTRICTED ACCESS</span></span></div><div><div class="label">Administrator gateway</div><h1>Control access.<br>Protect the network.</h1><p>This separate sign-in is reserved for authorised VTG administrators. Buyer, supplier and finance accounts cannot use this entry.</p></div><div class="foot">Vintage Trade Global · Africa · China · South Korea · World</div></section>
 <section class="formPanel"><div class="actions"><button id="theme" type="button">Light / Dark</button><a href="/workforce-access.html">← Workforce access</a></div><div class="kicker">Secure administrator access</div><h2>Administrator sign-in</h2><p class="intro">Use your registered administrator credentials to continue.</p>
@@ -14,5 +62,5 @@
 <script>
 (function(){const root=document.documentElement;try{const saved=localStorage.getItem('vtg-theme');root.dataset.theme=saved==='dark'||saved==='light'?saved:((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark')}catch(e){}document.getElementById('theme').onclick=()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';try{localStorage.setItem('vtg-theme',root.dataset.theme);localStorage.setItem('vtg-theme-mode','manual')}catch(e){}}})();
 document.getElementById('adminForm').addEventListener('submit',async function(e){e.preventDefault();const msg=document.getElementById('message');msg.textContent='Checking administrator credentials…';const data=new FormData(e.currentTarget);try{const r=await fetch((window.VTG_API_BASE||'')+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:data.get('email'),password:data.get('password')})});const out=await r.json();if(!r.ok)throw new Error(out.message||'Sign-in failed.');if(!['admin','administrator'].includes(String(out.user?.role||'').toLowerCase()))throw new Error('This account does not have administrator permissions.');if(out.accessToken){localStorage.setItem('vtg_access_token',out.accessToken);localStorage.setItem('vtg-auth',JSON.stringify({user:out.user,accessToken:out.accessToken,refreshToken:out.refreshToken||null}));}msg.textContent='Administrator credentials accepted. Opening the VTG workforce control centre…';const requestedNext=new URLSearchParams(location.search).get('next');let destination='/admin-dashboard-preview.html';if(requestedNext){try{const target=new URL(requestedNext,location.origin);if(target.origin===location.origin)destination=target.pathname+target.search+target.hash}catch(_){}}setTimeout(()=>{location.href=destination},500);}catch(err){msg.textContent=err.message||'Unable to sign in. Please try again.';}});
-</script><script src="/vtg-site-navigation.js?v=20261020-universal-header-1" defer></script>
+</script><script src="/vtg-site-navigation.js?v=20261023-no-footer-2" defer></script>
 </body></html>

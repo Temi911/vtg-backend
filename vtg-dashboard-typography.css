@@ -45,3 +45,53 @@ html body .record-list,html body .table-wrap,html body .stats,html body .field-g
   html body .page-head{margin-bottom:17px;gap:12px}
   html body table{font-size:12px}
 }
+
+/* Dashboard-wide refinement: data-friendly spacing and control polish without overriding workspace skin colours. */
+:root{
+  --vtg-dash-radius:14px;
+  --vtg-dash-control-radius:9px;
+}
+html body :is(.card,.panel,.stat,.metric,.widget,.widget-card,.toolPanel,.formPanel,.form-panel,.tableWrap,.table-wrap,.chart,.chart-card,.quickCard,.quickLink,.task,.task-card,.roleRow,.role-row,.adminPreview,.previewNotice){
+  border-radius:var(--vtg-dash-radius);
+}
+html body :is(.panel,.card,.widget,.widget-card,.toolPanel,.formPanel,.form-panel,.chart-card,.quickCard,.quickLink,.task-card,.adminPreview,.previewNotice){
+  transition:border-color .16s ease,box-shadow .16s ease;
+}
+html body :is(.btn,button,[role="button"],.utilityBtn,.iconBtn,.themeIconBtn,.homeBtn,.miniButton){
+  border-radius:var(--vtg-dash-control-radius);
+  font-weight:650;
+}
+html body :is(input,select,textarea){
+  min-height:38px;
+  border-radius:var(--vtg-dash-control-radius);
+}
+html body input[type="checkbox"],html body input[type="radio"]{min-height:0}
+html body :is(.panelHead,.panel-head,.cardTop,.formTop,.sectionHead,.section-head){
+  gap:12px;
+}
+html body :is(.stat,.metric,.quickCard,.quickLink,.task,.task-card,.roleRow,.role-row){
+  overflow-wrap:anywhere;
+}
+html body :is(.tableWrap,.table-wrap,.table-responsive,.table-scroll){
+  overflow-x:auto;
+  overscroll-behavior-inline:contain;
+  scrollbar-width:thin;
+}
+html body :is(th,td){vertical-align:middle}
+html body :is(.pill,.tag,.status,.badge,.status-pill){border-radius:7px}
+html body :is(a,button,input,select,textarea,[tabindex]):focus-visible{
+  outline:2px solid var(--vtg-dash-focus,#9b5c60);
+  outline-offset:2px;
+}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+  html body :is(.panel,.card,.widget,.widget-card,.toolPanel,.formPanel,.form-panel,.chart-card,.quickCard,.quickLink,.task-card,.adminPreview):hover{
+    box-shadow:0 10px 28px rgba(0,0,0,.07);
+  }
+}
+@media(max-width:720px){
+  html body :is(.panel,.card,.widget,.widget-card,.toolPanel,.formPanel,.form-panel){border-radius:12px}
+  html body :is(.panel-head,.panelHead,.sectionHead,.section-head){gap:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  html body :is(.panel,.card,.widget,.widget-card,.toolPanel,.formPanel,.form-panel,.chart-card,.quickCard,.quickLink,.task-card,.adminPreview){transition:none}
+}

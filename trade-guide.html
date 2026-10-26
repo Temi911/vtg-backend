@@ -79,10 +79,76 @@ html[data-theme="dark"] body .hero .heroIn>div:first-child p {color:#c1cbd3!impo
 html[data-theme="dark"] body .card,html[data-theme="dark"] body .faq details,html[data-theme="dark"] body .faq details[open],html[data-theme="dark"] body .check,html[data-theme="dark"] body .steps>div{background:#11161d!important;border-color:#34404b!important;color:#eef3f6!important}html[data-theme="dark"] body .card :is(h2,h3,h4,p,li,span,strong,b),html[data-theme="dark"] body .faq summary,html[data-theme="dark"] body .faq p,html[data-theme="dark"] body .check{color:#eef3f6!important}html[data-theme="dark"] body .faq p,html[data-theme="dark"] body .card li{color:#c1cbd3!important}html[data-theme="dark"] body .faq summary::marker{color:#eef3f6!important}html[data-theme="light"] body .card,html[data-theme="light"] body .faq details{background:#fff!important;color:#202b35!important}html[data-theme="light"] body .card :is(h2,h3,h4,p,li,span,strong,b),html[data-theme="light"] body .faq summary,html[data-theme="light"] body .faq p{color:#243441!important}
 </style>
 <link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<style id="vtg-trade-guide-premium-refresh">
+/* Trade guide editorial refresh; preserve steps, examples, quantity guidance and existing links. */
+:root{--bg:#f7f5f0;--panel:#fffefa;--line:#ddd6cb;--text:#242321;--muted:#625d56;--red:#702a30;--gold:#b49a70}
+body{background:#f7f5f0;color:#242321}
+.topline{background:#702a30}
+.nav{background:rgba(247,245,240,.95);border-color:#ddd6cb;backdrop-filter:blur(18px)}
+.brand{color:#202326}
+.navlinks{color:#514b45}
+.navlinks a:hover,html[data-theme="light"] .navlinks .active{color:#702a30}
+.hero{padding:clamp(34px,5vw,66px) 0}
+.heroIn{gap:clamp(24px,4vw,54px);align-items:center}
+.eyebrow{color:#702a30;letter-spacing:.15em}
+.hero h1{font-size:clamp(35px,4.7vw,58px);line-height:1.05;letter-spacing:-.045em;color:#202326;text-wrap:balance}
+.hero p{max-width:690px;color:#625d56;line-height:1.85;font-size:14px}
+.btn{min-height:42px;border:1px solid #d7ccc0;border-radius:10px;background:#fffefa;color:#302a26;padding:12px 17px}
+.btn.primary{background:#702a30;border-color:#702a30;color:#fff}
+.btn.primary:hover{background:#552126}
+.btn.ghost{background:transparent;color:#302a26;border-color:#d7ccc0}
+.heroPanel{border:1px solid #ded4c8;border-radius:18px;background:linear-gradient(135deg,#fffefa,#f0e7dd);box-shadow:0 20px 54px rgba(40,30,24,.075)}
+.flow{gap:10px}
+.flow>div{border:1px solid #e4d9ce;border-radius:10px;background:#faf6f0;color:#393530}
+.section{padding-block:clamp(36px,5vw,62px)}
+.sectionHead h2{color:#242321;letter-spacing:-.035em}
+.sectionHead p{color:#625d56;line-height:1.8}
+.grid{gap:15px}
+.card{border:1px solid #e0d8ce;border-radius:15px;background:#fffefa;box-shadow:0 8px 24px rgba(30,25,22,.035);transition:transform .18s,border-color .18s,box-shadow .18s}
+.card:hover{transform:translateY(-2px);border-color:#c7aaa3;box-shadow:0 15px 34px rgba(30,25,22,.07)}
+.icon{background:#f2e9e5;color:#702a30;border-radius:10px}
+.card h3{color:#242321}
+.card p,.card li{color:#625d56;line-height:1.75}
+.band{border:1px solid #e2d5c9;border-radius:12px;background:#faf4ec;color:#625d56}
+.steps{gap:14px}
+.step{border:1px solid #e0d8ce;border-radius:14px;background:#fffefa;padding:18px}
+.step h3{color:#242321}
+.step p{color:#625d56;line-height:1.75}
+.checklist{border:1px solid #e0d8ce;border-radius:14px;background:#fffefa;padding:18px}
+.checks{gap:9px}
+.check{border:1px solid #e4d9ce;border-radius:10px;background:#faf6f0;color:#393530;padding:12px}
+.notice{border:1px solid #e2d5c9;border-radius:11px;background:#faf4ec;color:#625d56;line-height:1.75;padding:14px}
+.qty{gap:14px}
+.qtyCard{border:1px solid #e0d8ce;border-radius:13px;background:#fffefa;padding:16px}
+.qtyCard strong{color:#242321}
+.qtyCard p{color:#625d56;line-height:1.75}
+.pillrow{gap:8px}
+.pill{border:1px solid #e0d8ce;border-radius:7px;background:#f7f3ed;color:#625d56}
+.faq{border:1px solid #e0d8ce;border-radius:13px;background:#fffefa;overflow:hidden}
+.faq summary{color:#242321}
+.faq p{color:#625d56;line-height:1.75}
+.cta{border:1px solid #ded4c8;border-radius:18px;background:linear-gradient(115deg,#f2e8df,#fffefa)}
+.cta h2{color:#242321}
+.cta p{color:#625d56;line-height:1.75}
+.footer{background:#202326;color:#f3efe6}
+.footer a{color:#e2be91}
+html[data-theme="dark"] body{background:#17191b;color:#f3efe6}
+html[data-theme="dark"] .nav{background:rgba(23,25,27,.96);border-color:#3b3d40}
+html[data-theme="dark"] .brand,html[data-theme="dark"] .hero h1,html[data-theme="dark"] .sectionHead h2,html[data-theme="dark"] .card h3,html[data-theme="dark"] .step h3,html[data-theme="dark"] .qtyCard strong,html[data-theme="dark"] .faq summary,html[data-theme="dark"] .cta h2{color:#f3efe6}
+html[data-theme="dark"] .navlinks,html[data-theme="dark"] .hero p,html[data-theme="dark"] .sectionHead p,html[data-theme="dark"] .card p,html[data-theme="dark"] .card li,html[data-theme="dark"] .step p,html[data-theme="dark"] .qtyCard p,html[data-theme="dark"] .faq p,html[data-theme="dark"] .cta p{color:#c5bfb5}
+html[data-theme="dark"] .heroPanel,html[data-theme="dark"] .card,html[data-theme="dark"] .step,html[data-theme="dark"] .checklist,html[data-theme="dark"] .qtyCard,html[data-theme="dark"] .faq{background:#202326;border-color:#3b3d40}
+html[data-theme="dark"] .flow>div,html[data-theme="dark"] .check{background:#292b2d;border-color:#45484b;color:#d4ccc2}
+html[data-theme="dark"] .icon,html[data-theme="dark"] .pill{background:#43282a;border-color:#65464a;color:#f2c6c2}
+html[data-theme="dark"] .band,html[data-theme="dark"] .notice{background:#292522;border-color:#45403c;color:#d4ccc2}
+html[data-theme="dark"] .cta{background:linear-gradient(115deg,#292522,#202326);border-color:#45403c}
+html[data-theme="dark"] .btn:not(.primary){background:#292b2d;border-color:#45484b;color:#f3efe6}
+@media(max-width:760px){.hero{padding-block:30px}.section{padding-block:34px}.step,.checklist{padding:15px}}
+@media(prefers-reduced-motion:reduce){.card{transition:none}}
+</style>
 </head>
 <body>
-<div class="topline"></div>
-<header class="nav"><div class="navin"><a class="brand" href="/"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><nav class="navlinks"><a href="/">Home</a><a class="active" href="/trade-guide.html">Trade Guide</a><a href="/signin.html">Enter VTG</a></nav></div></header>
+
+
 
 <main>
 <section class="hero"><div class="heroIn">
@@ -134,14 +200,9 @@ html[data-theme="dark"] body .card,html[data-theme="dark"] body .faq details,htm
 </div></section>
 </main>
 
-<footer class="footer"><div class="footerGrid"><div><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"><p>Connecting Africa, China and the world through intelligent trade.</p></div><div class="links">
-<div><h4>Explore</h4><a href="/#market">Marketplace</a><a href="/#vtgAtlasPreview">Trade Atlas</a><a href="/#vtgIntelLaunch">Market Intelligence</a></div>
-<div><h4>Trade</h4><a href="/#how">How VTG Works</a><a href="/product-verification.html">Product Verification</a><a href="/partnerships.html#logistics">Logistics & Shipping</a><a href="/signin.html">Sign in</a></div>
-<div><h4>Business</h4><a href="/sourcing-suppliers.html">Sourcing & Suppliers</a><a href="/finance-payments.html">Finance & Payments</a><a href="/trade-guide.html">Trade Guide</a><a href="/agent.html">Become an Agent</a></div>
-<div><h4>Company</h4><a href="/about-vintage.html">About VTG</a><a href="/partnerships.html">Partnerships</a><a href="/contact.html">Contact VTG</a></div>
-</div></div><div class="bottom"><span>© 2026 Vintage Trade Global • Powered by Folayele Global Resources Limited</span><div><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/code-of-conduct.html">Code of Conduct</a></div></div></footer>
+
 <script>lucide.createIcons();</script>
-<script src="/vtg-site-navigation.js?v=20261020-universal-header-1" defer></script>
+<script src="/vtg-site-navigation.js?v=20261023-no-footer-2" defer></script>
 
 <style id="vtg-trade-guide-hero-light-contrast-20261012">
 /* Keep the hero introduction readable in light theme despite its intentionally dark background. */

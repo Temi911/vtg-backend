@@ -3,6 +3,14 @@
   'use strict';
   const DATA_URL='/vtg-trade-atlas.js?v=20261016-live-leaflet';
   const css=`
+    html[data-theme="light"] #mapDrawer .drawerPanel{background:#f3f7f8!important;color:#17384b!important}
+    html[data-theme="light"] .vtgMapApp{background:#fff!important;color:#17384b!important;border-color:#dbe5e9!important}
+    html[data-theme="light"] .vtgMapApp .leaflet-tile{filter:none!important}
+    html[data-theme="dark"] #mapDrawer .drawerPanel{background:#0b1117!important;color:#edf3f7!important}
+    html[data-theme="dark"] .vtgMapApp{background:#121c25!important;color:#edf3f7!important;border-color:#2a3945!important}
+    html[data-theme="dark"] .vtgMapApp .leaflet-tile{filter:brightness(.72) invert(1) contrast(.86) hue-rotate(180deg) saturate(.72)!important}
+    html[data-theme="dark"] .vtgMapApp .vtgMapHead,html[data-theme="dark"] .vtgMapApp .vtgMapControls{background:#17232e!important;color:#edf3f7!important;border-color:#2a3945!important}
+
     #mapDrawer .drawerPanel{width:min(1120px,96vw)!important;height:min(94vh,900px)!important;top:3vh!important;border-radius:18px 0 0 18px!important;padding:16px!important;background:#f3f7f8;overflow:auto!important}
     .vtgMapApp{color:#17384b;background:#fff;border:1px solid #dbe5e9;border-radius:16px;overflow:hidden}
     .vtgMapHead{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:12px;border-bottom:1px solid #e2eaee}

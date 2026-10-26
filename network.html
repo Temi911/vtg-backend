@@ -27,10 +27,28 @@
 })();
 </script>
 <link rel="stylesheet" href="/vtg-typography.css?v=20261020-4" data-vtg-typography="1">
+<style id="vtg-network-hub-premium-refresh">
+:root{--bg:#f7f5f0;--panel:#fffefa;--line:#ddd6cb;--text:#242321;--muted:#625d56;--red:#702a30}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 80% 0%,rgba(180,154,112,.15),transparent 42%),#f7f5f0;color:#242321;font-family:Manrope,Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body:before{content:"VTG · TRADE NETWORK";display:block;padding:24px clamp(18px,5vw,64px);border-bottom:1px solid #ddd6cb;color:#702a30;font-size:10px;font-weight:800;letter-spacing:.17em}
+body p{width:min(720px,calc(100% - 36px));margin:clamp(22px,4vw,42px) auto 0;color:#625d56;font-size:15px;line-height:1.85}
+body p:first-of-type{margin-top:clamp(56px,10vh,110px);font-size:clamp(26px,4vw,40px);font-weight:750;letter-spacing:-.04em;line-height:1.2;color:#202326}
+body p:last-of-type{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+body a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:12px 16px;border:1px solid #d7ccc0;border-radius:10px;background:#fffefa;color:#702a30;text-decoration:none;font-size:12px;font-weight:750;transition:background .18s,border-color .18s,transform .18s}
+body a:hover{transform:translateY(-1px);background:#f2e9e5;border-color:#c7aaa3}
+body a:focus-visible{outline:2px solid #9b5c60;outline-offset:3px}
+html[data-theme="dark"] body{background:radial-gradient(ellipse at 80% 0%,rgba(180,154,112,.1),transparent 42%),#17191b;color:#f3efe6}
+html[data-theme="dark"] body:before{border-color:#3b3d40;color:#e2be91}
+html[data-theme="dark"] body p:first-of-type{color:#f3efe6}
+html[data-theme="dark"] body p{color:#c5bfb5}
+html[data-theme="dark"] body a{background:#202326;border-color:#45484b;color:#e2be91}
+html[data-theme="dark"] body a:hover{background:#292b2d;border-color:#6b5553}
+@media(max-width:600px){body p:last-of-type{flex-direction:column;align-items:stretch}body a{width:100%}}
+</style>
 </head>
 <body>
 <p>The VTG Trade Network is now accessed from your role-specific workspace.</p>
 <p><a href="/buyer-dashboard.html#network">Open the Buyer Dashboard network</a> · <a href="/supplier-dashboard.html#network">Open the Supplier Dashboard network</a> · <a href="/signin.html">Sign in</a></p>
-<script src="/vtg-site-navigation.js?v=20261020-public-shell-1" defer></script>
+<script src="/vtg-site-navigation.js?v=20261023-no-footer-2" defer></script>
 </body>
 </html>

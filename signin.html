@@ -179,8 +179,51 @@ html:not([data-theme="dark"]) body .page .layout .formSide .formIntro .sub {
 
 </style>
 <script>(function(){try{document.documentElement.setAttribute('data-theme',((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark'))}catch(e){}})();</script><link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<style id="vtg-signin-premium-refresh">
+/* Authentication shell refinement; preserve role selection, credentials, redirects and form handlers. */
+:root{--auth-ink:#242321;--auth-muted:#625d56;--auth-red:#702a30;--auth-line:#ddd6cb;--auth-panel:#fffefa}
+.page{background:#f7f5f0;color:var(--auth-ink)}
+.layout{gap:clamp(20px,3vw,42px);align-items:stretch}
+.story{overflow:hidden;border:1px solid rgba(221,214,203,.18);border-radius:22px;box-shadow:0 24px 70px rgba(16,20,24,.17)}
+.storyCopy h1{font-size:clamp(36px,4.5vw,58px);line-height:1.04;letter-spacing:-.045em;text-wrap:balance}
+.kicker{letter-spacing:.15em}
+.pillRow{gap:8px}
+.pill{border-radius:8px}
+.formSide{border:1px solid var(--auth-line);border-radius:22px;background:var(--auth-panel);box-shadow:0 22px 60px rgba(40,30,24,.07);padding:clamp(22px,3vw,38px)}
+.topActions{gap:8px}
+.themeToggle,.homeLink{min-height:38px;border:1px solid #ddd6cb;border-radius:9px;background:#fffefa;color:#393530}
+.formIntro h2{color:#242321;letter-spacing:-.035em}
+.formIntro .sub{color:#625d56;line-height:1.75}
+.roles{gap:8px}
+.roles button,.roles [role="button"]{border:1px solid #ddd6cb;border-radius:10px;background:#fffefa;color:#625d56;transition:background .18s,border-color .18s,color .18s}
+.roles .active,.roles button[aria-pressed="true"]{background:#f2e9e5;border-color:#c7aaa3;color:#702a30}
+.field label{color:#393530;font-weight:700}
+.field input,.field select,.field textarea{min-height:44px;border:1px solid #d9d0c6;border-radius:10px;background:#fffefa;color:#242321}
+.fieldIcon{color:#746d65}
+.toggle{color:#625d56}
+.formMeta,.remember,.forgot,.bottomLinks{color:#625d56}
+.forgot,.bottomLinks a{color:#702a30}
+.primary{min-height:44px;border-radius:10px;background:#702a30;color:#fff}
+.primary:hover{background:#552126}
+.msg,.securityNote{border-radius:11px;line-height:1.7}
+.msg.ok{background:#e8f3ec;border:1px solid #b7d9c4;color:#235c40}
+.securityNote{background:#f7f2eb;border:1px solid #e5d8cc;color:#625d56}
+.field input:focus-visible,.field select:focus-visible,.field textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid #9b5c60;outline-offset:3px}
+html[data-theme="dark"] .page{background:#17191b;color:#f3efe6}
+html[data-theme="dark"] .formSide{background:#202326;border-color:#3b3d40}
+html[data-theme="dark"] .formIntro h2,html[data-theme="dark"] .field label{color:#f3efe6}
+html[data-theme="dark"] .formIntro .sub,html[data-theme="dark"] .formMeta,html[data-theme="dark"] .remember,html[data-theme="dark"] .forgot,html[data-theme="dark"] .bottomLinks,html[data-theme="dark"] .toggle{color:#c5bfb5}
+html[data-theme="dark"] .themeToggle,html[data-theme="dark"] .homeLink,html[data-theme="dark"] .roles button,html[data-theme="dark"] .roles [role="button"]{background:#292b2d;border-color:#45484b;color:#d4ccc2}
+html[data-theme="dark"] .roles .active,html[data-theme="dark"] .roles button[aria-pressed="true"]{background:#43282a;border-color:#65464a;color:#f2c6c2}
+html[data-theme="dark"] .field input,html[data-theme="dark"] .field select,html[data-theme="dark"] .field textarea{background:#17191b;border-color:#45484b;color:#f3efe6}
+html[data-theme="dark"] .forgot,html[data-theme="dark"] .bottomLinks a{color:#e2be91}
+html[data-theme="dark"] .msg.ok{background:#1e3a30;border-color:#315c49;color:#b4e4c8}
+html[data-theme="dark"] .securityNote{background:#292522;border-color:#45403c;color:#d4ccc2}
+@media(max-width:760px){.layout{gap:14px}.story,.formSide{border-radius:16px}.formSide{padding:20px}}
+@media(prefers-reduced-motion:reduce){.roles button,.roles [role="button"]{transition:none}}
+</style>
 </head>
-<body><div class="topline"></div>
+<body>
 <main class="page">
   <div class="layout">
     <section class="story" aria-label="VTG international trade">
@@ -236,5 +279,5 @@ document.getElementById('toggle').onclick=()=>{const p=document.getElementById('
 document.getElementById('form').onsubmit=async e=>{e.preventDefault();msg.className='msg';msg.textContent='';const d=Object.fromEntries(new FormData(e.currentTarget));try{const r=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:d.email,password:d.password})});const out=await r.json();if(!r.ok)throw Error(out.message||'Sign in failed');if(out.user?.role&&String(out.user.role).toLowerCase()!==role){const names={buyer:'Buyer',supplier:'Supplier',bank:'Bank'};throw Error('This account is registered as a '+(names[out.user.role]||out.user.role)+'. Please select '+(names[out.user.role]||out.user.role)+' above.')}if(out.accessToken){localStorage.setItem('vtg_access_token',out.accessToken);localStorage.setItem('vtg-auth',JSON.stringify({user:out.user,accessToken:out.accessToken,refreshToken:out.refreshToken||null}));localStorage.setItem('vtg-language',out.user?.preferredLanguage||'en');localStorage.setItem('vtg-country',out.user?.country||'')}msg.className='msg ok';msg.textContent='Signed in successfully. Opening your VTG workspace…';setTimeout(()=>{if(out.agreementRequired){location.href='/signup-agreement.html';return}if(safeNext&&String(out.user?.role||'').toLowerCase()===role){location.href=safeNext;return}if(String(out.user?.role||'').toLowerCase()==='supplier'){location.href='/supplier-dashboard.html';return}if(String(out.user?.role||'').toLowerCase()==='bank'){location.href='/bank-trade-os.html';return}location.href=String(out.user?.role||'').toLowerCase()==='buyer'?'/buyer-dashboard.html':'/'},450)}catch(err){msg.textContent=err.message||'Sign in failed'}};
 </script>
 <script src="/page-visuals.js?v=20261013-auth-layout-redesign-1"></script>
-<script src="/vtg-site-navigation.js?v=20261020-universal-header-1" defer></script>
+<script src="/vtg-site-navigation.js?v=20261023-no-footer-2" defer></script>
 </body></html>
