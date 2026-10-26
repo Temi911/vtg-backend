@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+/* VTG global typography system — one family, deliberate scale, consistent rhythm.
+   Typography only: preserves page structure, brand colours, theme, and component behaviour. */
+:root{
+  --vtg-font-family:"Manrope",Arial,sans-serif;
+  --vtg-text-xs:0.6875rem;
+  --vtg-text-sm:0.75rem;
+  --vtg-text-base:0.875rem;
+  --vtg-text-lg:1rem;
+  --vtg-text-xl:1.125rem;
+  --vtg-text-2xl:1.375rem;
+  --vtg-text-3xl:1.625rem;
+  --vtg-text-4xl:clamp(1.75rem,3vw,2.25rem);
+  --vtg-leading-tight:1.15;
+  --vtg-leading-heading:1.25;
+  --vtg-leading-body:1.65;
+  --vtg-copy-measure:72ch;
+  --vtg-space-paragraph:0 0 0.85em;
+}
+html{
+  font-family:var(--vtg-font-family)!important;
+  font-size:15px!important;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+body,body *:not(svg):not(svg *):not(i):not([class*="icon"]):not([class*="Icon"]):not([class*="fa-"]):not(.fa):not(.fas):not(.far):not(.fab):not(.material-icons):not(.material-symbols-outlined):not(.material-symbols-rounded):not([data-lucide]):not(.lucide){
+  font-family:var(--vtg-font-family)!important;
+  word-spacing:normal;
+}
+body{font-size:var(--vtg-text-base)!important;line-height:var(--vtg-leading-body)}
+p,li,dd,dt,blockquote,figcaption{font-size:var(--vtg-text-base)!important;line-height:var(--vtg-leading-body)!important;letter-spacing:normal!important;word-spacing:normal!important}
+p{margin-block:0 0.85em}
+h1,h2,h3,h4,h5,h6{
+  line-height:var(--vtg-leading-heading)!important;
+  letter-spacing:-.025em!important;
+  word-spacing:normal!important;
+  text-wrap:pretty;
+  font-weight:800;
+}
+h1{font-size:var(--vtg-text-4xl)!important;line-height:1.12!important;margin-block:0 .55em!important;letter-spacing:-.035em!important}
+h2{font-size:var(--vtg-text-2xl)!important;line-height:1.2!important;margin-block:0 .6em!important;letter-spacing:-.03em!important}
+h3{font-size:var(--vtg-text-xl)!important;margin-block:0 .55em!important}
+h4{font-size:var(--vtg-text-lg)!important;margin-block:0 .5em!important}
+h5{font-size:var(--vtg-text-base)!important;margin-block:0 .45em!important}
+h6{font-size:var(--vtg-text-sm)!important;margin-block:0 .45em!important;letter-spacing:.01em!important}
+.hero h1,.hero-title,.heroTitle,.hero-content h1,.hero-copy h1,.landing-hero h1,.home-hero h1,.atlas-hero h1{
+  font-size:clamp(2rem,4.5vw,3.25rem)!important;
+  line-height:1.08!important;
+  letter-spacing:-.045em!important;
+}
+.hero h2,.hero-title + h2,.hero-content h2{font-size:clamp(1.25rem,2.2vw,1.625rem)!important;line-height:1.25!important}
+.lead,.intro,.hero p,.hero-copy p,.hero-content p,.heroIn p,.page-intro,.pageIntro,.subtitle,.sub-title{
+  font-size:clamp(.875rem,1.1vw,1rem)!important;
+  line-height:1.7!important;
+}
+button,input,select,textarea,[role="button"],.btn,.button,.primary-btn,.btn-primary,.action-button{
+  font-size:var(--vtg-text-sm)!important;
+  line-height:1.4!important;
+  letter-spacing:normal!important;
+}
+input,select,textarea{font-family:var(--vtg-font-family)!important;line-height:1.45!important}
+label,legend,th{font-size:var(--vtg-text-sm)!important;line-height:1.45!important;letter-spacing:normal!important}
+small,small *, .small,.meta,.metadata,.caption,.eyebrow,.kicker,.section-label,.sectionLabel,.overline,.helper-text,.help-text,.form-hint,.timestamp,.date-label,.status-label,.badge,.pill,.status-pill{
+  font-size:var(--vtg-text-xs)!important;line-height:1.5!important;letter-spacing:normal;
+}
+nav a,nav button,.nav a,.site-nav a,.vtg-page-nav a,.vtg-page-nav button{font-size:var(--vtg-text-sm)!important;line-height:1.4!important}
+table{font-size:var(--vtg-text-sm)!important;line-height:1.55!important}
+th,td{padding-block:0.65rem}
+:where(.card,.panel,.surface,.tile,.modal,.modal-content,.dialog,.dialog-content,.drawer,.sheet,.form-card,.formCard,.content-card,.contentCard,.feature-card,.info-card,.stat-card,.statCard,.widget,.widget-card,.news-card,.newsCard,.market-card,.marketCard,.access-card,.application-card,.dashboard-card,.dashboard-panel) :is(p,li){line-height:1.6!important}
+:where(.card,.panel,.surface,.tile,.modal,.modal-content,.dialog,.dialog-content,.drawer,.sheet,.form-card,.formCard,.content-card,.contentCard,.feature-card,.info-card,.stat-card,.statCard,.widget,.widget-card,.news-card,.newsCard,.market-card,.marketCard,.access-card,.application-card,.dashboard-card,.dashboard-panel) :is(h1,h2,h3,h4,h5,h6){margin-block-end:.55em!important}
+:where(.field,.form-group,.formField,.input-group) label{display:block;margin-block-end:.4rem}
+:where(.field,.form-group,.formField,.input-group) :is(input,select,textarea){letter-spacing:normal}
+:where(.stat,.stat-card,.statCard,.metric,.metric-card,.number,.stat-value){font-variant-numeric:tabular-nums}
+.vtgCompactFooter .vtgFooterBrand p{font-size:var(--vtg-text-xs)!important;line-height:1.6!important}
+.vtgCompactFooter .vtgFooterLinks h4{font-size:var(--vtg-text-sm)!important;line-height:1.45!important}
+.vtgCompactFooter .vtgFooterLinks a{font-size:var(--vtg-text-xs)!important;line-height:1.65!important}
+.vtgCompactFooter .vtgFooterBottom,.vtgCompactFooter .vtgFooterBottom span,.vtgCompactFooter .vtgFooterBottom a{font-size:var(--vtg-text-xs)!important;line-height:1.55!important}
+.vtg-page-nav button,.vtg-page-nav a{font-size:var(--vtg-text-sm)!important}
+#vtg-shared-footer{font-family:var(--vtg-font-family)!important;font-size:var(--vtg-text-xs)!important}
+#vtg-shared-footer :is(a,button,select,span){font-family:var(--vtg-font-family)!important}
+#vtg-shared-footer :is(a,button,select){font-size:var(--vtg-text-xs)!important;line-height:1.4!important}
+@media(max-width:720px){
+  html{font-size:14px!important}
+  body{font-size:var(--vtg-text-sm)!important}
+  p,li,dd,dt,blockquote,figcaption{font-size:var(--vtg-text-sm)!important;line-height:1.65!important}
+  h1{font-size:clamp(1.75rem,7.5vw,2.25rem)!important}
+  h2{font-size:clamp(1.375rem,5.5vw,1.625rem)!important}
+  h3{font-size:1rem!important}
+  .hero h1,.hero-title,.heroTitle,.hero-content h1,.hero-copy h1,.landing-hero h1,.home-hero h1,.atlas-hero h1{font-size:clamp(1.75rem,7vw,2.4rem)!important;line-height:1.1!important}
+  .lead,.intro,.hero p,.hero-copy p,.hero-content p,.heroIn p,.page-intro,.pageIntro,.subtitle,.sub-title{font-size:var(--vtg-text-sm)!important}
+  button,input,select,textarea,[role="button"],.btn,.button,.primary-btn,.btn-primary,.action-button{font-size:var(--vtg-text-sm)!important}
+  th,td{padding-block:.55rem}
+}
+@media(max-width:420px){
+  .vtgCompactFooter .vtgFooterTop{gap:20px}
+  #vtg-shared-footer{font-size:11px!important}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+
+/* Readability pass: standardise utility labels and dashboard navigation that
+   previously used tiny, page-local 6–10px values. Keep metric figures and icons
+   untouched; this only applies to interface copy and supporting labels. */
+:where(.eyebrow,.kicker,.section-label,.sectionLabel,.overline,.meta,.metadata,
+.caption,.helper-text,.help-text,.form-hint,.timestamp,.date-label,.status-label,
+.badge,.pill,.status-pill,.tag,.small,.muted,.hint,.note,.foot,.empty,
+.field-label,.fieldLabel,.nav-label,.navLabel,.side-label,.sideLabel,
+.vtgCompactFooter .vtgFooterLinks a,.vtgCompactFooter .vtgFooterBottom,
+.vtgCompactFooter .vtgFooterBottom a,.vtgCompactFooter .vtgFooterBottom span){
+  font-size:max(0.6875rem, 11px)!important;
+  line-height:1.5!important;
+}
+:where(.sidebar a,.sidebar button,.side a,.side button,.dash-nav a,.dash-nav button,
+.dashboard-nav a,.dashboard-nav button,.topbar a,.topbar button,.toolbar a,.toolbar button,
+.header-actions a,.header-actions button,.actions a,.actions button){
+  font-size:0.75rem!important;
+  line-height:1.4!important;
+}
+:where(.footer,.site-footer,.footerGrid,.footerGrid a,.footerGrid p,.footerGrid span,
+.footerGrid h4,.links a,.bottom,.bottom a,#vtg-shared-footer a,#vtg-shared-footer button){
+  line-height:1.55!important;
+}
+:where(.footerGrid a,.bottom a,.site-footer a,.footer a){font-size:max(0.6875rem,11px)!important}
+:where(input,select,textarea){min-height:2.4rem}
