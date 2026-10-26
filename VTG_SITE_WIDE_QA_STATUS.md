@@ -103,3 +103,34 @@ This phase is **audit-in-progress, not site-wide acceptance**. The current previ
 - The GitHub combined status for this commit reports the Vercel check as `success`. No GitHub Actions workflow run was returned for this commit, so do not infer that the full test suite ran.
 - **Still open:** rendered browser QA, responsive/mobile review, console/network inspection, and interactive control/API checks. The connected browser-control session is unavailable for navigation in this session, and external HTTP fetching of the deployment URL could not be independently repeated here. Vercel `READY` confirms deployment status, not end-to-end acceptance.
 - Phase 4 remains **audit-in-progress**. No production merge/promotion or Railway changes.
+
+
+## Phase 4 follow-up verification — 2026-10-26 (live preview routes)
+
+### Deployment checked
+- Branch: `redesign/landing-page-visual-refresh`
+- Latest checked preview deployment: `dpl_J1XM156wsjte9wCMt5vEdJAP7Xa2` (Vercel state `READY`)
+- Commit: `583c5f5c452d1b291c701bf85fa85f35accb1a28` — `Record supplier preview restoration and current Phase 4 QA status`
+- GitHub combined status: Vercel check `success`. This does not imply interactive browser acceptance or a full GitHub Actions test suite.
+
+### Fresh HTTP route checks
+- [x] `/supplier-preview/` — 200; returns the intended minimal page with meta refresh and `window.location.replace('/supplier-dashboard.html')`.
+- [x] `/supplier-dashboard.html` — 200; Supplier Trade OS page returned.
+- [x] `/buyer-dashboard.html` — 200.
+- [x] `/bank-trade-os.html` — 200.
+- [x] `/marketplace.html` — 200.
+- [x] `/trade-atlas.html` — 200.
+- [x] `/vtg-ai.html` — 200.
+- [x] `/trade-feed.html` — 200.
+- [x] `/market-intelligence.html` — 200.
+- [x] `/supplier.html` — 200; this is the existing supplier profile route.
+- [x] `/buyer-signup.html`, `/supplier-signup.html`, and `/bank-signup.html` — all 200.
+- [!] `/supplier-profile.html` — 404. Repository search did not find this as a tracked page/reference; the existing profile page is `/supplier.html`. Treat this as a non-canonical test path unless a valid link is found pointing to it.
+
+### Supplier restoration result
+The supplier-preview entry point is restored as a redirect to the ordinary supplier dashboard on the checked branch preview deployment. This ends the temporary isolated-preview entry behaviour and returns normal dashboard navigation, including normal Home navigation. The dedicated preview URL must use the branch preview deployment; the production alias was checked separately and did not serve the preview entry at that path. Do not describe this as an access-restricted or confidential supplier-only link.
+
+### Additional observations and limitations
+- A request to `/api/health` returned JSON 404 `Application not found`. This endpoint may not be implemented at the configured backend path; this single result does not establish whether the API is healthy. Confirm the documented health route or inspect an authenticated, known API endpoint before making an API-health claim.
+- Static source inspection and HTTP checks do not execute client JavaScript. Rendered desktop/mobile review, click-through testing, browser console/network inspection, keyboard/accessibility checks, and authenticated API workflows remain open because connected browser control is unavailable.
+- No production promotion, merge to `main`, or Railway change was performed by this follow-up.
