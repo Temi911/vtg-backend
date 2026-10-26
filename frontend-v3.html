@@ -446,6 +446,87 @@ html[data-vtg-skin][data-theme="dark"] body #landing footer#vtgFooter.vtgCompact
 html[data-vtg-skin][data-theme="dark"] body #landing footer#vtgFooter.vtgCompactFooter :is(p,a,span){color:#a5b4b8!important;-webkit-text-fill-color:#a5b4b8!important}
 html[data-vtg-skin][data-theme="dark"] body #landing footer#vtgFooter.vtgCompactFooter a:hover{color:#f3a79e!important;-webkit-text-fill-color:#f3a79e!important}
 </style>
+
+<style id="vtg-phase3-landing-refresh">
+/* Phase 3: quieter, brighter Private Trade House art direction. */
+:root{--vtg-ink:#202222;--vtg-paper:#f5f1e9;--vtg-red:#702a30;--vtg-line:rgba(32,34,34,.13)}
+#landing{background:#f5f1e9;color:#202222}
+#landing .vtgEditorialHero{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(120deg,#faf7f0 0%,#f3eee5 58%,#e7e7df 100%);padding-top:clamp(50px,7vw,94px);padding-bottom:0}
+#landing .vtgHeroBackdrop{opacity:.18;background:radial-gradient(ellipse at 18% 12%,rgba(180,154,112,.19),transparent 42%),radial-gradient(ellipse at 86% 65%,rgba(112,42,48,.07),transparent 38%)}
+#landing .vtgHeroLayout{max-width:1450px;gap:clamp(36px,6vw,96px);padding-inline:clamp(22px,5.8vw,92px);align-items:center}
+#landing .vtgHeroCopy{max-width:590px}
+#landing .vtgHeroCopy h1{font-size:clamp(44px,6.3vw,82px);line-height:.99;letter-spacing:-.055em;font-weight:500;color:#202222;max-width:640px}
+#landing .vtgHeroCopy h1 em{font-style:normal;color:#702a30}
+#landing .vtgHeroCopy>p{max-width:500px;color:#5d625f;font-size:clamp(15px,1.1vw,17px);line-height:1.8}
+#landing .vtgEyebrow{letter-spacing:.19em;color:#6c6258}
+#landing .vtgEyebrowDot{background:#702a30}
+#landing .vtgButton{min-height:50px;border-radius:7px;padding-inline:20px}
+#landing .vtgButtonPrimary{background:#702a30;color:#fff;box-shadow:0 9px 22px rgba(112,42,48,.13)}
+#landing .vtgButtonPrimary:hover{background:#572127}
+#landing .vtgButtonSecondary{border:1px solid rgba(32,34,34,.22);color:#202222;background:rgba(255,255,255,.42)}
+#landing .vtgHeroVisual{border-radius:5px;box-shadow:0 22px 64px rgba(30,40,39,.13);min-height:clamp(340px,38vw,540px);background:#d8e2e3}
+#landing .vtgHeroImage{filter:brightness(1.12) saturate(.82) contrast(.96);object-position:center center}
+#landing .vtgHeroImageTint{background:linear-gradient(180deg,rgba(20,34,37,.02) 25%,rgba(20,34,37,.18) 100%)}
+#landing .vtgHeroImageTag{background:rgba(248,246,239,.93);color:#202222;border:1px solid rgba(255,255,255,.65);backdrop-filter:blur(14px);border-radius:4px}
+#landing .vtgLiveDot{background:#617f69}
+#landing .vtgRouteCard{background:rgba(250,248,242,.96);color:#202222;border:1px solid rgba(255,255,255,.75);border-radius:5px;box-shadow:0 14px 40px rgba(22,35,36,.14)}
+#landing .vtgRouteCard small{color:#77756d}
+#landing .vtgRouteCard strong,#landing .vtgRoutePlaces b{color:#202222}
+#landing .vtgRoutePlaces small{color:#77756d}
+#landing .vtgRouteIcon{background:#eee5d9;color:#702a30;border-radius:4px}
+#landing .vtgHeroStamp{border-color:rgba(255,255,255,.75);color:#fff}
+#landing .vtgHeroBottom{max-width:1300px;padding:25px clamp(22px,5.8vw,92px);color:#77756d;letter-spacing:.06em;font-size:10px}
+#landing .vtgHeroBottomRule{background:#b49a70}
+#landing .vtgEditorialMarket{background:#f5f1e9;padding:clamp(56px,7vw,92px) 0 48px}
+#landing .vtgMarketSection{max-width:1300px;padding-inline:clamp(22px,5.8vw,92px)}
+#landing .vtgMarketHeading{align-items:end;gap:32px;margin-bottom:30px}
+#landing .vtgMarketHeading h2,#landing .vtgShowcaseIntro h2{font-size:clamp(32px,4.2vw,54px);line-height:1.04;letter-spacing:-.04em;color:#202222;font-weight:500}
+#landing .vtgMarketHeading h2 em,#landing .vtgShowcaseIntro h2 em{font-style:normal;color:#702a30}
+#landing .vtgMarketHeading p,#landing .vtgShowcaseIntro p{color:#666b67;line-height:1.75;font-size:14px;max-width:380px}
+#landing .vtgMarketRule{border-color:rgba(32,34,34,.17);color:#746f66;letter-spacing:.15em;font-size:9px}
+#landing .vtgEditorialShowcase{max-width:1300px;margin:0 auto;padding:28px clamp(22px,5.8vw,92px) 86px}
+#landing .vtgShowcaseIntro{display:grid;grid-template-columns:1fr minmax(230px,360px);align-items:end;gap:20px 45px;margin-bottom:26px}
+#landing .vtgShowcaseIntro>.vtgEyebrow{grid-column:1/-1}
+#landing .vtgShowcaseIntro h2{margin:0;max-width:680px}
+#landing .vtgShowcaseIntro p{margin:0 0 4px}
+#landing .vtgShowcaseGrid{grid-template-columns:1.1fr .9fr;grid-template-rows:clamp(240px,29vw,390px);gap:14px}
+#landing .vtgShowcaseCard{border-radius:5px;box-shadow:none;background:#d8dfdb}
+#landing .vtgShowcaseCard>img{filter:saturate(.78);transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+#landing .vtgShowcaseCard:hover>img{transform:scale(1.035)}
+#landing .vtgShowcaseOverlay{background:linear-gradient(180deg,rgba(18,27,27,.02) 20%,rgba(18,27,27,.72) 100%)}
+#landing .vtgShowcaseContent{padding:clamp(20px,3vw,38px)}
+#landing .vtgShowcaseContent small{letter-spacing:.15em;color:#f0dfc2}
+#landing .vtgShowcaseContent strong{font-size:clamp(22px,2.5vw,34px);line-height:1.1;letter-spacing:-.025em}
+#landing .vtgShowcaseContent>span{font-size:12px}
+#landing .vtgEditorialCta{margin:0 clamp(16px,3vw,42px) 50px;border-radius:5px;background:#702a30;color:#fff;box-shadow:none}
+#landing .vtgEditorialCta h2{font-size:clamp(32px,4vw,52px);letter-spacing:-.04em;font-weight:500}
+#landing .vtgEditorialCta h2 em{color:#e7d4b5}
+#landing .vtgEditorialCta .vtgEyebrow{color:#e2c9aa}
+#landing .vtgButtonLight{border-radius:5px;background:#f5f1e9;color:#702a30}
+#landing .vtgCtaTextLink{color:#fff}
+#landing .vtgCompactFooter{background:#f5f1e9;color:#202222;border-top:1px solid rgba(32,34,34,.13)}
+#landing .vtgCompactFooter a{color:inherit}
+#landing .vtgCompactFooter .vtgFooterBrand p,#landing .vtgCompactFooter small{color:#696d68}
+@media(max-width:850px){
+ #landing .vtgHeroLayout{grid-template-columns:1fr;gap:32px}
+ #landing .vtgHeroCopy{max-width:680px}
+ #landing .vtgHeroVisual{min-height:380px}
+ #landing .vtgShowcaseIntro{grid-template-columns:1fr;gap:12px}
+ #landing .vtgShowcaseIntro>.vtgEyebrow{grid-column:auto}
+ #landing .vtgShowcaseGrid{grid-template-columns:1fr;grid-template-rows:repeat(2,minmax(245px,62vw))}
+ #landing .vtgEditorialCta{margin-inline:16px}
+}
+@media(max-width:520px){
+ #landing .vtgHeroCopy h1{font-size:clamp(42px,12vw,58px)}
+ #landing .vtgHeroVisual{min-height:350px}
+ #landing .vtgHeroBottom{gap:10px;flex-wrap:wrap}
+ #landing .vtgRouteCard{left:12px;right:12px;bottom:12px}
+ #landing .vtgHeroStamp{display:none}
+ #landing .vtgMarketHeading{align-items:start}
+ #landing .vtgEditorialCta{padding:28px 22px}
+}
+@media(prefers-reduced-motion:reduce){#landing .vtgShowcaseCard>img{transition:none}}
+</style>
 </head>
 <body>
 <div class="topline"></div>
@@ -499,15 +580,6 @@ html[data-vtg-skin][data-theme="dark"] body #landing footer#vtgFooter.vtgCompact
     <h2 id="vtgShowcaseTitle">Move from discovery to <em>clearer decisions.</em></h2>
     <p>Explore products, understand the wider trade landscape, and review the options available before taking your next step.</p>
   </div>
-  <div class="vtgJourneyRail" aria-label="Trade journey overview">
-    <div class="vtgJourneyStep"><span>01</span><b>Discover</b><small>Browse products and supplier catalogues</small></div>
-    <span class="vtgJourneyConnector" aria-hidden="true"></span>
-    <div class="vtgJourneyStep"><span>02</span><b>Understand</b><small>Explore routes and trade context</small></div>
-    <span class="vtgJourneyConnector" aria-hidden="true"></span>
-    <div class="vtgJourneyStep"><span>03</span><b>Review</b><small>Learn about product verification</small></div>
-    <span class="vtgJourneyConnector" aria-hidden="true"></span>
-    <div class="vtgJourneyStep"><span>04</span><b>Continue</b><small>Choose the relevant VTG destination</small></div>
-  </div>
   <div class="vtgShowcaseGrid">
     <a class="vtgShowcaseCard vtgShowcaseWide" href="/marketplace.html">
       <img loading="lazy" src="https://images.pexels.com/photos/9716363/pexels-photo-9716363.jpeg?auto=compress&cs=tinysrgb&w=1400" alt="Organized shipping containers at a logistics terminal">
@@ -517,19 +589,9 @@ html[data-vtg-skin][data-theme="dark"] body #landing footer#vtgFooter.vtgCompact
       <img loading="lazy" src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=1000&q=85" alt="Earth viewed from space">
       <span class="vtgShowcaseOverlay"></span><span class="vtgShowcaseContent"><small>02 / TRADE LANDSCAPE</small><strong>See the bigger picture.</strong><span>Explore Trade Atlas <i data-lucide="arrow-up-right"></i></span></span>
     </a>
-    <a class="vtgShowcaseCard" href="/product-verification.html">
-      <img loading="lazy" src="https://images.pexels.com/photos/5953723/pexels-photo-5953723.jpeg?auto=compress&cs=tinysrgb&w=1000" alt="Industrial quality inspection and equipment">
-      <span class="vtgShowcaseOverlay"></span><span class="vtgShowcaseContent"><small>03 / TRADE CONFIDENCE</small><strong>Review verification options.</strong><span>Explore verification <i data-lucide="arrow-up-right"></i></span></span>
-    </a>
   </div>
 </section>
-<section class="vtgTrustStrip" aria-label="VTG platform areas">
-  <div class="vtgTrustIntro"><span class="vtgEyebrow vtgEyebrowDark">BUILT AROUND YOUR TRADE</span><b>Useful context at every step.</b></div>
-  <div class="vtgTrustItem"><i data-lucide="search-check" aria-hidden="true"></i><span><b>Product discovery</b><small>Explore categories and supplier listings</small></span></div>
-  <div class="vtgTrustItem"><i data-lucide="route" aria-hidden="true"></i><span><b>Trade-route context</b><small>See the wider picture in Trade Atlas</small></span></div>
-  <div class="vtgTrustItem"><i data-lucide="clipboard-check" aria-hidden="true"></i><span><b>Verification options</b><small>Understand the available review pathway</small></span></div>
-  <div class="vtgTrustItem"><i data-lucide="panels-top-left" aria-hidden="true"></i><span><b>Connected workspaces</b><small>Continue to the relevant VTG area</small></span></div>
-</section>
+
 
 <section class="vtgEditorialCta" aria-labelledby="vtgCtaTitle">
   <div class="vtgCtaGlow" aria-hidden="true"></div>
