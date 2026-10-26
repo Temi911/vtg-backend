@@ -134,3 +134,40 @@ The supplier-preview entry point is restored as a redirect to the ordinary suppl
 - A request to `/api/health` returned JSON 404 `Application not found`. This endpoint may not be implemented at the configured backend path; this single result does not establish whether the API is healthy. Confirm the documented health route or inspect an authenticated, known API endpoint before making an API-health claim.
 - Static source inspection and HTTP checks do not execute client JavaScript. Rendered desktop/mobile review, click-through testing, browser console/network inspection, keyboard/accessibility checks, and authenticated API workflows remain open because connected browser control is unavailable.
 - No production promotion, merge to `main`, or Railway change was performed by this follow-up.
+
+
+## Fresh Phase 4 route and asset spot-check — 2026-10-26 (continued)
+
+### Preview URL checked
+`https://vtg-backended-khskzg5mp-olanrewajutope80-7999s-projects.vercel.app`
+
+Fresh fetches through the Vercel preview fetch service returned **HTTP 200** and the expected page title for:
+- [x] `/` (rewrites to `/frontend-v3.html`)
+- [x] `/frontend-v3.html`
+- [x] `/supplier-preview/`
+- [x] `/supplier-dashboard.html`
+- [x] `/buyer-dashboard.html`
+- [x] `/bank-trade-os.html`
+- [x] `/marketplace.html`
+- [x] `/trade-atlas.html`
+- [x] `/vtg-ai.html`
+- [x] `/trade-feed.html`
+- [x] `/market-intelligence.html`
+- [x] `/supplier.html`
+- [x] `/buyer-signup.html`
+- [x] `/supplier-signup.html`
+- [x] `/bank-signup.html`
+
+### Asset and endpoint spot-check
+- [x] `/vtg-site-navigation.js?v=20261023-no-footer-2` — HTTP 200.
+- [x] `/vtg-ui-repair.js` — HTTP 200.
+- [!] `/map-enhancer.js` — HTTP 404. The earlier repository source audit found no active references to this root path, so this is not yet classified as a user-facing defect. Recheck if a current page or runtime request references it.
+- [!] `/api/health` — HTTP 404 with JSON `Application not found`. This is not a valid health result unless the backend actually defines this route; API health remains unverified.
+
+### Supplier preview restoration
+The preview entry returns a small HTML page that sets a meta refresh and calls `window.location.replace('/supplier-dashboard.html')`; the ordinary supplier dashboard itself returns HTTP 200. This verifies the redirect code is present in the deployed response, but an HTTP fetch cannot execute the redirect or verify subsequent clicks.
+
+### Limitations and next acceptance checks
+These checks are HTTP/source checks, not rendered-browser acceptance. Interactive Home/Previous clicks, dashboard controls, mobile layout, theme contrast, console/network errors, keyboard/accessibility behaviour, and authenticated API workflows remain open. The connected browser tool in this session exposes tab reading but not interactive navigation/click control. A Vercel deployment-list request was denied by the connected account, so this follow-up does not claim an independent deployment-metadata refresh.
+
+**Phase 4 remains in progress.** No production promotion, merge to `main`, or Railway change was performed.
