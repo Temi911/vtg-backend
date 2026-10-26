@@ -92,3 +92,14 @@ This phase is **audit-in-progress, not site-wide acceptance**. The current previ
 - Static validation: isolated HTML contains no remaining `href="/frontend-v3.html"`, `href="/signin.html"`, or root-relative CSS/JS/SVG asset references.
 - **Deployment blocker:** attempted to create a separate Vercel project named `vtg-supplier-preview` in the known team, rooted at `supplier-preview`, with deployment disabled until the source bundle is ready. Vercel returned HTTP 403: project creation is not permitted for the current connection. No project was created and no shareable isolated URL exists yet.
 - **Status:** source bundle prepared; true URL-level isolation is not complete until a user with Vercel project-creation permission creates the separate project (root directory `supplier-preview`) and deploys the current redesign branch. Do not share the original main-site preview as if it were isolated. No changes were made to the existing main Vercel project, production deployment, or Railway.
+
+
+## Follow-up verification — 2026-10-26 (supplier preview restored)
+
+- Supplier preview restoration commit: `33e968d454846bad6418355bedbbcb84ad1fa03e` — `Restore normal VTG supplier dashboard navigation after preview`.
+- Vercel deployment `dpl_7894Phzafas77Cq74Fx6ye7tsECW` reached `READY` for this commit. Its preview alias remains on the existing `vtg-backended` project; no production deployment or Railway change was made.
+- `supplier-preview/index.html` is now a minimal redirect to `/supplier-dashboard.html`, ending the temporary isolated-preview entry point without deleting the supplier dashboard or its normal source.
+- Static navigation spot-check covered supplier, buyer, bank, landing, marketplace, Trade Atlas, VTG AI, shared navigation script, and supplier-preview entry page. The normal dashboards still contain their expected Home/sign-in links; the preview entry redirects to the standard supplier dashboard.
+- The GitHub combined status for this commit reports the Vercel check as `success`. No GitHub Actions workflow run was returned for this commit, so do not infer that the full test suite ran.
+- **Still open:** rendered browser QA, responsive/mobile review, console/network inspection, and interactive control/API checks. The connected browser-control session is unavailable for navigation in this session, and external HTTP fetching of the deployment URL could not be independently repeated here. Vercel `READY` confirms deployment status, not end-to-end acceptance.
+- Phase 4 remains **audit-in-progress**. No production merge/promotion or Railway changes.
