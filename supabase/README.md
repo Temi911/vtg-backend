@@ -20,23 +20,52 @@ Base URL:
 `https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-api`
 
 Routes currently implemented:
-- `GET /health` — public health response
+- `GET /health` — checks database connectivity through a lightweight query
+- `GET /products?q=...` — public active product catalogue; RLS limits results to active listings
 - `GET /me` — authenticated profile
-- `GET /products?q=...` — active product catalogue
-- `POST /products` — authenticated supplier product creation; database policies decide whether the user is authorized
-- `GET /orders` — authenticated orders visible under RLS
-- `POST /orders` — authenticated buyer order creation; validates product/supplier match and relies on RLS for role authorization
+- `GET|POST /products` — supplier product catalogue and create
+- `GET|POST /orders` — buyer trade orders
+- `GET|POST /role-requests` — buyer requests supplier or bank access; role remains buyer until an admin approves
+- `GET /shipments` — shipment records visible to order participants or admins
+- `GET|POST /letters-of-credit` — buyer LC requests and participant-scoped reads
+- `GET|POST /conversations` — create and list conversations
+- `GET|POST /messages?conversation_id=...` — participant-scoped messaging
+- `POST /documents` — save metadata after an authenticated upload to private storage
+
+The API delegates authorization to database RLS and validates the user JWT for private routes. This is an initial foundation, not yet a full banking, payment, customs or logistics integration.
 
 All private requests require `Authorization: Bearer <Supabase access token>`. The publishable/anon key may be used by the browser; never expose a service-role key or database password in frontend code.
 
+## Storage buckets
+
+- `vtg-product-images` — public image reads, supplier-folder upload rules, 10 MiB limit.
+- `vtg-trade-documents` — private, participant-scoped documents, 25 MiB limit.
+- `vtg-supplier-verification` — private verification files, 25 MiB limit.
+
+Storage policies restrict writes to owner-specific folders. The website must upload to a path beginning with the signed-in user's UUID and must never expose a service-role key.
+
+## Database foundation
+
+The live Supabase project has these migration entries:
+- `vtg_core_backend_schema`
+- `vtg_profile_privilege_hardening`
+- `vtg_rls_policy_hardening`
+- `vtg_role_requests_and_approval`
+- `vtg_private_storage_buckets`
+- `vtg_security_and_query_indexes`
+- `vtg_public_catalogue_policy_split`
+
+The live database has been provisioned and verified. Before using Supabase CLI migration workflows, export/reconcile the full applied SQL into repository migration files so local, staging and production schemas can be reproduced deterministically.
+
 ## Important next steps
 
-1. Finish the remaining routes (verification review, shipment updates, LC workflows, documents/storage, messaging, admin actions).
-2. Create private Storage buckets and policies for trade and verification documents.
-3. Configure Supabase Auth email templates, redirect URLs and allowed site origins.
-4. Establish the first administrator securely after the owner's account is created; do not allow public signup metadata to assign privileged roles.
-5. Add an integration test suite and test sign-up, role boundaries, product search, order creation, and mobile dashboard workflows.
-6. Add the Supabase client to the existing website and change production routing only after acceptance tests pass.
+1. Smoke-test the deployed Edge Function endpoints and auth failures from a real HTTP client.
+2. Configure Supabase Auth email templates, redirect URLs and allowed site origins.
+3. Establish the first administrator securely after the owner's account is created; do not allow public signup metadata to assign privileged roles.
+4. Add an integration test suite for signup, role requests, RLS boundaries, product search, order creation, messaging and document access.
+5. Wire the existing website to the Supabase client on a preview branch and test each dashboard.
+6. Change production routing only after preview acceptance tests pass.
+7. Build remaining features: admin review UI, verification review, shipment status updates, LC bank review, audit event writes, and integrations with external logistics/banking providers.
 
 ## Secrets
 
