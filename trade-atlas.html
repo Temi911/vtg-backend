@@ -245,7 +245,7 @@ function init(){
      mapStatus.innerHTML='Switching map tile source…';mapStatus.style.display='block';
      try{
       map.removeLayer(baseTiles);
-      const alternate=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+      const alternate=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
        attribution:'&copy; OpenStreetMap contributors &copy; CARTO',subdomains:'abcd',maxZoom:20
       }).addTo(map);
       alternate.on('tileload',()=>{loadedTiles++;mapStatus.style.display='none';});

@@ -14,6 +14,7 @@ html[data-theme=dark]{color-scheme:dark;--bg:#0d1117;--surface:#151b23;--ink:#ee
 <link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
 </head>
 <body><main class="wrap">
+<div class="toolbar" aria-label="Page controls"><button id="theme-toggle" type="button" aria-label="Toggle light and dark mode">Toggle light / dark</button><a href="/frontend-v3.html" style="font-weight:800">VTG Home</a></div>
 
 <section class="hero"><div class="eyebrow">Phase 6 · Africa scale</div><h1>One trade workspace.<br>Country-aware by design.</h1><p class="muted" style="max-width:760px">Explore VTG’s initial Africa market catalogue, including local currency, supported locale references, time zone and reference seaports. Coverage status is shown honestly so planning data is not mistaken for an operational service.</p>
 <div class="notice" role="note"><div aria-hidden="true">ⓘ</div><div><strong>Planning catalogue — not a live logistics feed</strong><span class="muted">Port entries are reference information only. This page does not confirm port operations, carrier schedules, customs requirements, regional representatives, exchange rates or route availability.</span></div></div></section>
@@ -53,6 +54,7 @@ html[data-theme=dark]{color-scheme:dark;--bg:#0d1117;--surface:#151b23;--ink:#ee
   }).join('');
  }
  search.addEventListener('input',render);status.addEventListener('change',render);
+ const themeToggle=document.getElementById('theme-toggle');if(themeToggle){const saved=localStorage.getItem('vtg-theme');if(saved==='dark'||saved==='light')document.documentElement.dataset.theme=saved;themeToggle.addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('vtg-theme',next);});}
  fetch('/api/africa/markets',{headers:{Accept:'application/json'},cache:'no-store'}).then(async r=>{const d=await r.json();if(!r.ok)throw new Error(d.error?.message||'Market catalogue unavailable');if(d.status!=='planning_data'||d.liveProviderData!==false||!Array.isArray(d.markets))throw new Error('The market catalogue returned an unexpected response.');markets=d.markets;render()}).catch(err=>{count.textContent='Catalogue unavailable';list.innerHTML='<div class="state">We could not load the market catalogue. '+esc(err.message)+'<br><br><button type="button" id="retry">Try again</button></div>';document.getElementById('retry').addEventListener('click',()=>location.reload())});
 })();
 </script>
