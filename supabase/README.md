@@ -11,6 +11,7 @@ The Supabase project currently hosts the initial VTG relational schema and the `
 - Row Level Security (RLS): ownership and participant boundaries are enforced in the database.
 - Supabase Edge Functions: the first VTG API surface.
 - Vercel: current public website. The production `vercel.json` rewrite still points to the old Railway host and must not be changed until the replacement routes have been tested.
+- The feature branch connects sign-in and buyer/supplier/bank registration forms to Supabase Auth. Supplier and bank registrations remain buyer-level accounts until an administrator approves the requested role.
 
 ## Edge Function
 
@@ -60,7 +61,7 @@ The live database has been provisioned and its table list, migration history, pr
 ## Important next steps
 
 1. Run `SUPABASE_PUBLISHABLE_KEY=... node scripts/vtg-supabase-smoke.js` from a networked environment to test health/database connectivity, public catalogue access, and anonymous access denial.
-2. Configure Supabase Auth email templates, redirect URLs and allowed site origins.
+2. Configure Supabase Auth email templates, redirect URLs and allowed site origins (including the Vercel production URL and the chosen preview URL) before testing confirmation emails.
 3. Establish the first administrator securely after the owner's account is created; do not allow public signup metadata to assign privileged roles.
 4. Add an integration test suite for signup, role requests, RLS boundaries, product search, order creation, messaging and document access.
 5. Wire the existing website to the Supabase client on a preview branch and test each dashboard.
