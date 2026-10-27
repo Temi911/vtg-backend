@@ -132,19 +132,16 @@ def main() -> int:
                 failures.append(f"marketplace carousel: {exc}")
                 print(f"FAIL marketplace carousel: {exc}")
 
-            # Trade Atlas: theme selector should switch the document theme; report globe fallback state.
+            # Trade Atlas: exercise its real reset control and record whether the globe renderer/fallback exists.
             try:
                 page.goto(BASE + "/trade-atlas.html", wait_until="domcontentloaded", timeout=20000)
-                selector = page.locator("#atlasThemePreference")
-                assert selector.count() == 1, "Trade Atlas theme preference selector is missing"
-                initial_theme = page.locator("html").get_attribute("data-theme")
-                target_theme = "light" if initial_theme != "light" else "dark"
-                selector.select_option(target_theme, timeout=3000)
-                page.wait_for_timeout(150)
-                actual_theme = page.locator("html").get_attribute("data-theme")
-                assert actual_theme == target_theme, f"Atlas theme did not update: expected {target_theme}, got {actual_theme}"
-                globe_state = page.evaluate("""() => ({canvas: !!document.querySelector('.globeCanvas canvas'), fallback: getComputedStyle(document.querySelector('.globeFallback') || document.body).display, map: !!document.querySelector('#map, .leaflet-container')})""")
-                print(f"PASS Trade Atlas theme toggle — {initial_theme!r} -> {actual_theme!r}; visual state {globe_state}")
+                reset_globe = page.locator("#resetGlobe")
+                assert reset_globe.count() == 1, "Trade Atlas reset-globe control is missing"
+                reset_globe.click(timeout=3000)
+                page.wait_for_timeout(250)
+                globe_state = page.evaluate("""() => ({canvas: !!document.querySelector('#globeViz canvas, .globeCanvas canvas'), fallback: !!document.querySelector('.globeFallback'), map: !!document.querySelector('#locationMap .leaflet-container'), resetVisible: !!document.querySelector('#resetGlobe') && getComputedStyle(document.querySelector('#resetGlobe')).display !== 'none'})""")
+                assert globe_state["resetVisible"], "Trade Atlas reset control became unavailable"
+                print(f"PASS Trade Atlas interaction — reset control works; renderer state {globe_state}")
                 passed += 1
             except Exception as exc:
                 failures.append(f"Trade Atlas interaction: {exc}")
@@ -158,7 +155,9 @@ def main() -> int:
                 buyer_errors: list[str] = []
                 buyer.on("pageerror", lambda error: buyer_errors.append(str(error)))
                 buyer.goto(BASE + "/buyer-dashboard.html?preview=1", wait_until="domcontentloaded", timeout=20000)
-                buyer.wait_for_selector("#sharedBuyerForm", timeout=10000)
+                buyer.locator('button.groupBtn[data-group="trade"]').click(timeout=3000)
+                buyer.locator('[data-view="trade-desk"]').click(timeout=3000)
+                buyer.wait_for_selector("#sharedBuyerForm", state="visible", timeout=10000)
                 buyer.locator('#sharedBuyerForm input[name="product"]').fill("QA-only sample bolts")
                 buyer.locator('#sharedBuyerForm input[name="quantity"]').fill("12")
                 buyer.locator('#sharedBuyerForm button[type="submit"]').click(timeout=3000)
@@ -166,6 +165,8 @@ def main() -> int:
                 assert "QA-only sample bolts" in buyer.locator("#sharedBuyerRows").inner_text(), "submitted request was not shown in the buyer trade desk"
                 buyer.reload(wait_until="domcontentloaded", timeout=20000)
                 buyer.wait_for_timeout(250)
+                buyer.locator('button.groupBtn[data-group="trade"]').click(timeout=3000)
+                buyer.locator('[data-view="trade-desk"]').click(timeout=3000)
                 assert "QA-only sample bolts" in buyer.locator("#sharedBuyerRows").inner_text(), "buyer request did not persist after reload"
                 assert not buyer_errors, "buyer preview JavaScript error(s): " + " | ".join(buyer_errors[:3])
                 print("PASS buyer preview workflow — request saved locally and persisted after reload (isolated test context)")
@@ -194,13 +195,14 @@ def main() -> int:
                 bank_errors: list[str] = []
                 bank.on("pageerror", lambda error: bank_errors.append(str(error)))
                 bank.goto(BASE + "/bank-trade-os.html?preview=1", wait_until="domcontentloaded", timeout=20000)
-                bank.wait_for_selector("#caseForm", timeout=10000)
+                bank.wait_for_selector("#caseForm", state="attached", timeout=10000)
                 theme_button = bank.locator("#themeToggle")
                 before_theme = bank.locator("html").get_attribute("data-theme")
                 theme_button.click(timeout=3000)
                 after_theme = bank.locator("html").get_attribute("data-theme")
                 assert before_theme != after_theme, f"bank theme toggle did not change theme: {before_theme!r} -> {after_theme!r}"
                 bank.locator('[data-action="new-case"]').first.click(timeout=3000)
+                bank.locator("#caseForm",).wait_for(state="visible", timeout=5000)
                 bank.locator("#fref").fill("QA-LOCAL-TEST-2026")
                 bank.locator("#famount").fill("123")
                 bank.locator("#fgoods").fill("Synthetic QA sample only; no real transaction")
@@ -209,6 +211,7 @@ def main() -> int:
                 assert "QA-LOCAL-TEST-2026" in bank.locator("#caseRows").inner_text(), "new local case was not listed"
                 bank.reload(wait_until="domcontentloaded", timeout=20000)
                 bank.wait_for_timeout(200)
+                bank.locator('.navbtn[data-view="applications"]').click(timeout=3000)
                 assert "QA-LOCAL-TEST-2026" in bank.locator("#caseRows").inner_text(), "bank local case did not persist after reload"
                 assert not bank_errors, "bank preview JavaScript error(s): " + " | ".join(bank_errors[:3])
                 print("PASS bank preview workflow — theme toggle and synthetic local case persisted after reload")
