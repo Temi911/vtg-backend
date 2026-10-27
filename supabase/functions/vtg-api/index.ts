@@ -7,10 +7,10 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "GET, POST, PATCH, OPTIONS",
   "Content-Type": "application/json; charset=utf-8",
 };
-
 function respond(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: corsHeaders });
 }
+const isText = (value: unknown): value is string => typeof value === "string";
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -19,7 +19,6 @@ Deno.serve(async (req: Request) => {
   const segments = route.split("/").filter(Boolean);
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const apiKey = Deno.env.get("SUPABASE_ANON_KEY") ?? Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
-
   if (!supabaseUrl || !apiKey) return respond({ error: "Backend configuration is incomplete." }, 500);
   if (segments[0] === "health" || route === "") {
     return respond({ service: "VTG API", status: "ok", database: "configured", timestamp: new Date().toISOString() });
@@ -58,17 +57,17 @@ Deno.serve(async (req: Request) => {
 
   if (segments[0] === "products" && req.method === "POST") {
     const body = await req.json().catch(() => null);
-    if (!body || typeof body.name !== "string" || !body.name.trim()) return respond({ error: "Product name is required." }, 400);
+    if (!body || !isText(body.name) || !body.name.trim()) return respond({ error: "Product name is required." }, 400);
     const { data, error } = await supabase.from("products").insert({
       supplier_id: user.id, name: body.name.trim(),
-      category: typeof body.category === "string" ? body.category : null,
-      description: typeof body.description === "string" ? body.description : null,
+      category: isText(body.category) ? body.category : null,
+      description: isText(body.description) ? body.description : null,
       unit_price: Number.isFinite(Number(body.unit_price)) ? Number(body.unit_price) : null,
       currency: ["USD","NGN","CNY","KRW"].includes(body.currency) ? body.currency : "USD",
       minimum_order_quantity: Math.max(1, Math.floor(Number(body.minimum_order_quantity) || 1)),
-      hs_code: typeof body.hs_code === "string" ? body.hs_code : null,
-      origin_country: typeof body.origin_country === "string" ? body.origin_country : null,
-      image_urls: Array.isArray(body.image_urls) ? body.image_urls.filter((x: unknown) => typeof x === "string").slice(0, 10) : [],
+      hs_code: isText(body.hs_code) ? body.hs_code : null,
+      origin_country: isText(body.origin_country) ? body.origin_country : null,
+      image_urls: Array.isArray(body.image_urls) ? body.image_urls.filter((x: unknown) => isText(x)).slice(0, 10) : [],
     }).select().single();
     if (error) return respond({ error: "Product could not be created. Confirm your supplier account is approved." }, 403);
     return respond({ product: data }, 201);
@@ -84,7 +83,7 @@ Deno.serve(async (req: Request) => {
 
   if (segments[0] === "orders" && req.method === "POST") {
     const body = await req.json().catch(() => null);
-    if (!body || typeof body.supplier_id !== "string" || typeof body.product_id !== "string") return respond({ error: "Supplier and product are required." }, 400);
+    if (!body || !isText(body.supplier_id) || !isText(body.product_id)) return respond({ error: "Supplier and product are required." }, 400);
     const quantity = Math.floor(Number(body.quantity));
     if (!Number.isFinite(quantity) || quantity < 1 || quantity > 100000000) return respond({ error: "Quantity must be a positive whole number." }, 400);
     const { data: product, error: productError } = await supabase.from("products")
@@ -93,14 +92,131 @@ Deno.serve(async (req: Request) => {
     const { data, error } = await supabase.from("trade_orders").insert({
       buyer_id: user.id, supplier_id: product.supplier_id, product_id: product.id,
       quantity, unit_price: Number(product.unit_price ?? 0), currency: product.currency,
-      incoterm: typeof body.incoterm === "string" ? body.incoterm : null,
-      origin_port: typeof body.origin_port === "string" ? body.origin_port : null,
-      destination_port: typeof body.destination_port === "string" ? body.destination_port : "Tin Can Island, Lagos",
-      notes: typeof body.notes === "string" ? body.notes : null,
+      incoterm: isText(body.incoterm) ? body.incoterm : null,
+      origin_port: isText(body.origin_port) ? body.origin_port : null,
+      destination_port: isText(body.destination_port) ? body.destination_port : "Tin Can Island, Lagos",
+      notes: isText(body.notes) ? body.notes : null,
     }).select().single();
     if (error) return respond({ error: "Order could not be created. Confirm your account is approved as a buyer." }, 403);
     return respond({ order: data }, 201);
   }
 
-  return respond({ error: "Route not found.", available: ["GET /health", "GET /me", "GET /products", "POST /products", "GET /orders", "POST /orders"] }, 404);
+  if (segments[0] === "role-requests" && req.method === "GET") {
+    const { data, error } = await supabase.from("role_requests")
+      .select("id,requested_role,organization_name,country,registration_reference,message,status,created_at,reviewed_at")
+      .order("created_at", { ascending: false }).limit(50);
+    if (error) return respond({ error: "Could not load role requests." }, 500);
+    return respond({ requests: data ?? [] });
+  }
+
+  if (segments[0] === "role-requests" && req.method === "POST") {
+    const body = await req.json().catch(() => null);
+    if (!body || !["supplier","bank"].includes(body.requested_role) || !isText(body.organization_name) || !body.organization_name.trim()) {
+      return respond({ error: "Choose supplier or bank and provide the organization name." }, 400);
+    }
+    const { data, error } = await supabase.from("role_requests").insert({
+      user_id: user.id, requested_role: body.requested_role, organization_name: body.organization_name.trim(),
+      country: isText(body.country) ? body.country : null,
+      registration_reference: isText(body.registration_reference) ? body.registration_reference : null,
+      message: isText(body.message) ? body.message : null,
+    }).select("id,requested_role,organization_name,status,created_at").single();
+    if (error) return respond({ error: "Role request could not be submitted." }, 403);
+    return respond({ request: data }, 201);
+  }
+
+  if (segments[0] === "shipments" && req.method === "GET") {
+    const { data, error } = await supabase.from("shipments")
+      .select("id,order_id,carrier,tracking_number,container_number,origin_port,destination_port,current_location,status,progress_percent,estimated_arrival,created_at,updated_at")
+      .order("created_at", { ascending: false }).limit(100);
+    if (error) return respond({ error: "Could not load shipments." }, 500);
+    return respond({ shipments: data ?? [] });
+  }
+
+  if (segments[0] === "letters-of-credit" && req.method === "GET") {
+    const { data, error } = await supabase.from("letters_of_credit")
+      .select("id,order_id,buyer_id,supplier_id,bank_id,reference,amount,currency,status,expiry_date,created_at,updated_at")
+      .order("created_at", { ascending: false }).limit(100);
+    if (error) return respond({ error: "Could not load letters of credit." }, 500);
+    return respond({ letters_of_credit: data ?? [] });
+  }
+
+  if (segments[0] === "letters-of-credit" && req.method === "POST") {
+    const body = await req.json().catch(() => null);
+    const amount = Number(body?.amount);
+    if (!body || !isText(body.order_id) || !Number.isFinite(amount) || amount <= 0) return respond({ error: "Order and a positive amount are required." }, 400);
+    const { data: order, error: orderError } = await supabase.from("trade_orders")
+      .select("id,buyer_id,supplier_id,currency").eq("id", body.order_id).maybeSingle();
+    if (orderError || !order || order.buyer_id !== user.id) return respond({ error: "Only the order's buyer can request a letter of credit." }, 403);
+    const { data, error } = await supabase.from("letters_of_credit").insert({
+      order_id: order.id, buyer_id: user.id, supplier_id: order.supplier_id,
+      amount, currency: ["USD","NGN","CNY","KRW"].includes(body.currency) ? body.currency : order.currency,
+      expiry_date: isText(body.expiry_date) ? body.expiry_date : null,
+    }).select().single();
+    if (error) return respond({ error: "Letter of credit request could not be created." }, 403);
+    return respond({ letter_of_credit: data }, 201);
+  }
+
+  if (segments[0] === "conversations" && req.method === "GET") {
+    const { data, error } = await supabase.from("conversations")
+      .select("id,order_id,created_by,created_at").order("created_at", { ascending: false }).limit(100);
+    if (error) return respond({ error: "Could not load conversations." }, 500);
+    return respond({ conversations: data ?? [] });
+  }
+
+  if (segments[0] === "conversations" && req.method === "POST") {
+    const body = await req.json().catch(() => null);
+    if (!body || !isText(body.participant_id) || body.participant_id === user.id) return respond({ error: "A different participant is required." }, 400);
+    const { data: conversation, error: createError } = await supabase.from("conversations")
+      .insert({ created_by: user.id, order_id: isText(body.order_id) ? body.order_id : null }).select().single();
+    if (createError || !conversation) return respond({ error: "Conversation could not be created." }, 403);
+    const { error: participantError } = await supabase.from("conversation_participants").insert([
+      { conversation_id: conversation.id, user_id: user.id },
+      { conversation_id: conversation.id, user_id: body.participant_id },
+    ]);
+    if (participantError) return respond({ error: "Conversation created but participant setup failed." }, 500);
+    return respond({ conversation }, 201);
+  }
+
+  if (segments[0] === "messages" && req.method === "GET") {
+    const conversationId = url.searchParams.get("conversation_id");
+    if (!conversationId) return respond({ error: "conversation_id is required." }, 400);
+    const { data, error } = await supabase.from("messages")
+      .select("id,conversation_id,sender_id,body,read_at,created_at")
+      .eq("conversation_id", conversationId).order("created_at", { ascending: true }).limit(200);
+    if (error) return respond({ error: "Could not load messages. Confirm you are a conversation participant." }, 403);
+    return respond({ messages: data ?? [] });
+  }
+
+  if (segments[0] === "messages" && req.method === "POST") {
+    const body = await req.json().catch(() => null);
+    if (!body || !isText(body.conversation_id) || !isText(body.body) || !body.body.trim() || body.body.length > 10000) {
+      return respond({ error: "Conversation and message text are required (maximum 10,000 characters)." }, 400);
+    }
+    const { data, error } = await supabase.from("messages")
+      .insert({ conversation_id: body.conversation_id, sender_id: user.id, body: body.body.trim() })
+      .select("id,conversation_id,sender_id,body,read_at,created_at").single();
+    if (error) return respond({ error: "Message could not be sent. Confirm you are a conversation participant." }, 403);
+    return respond({ message: data }, 201);
+  }
+
+  if (segments[0] === "documents" && req.method === "POST") {
+    const body = await req.json().catch(() => null);
+    if (!body || !isText(body.storage_path) || !body.storage_path.startsWith(`${user.id}/`) || !isText(body.file_name) || !isText(body.document_type)) {
+      return respond({ error: "Document path, file name and document type are required; use your own private storage folder." }, 400);
+    }
+    const { data, error } = await supabase.from("trade_documents").insert({
+      owner_id: user.id, order_id: isText(body.order_id) ? body.order_id : null,
+      document_type: body.document_type, storage_path: body.storage_path,
+      file_name: body.file_name, mime_type: isText(body.mime_type) ? body.mime_type : null,
+      file_size_bytes: Number.isFinite(Number(body.file_size_bytes)) ? Number(body.file_size_bytes) : null,
+    }).select("id,owner_id,order_id,document_type,storage_path,file_name,status,created_at").single();
+    if (error) return respond({ error: "Document metadata could not be saved." }, 403);
+    return respond({ document: data }, 201);
+  }
+
+  return respond({ error: "Route not found.", available: [
+    "GET /health", "GET /me", "GET|POST /products", "GET|POST /orders",
+    "GET|POST /role-requests", "GET /shipments", "GET|POST /letters-of-credit",
+    "GET|POST /conversations", "GET|POST /messages?conversation_id=...", "POST /documents"
+  ] }, 404);
 });
