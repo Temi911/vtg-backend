@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: vtg-browser-acceptance-${{ github.workflow }}-${{ github.ref }}
+  group: vtg-browser-acceptance-${{ github.workflow }}-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
