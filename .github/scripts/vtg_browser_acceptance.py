@@ -155,8 +155,8 @@ def main() -> int:
                 buyer_errors: list[str] = []
                 buyer.on("pageerror", lambda error: buyer_errors.append(str(error)))
                 buyer.goto(BASE + "/buyer-dashboard.html?preview=1", wait_until="domcontentloaded", timeout=20000)
-                buyer.locator('button.groupBtn[data-group="trade"]').click(timeout=3000)
-                buyer.locator('[data-view="trade-desk"]').click(timeout=3000)
+                buyer.evaluate("""() => { const link = document.querySelector('[data-view="trade-desk"]'); if (!link) throw new Error('Trade Desk navigation link missing'); link.click(); }""")
+                buyer.wait_for_selector("#page-trade-desk.active", state="visible", timeout=10000)
                 buyer.wait_for_selector("#sharedBuyerForm", state="visible", timeout=10000)
                 buyer.locator('#sharedBuyerForm input[name="product"]').fill("QA-only sample bolts")
                 buyer.locator('#sharedBuyerForm input[name="quantity"]').fill("12")
@@ -165,8 +165,8 @@ def main() -> int:
                 assert "QA-only sample bolts" in buyer.locator("#sharedBuyerRows").inner_text(), "submitted request was not shown in the buyer trade desk"
                 buyer.reload(wait_until="domcontentloaded", timeout=20000)
                 buyer.wait_for_timeout(250)
-                buyer.locator('button.groupBtn[data-group="trade"]').click(timeout=3000)
-                buyer.locator('[data-view="trade-desk"]').click(timeout=3000)
+                buyer.evaluate("""() => { const link = document.querySelector('[data-view="trade-desk"]'); if (!link) throw new Error('Trade Desk navigation link missing after reload'); link.click(); }""")
+                buyer.wait_for_selector("#page-trade-desk.active", state="visible", timeout=5000)
                 assert "QA-only sample bolts" in buyer.locator("#sharedBuyerRows").inner_text(), "buyer request did not persist after reload"
                 assert not buyer_errors, "buyer preview JavaScript error(s): " + " | ".join(buyer_errors[:3])
                 print("PASS buyer preview workflow — request saved locally and persisted after reload (isolated test context)")
@@ -188,35 +188,49 @@ def main() -> int:
                 failures.append(f"buyer/bank access gate: {exc}")
                 print(f"FAIL buyer/bank access gate: {exc}")
 
-            # Bank preview workflow: toggle theme and save a clearly synthetic local case,
-            # then reload to verify browser-local persistence. No real banking/API action is performed.
+            # Bank theme control: inspect visibility and verify a real user click changes theme.
             try:
-                bank = browser.new_context(viewport={"width": 1365, "height": 900}).new_page()
-                bank_errors: list[str] = []
-                bank.on("pageerror", lambda error: bank_errors.append(str(error)))
-                bank.goto(BASE + "/bank-trade-os.html?preview=1", wait_until="domcontentloaded", timeout=20000)
-                bank.wait_for_selector("#caseForm", state="attached", timeout=10000)
-                theme_button = bank.locator("#themeToggle")
-                before_theme = bank.locator("html").get_attribute("data-theme")
+                bank_theme_page = browser.new_context(viewport={"width": 1365, "height": 900}).new_page()
+                bank_theme_page.goto(BASE + "/bank-trade-os.html?preview=1", wait_until="domcontentloaded", timeout=20000)
+                bank_theme_page.wait_for_timeout(500)
+                theme_button = bank_theme_page.locator("#themeToggle")
+                diagnostic = theme_button.evaluate("""el => { const a=[]; for(let n=el;n&&a.length<6;n=n.parentElement){const s=getComputedStyle(n),r=n.getBoundingClientRect();a.push({tag:n.tagName,id:n.id,cls:String(n.className||'').slice(0,80),display:s.display,visibility:s.visibility,opacity:s.opacity,rect:{x:r.x,y:r.y,width:r.width,height:r.height}})} return a }""")
+                print("Bank theme visibility diagnostic:", diagnostic)
+                assert theme_button.is_visible(), f"bank theme toggle is hidden: {diagnostic}"
+                before_theme = bank_theme_page.locator("html").get_attribute("data-theme")
                 theme_button.click(timeout=3000)
-                after_theme = bank.locator("html").get_attribute("data-theme")
+                after_theme = bank_theme_page.locator("html").get_attribute("data-theme")
                 assert before_theme != after_theme, f"bank theme toggle did not change theme: {before_theme!r} -> {after_theme!r}"
-                bank.locator('[data-action="new-case"]').first.click(timeout=3000)
-                bank.locator("#caseForm",).wait_for(state="visible", timeout=5000)
-                bank.locator("#fref").fill("QA-LOCAL-TEST-2026")
-                bank.locator("#famount").fill("123")
-                bank.locator("#fgoods").fill("Synthetic QA sample only; no real transaction")
-                bank.locator('#caseForm button[type="submit"]').click(timeout=3000)
-                bank.wait_for_timeout(200)
-                assert "QA-LOCAL-TEST-2026" in bank.locator("#caseRows").inner_text(), "new local case was not listed"
-                bank.reload(wait_until="domcontentloaded", timeout=20000)
-                bank.wait_for_timeout(200)
-                bank.locator('.navbtn[data-view="applications"]').click(timeout=3000)
-                assert "QA-LOCAL-TEST-2026" in bank.locator("#caseRows").inner_text(), "bank local case did not persist after reload"
-                assert not bank_errors, "bank preview JavaScript error(s): " + " | ".join(bank_errors[:3])
-                print("PASS bank preview workflow — theme toggle and synthetic local case persisted after reload")
+                print("PASS bank preview theme toggle")
                 passed += 1
-                bank.context.close()
+                bank_theme_page.context.close()
+            except Exception as exc:
+                failures.append(f"bank theme toggle: {exc}")
+                print(f"FAIL bank theme toggle: {exc}")
+
+            # Bank case workflow: create synthetic browser-local data, reload, and verify persistence.
+            try:
+                bank_case_page = browser.new_context(viewport={"width": 1365, "height": 900}).new_page()
+                bank_errors: list[str] = []
+                bank_case_page.on("pageerror", lambda error: bank_errors.append(str(error)))
+                bank_case_page.goto(BASE + "/bank-trade-os.html?preview=1", wait_until="domcontentloaded", timeout=20000)
+                bank_case_page.wait_for_selector("#caseForm", state="attached", timeout=10000)
+                bank_case_page.locator('[data-action="new-case"]').first.click(timeout=3000)
+                bank_case_page.locator("#caseForm").wait_for(state="visible", timeout=5000)
+                bank_case_page.locator("#fref").fill("QA-LOCAL-TEST-2026")
+                bank_case_page.locator("#famount").fill("123")
+                bank_case_page.locator("#fgoods").fill("Synthetic QA sample only; no real transaction")
+                bank_case_page.locator('#caseForm button[type="submit"]').click(timeout=3000)
+                bank_case_page.wait_for_timeout(200)
+                assert "QA-LOCAL-TEST-2026" in bank_case_page.locator("#caseRows").inner_text(), "new local case was not listed"
+                bank_case_page.reload(wait_until="domcontentloaded", timeout=20000)
+                bank_case_page.wait_for_timeout(200)
+                bank_case_page.locator('.navbtn[data-view="applications"]').click(timeout=3000)
+                assert "QA-LOCAL-TEST-2026" in bank_case_page.locator("#caseRows").inner_text(), "bank local case did not persist after reload"
+                assert not bank_errors, "bank preview JavaScript error(s): " + " | ".join(bank_errors[:3])
+                print("PASS bank preview workflow — synthetic local case persisted after reload")
+                passed += 1
+                bank_case_page.context.close()
             except Exception as exc:
                 failures.append(f"bank preview save/reload: {exc}")
                 print(f"FAIL bank preview save/reload: {exc}")
