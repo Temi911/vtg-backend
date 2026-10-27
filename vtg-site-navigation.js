@@ -187,7 +187,8 @@
   }
   function isWorkspaceDashboardPage() {
     var path = (window.location.pathname || '').toLowerCase();
-    return /(?:^|\/)[^/]*dashboard[^/]*\.html$/.test(path) || /(?:^|\/)(?:bank-trade-os|trade-os|inspection-admin)\.html$/.test(path);
+    var isBankWorkspace = path.endsWith('/bank-trade-os.html');
+    return /(?:^|\/)[^/]*dashboard[^/]*\.html$/.test(path) || isBankWorkspace || /(?:^|\/)(?:trade-os|inspection-admin)\.html$/.test(path);
   }
   function hasDownstreamPageLinks() {
     if (isHomePage() || isWorkspaceDashboardPage()) return true;
