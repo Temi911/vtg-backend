@@ -71,3 +71,11 @@ The live database has been provisioned and its table list, migration history, pr
 ## Secrets
 
 Keep all server-side credentials in managed environment variables. Never commit database connection strings, JWT secrets, SMTP credentials, private API keys or service-role keys.
+
+
+## Live rollout blockers (checked 2026-10-27)
+
+- **HTTP smoke tests:** the deployed `/me` route correctly rejects anonymous access with HTTP 401. The health route returns HTTP 503 and public `/products` returns HTTP 500. PostgreSQL logs identify the catalogue cause as missing `SELECT` privileges for the `anon` role on `public.products`. The active-product RLS policy exists, but a policy alone does not grant table privileges. Apply a reviewed, least-privilege `SELECT` grant for the catalogue in the Supabase SQL Editor, then rerun the workflow at [VTG Supabase API smoke tests](https://github.com/Temi911/vtg-backend/actions/workflows/vtg-supabase-smoke.yml).
+- **Auth URLs:** Supabase project dashboard > Authentication > URL Configuration. Set the Site URL to `https://vtg-backended.vercel.app`; add redirect URLs for `https://vtg-backended.vercel.app/**`, `https://vtg-staging.vercel.app/**`, `https://*-olanrewajutope80-7999s-projects.vercel.app/**`, and `http://localhost:3000/**`. Verify email confirmation is enabled and that the confirmation email template uses the configured redirect destination.
+- **First administrator:** first register and confirm `vintageafricatrade@gmail.com`. Then perform a reviewed one-time bootstrap from the Supabase SQL Editor, after verifying no administrator already exists. Never assign administrator roles from public signup metadata or expose a service-role key to the browser.
+- **Website integration:** the existing buyer/supplier/bank dashboards still call many legacy `/api/*` endpoints that are not yet implemented in `vtg-api`. Production routing remains on the existing target intentionally; do not switch or retire Railway until route compatibility and end-to-end tests pass.
