@@ -196,3 +196,22 @@ The unusual `/frontend-v3.html/` destination also returned HTTP 200 and served t
 
 ### Acceptance boundary
 This closes the **destination-existence** portion of the public-link audit for the listed routes. It does not establish that every link is visually correct, that forms submit successfully, or that dashboard actions work. Rendered-browser navigation, mobile checks, console/network inspection and API-backed workflow checks remain outstanding. Phase 4 remains open.
+
+
+## Phase 4 live preview acceptance pass — 2026-10-27 (continued)
+
+### Executed checks
+- [x] Fetched live preview HTML for supplier, buyer, bank, admin, Trade Atlas, marketplace, VTG AI, and supplier-preview entry routes. All returned HTTP 200 with expected page titles.
+- [x] Fetched shared dashboard/public JavaScript and CSS dependencies: `vtg-shipment-globe.js`, `vtg-buyer-atlas.js`, `vtg-dashboard-footer.js`, `admin-trust-risk.js`, `vtg-site-navigation.js`, `vtg-visual-product-search.js`, `vtg-typography.css`, and `vtg-dashboard-typography.css`. All returned HTTP 200.
+- [x] Checked dashboard header's Home destination and the configured workspace route list in the deployed shared footer script. The Home link targets `/frontend-v3.html`.
+- [x] Checked dashboard Home/workspace destinations: landing, buyer preview, supplier, bank preview, admin preview, workforce preview, agent preview, VTG AI dashboard, and supplier sign-in returned HTTP 200. One additional agent-network route fetch was blocked by the fetch service and remains unverified.
+- [x] Rechecked the supplier-preview entry: it returns a minimal redirect page pointing to `/supplier-dashboard.html`; this is the intended restored, non-isolated behaviour.
+- [!] API smoke checks failed through the deployed Vercel rewrite: `/api/products/mine`, `/api/orders`, `/api/marketplace/feed?limit=1`, `/api/market-intelligence/news?limit=1`, `/api/health`, and `/api/healthz` returned HTTP 404 with `Application not found`. The current `vercel.json` routes `/api/:path*` to `https://vtg-backend-production-ab20.up.railway.app/api/:path*`. This indicates the current API destination/route is not serving these requests; it does not prove whether the Railway service itself is stopped or whether its hostname/path has changed.
+
+### Important acceptance limits
+- Browser-control access remains unavailable in this session, so actual clicks, JS execution, rendered visual review, mobile viewport behaviour, console/network panel inspection, keyboard focus, and authenticated workflows were not run. These are still open—not passed.
+- No website source code was changed during this test pass. No production promotion, merge to `main`, or Railway changes were made. Railway remains on hold as requested.
+- The API failure is a confirmed blocker for live dashboard functionality. Resolve the backend endpoint/route in a separately approved Railway/API task before claiming live products, orders, marketplace feed, or market news are operational.
+
+### Phase 4 disposition
+Phase 4 remains **in progress**. Static and HTTP route/assets checks largely pass, but live API smoke checks fail and browser acceptance remains blocked.
