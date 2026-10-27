@@ -171,3 +171,28 @@ The preview entry returns a small HTML page that sets a meta refresh and calls `
 These checks are HTTP/source checks, not rendered-browser acceptance. Interactive Home/Previous clicks, dashboard controls, mobile layout, theme contrast, console/network errors, keyboard/accessibility behaviour, and authenticated API workflows remain open. The connected browser tool in this session exposes tab reading but not interactive navigation/click control. A Vercel deployment-list request was denied by the connected account, so this follow-up does not claim an independent deployment-metadata refresh.
 
 **Phase 4 remains in progress.** No production promotion, merge to `main`, or Railway change was performed.
+
+## Phase 4 — Public navigation destination audit — 2026-10-27
+
+### Result
+Followed up the local destinations flagged by the landing page and bank dashboard source scan. The previously unmatched public links were present in the current preview deployment and returned HTTP 200:
+
+- [x] `/africa-markets.html`
+- [x] `/product-verification.html`
+- [x] `/logistics-shipping.html`
+- [x] `/sourcing-suppliers.html`
+- [x] `/finance-payments.html`
+- [x] `/trade-guide.html`
+- [x] `/agent.html`
+- [x] `/about-vintage.html`
+- [x] `/partnerships.html`
+- [x] `/contact.html`
+- [x] `/workforce-access.html`
+- [x] `/privacy.html`
+- [x] `/terms.html`
+- [x] `/code-of-conduct.html`
+
+The unusual `/frontend-v3.html/` destination also returned HTTP 200 and served the landing page, but it appears to be a source-pattern false positive rather than a confirmed user-facing link. No route was changed based only on this result.
+
+### Acceptance boundary
+This closes the **destination-existence** portion of the public-link audit for the listed routes. It does not establish that every link is visually correct, that forms submit successfully, or that dashboard actions work. Rendered-browser navigation, mobile checks, console/network inspection and API-backed workflow checks remain outstanding. Phase 4 remains open.
