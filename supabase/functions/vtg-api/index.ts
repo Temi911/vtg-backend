@@ -15,8 +15,10 @@ const isText = (value: unknown): value is string => typeof value === "string";
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   const url = new URL(req.url);
-  const route = url.pathname.replace(/^.*\/vtg-api/, "").replace(/^\/+/, "");
+  const route = url.pathname.replace(/^.*\/vtg-api/, "").replace(/^\/+/, "").replace(/^api\/?/, "");
   const segments = route.split("/").filter(Boolean);
+  // Compatibility aliases used by the existing VTG dashboards.
+  if (segments[0] === "lc") segments[0] = "letters-of-credit";
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const apiKey = Deno.env.get("SUPABASE_ANON_KEY") ?? Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
   if (!supabaseUrl || !apiKey) return respond({ error: "Backend configuration is incomplete." }, 500);
@@ -49,6 +51,16 @@ Deno.serve(async (req: Request) => {
     : { data: { user: null }, error: new Error("Authentication required") };
   const user = authData?.user;
   if (authError || !user) return respond({ error: "Authentication required." }, 401);
+
+  if (segments[0] === "market" && segments[1] === "dashboard" && req.method === "GET") {
+    const [productsResult, ordersResult, shipmentsResult] = await Promise.all([
+      supabase.from("products").select("id", { count: "exact", head: true }).eq("is_active", true),
+      supabase.from("trade_orders").select("id", { count: "exact", head: true }),
+      supabase.from("shipments").select("id", { count: "exact", head: true }),
+    ]);
+    if (productsResult.error || ordersResult.error || shipmentsResult.error) return respond({ error: "Could not load trade dashboard summary." }, 500);
+    return respond({ products: productsResult.count ?? 0, orders: ordersResult.count ?? 0, shipments: shipmentsResult.count ?? 0 });
+  }
 
   if (segments[0] === "me" && req.method === "GET") {
     const { data, error } = await supabase.from("profiles")
@@ -138,6 +150,14 @@ Deno.serve(async (req: Request) => {
     return respond({ request: data }, 201);
   }
 
+  if (segments[0] === "shipments" && segments[1] === "order" && segments[2] && req.method === "GET") {
+    const { data, error } = await supabase.from("shipments")
+      .select("id,order_id,carrier,tracking_number,container_number,origin_port,destination_port,current_location,status,progress_percent,estimated_arrival,created_at,updated_at")
+      .eq("order_id", segments[2]).order("created_at", { ascending: false }).limit(1);
+    if (error) return respond({ error: "Could not load shipment for this order." }, 500);
+    return respond({ shipment: data?.[0] ?? null, events: [] });
+  }
+
   if (segments[0] === "shipments" && req.method === "GET") {
     const { data, error } = await supabase.from("shipments")
       .select("id,order_id,carrier,tracking_number,container_number,origin_port,destination_port,current_location,status,progress_percent,estimated_arrival,created_at,updated_at")
@@ -193,12 +213,38 @@ Deno.serve(async (req: Request) => {
 
   if (segments[0] === "messages" && req.method === "GET") {
     const conversationId = url.searchParams.get("conversation_id");
-    if (!conversationId) return respond({ error: "conversation_id is required." }, 400);
-    const { data, error } = await supabase.from("messages")
-      .select("id,conversation_id,sender_id,body,read_at,created_at")
-      .eq("conversation_id", conversationId).order("created_at", { ascending: true }).limit(200);
-    if (error) return respond({ error: "Could not load messages. Confirm you are a conversation participant." }, 403);
-    return respond({ messages: data ?? [] });
+    if (conversationId) {
+      const { data, error } = await supabase.from("messages")
+        .select("id,conversation_id,sender_id,body,read_at,created_at")
+        .eq("conversation_id", conversationId).order("created_at", { ascending: true }).limit(200);
+      if (error) return respond({ error: "Could not load messages. Confirm you are a conversation participant." }, 403);
+      return respond({ messages: data ?? [] });
+    }
+    const { data: memberships, error: membershipError } = await supabase.from("conversation_participants")
+      .select("conversation_id").eq("user_id", user.id).limit(100);
+    if (membershipError) return respond({ error: "Could not load conversation membership." }, 403);
+    const ids = (memberships ?? []).map(m => m.conversation_id);
+    if (!ids.length) return respond({ conversations: [] });
+    const { data: conversations, error: conversationError } = await supabase.from("conversations")
+      .select("id,order_id,created_by,created_at").in("id", ids).order("created_at", { ascending: false }).limit(100);
+    if (conversationError) return respond({ error: "Could not load conversations." }, 403);
+    const { data: allMessages } = await supabase.from("messages")
+      .select("id,conversation_id,sender_id,body,read_at,created_at").in("conversation_id", ids)
+      .order("created_at", { ascending: false }).limit(300);
+    const latest = new Map();
+    for (const message of allMessages ?? []) if (!latest.has(message.conversation_id)) latest.set(message.conversation_id, message);
+    const orderIds = [...new Set((conversations ?? []).map(x => x.order_id).filter(Boolean))];
+    let ordersById = new Map();
+    if (orderIds.length) {
+      const { data: orders } = await supabase.from("trade_orders").select("id,reference").in("id", orderIds);
+      ordersById = new Map((orders ?? []).map(o => [o.id, o.reference]));
+    }
+    return respond({ conversations: (conversations ?? []).map(conversation => ({
+      ...conversation,
+      order_reference: ordersById.get(conversation.order_id) ?? null,
+      last_message: latest.get(conversation.id)?.body ?? null,
+      unread_count: 0,
+    })) });
   }
 
   if (segments[0] === "messages" && req.method === "POST") {
@@ -211,6 +257,14 @@ Deno.serve(async (req: Request) => {
       .select("id,conversation_id,sender_id,body,read_at,created_at").single();
     if (error) return respond({ error: "Message could not be sent. Confirm you are a conversation participant." }, 403);
     return respond({ message: data }, 201);
+  }
+
+  if (segments[0] === "documents" && segments[1] === "order" && segments[2] && req.method === "GET") {
+    const { data, error } = await supabase.from("trade_documents")
+      .select("id,owner_id,order_id,document_type,storage_path,file_name,mime_type,file_size_bytes,status,created_at")
+      .eq("order_id", segments[2]).order("created_at", { ascending: false }).limit(100);
+    if (error) return respond({ error: "Could not load documents for this order." }, 403);
+    return respond({ documents: (data ?? []).map(d => ({ ...d, doc_type: d.document_type, uploaded_at: d.created_at })) });
   }
 
   if (segments[0] === "documents" && req.method === "POST") {
