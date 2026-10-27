@@ -107,7 +107,8 @@ def main() -> int:
                 page.wait_for_timeout(150)
                 after = page.locator("html").get_attribute("data-theme")
                 assert before != after, f"theme toggle did not change theme ({before!r} -> {after!r})"
-                page.locator('[data-page="tasks"]').click()
+                page.locator('button.groupBtn[data-group="workspace"]').click(timeout=3000)
+                page.locator('[data-page="tasks"]').click(timeout=3000)
                 assert page.locator("#page-tasks").is_visible(), "Tasks navigation did not show its panel"
                 print("PASS supplier interactions — theme toggle and Tasks navigation")
                 passed += 1
