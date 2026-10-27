@@ -20,16 +20,30 @@ Deno.serve(async (req: Request) => {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const apiKey = Deno.env.get("SUPABASE_ANON_KEY") ?? Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
   if (!supabaseUrl || !apiKey) return respond({ error: "Backend configuration is incomplete." }, 500);
-  if (segments[0] === "health" || route === "") {
-    return respond({ service: "VTG API", status: "ok", database: "configured", timestamp: new Date().toISOString() });
-  }
-
   const authHeader = req.headers.get("Authorization") ?? "";
   const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
   const supabase = createClient(supabaseUrl, apiKey, {
     global: { headers: token ? { Authorization: `Bearer ${token}` } : {} },
     auth: { persistSession: false, autoRefreshToken: false },
   });
+
+  if (segments[0] === "health" || route === "") {
+    const { error } = await supabase.from("products").select("id", { head: true, count: "exact" });
+    if (error) return respond({ service: "VTG API", status: "degraded", database: "unavailable" }, 503);
+    return respond({ service: "VTG API", status: "ok", database: "connected", timestamp: new Date().toISOString() });
+  }
+
+  // Product discovery is intentionally public; database RLS limits this to active listings.
+  if (segments[0] === "products" && req.method === "GET") {
+    const search = url.searchParams.get("q");
+    let query = supabase.from("products")
+      .select("id,supplier_id,name,category,description,unit_price,currency,minimum_order_quantity,hs_code,lead_time_days,origin_country,image_urls,is_verified,created_at")
+      .eq("is_active", true).order("created_at", { ascending: false }).limit(100);
+    if (search) query = query.ilike("name", `%${search.replace(/[,%()]/g, "")}%`);
+    const { data, error } = await query;
+    if (error) return respond({ error: "Could not load products." }, 500);
+    return respond({ products: data ?? [] });
+  }
   const { data: authData, error: authError } = token
     ? await supabase.auth.getUser(token)
     : { data: { user: null }, error: new Error("Authentication required") };
