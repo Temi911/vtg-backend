@@ -58,17 +58,28 @@ def main() -> int:
             page = desktop.new_page()
             page_errors: list[str] = []
             bad_local_assets: list[str] = []
+            bad_local_responses: list[str] = []
+            external_network_diagnostics: list[str] = []
             page.on("pageerror", lambda error: page_errors.append(f"{error} | {error.stack}"))
             page.on(
                 "requestfailed",
                 lambda request: bad_local_assets.append(request.url)
                 if request.url.startswith(BASE + "/") and "/api/" not in request.url
+                else external_network_diagnostics.append("request failed: " + request.url),
+            )
+            page.on(
+                "response",
+                lambda response: bad_local_responses.append(f"{response.status} {response.url}")
+                if response.status >= 400 and response.url.startswith(BASE + "/")
+                else external_network_diagnostics.append(f"HTTP {response.status} {response.url}")
+                if response.status >= 400
                 else None,
             )
 
             for route in ROUTES:
                 page_errors.clear()
                 bad_local_assets.clear()
+                bad_local_responses.clear()
                 try:
                     response = page.goto(BASE + route, wait_until="domcontentloaded", timeout=20000)
                     page.wait_for_timeout(500)
@@ -79,6 +90,7 @@ def main() -> int:
                     assert len(body) >= 20, "page body is unexpectedly empty"
                     assert not page_errors, "uncaught JavaScript error(s): " + " | ".join(page_errors[:3])
                     assert not bad_local_assets, "failed local asset request(s): " + " | ".join(bad_local_assets[:3])
+                    assert not bad_local_responses, "local HTTP error response(s): " + " | ".join(bad_local_responses[:3])
                     print(f"PASS route {route} — {title}")
                     passed += 1
                 except Exception as exc:
@@ -193,7 +205,7 @@ def main() -> int:
                 bank_theme_page = browser.new_context(viewport={"width": 1365, "height": 900}).new_page()
                 bank_theme_page.goto(BASE + "/bank-trade-os.html?preview=1", wait_until="domcontentloaded", timeout=20000)
                 bank_theme_page.wait_for_timeout(500)
-                theme_button = bank_theme_page.locator("#themeToggle")
+                theme_button = bank_theme_page.locator("#vf-theme-toggle")
                 diagnostic = theme_button.evaluate("""el => { const a=[]; for(let n=el;n&&a.length<6;n=n.parentElement){const s=getComputedStyle(n),r=n.getBoundingClientRect();a.push({tag:n.tagName,id:n.id,cls:String(n.className||'').slice(0,80),display:s.display,visibility:s.visibility,opacity:s.opacity,rect:{x:r.x,y:r.y,width:r.width,height:r.height}})} return a }""")
                 print("Bank theme visibility diagnostic:", diagnostic)
                 assert theme_button.is_visible(), f"bank theme toggle is hidden: {diagnostic}"
@@ -225,6 +237,7 @@ def main() -> int:
                 assert "QA-LOCAL-TEST-2026" in bank_case_page.locator("#caseRows").inner_text(), "new local case was not listed"
                 bank_case_page.reload(wait_until="domcontentloaded", timeout=20000)
                 bank_case_page.wait_for_timeout(200)
+                bank_case_page.locator('button.navgroup-toggle[data-navgroup="workspace"]').click(timeout=3000)
                 bank_case_page.locator('.navbtn[data-view="applications"]').click(timeout=3000)
                 assert "QA-LOCAL-TEST-2026" in bank_case_page.locator("#caseRows").inner_text(), "bank local case did not persist after reload"
                 assert not bank_errors, "bank preview JavaScript error(s): " + " | ".join(bank_errors[:3])
@@ -270,6 +283,7 @@ def main() -> int:
         server.shutdown()
         server.server_close()
 
+    print("External network diagnostics (review each; third-party failures may be transient):", external_network_diagnostics[:30])
     print(f"\nVTG browser acceptance: {passed} checks passed; {len(failures)} failed.")
     if failures:
         for failure in failures:
