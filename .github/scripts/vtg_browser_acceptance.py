@@ -58,7 +58,7 @@ def main() -> int:
             page = desktop.new_page()
             page_errors: list[str] = []
             bad_local_assets: list[str] = []
-            page.on("pageerror", lambda error: page_errors.append(str(error)))
+            page.on("pageerror", lambda error: page_errors.append(f"{error} | {error.stack}"))
             page.on(
                 "requestfailed",
                 lambda request: bad_local_assets.append(request.url)
@@ -90,8 +90,16 @@ def main() -> int:
                 page.goto(BASE + "/supplier-dashboard.html", wait_until="domcontentloaded", timeout=20000)
                 theme = page.locator("#themeToggle")
                 assert theme.count() == 1, "supplier theme toggle is missing"
+                visibility = theme.evaluate("""el => {
+                  const s = getComputedStyle(el), r = el.getBoundingClientRect();
+                  return {display:s.display,visibility:s.visibility,opacity:s.opacity,
+                    rect:{x:r.x,y:r.y,width:r.width,height:r.height},
+                    parent:el.parentElement?.outerHTML?.slice(0,500)};
+                }""")
+                print("Supplier theme control diagnostic:", visibility)
+                assert theme.is_visible(), f"supplier theme toggle is not visible: {visibility}"
                 before = page.locator("html").get_attribute("data-theme")
-                theme.click()
+                theme.click(timeout=3000)
                 page.wait_for_timeout(150)
                 after = page.locator("html").get_attribute("data-theme")
                 assert before != after, f"theme toggle did not change theme ({before!r} -> {after!r})"
