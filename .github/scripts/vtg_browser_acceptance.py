@@ -187,6 +187,51 @@ def main() -> int:
                 failures.append(f"buyer/bank access gate: {exc}")
                 print(f"FAIL buyer/bank access gate: {exc}")
 
+            # Bank preview workflow: toggle theme and save a clearly synthetic local case,
+            # then reload to verify browser-local persistence. No real banking/API action is performed.
+            try:
+                bank = browser.new_context(viewport={"width": 1365, "height": 900}).new_page()
+                bank_errors: list[str] = []
+                bank.on("pageerror", lambda error: bank_errors.append(str(error)))
+                bank.goto(BASE + "/bank-trade-os.html?preview=1", wait_until="domcontentloaded", timeout=20000)
+                bank.wait_for_selector("#caseForm", timeout=10000)
+                theme_button = bank.locator("#themeToggle")
+                before_theme = bank.locator("html").get_attribute("data-theme")
+                theme_button.click(timeout=3000)
+                after_theme = bank.locator("html").get_attribute("data-theme")
+                assert before_theme != after_theme, f"bank theme toggle did not change theme: {before_theme!r} -> {after_theme!r}"
+                bank.locator('[data-action="new-case"]').first.click(timeout=3000)
+                bank.locator("#fref").fill("QA-LOCAL-TEST-2026")
+                bank.locator("#famount").fill("123")
+                bank.locator("#fgoods").fill("Synthetic QA sample only; no real transaction")
+                bank.locator('#caseForm button[type="submit"]').click(timeout=3000)
+                bank.wait_for_timeout(200)
+                assert "QA-LOCAL-TEST-2026" in bank.locator("#caseRows").inner_text(), "new local case was not listed"
+                bank.reload(wait_until="domcontentloaded", timeout=20000)
+                bank.wait_for_timeout(200)
+                assert "QA-LOCAL-TEST-2026" in bank.locator("#caseRows").inner_text(), "bank local case did not persist after reload"
+                assert not bank_errors, "bank preview JavaScript error(s): " + " | ".join(bank_errors[:3])
+                print("PASS bank preview workflow — theme toggle and synthetic local case persisted after reload")
+                passed += 1
+                bank.context.close()
+            except Exception as exc:
+                failures.append(f"bank preview save/reload: {exc}")
+                print(f"FAIL bank preview save/reload: {exc}")
+
+            # Check primary landing navigation reaches Trade Atlas using the site's own link.
+            try:
+                page.goto(BASE + "/frontend-v3.html", wait_until="domcontentloaded", timeout=20000)
+                atlas_links = page.locator('a[href="/trade-atlas.html"]')
+                assert atlas_links.count() > 0, "landing page has no Trade Atlas link"
+                atlas_links.first.click(timeout=3000)
+                page.wait_for_url("**/trade-atlas.html", timeout=5000)
+                assert "Trade Atlas" in page.title(), f"unexpected navigation destination: {page.url}"
+                print("PASS landing navigation — Trade Atlas link opens the Atlas page")
+                passed += 1
+            except Exception as exc:
+                failures.append(f"landing navigation: {exc}")
+                print(f"FAIL landing navigation: {exc}")
+
             # Responsive sanity: ensure core pages do not produce major horizontal overflow.
             mobile = browser.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=1)
             for route in ("/frontend-v3.html", "/supplier-dashboard.html", "/marketplace.html"):
