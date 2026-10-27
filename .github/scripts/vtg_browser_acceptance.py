@@ -12,6 +12,8 @@ import socketserver
 import subprocess
 import threading
 import time
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright
@@ -51,6 +53,50 @@ def main() -> int:
 
     failures: list[str] = []
     passed = 0
+
+    # Live read-only Railway/API smoke tests. The static local server intentionally
+    # cannot serve /api/*, so test those endpoints directly against the configured backend.
+    api_base = "https://vtg-backend-production-ab20.up.railway.app"
+    health_paths = ("/health", "/health/live", "/health/ready")
+    for path in health_paths:
+        status = None
+        detail = ""
+        try:
+            request = urllib.request.Request(api_base + path, headers={"Accept": "application/json", "User-Agent": "VTG-QA-smoke/1.0"})
+            with urllib.request.urlopen(request, timeout=12) as response:
+                status = response.status
+                detail = response.read(240).decode("utf-8", errors="replace").replace("\\n", " ")
+        except urllib.error.HTTPError as exc:
+            status = exc.code
+            detail = exc.read(240).decode("utf-8", errors="replace").replace("\\n", " ")
+        except Exception as exc:
+            detail = str(exc)
+        print(f"RAILWAY health {path}: status={status!r}; detail={detail[:240]!r}")
+        if status is not None and 200 <= status < 300:
+            passed += 1
+        else:
+            failures.append(f"Railway health {path}: expected HTTP 2xx, got {status!r} ({detail[:160]})")
+
+    for path in ("/api/market/dashboard", "/api/products"):
+        status = None
+        detail = ""
+        try:
+            request = urllib.request.Request(api_base + path, headers={"Accept": "application/json", "User-Agent": "VTG-QA-smoke/1.0"})
+            with urllib.request.urlopen(request, timeout=12) as response:
+                status = response.status
+                detail = response.read(240).decode("utf-8", errors="replace").replace("\\n", " ")
+        except urllib.error.HTTPError as exc:
+            status = exc.code
+            detail = exc.read(240).decode("utf-8", errors="replace").replace("\\n", " ")
+        except Exception as exc:
+            detail = str(exc)
+        print(f"RAILWAY API {path}: status={status!r}; detail={detail[:240]!r}")
+        # 401/403 confirms the route is reachable but protected. A 404 indicates a
+        # missing route; 5xx or connection errors indicate a service/proxy problem.
+        if status is not None and (200 <= status < 300 or status in (401, 403)):
+            passed += 1
+        else:
+            failures.append(f"Railway API {path}: expected 2xx or auth-gated 401/403, got {status!r} ({detail[:160]})")
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
@@ -70,7 +116,7 @@ def main() -> int:
             page.on(
                 "response",
                 lambda response: bad_local_responses.append(f"{response.status} {response.url}")
-                if response.status >= 400 and response.url.startswith(BASE + "/")
+                if response.status >= 400 and response.url.startswith(BASE + "/") and "/api/" not in response.url
                 else external_network_diagnostics.append(f"HTTP {response.status} {response.url}")
                 if response.status >= 400
                 else None,
