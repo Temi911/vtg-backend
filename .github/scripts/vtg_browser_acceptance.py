@@ -88,8 +88,8 @@ def main() -> int:
             # Exercise real controls on the supplier workspace without submitting data.
             try:
                 page.goto(BASE + "/supplier-dashboard.html", wait_until="domcontentloaded", timeout=20000)
-                theme = page.locator("#themeToggle")
-                assert theme.count() == 1, "supplier theme toggle is missing"
+                theme = page.locator("#vf-theme-toggle")
+                assert theme.count() == 1, "shared dashboard theme toggle is missing"
                 visibility = theme.evaluate("""el => {
                   const chain = [];
                   for (let n = el; n && chain.length < 6; n = n.parentElement) {
@@ -100,8 +100,8 @@ def main() -> int:
                   }
                   return chain;
                 }""")
-                print("Supplier theme control diagnostic:", visibility)
-                assert theme.is_visible(), f"supplier theme toggle is not visible: {visibility}"
+                print("Shared dashboard theme control diagnostic:", visibility)
+                assert theme.is_visible(), f"shared dashboard theme toggle is not visible: {visibility}"
                 before = page.locator("html").get_attribute("data-theme")
                 theme.click(timeout=3000)
                 page.wait_for_timeout(150)
