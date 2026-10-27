@@ -310,7 +310,7 @@ def main() -> int:
 
             # Responsive sanity: ensure core pages do not produce major horizontal overflow.
             mobile = browser.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=1)
-            for route in ("/frontend-v3.html", "/supplier-dashboard.html", "/marketplace.html"):
+            for route in ("/frontend-v3.html", "/supplier-dashboard.html", "/marketplace.html", "/trade-atlas.html", "/buyer-dashboard.html?preview=1", "/bank-trade-os.html?preview=1"):
                 try:
                     mobile.goto(BASE + route, wait_until="domcontentloaded", timeout=20000)
                     mobile.wait_for_timeout(250)
