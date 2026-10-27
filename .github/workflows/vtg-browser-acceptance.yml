@@ -1,0 +1,35 @@
+name: VTG browser acceptance
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, redesign/landing-page-visual-refresh]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vtg-browser-acceptance-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser-acceptance:
+    name: Chromium desktop, mobile and interaction smoke tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the exact commit
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Playwright
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Test page loading, JavaScript, local assets, interactions and mobile layout
+        run: python .github/scripts/vtg_browser_acceptance.py
