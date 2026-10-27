@@ -55,11 +55,11 @@ The live Supabase project has these migration entries:
 - `vtg_security_and_query_indexes`
 - `vtg_public_catalogue_policy_split`
 
-The live database has been provisioned and verified. Before using Supabase CLI migration workflows, export/reconcile the full applied SQL into repository migration files so local, staging and production schemas can be reproduced deterministically.
+The live database has been provisioned and its table list, migration history, private storage buckets, and Supabase security advisor were checked. The security advisor currently reports no security lints. Before using Supabase CLI migration workflows, export/reconcile the full applied SQL into repository migration files so local, staging and production schemas can be reproduced deterministically.
 
 ## Important next steps
 
-1. Smoke-test the deployed Edge Function endpoints and auth failures from a real HTTP client.
+1. Run `SUPABASE_PUBLISHABLE_KEY=... node scripts/vtg-supabase-smoke.js` from a networked environment to test health/database connectivity, public catalogue access, and anonymous access denial.
 2. Configure Supabase Auth email templates, redirect URLs and allowed site origins.
 3. Establish the first administrator securely after the owner's account is created; do not allow public signup metadata to assign privileged roles.
 4. Add an integration test suite for signup, role requests, RLS boundaries, product search, order creation, messaging and document access.
