@@ -91,10 +91,14 @@ def main() -> int:
                 theme = page.locator("#themeToggle")
                 assert theme.count() == 1, "supplier theme toggle is missing"
                 visibility = theme.evaluate("""el => {
-                  const s = getComputedStyle(el), r = el.getBoundingClientRect();
-                  return {display:s.display,visibility:s.visibility,opacity:s.opacity,
-                    rect:{x:r.x,y:r.y,width:r.width,height:r.height},
-                    parent:el.parentElement?.outerHTML?.slice(0,500)};
+                  const chain = [];
+                  for (let n = el; n && chain.length < 6; n = n.parentElement) {
+                    const s = getComputedStyle(n), r = n.getBoundingClientRect();
+                    chain.push({tag:n.tagName,id:n.id,cls:String(n.className||'').slice(0,100),
+                      display:s.display,visibility:s.visibility,opacity:s.opacity,
+                      rect:{x:r.x,y:r.y,width:r.width,height:r.height}});
+                  }
+                  return chain;
                 }""")
                 print("Supplier theme control diagnostic:", visibility)
                 assert theme.is_visible(), f"supplier theme toggle is not visible: {visibility}"
