@@ -1,0 +1,19 @@
+name: VTG Supabase API smoke tests
+
+on:
+  push:
+    branches:
+      - feature/supabase-backend-foundation
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Run public API smoke tests
+        env:
+          SUPABASE_PUBLISHABLE_KEY: sb_publishable_WX5_k_ie2eO8aIWeUD4YhQ_koVO2TWT
+        run: node scripts/vtg-supabase-smoke.js
