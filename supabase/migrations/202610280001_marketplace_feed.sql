@@ -51,13 +51,18 @@ create policy "Active marketplace feed posts are readable"
 drop policy if exists "Users can create their own marketplace feed posts" on public.marketplace_feed_posts;
 create policy "Users can create their own marketplace feed posts"
   on public.marketplace_feed_posts for insert
-  to authenticated with check (author_id = (select auth.uid()));
+  to authenticated with check (
+    author_id = (select auth.uid())
+    and exists (
+      select 1 from public.profiles p
+      where p.id = (select auth.uid())
+        and p.role::text = author_role
+        and coalesce(nullif(p.full_name, ''), 'VTG trade member') = author_name
+    )
+  );
 
 drop policy if exists "Authors can update their own marketplace feed posts" on public.marketplace_feed_posts;
-create policy "Authors can update their own marketplace feed posts"
-  on public.marketplace_feed_posts for update
-  to authenticated using (author_id = (select auth.uid()))
-  with check (author_id = (select auth.uid()));
+drop policy if exists "Authors can update their own marketplace feed posts" on public.marketplace_feed_posts;
 
 drop policy if exists "Comments on active posts are readable" on public.marketplace_feed_comments;
 create policy "Comments on active posts are readable"
@@ -71,6 +76,11 @@ create policy "Users can comment as themselves on active posts"
   on public.marketplace_feed_comments for insert
   to authenticated with check (
     author_id = (select auth.uid())
+    and exists (
+      select 1 from public.profiles p
+      where p.id = (select auth.uid())
+        and coalesce(nullif(p.full_name, ''), 'VTG trade member') = author_name
+    )
     and exists (select 1 from public.marketplace_feed_posts p where p.id = post_id and p.is_active = true)
   );
 
@@ -95,6 +105,6 @@ create policy "Users can remove their own reactions"
   to authenticated using (user_id = (select auth.uid()));
 
 grant select on public.marketplace_feed_posts, public.marketplace_feed_comments, public.marketplace_feed_reactions to anon, authenticated;
-grant insert, update on public.marketplace_feed_posts to authenticated;
+grant insert on public.marketplace_feed_posts to authenticated;
 grant insert on public.marketplace_feed_comments, public.marketplace_feed_reactions to authenticated;
 grant delete on public.marketplace_feed_reactions to authenticated;
