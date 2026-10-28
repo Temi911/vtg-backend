@@ -298,6 +298,20 @@
       .vtgGlobeFrame{height:410px;border-radius:28px;overflow:hidden;position:relative;background:#02070b;box-shadow:0 25px 80px rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.08)}
       .vtgGlobeFrame img{width:118%;height:118%;max-width:none;object-fit:cover;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
       .vtgGlobeShade{position:absolute;inset:0;background:radial-gradient(circle at 60% 45%,transparent 0 28%,rgba(2,7,11,.08) 46%,rgba(2,7,11,.70) 100%)}
+      .vtgMinimalAI{background:#f3efe6;color:#17191b;border-top:1px solid rgba(112,42,48,.12);border-bottom:1px solid rgba(112,42,48,.12)}
+      .vtgMinimalAIInner{max-width:1120px;margin:auto;padding:78px 24px;display:grid;grid-template-columns:190px 1fr;gap:48px;align-items:center}
+      .vtgAIOrb{width:170px;height:170px;border:1px solid rgba(112,42,48,.35);border-radius:50%;display:grid;place-items:center;position:relative;background:radial-gradient(circle,#fff 0%,#f3efe6 70%);box-shadow:0 18px 50px rgba(23,25,27,.09)}
+      .vtgAIOrb span{font-size:30px;font-weight:800;letter-spacing:-.08em;color:#702a30}
+      .vtgAIOrb i{position:absolute;inset:13px;border:1px solid rgba(180,154,112,.7);border-radius:50%}
+      .vtgMinimalAICopy .kicker{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#702a30;font-weight:800}
+      .vtgMinimalAICopy h2{font-size:clamp(30px,4vw,48px);line-height:1.08;letter-spacing:-.045em;margin:12px 0;color:#17191b}
+      .vtgMinimalAICopy p{font-size:13px;line-height:1.8;color:#51565a;max-width:590px;margin:0 0 22px}
+      html[data-theme="dark"] .vtgMinimalAI{background:#17191b;color:#f3efe6}
+      html[data-theme="dark"] .vtgMinimalAIInner .vtgMinimalAICopy h2{color:#f3efe6}
+      html[data-theme="dark"] .vtgMinimalAICopy p{color:#c6c1b8}
+      html[data-theme="dark"] .vtgAIOrb{background:radial-gradient(circle,#26282a 0%,#17191b 70%);border-color:rgba(180,154,112,.6)}
+      html[data-theme="dark"] .vtgAIOrb span{color:#f0a5a4}
+      @media(max-width:700px){.vtgMinimalAIInner{grid-template-columns:1fr;gap:24px;padding:58px 20px}.vtgAIOrb{width:112px;height:112px}.vtgAIOrb span{font-size:23px}.vtgAIOrb i{inset:9px}}
       .vtgMinimalCta{max-width:1320px;margin:auto;padding:100px 24px 110px;text-align:center}
       .vtgCtaInner{max-width:1080px;margin:auto}
       .vtgMinimalCta h2{font-size:clamp(36px,5vw,62px);line-height:1.02;letter-spacing:-.05em;margin:9px 0 16px;color:var(--navy)}
@@ -498,6 +512,23 @@
       </div>
     `;
     about.insertAdjacentElement('afterend',atlas);
+
+    document.querySelectorAll('#vtgMinimalAI').forEach(el=>el.remove());
+    const ai=document.createElement('section');
+    ai.className='vtgMinimalAI';
+    ai.id='vtgMinimalAI';
+    ai.innerHTML=`
+      <div class="vtgMinimalAIInner">
+        <div class="vtgAIOrb" aria-hidden="true"><span>VTG</span><i></i></div>
+        <div class="vtgMinimalAICopy">
+          <span class="kicker">VTG AI</span>
+          <h2>Clarity for every trade decision.</h2>
+          <p>Get help exploring suppliers, understanding trade steps and navigating the VTG ecosystem.</p>
+          <a class="primary" href="/vtg-ai.html">Explore VTG AI <i data-lucide="arrow-up-right"></i></a>
+        </div>
+      </div>
+    `;
+    atlas.insertAdjacentElement('afterend',ai);
 
     const cta=document.createElement('section');
     cta.className='vtgMinimalCta';
