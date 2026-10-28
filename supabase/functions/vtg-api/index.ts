@@ -93,7 +93,7 @@ Deno.serve(async (req: Request) => {
     const { data: profile, error: profileError } = await supabase.from("profiles")
       .select("full_name,role").eq("id", user.id).maybeSingle();
     if (profileError || !profile) return respond({ error: "Could not verify your VTG profile." }, 403);
-    const authorName = (profile.full_name || user.email || "VTG trade member").trim().slice(0, 160);
+    const authorName = (profile.full_name || "VTG trade member").trim().slice(0, 160);
     const { data, error } = await supabase.from("marketplace_feed_posts").insert({
       author_id: user.id, author_name: authorName, author_role: profile.role,
       body: body.body.trim(), post_type: postType, external_url: externalUrl,
