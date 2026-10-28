@@ -62,7 +62,6 @@ create policy "Users can create their own marketplace feed posts"
   );
 
 drop policy if exists "Authors can update their own marketplace feed posts" on public.marketplace_feed_posts;
-drop policy if exists "Authors can update their own marketplace feed posts" on public.marketplace_feed_posts;
 
 drop policy if exists "Comments on active posts are readable" on public.marketplace_feed_comments;
 create policy "Comments on active posts are readable"
