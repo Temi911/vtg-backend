@@ -464,7 +464,7 @@
       heroContent.querySelector('#minimalEnterVtg')?.remove();
     }
 
-    market.querySelector('.sectionHead h2').textContent='Discover what moves through VTG.';
+    market.querySelector('.sectionHead h2').textContent='Discover What Moves Business.';
     const carousel=market.querySelector('#vtgProductCarousel');
     if(carousel) carousel.setAttribute('aria-label','VTG marketplace categories');
 
