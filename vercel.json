@@ -69,6 +69,22 @@
       "destination": "/api/vtg-supabase-proxy?path=documents"
     },
     {
+      "source": "/api/marketplace/feed/account",
+      "destination": "/api/vtg-supabase-proxy?path=marketplace/feed/account"
+    },
+    {
+      "source": "/api/marketplace/feed/:postId/reactions",
+      "destination": "/api/vtg-supabase-proxy?path=marketplace/feed/:postId/reactions"
+    },
+    {
+      "source": "/api/marketplace/feed/:postId/comments",
+      "destination": "/api/vtg-supabase-proxy?path=marketplace/feed/:postId/comments"
+    },
+    {
+      "source": "/api/marketplace/feed",
+      "destination": "/api/vtg-supabase-proxy?path=marketplace/feed"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://vtg-backend-production-ab20.up.railway.app/api/:path*"
     },
