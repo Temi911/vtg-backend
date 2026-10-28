@@ -146,7 +146,7 @@ Deno.serve(async (req: Request) => {
     if (profileError || !profile) return respond({ error: "Could not verify your VTG profile." }, 403);
     const { data, error } = await supabase.from("marketplace_feed_comments").insert({
       post_id: postId, author_id: user.id,
-      author_name: (profile.full_name || user.email || "VTG trade member").trim().slice(0, 160),
+      author_name: (profile.full_name || "VTG trade member").trim().slice(0, 160),
       body: body.body.trim(),
     }).select("id,post_id,author_id,author_name,body,created_at").single();
     if (error) return respond({ error: "Comment could not be added. Confirm the post is active." }, 403);
