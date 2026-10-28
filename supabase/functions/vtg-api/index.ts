@@ -46,11 +46,112 @@ Deno.serve(async (req: Request) => {
     if (error) return respond({ error: "Could not load products." }, 500);
     return respond({ products: data ?? [] });
   }
+
+  // Public marketplace feed; RLS limits reads to active posts only.
+  if (segments[0] === "marketplace" && segments[1] === "feed" && segments.length === 2 && req.method === "GET") {
+    const requestedLimit = Number(url.searchParams.get("limit") || 30);
+    const limit = Math.min(50, Math.max(1, Number.isFinite(requestedLimit) ? Math.floor(requestedLimit) : 30));
+    const { data: posts, error } = await supabase.from("marketplace_feed_posts")
+      .select("id,author_id,author_name,author_role,body,post_type,external_url,created_at")
+      .eq("is_active", true).order("created_at", { ascending: false }).limit(limit);
+    if (error) return respond({ error: "Could not load marketplace feed." }, 500);
+    const ids = (posts ?? []).map(post => post.id);
+    if (!ids.length) return respond({ posts: [] });
+    const [{ data: reactions, error: reactionsError }, { data: comments, error: commentsError }] = await Promise.all([
+      supabase.from("marketplace_feed_reactions").select("post_id").in("post_id", ids),
+      supabase.from("marketplace_feed_comments").select("post_id").in("post_id", ids),
+    ]);
+    if (reactionsError || commentsError) return respond({ error: "Could not load marketplace feed activity." }, 500);
+    const reactionCounts = new Map(), commentCounts = new Map();
+    for (const item of reactions ?? []) reactionCounts.set(item.post_id, (reactionCounts.get(item.post_id) ?? 0) + 1);
+    for (const item of comments ?? []) commentCounts.set(item.post_id, (commentCounts.get(item.post_id) ?? 0) + 1);
+    return respond({ posts: (posts ?? []).map(post => ({
+      id: post.id, author_id: post.author_id, full_name: post.author_name,
+      storefront_name: post.author_name, role: post.author_role, created_at: post.created_at,
+      body: post.body, post_type: post.post_type, external_url: post.external_url,
+      reaction_count: reactionCounts.get(post.id) ?? 0, comment_count: commentCounts.get(post.id) ?? 0,
+    })) });
+  }
+
   const { data: authData, error: authError } = token
     ? await supabase.auth.getUser(token)
     : { data: { user: null }, error: new Error("Authentication required") };
   const user = authData?.user;
   if (authError || !user) return respond({ error: "Authentication required." }, 401);
+
+
+  if (segments[0] === "marketplace" && segments[1] === "feed" && segments[2] === "account" && req.method === "POST") {
+    const body = await req.json().catch(() => null);
+    if (!body || !isText(body.body) || !body.body.trim() || body.body.trim().length > 5000) {
+      return respond({ error: "Post text is required (maximum 5,000 characters)." }, 400);
+    }
+    const postType = ["update", "product", "logistics", "question"].includes(body.postType) ? body.postType : "update";
+    const externalUrl = isText(body.external_url) && body.external_url.trim() ? body.external_url.trim() : null;
+    if (externalUrl && (!/^https:\/\//i.test(externalUrl) || /\s/.test(externalUrl))) {
+      return respond({ error: "External links must use a valid HTTPS URL." }, 400);
+    }
+    const { data: profile, error: profileError } = await supabase.from("profiles")
+      .select("full_name,role").eq("id", user.id).maybeSingle();
+    if (profileError || !profile) return respond({ error: "Could not verify your VTG profile." }, 403);
+    const authorName = (profile.full_name || "VTG trade member").trim().slice(0, 160);
+    const { data, error } = await supabase.from("marketplace_feed_posts").insert({
+      author_id: user.id, author_name: authorName, author_role: profile.role,
+      body: body.body.trim(), post_type: postType, external_url: externalUrl,
+    }).select("id,author_id,author_name,author_role,body,post_type,external_url,created_at").single();
+    if (error) return respond({ error: "Post could not be published." }, 403);
+    return respond({ post: { ...data, full_name: data.author_name, storefront_name: data.author_name, role: data.author_role, reaction_count: 0, comment_count: 0 } }, 201);
+  }
+
+  if (segments[0] === "marketplace" && segments[1] === "feed" && segments[2] && segments[3] === "reactions" && req.method === "POST") {
+    const postId = segments[2];
+    const body = await req.json().catch(() => null);
+    if (body && body.reaction !== undefined && body.reaction !== "like") return respond({ error: "Only the like reaction is supported." }, 400);
+    const { data: post, error: postError } = await supabase.from("marketplace_feed_posts").select("id").eq("id", postId).eq("is_active", true).maybeSingle();
+    if (postError || !post) return respond({ error: "Post not found." }, 404);
+    const { data: existing, error: existingError } = await supabase.from("marketplace_feed_reactions")
+      .select("post_id").eq("post_id", postId).eq("user_id", user.id).maybeSingle();
+    if (existingError) return respond({ error: "Could not check your reaction." }, 500);
+    let liked = false;
+    if (existing) {
+      const { error } = await supabase.from("marketplace_feed_reactions").delete().eq("post_id", postId).eq("user_id", user.id);
+      if (error) return respond({ error: "Could not remove reaction." }, 403);
+    } else {
+      const { error } = await supabase.from("marketplace_feed_reactions").insert({ post_id: postId, user_id: user.id, reaction: "like" });
+      if (error) return respond({ error: "Could not add reaction." }, 403);
+      liked = true;
+    }
+    const { count, error: countError } = await supabase.from("marketplace_feed_reactions")
+      .select("post_id", { count: "exact", head: true }).eq("post_id", postId);
+    if (countError) return respond({ error: "Reaction saved but count could not be refreshed." }, 500);
+    return respond({ liked, count: count ?? 0 });
+  }
+
+  if (segments[0] === "marketplace" && segments[1] === "feed" && segments[2] && segments[3] === "comments" && req.method === "GET") {
+    const postId = segments[2];
+    const { data, error } = await supabase.from("marketplace_feed_comments")
+      .select("id,post_id,author_id,author_name,body,created_at")
+      .eq("post_id", postId).order("created_at", { ascending: true }).limit(200);
+    if (error) return respond({ error: "Could not load comments." }, 403);
+    return respond({ comments: (data ?? []).map(comment => ({ ...comment, full_name: comment.author_name })) });
+  }
+
+  if (segments[0] === "marketplace" && segments[1] === "feed" && segments[2] && segments[3] === "comments" && req.method === "POST") {
+    const postId = segments[2];
+    const body = await req.json().catch(() => null);
+    if (!body || !isText(body.body) || !body.body.trim() || body.body.trim().length > 2000) {
+      return respond({ error: "Comment text is required (maximum 2,000 characters)." }, 400);
+    }
+    const { data: profile, error: profileError } = await supabase.from("profiles")
+      .select("full_name").eq("id", user.id).maybeSingle();
+    if (profileError || !profile) return respond({ error: "Could not verify your VTG profile." }, 403);
+    const { data, error } = await supabase.from("marketplace_feed_comments").insert({
+      post_id: postId, author_id: user.id,
+      author_name: (profile.full_name || "VTG trade member").trim().slice(0, 160),
+      body: body.body.trim(),
+    }).select("id,post_id,author_id,author_name,body,created_at").single();
+    if (error) return respond({ error: "Comment could not be added. Confirm the post is active." }, 403);
+    return respond({ comment: { ...data, full_name: data.author_name } }, 201);
+  }
 
   if (segments[0] === "market" && segments[1] === "dashboard" && req.method === "GET") {
     const [productsResult, ordersResult, shipmentsResult] = await Promise.all([
@@ -283,7 +384,7 @@ Deno.serve(async (req: Request) => {
   }
 
   return respond({ error: "Route not found.", available: [
-    "GET /health", "GET /me", "GET|POST /products", "GET|POST /orders",
+    "GET /health", "GET /marketplace/feed", "POST /marketplace/feed/account", "GET|POST /marketplace/feed/:id/comments", "POST /marketplace/feed/:id/reactions", "GET /me", "GET|POST /products", "GET|POST /orders",
     "GET|POST /role-requests", "GET /shipments", "GET|POST /letters-of-credit",
     "GET|POST /conversations", "GET|POST /messages?conversation_id=...", "POST /documents"
   ] }, 404);

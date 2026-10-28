@@ -13,6 +13,78 @@
   ],
   "rewrites": [
     {
+      "source": "/api/health",
+      "destination": "/api/vtg-supabase-proxy?path=health"
+    },
+    {
+      "source": "/api/market/dashboard",
+      "destination": "/api/vtg-supabase-proxy?path=market/dashboard"
+    },
+    {
+      "source": "/api/shipments/order/:orderId",
+      "destination": "/api/vtg-supabase-proxy?path=shipments/order/:orderId"
+    },
+    {
+      "source": "/api/documents/order/:orderId",
+      "destination": "/api/vtg-supabase-proxy?path=documents/order/:orderId"
+    },
+    {
+      "source": "/api/products",
+      "destination": "/api/vtg-supabase-proxy?path=products"
+    },
+    {
+      "source": "/api/me",
+      "destination": "/api/vtg-supabase-proxy?path=me"
+    },
+    {
+      "source": "/api/orders",
+      "destination": "/api/vtg-supabase-proxy?path=orders"
+    },
+    {
+      "source": "/api/role-requests",
+      "destination": "/api/vtg-supabase-proxy?path=role-requests"
+    },
+    {
+      "source": "/api/shipments",
+      "destination": "/api/vtg-supabase-proxy?path=shipments"
+    },
+    {
+      "source": "/api/letters-of-credit",
+      "destination": "/api/vtg-supabase-proxy?path=letters-of-credit"
+    },
+    {
+      "source": "/api/lc",
+      "destination": "/api/vtg-supabase-proxy?path=lc"
+    },
+    {
+      "source": "/api/conversations",
+      "destination": "/api/vtg-supabase-proxy?path=conversations"
+    },
+    {
+      "source": "/api/messages",
+      "destination": "/api/vtg-supabase-proxy?path=messages"
+    },
+    {
+      "source": "/api/documents",
+      "destination": "/api/vtg-supabase-proxy?path=documents"
+    },
+    {
+      "source": "/api/marketplace/feed/account",
+      "destination": "/api/vtg-supabase-proxy?path=marketplace/feed/account"
+    },
+    {
+      "source": "/api/marketplace/feed/:postId/reactions",
+      "destination": "/api/vtg-supabase-proxy?path=marketplace/feed/:postId/reactions"
+    },
+    {
+      "source": "/api/marketplace/feed/:postId/comments",
+      "destination": "/api/vtg-supabase-proxy?path=marketplace/feed/:postId/comments"
+    },
+    {
+      "source": "/api/marketplace/feed",
+      "destination": "/api/vtg-supabase-proxy?path=marketplace/feed"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://vtg-backend-production-ab20.up.railway.app/api/:path*"
     },
