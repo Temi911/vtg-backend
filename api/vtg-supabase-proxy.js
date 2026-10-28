@@ -31,7 +31,7 @@ module.exports = async function vtgSupabaseProxy(req, res) {
   const segments = path.split("/").filter(Boolean);
   const allowedRoots = new Set([
     "health", "products", "me", "orders", "role-requests", "shipments",
-    "letters-of-credit", "lc", "conversations", "messages", "documents", "market",
+    "letters-of-credit", "lc", "conversations", "messages", "documents", "market", "marketplace",
   ]);
   if (!segments.length || !allowedRoots.has(segments[0]) || segments.some(part => part === "." || part === "..")) {
     return sendJson(res, 400, JSON.stringify({ error: "Invalid API route." }));
