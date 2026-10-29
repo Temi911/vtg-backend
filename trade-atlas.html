@@ -242,15 +242,7 @@ function init(){
     failedTiles++;
     if(!loadedTiles&&failedTiles>=4&&!fallbackStarted){
      fallbackStarted=true;
-     mapStatus.innerHTML='Switching map tile source…';mapStatus.style.display='block';
-     try{
-      map.removeLayer(baseTiles);
-      const alternate=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
-       attribution:'&copy; OpenStreetMap contributors &copy; CARTO',subdomains:'abcd',maxZoom:20
-      }).addTo(map);
-      alternate.on('tileload',()=>{loadedTiles++;mapStatus.style.display='none';});
-      alternate.on('tileerror',()=>{failedTiles++;if(!loadedTiles&&failedTiles>=8){mapStatus.innerHTML='Map tiles are unavailable on this connection. <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">Open OpenStreetMap</a> or reload to retry.';mapStatus.style.display='block';}});
-     }catch(error){mapStatus.innerHTML='Map tiles are unavailable on this connection. <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">Open OpenStreetMap</a> or reload to retry.';mapStatus.style.display='block';}
+     mapStatus.innerHTML='Map tiles are unavailable on this connection. <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">Open OpenStreetMap</a> or reload to retry.';mapStatus.style.display='block';
     }
    });
   };
