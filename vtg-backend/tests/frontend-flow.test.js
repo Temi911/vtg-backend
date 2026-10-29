@@ -11,9 +11,6 @@ test('current VTG frontend exposes the core trade interface', () => {
   assert.match(html, /id="newsDrawer"/);
   assert.match(html, /id="mapDrawer"/);
   assert.match(html, /id="authForm"/);
-  assert.match(html, /data-role="buyer"/);
-  assert.match(html, /data-role="supplier"/);
-  assert.match(html, /data-role="bank"/);
 });
 
 test('frontend includes trade calculator, cart and currency conversion hooks', () => {

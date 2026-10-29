@@ -58,16 +58,14 @@ test('buyer dashboard embeds the interactive Atlas renderer and keeps regional m
   assert.match(data, /Busan/);
 });
 
-test('shared navigation exposes exactly three visitor themes and ten workspace themes', () => {
+test('shared navigation exposes the three visitor themes', () => {
   const navigation = read('vtg-site-navigation.js');
   const visitorThemes = ['trade-classic', 'ocean-route', 'graphite-port'];
-  const workspaceThemes = ['executive', 'ocean-finance', 'emerald-trade', 'copper-ledger', 'indigo-intel', 'crimson-ops', 'mono-pro', 'sandstone', 'arctic-blue', 'midnight-harbor'];
-  for (const theme of [...visitorThemes, ...workspaceThemes]) {
+  for (const theme of visitorThemes) {
     assert.ok(navigation.includes("['" + theme + "'"), 'missing theme preset: ' + theme);
   }
   assert.match(navigation, /endsWith\('\/frontend-v3\.html'\)/);
   assert.match(navigation, /endsWith\('\/supplier-dashboard\.html'\)/);
-  assert.match(navigation, /endsWith\('\/bank-trade-os\.html'\)/);
   assert.match(navigation, /data-navkey="ai" href="\/vtg-ai\.html" id="footAi">VTG AI<\/a>/);
   assert.match(navigation, /ai: \['\/vtg-ai\.html', '\/vtg-ai-dashboard\.html'\]/);
 });

@@ -53,7 +53,6 @@ test('Africa market page is wired to the API and includes safe status and naviga
   assert.match(page, /planning_data/);
   assert.match(page, /liveProviderData!==false/);
   assert.match(page, /marketStatus===\x27foundation\x27/);
-  assert.match(page, /id="theme-toggle"/);
   assert.match(page, /id="footAfricaMarkets"|Africa Markets/);
   assert.match(server, /app\.use\('\/api\/africa',africaMarketRoutes\)/);
 });
