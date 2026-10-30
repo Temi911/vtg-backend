@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="Vintage Trade Global — a connected marketplace for buyers, suppliers, financial institutions and cross-border trade.">
-<meta name="theme-color" content="#5b1712">
+<meta name="theme-color" content="#17191B">
 <title>Vintage Trade Global — Global Trade, Sourcing & Finance</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -177,7 +177,6 @@ html[data-theme="dark"] .roleExperience .roleAccess:hover{background:#202b35;bor
 .vtgCompactFooter .vtgFooterTop{align-items:start!important}
 @media(max-width:600px){.vtgFooterLinksSimple{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:18px!important}}
 </style>
-<script defer src="/visual-enhancer.js?v=18"></script>
 <script defer src="/vtg-cart-calculator.js?v=2"></script>
 <script defer src="/vtg-weather.js?v=1"></script>
 <style id="vtgAuthUiGuard">
@@ -258,37 +257,267 @@ body{top:0!important}
 html.translated-ltr,html.translated-rtl{margin-top:0!important}
 @media(max-width:900px){.vtg-language-wrap{gap:4px}.vtg-language-wrap span{display:none}.vtg-language-wrap select{max-width:102px;height:38px;padding:0 5px;font-size:9px}}
 </style><link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<style id="vtg-landing-v4">
+/* VTG landing v4 - everything is scoped to html body #landing#landing and uses lp- class names. */
+html body #landing#landing{--lp-bg:#F3EFE6;--lp-surface:#FBF8F1;--lp-alt:#EAE4D6;--lp-ink:#17191B;--lp-muted:#5A5750;--lp-line:rgba(23,25,27,.14);--lp-accent:#702A30;--lp-brass:#B49A70;--lp-on-accent:#F3EFE6;--lp-shadow:0 1px 2px rgba(23,25,27,.06),0 8px 24px rgba(23,25,27,.06);background:var(--lp-bg);color:var(--lp-ink)!important;font-family:Manrope,system-ui,sans-serif;font-size:16px!important;line-height:1.65!important}
+html[data-theme="dark"] body #landing#landing{--lp-bg:#17191B;--lp-surface:#1F2224;--lp-alt:#1B1E20;--lp-ink:#F3EFE6;--lp-muted:#B9B4A9;--lp-line:rgba(243,239,230,.16);--lp-accent:#702A30;--lp-shadow:none}
+html body #landing#landing *,html body #landing#landing *::before,html body #landing#landing *::after{box-sizing:border-box}
+html body #landing#landing a{color:inherit!important;text-decoration:none}
+html body #landing#landing img{display:block;max-width:100%}
+html body #landing#landing :focus-visible{outline:2px solid var(--lp-brass);outline-offset:3px;border-radius:4px}
+html body #landing#landing svg[data-lucide]{color:inherit!important;stroke:currentColor!important;fill:none!important}
+html body #landing#landing .lp-wrap{width:100%;max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* Header */
+html body #landing#landing .lp-header{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--lp-bg) 94%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--lp-line)}
+html body #landing#landing .lp-header-in{display:flex;align-items:center;gap:28px;height:68px}
+html body #landing#landing .lp-logo img{height:34px;width:auto}
+html body #landing#landing .lp-nav{display:flex;gap:26px;margin-left:12px}
+html body #landing#landing .lp-nav a{font-size:15px!important;font-weight:600;color:var(--lp-ink)!important;padding:6px 0;border-bottom:2px solid transparent}
+html body #landing#landing .lp-nav a:hover{border-bottom-color:var(--lp-brass)}
+html body #landing#landing .lp-actions{margin-left:auto;display:flex;align-items:center;gap:18px}
+html body #landing#landing .lp-signin{font-size:15px!important;font-weight:600}
+html body #landing#landing .lp-signin:hover{text-decoration:underline;text-underline-offset:4px}
+
+/* Buttons */
+html body #landing#landing .lp-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 22px;border-radius:999px;border:1px solid transparent;font-family:inherit;font-size:15px!important;font-weight:700;line-height:1!important;cursor:pointer;transition:background-color .15s,color .15s,border-color .15s}
+html body #landing#landing .lp-btn svg{width:18px;height:18px}
+html body #landing#landing .lp-btn-solid,html body #landing#landing #joinBtn{background:var(--lp-accent)!important;background-image:none!important;color:#F3EFE6!important;-webkit-text-fill-color:#F3EFE6!important;border:1px solid var(--lp-accent)!important;box-shadow:none!important;opacity:1!important;visibility:visible!important}
+html[data-theme="dark"] body #landing#landing .lp-btn-solid,html[data-theme="dark"] body #landing#landing #joinBtn{border-color:var(--lp-brass)!important}
+html body #landing#landing .lp-btn-solid:hover,html body #landing#landing #joinBtn:hover{background:#5A2127!important}
+html body #landing#landing #joinBtn *{color:#F3EFE6!important;-webkit-text-fill-color:#F3EFE6!important;stroke:#F3EFE6!important}
+html body #landing#landing #joinBtn{min-height:42px;padding:0 20px}
+html body #landing#landing .lp-btn-ivory{background:#F3EFE6;color:#17191B!important;border-color:#F3EFE6}
+html body #landing#landing .lp-btn-ivory:hover{background:#fff}
+html body #landing#landing .lp-btn-line{background:transparent;color:#F3EFE6!important;border-color:rgba(243,239,230,.6)}
+html body #landing#landing .lp-btn-line:hover{background:rgba(243,239,230,.12);border-color:#F3EFE6}
+
+/* Hero - always obsidian */
+html body #landing#landing .lp-hero{background:#17191B;color:#F3EFE6!important;background-image:radial-gradient(900px 420px at 88% 0%,rgba(112,42,48,.55),transparent 70%),linear-gradient(rgba(180,154,112,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(180,154,112,.07) 1px,transparent 1px);background-size:auto,56px 56px,56px 56px;border-bottom:1px solid rgba(180,154,112,.35)}
+html body #landing#landing .lp-hero-in{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:56px;align-items:center;padding-top:84px;padding-bottom:92px}
+html body #landing#landing .lp-eyebrow{margin:0 0 18px;font-size:13px!important;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#B49A70!important}
+html body #landing#landing .lp-hero h1{margin:0 0 20px!important;max-width:15ch;font-size:clamp(36px,5vw,60px)!important;line-height:1.04!important;letter-spacing:-.03em;font-weight:800;color:#F3EFE6!important;text-shadow:none}
+html body #landing#landing .lp-lead{margin:0 0 30px;max-width:56ch;font-size:18px!important;line-height:1.7!important;color:#D9D4C8!important}
+html body #landing#landing .lp-search{display:flex;max-width:600px;background:#F3EFE6;border-radius:999px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+html body #landing#landing .lp-search input{flex:1;min-width:0;border:0;background:transparent;font-family:inherit;font-size:16px!important;color:#17191B!important;padding:0 18px;outline:none}
+html body #landing#landing .lp-search input::placeholder{color:#6B675F!important}
+html body #landing#landing .lp-search button{border:0;border-radius:999px;background:#702A30;color:#F3EFE6!important;font-family:inherit;font-size:15px!important;font-weight:700;padding:0 26px;min-height:46px;cursor:pointer}
+html body #landing#landing .lp-search button:hover{background:#5A2127}
+html body #landing#landing .lp-search:focus-within{outline:2px solid #B49A70;outline-offset:3px}
+html body #landing#landing .lp-popular{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin:18px 0 0;font-size:14px!important;color:#B9B4A9!important}
+html body #landing#landing .lp-popular a{padding:5px 13px;border:1px solid rgba(243,239,230,.28);border-radius:999px;color:#F3EFE6!important;font-weight:600}
+html body #landing#landing .lp-popular a:hover{border-color:#B49A70;color:#B49A70!important}
+html body #landing#landing .lp-hero-links{display:flex;flex-wrap:wrap;gap:10px 26px;margin:26px 0 0;font-size:15px!important;font-weight:600}
+html body #landing#landing .lp-hero-links a{display:inline-flex;align-items:center;gap:8px;color:#F3EFE6!important;text-decoration:underline;text-decoration-color:rgba(180,154,112,.6);text-underline-offset:5px}
+html body #landing#landing .lp-hero-links a:hover{text-decoration-color:#B49A70}
+html body #landing#landing .lp-hero-links svg{width:18px;height:18px;color:#B49A70!important}
+html body #landing#landing .lp-pillars{list-style:none;margin:0;padding:8px 24px;background:rgba(243,239,230,.05);border:1px solid rgba(180,154,112,.35);border-radius:20px}
+html body #landing#landing .lp-pillars li{display:flex;gap:16px;align-items:flex-start;padding:18px 0;border-bottom:1px solid rgba(243,239,230,.12)}
+html body #landing#landing .lp-pillars li:last-child{border-bottom:0}
+html body #landing#landing .lp-pillar-ico{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:rgba(180,154,112,.16);color:#B49A70!important}
+html body #landing#landing .lp-pillar-ico svg{width:22px;height:22px}
+html body #landing#landing .lp-pillars strong{display:block;font-size:17px!important;color:#F3EFE6!important;line-height:1.3!important}
+html body #landing#landing .lp-pillars li div>span{display:block;margin-top:2px;font-size:14.5px!important;line-height:1.55!important;color:#C9C4B8!important}
+
+/* Sections */
+html body #landing#landing .lp-section{padding:72px 0}
+html body #landing#landing .lp-alt{background:var(--lp-alt);border-top:1px solid var(--lp-line);border-bottom:1px solid var(--lp-line)}
+html body #landing#landing .lp-kicker{margin:0 0 10px;font-size:13px!important;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--lp-accent)!important}
+html[data-theme="dark"] body #landing#landing .lp-kicker{color:var(--lp-brass)!important}
+html body #landing#landing .lp-section h2{margin:0 0 12px!important;font-size:clamp(28px,3.6vw,40px)!important;line-height:1.12!important;letter-spacing:-.025em;font-weight:800;color:var(--lp-ink)!important}
+html body #landing#landing .lp-sub{margin:0 0 24px;max-width:56ch;font-size:17px!important;color:var(--lp-muted)!important}
+html body #landing#landing .lp-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:28px}
+html body #landing#landing .lp-head .lp-sub{margin:0}
+html body #landing#landing .lp-rail-ctl{display:flex;align-items:center;gap:10px;flex:none}
+html body #landing#landing .lp-arrow{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1px solid var(--lp-line);background:var(--lp-surface);color:var(--lp-ink)!important;cursor:pointer}
+html body #landing#landing .lp-arrow:hover:not(:disabled){border-color:var(--lp-accent)}
+html body #landing#landing .lp-arrow:disabled{opacity:.35;cursor:default}
+html body #landing#landing .lp-arrow svg{width:20px;height:20px}
+html body #landing#landing .lp-textlink{display:inline-flex;align-items:center;gap:6px;margin-left:8px;font-weight:700;font-size:15px!important;color:var(--lp-accent)!important;text-decoration:underline;text-underline-offset:5px}
+html[data-theme="dark"] body #landing#landing .lp-textlink{color:var(--lp-brass)!important}
+html body #landing#landing .lp-textlink svg{width:16px;height:16px}
+
+/* Category rail: two rows, scrolls sideways */
+html body #landing#landing .lp-rail{display:grid;grid-auto-flow:column;grid-template-rows:repeat(2,auto);grid-auto-columns:minmax(176px,200px);gap:14px;overflow-x:auto;scroll-snap-type:x proximity;padding:4px 2px 8px;scrollbar-width:thin;scrollbar-color:var(--lp-brass) transparent}
+html body #landing#landing .lp-cat{scroll-snap-align:start;display:flex;flex-direction:column;gap:14px;padding:18px;background:var(--lp-surface);border:1px solid var(--lp-line);border-radius:16px;box-shadow:var(--lp-shadow);transition:border-color .15s,transform .15s}
+html body #landing#landing .lp-cat:hover{border-color:var(--lp-accent);transform:translateY(-2px)}
+html[data-theme="dark"] body #landing#landing .lp-cat:hover{border-color:var(--lp-brass)}
+html body #landing#landing .lp-cat-ico{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:color-mix(in srgb,var(--lp-brass) 22%,transparent);color:var(--lp-accent)!important}
+html[data-theme="dark"] body #landing#landing .lp-cat-ico{color:var(--lp-brass)!important}
+html body #landing#landing .lp-cat-ico svg{width:24px;height:24px}
+html body #landing#landing .lp-cat-name{font-size:15px!important;font-weight:700;line-height:1.35!important;color:var(--lp-ink)!important;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+
+/* Split sections */
+html body #landing#landing .lp-split{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+html body #landing#landing .lp-split-rev>:first-child{order:2}
+html body #landing#landing .lp-corridor{position:relative;margin:0;padding:28px;border-radius:20px;background:#17191B;color:#B49A70!important;border:1px solid rgba(180,154,112,.4);aspect-ratio:480/300}
+html body #landing#landing .lp-corridor svg{width:100%;height:auto;display:block}
+html body #landing#landing .lp-node circle{fill:#17191B;stroke:#B49A70!important;stroke-width:3}
+html body #landing#landing .lp-pin{position:absolute;display:flex;flex-direction:column;line-height:1.25!important;color:#F3EFE6!important}
+html body #landing#landing .lp-pin b{font-size:14px!important;font-weight:700}
+html body #landing#landing .lp-pin small{font-size:12.5px!important;color:#B9B4A9!important}
+html body #landing#landing .lp-pin-a{left:24px;top:16%}
+html body #landing#landing .lp-pin-b{left:24px;bottom:22%}
+html body #landing#landing .lp-pin-c{right:24px;bottom:9%;text-align:right;align-items:flex-end}
+html body #landing#landing .lp-corridor figcaption{position:absolute;left:28px;bottom:12px;font-size:12px!important;color:#8F8B82!important}
+html body #landing#landing .lp-ask{display:flex;flex-direction:column;gap:12px;padding:24px;background:var(--lp-surface);border:1px solid var(--lp-line);border-radius:20px;box-shadow:var(--lp-shadow)}
+html body #landing#landing .lp-ask-label{margin:0;font-size:13px!important;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--lp-muted)!important}
+html body #landing#landing .lp-ask a{padding:14px 18px;border:1px solid var(--lp-line);border-radius:14px;font-size:15.5px!important;font-weight:600;line-height:1.45!important;color:var(--lp-ink)!important;background:var(--lp-bg)}
+html body #landing#landing .lp-ask a:hover{border-color:var(--lp-accent)}
+html[data-theme="dark"] body #landing#landing .lp-ask a:hover{border-color:var(--lp-brass)}
+
+/* Closing call to action */
+html body #landing#landing .lp-cta{background:#702A30;color:#F3EFE6!important;text-align:center;padding:84px 0}
+html body #landing#landing .lp-cta h2{margin:0 0 12px!important;font-size:clamp(28px,3.8vw,44px)!important;line-height:1.1!important;letter-spacing:-.025em;font-weight:800;color:#F3EFE6!important}
+html body #landing#landing .lp-cta p{margin:0 auto 28px;max-width:52ch;font-size:17.5px!important;color:#EADCD8!important}
+html body #landing#landing .lp-cta-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+
+/* Tablet and phone */
+@media (max-width:960px){
+html body #landing#landing .lp-nav{display:none}
+html body #landing#landing .lp-hero-in{grid-template-columns:1fr;gap:40px;padding-top:56px;padding-bottom:64px}
+html body #landing#landing .lp-hero h1{max-width:18ch}
+html body #landing#landing .lp-split{grid-template-columns:1fr;gap:36px}
+html body #landing#landing .lp-split-rev>:first-child{order:0}
+html body #landing#landing .lp-section{padding:60px 0}
+}
+@media (max-width:640px){
+html body #landing#landing .lp-wrap{padding:0 16px}
+html body #landing#landing .lp-header-in{gap:12px;height:60px}
+html body #landing#landing .lp-logo img{height:28px}
+html body #landing#landing .lp-signin{display:none}
+html body #landing#landing .lp-lead{font-size:16.5px!important}
+html body #landing#landing .lp-search{flex-direction:column;border-radius:20px;padding:8px;gap:8px}
+html body #landing#landing .lp-search input{min-height:46px}
+html body #landing#landing .lp-search button{width:100%}
+html body #landing#landing .lp-head{flex-direction:column;align-items:flex-start;gap:16px}
+html body #landing#landing .lp-rail{grid-auto-columns:minmax(150px,46vw)}
+html body #landing#landing .lp-pillars{padding:4px 16px}
+html body #landing#landing .lp-cta{padding:60px 0}
+html body #landing#landing .lp-cta-actions{flex-direction:column}
+html body #landing#landing .lp-cta-actions .lp-btn{width:100%}
+}
+@media (prefers-reduced-motion:reduce){html body #landing#landing *{transition:none!important}}
+</style>
 </head>
 <body>
-<div class="topline"></div>
 <div id="landing">
-<header class="nav"><div class="navin"><a class="brand" href="#top" aria-label="Vintage Trade Global"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><div class="navtools" aria-label="VTG quick access"><a class="headerFeatureBtn" id="atlasHeaderBtn" href="/trade-atlas.html" title="Open Trade Atlas" aria-label="Open Trade Atlas"><i data-lucide="globe-2"></i><span>Trade Atlas</span></a><a class="headerFeatureBtn" id="vtgAIHeaderBtn" href="/vtg-ai.html" title="Explore VTG AI" aria-label="Explore VTG AI"><i data-lucide="sparkles"></i><span>VTG AI</span></a><a class="primary headerEnterBtn" id="joinBtn" href="/signin.html" aria-label="Enter VTG and sign in"><i data-lucide="arrow-up-right"></i><span>Enter VTG</span></a></div></div></header>
-<section class="hero" id="top"><div class="heroMapWrap" aria-hidden="true"><svg viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="mapGrad1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#d1417a"/><stop offset="50%" stop-color="#7c4fd1"/><stop offset="100%" stop-color="#c0392b"/></linearGradient><linearGradient id="mapGrad2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#c0392b"/><stop offset="50%" stop-color="#e05a4f"/><stop offset="100%" stop-color="#a93226"/></linearGradient><filter id="glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g opacity=".16"><path fill="url(#mapGrad1)" d="M70 150C130 90 230 80 300 120C360 150 340 210 300 230C340 250 320 300 260 300C300 330 270 380 210 370C230 410 180 440 130 420C90 460 20 440 30 380C-10 360 0 300 40 280C10 250 20 190 70 150Z"/><path fill="url(#mapGrad2)" d="M160 340C210 330 250 360 240 410C280 420 280 470 240 490C250 530 200 560 160 540C140 570 90 560 90 520C50 510 50 460 90 450C70 410 110 350 160 340Z"/><path fill="url(#mapGrad1)" d="M480 110C560 70 660 90 690 140C740 130 780 170 760 210C810 220 820 270 770 290C790 330 750 370 700 360C700 400 650 420 610 400C590 440 530 440 510 400C460 410 430 370 450 330C410 320 400 270 440 250C410 210 430 150 480 110Z"/><path fill="url(#mapGrad2)" d="M540 300C580 290 620 320 610 360C650 370 650 420 610 430C620 470 570 490 540 470C520 500 470 490 470 450C440 440 440 390 470 380C450 340 490 310 540 300Z"/><path fill="url(#mapGrad1)" d="M700 130C780 90 900 100 970 150C1040 140 1100 180 1080 230C1130 250 1130 310 1080 320C1090 360 1040 390 990 370C980 410 920 420 890 390C840 410 790 390 790 350C740 350 710 300 740 270C690 250 670 190 700 130Z"/><path fill="url(#mapGrad2)" d="M900 400C950 390 990 420 980 460C1020 470 1020 510 980 520C970 550 920 550 900 520C860 520 850 480 880 460C860 430 870 400 900 400Z"/></g><g stroke="#c0392b" stroke-width="1.2" fill="none" opacity=".38"><path d="M280 190 Q400 90 500 150"/><path d="M500 150 Q600 170 700 250"/><path d="M700 250 Q780 200 900 210"/><path d="M520 300 Q600 220 500 150"/><path d="M520 300 Q610 280 700 250"/><path d="M280 190 Q380 260 520 300"/></g><g><circle class="hubDot d1" cx="280" cy="190" r="3.6" fill="#d1417a" filter="url(#glow)"/><circle class="hubDot d2" cx="500" cy="150" r="3.6" fill="#7c4fd1" filter="url(#glow)"/><circle class="hubDot d3" cx="520" cy="300" r="3.6" fill="#a93226" filter="url(#glow)"/><circle class="hubDot d4" cx="700" cy="250" r="3.6" fill="#c0392b" filter="url(#glow)"/><circle class="hubDot d5" cx="900" cy="210" r="3.6" fill="#d1417a" filter="url(#glow)"/></g></svg></div><div class="heroIn"><div><span class="eyebrow">Vintage Trade Global • Africa • China • South Korea</span><h1>One intelligent place for trade across borders.</h1><p>VTG connects African buyers with verified suppliers, financial institutions and logistics partners across China, South Korea and global markets — bringing sourcing, verification, finance, shipping and trade intelligence into one connected platform.</p><div class="heroCore"><span><i data-lucide="store"></i> Marketplace</span><span><i data-lucide="globe-2"></i> Trade Atlas</span><span><i data-lucide="landmark"></i> Trade Finance</span><span><i data-lucide="ship"></i> Logistics</span></div><div class="heroActions"><a class="outline heroMarketplaceBtn" href="/marketplace.html"><i data-lucide="store"></i> Explore Marketplace</a></div><div class="heroStats"><div class="stat"><strong>Africa ↔ Asia</strong><span>Core trade corridor</span></div><div class="stat"><strong>Buy • Finance • Move</strong><span>Connected trade journey</span></div><div class="stat"><strong>One platform</strong><span>From sourcing to delivery</span></div></div></div><div class="visual tradeNetworkVisual" aria-label="VTG Africa to Asia trade network">
-  <div class="networkGlow"></div>
-  <svg class="networkLines" viewBox="0 0 620 430" aria-hidden="true">
-    <defs>
-      <linearGradient id="vtgRoute" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e05a4f"/><stop offset="50%" stop-color="#6cc4c9"/><stop offset="100%" stop-color="#7c4fd1"/></linearGradient>
-      <filter id="vtgRouteGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    </defs>
-    <path class="routePath" d="M105 292 C190 225 270 245 348 195 S475 122 535 104"/>
-    <path class="routePath route2" d="M105 292 C185 325 272 312 348 195 S460 170 535 104"/>
-    <circle class="routeNode" cx="105" cy="292" r="7"/><circle class="routeNode" cx="348" cy="195" r="7"/><circle class="routeNode" cx="535" cy="104" r="7"/>
-  </svg>
-  <div class="networkMapShape africa"><span></span></div>
-  <div class="networkMapShape asia"><span></span></div>
-  <div class="networkNode nodeAfrica"><i data-lucide="map-pin"></i><strong>Africa</strong><small>Buyer market</small></div>
-  <div class="networkNode nodeChina"><i data-lucide="factory"></i><strong>China</strong><small>Supplier network</small></div>
-  <div class="networkNode nodeKorea"><i data-lucide="landmark"></i><strong>South Korea</strong><small>Trade & technology</small></div>
-  <div class="networkCenter"><div class="centerIcon"><i data-lucide="globe-2"></i></div><strong>VTG Trade Network</strong><span>Source • Verify • Finance • Move</span></div>
-  <div class="networkRouteBadge"><i data-lucide="route"></i><span>Connected corridor</span><b>Africa ↔ Asia</b></div>
-</div></div></section>
-<section class="market" id="market"><div class="section"><div class="sectionHead"><div><span class="eyebrow">Marketplace intelligence</span><h2>A living trade marketplace.</h2></div><p>Discover supplier storefronts and product categories, then move from browsing to a direct trade enquiry. You can also search the catalogue using a product photo.</p></div><div class="trust"><span>Verified profiles</span><span>Buyer enquiries</span><span>Supplier storefronts</span><span>Bank participation</span><span>Trade locations</span><span>Transparent transaction design</span></div><div style="margin-top:22px;display:flex;gap:10px;flex-wrap:wrap"><a class="primary" href="/marketplace.html" style="display:inline-flex;align-items:center;gap:7px">Explore Marketplace <i data-lucide="arrow-up-right"></i></a><a class="outline" href="/marketplace.html" style="display:inline-flex;align-items:center;gap:7px">Browse supplier catalogue <i data-lucide="search"></i></a><a class="outline" href="/marketplace.html#visual-search" style="display:inline-flex;align-items:center;gap:7px"><i data-lucide="scan-search"></i> Search by photo</a></div></div></section>
+<header class="lp-header"><div class="lp-wrap lp-header-in">
+<a class="lp-logo" href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a>
+<nav class="lp-nav" aria-label="Primary"><a href="/marketplace.html">Marketplace</a><a href="/trade-atlas.html">Trade Atlas</a><a href="/vtg-ai.html">VTG AI</a><a href="/about-vintage.html">About</a></nav>
+<div class="lp-actions navtools"><a class="lp-signin" href="/signin.html">Sign in</a><a class="lp-btn lp-btn-solid" id="joinBtn" href="/signin.html">Enter VTG</a></div>
+</div></header>
 
+<main id="top">
+<section class="lp-hero" aria-labelledby="lpHeroTitle"><div class="lp-wrap lp-hero-in">
+<div class="lp-hero-copy">
+<p class="lp-eyebrow">Africa &middot; China &middot; South Korea</p>
+<h1 id="lpHeroTitle">Buy from verified suppliers across Asia.</h1>
+<p class="lp-lead">VTG connects buyers in Africa with suppliers in China and South Korea &mdash; with inspection, trade finance and shipment tracking in one place.</p>
+<form class="lp-search" action="/marketplace.html" method="get" role="search"><input type="search" name="q" maxlength="80" placeholder="Search products, machinery, parts&hellip;" aria-label="Search the marketplace" autocomplete="off"><button type="submit">Search</button></form>
+<p class="lp-popular"><span>Popular:</span><a href="/marketplace.html?q=vehicle">Vehicles</a><a href="/marketplace.html?q=electronic">Electronics</a><a href="/marketplace.html?q=machinery">Machinery</a><a href="/marketplace.html?q=solar">Solar</a><a href="/marketplace.html?q=building">Building materials</a></p>
+<p class="lp-hero-links"><a href="/marketplace.html#visual-search"><i data-lucide="scan-search"></i> Search by photo</a><a href="/marketplace.html"><i data-lucide="store"></i> Browse the supplier catalogue</a></p>
+</div>
+<ul class="lp-pillars" aria-label="How VTG works">
+<li><span class="lp-pillar-ico"><i data-lucide="search"></i></span><div><strong>Source</strong><span>Browse supplier storefronts and send an enquiry.</span></div></li>
+<li><span class="lp-pillar-ico"><i data-lucide="badge-check"></i></span><div><strong>Verify</strong><span>Request a product inspection in the supplier&rsquo;s country.</span></div></li>
+<li><span class="lp-pillar-ico"><i data-lucide="landmark"></i></span><div><strong>Finance</strong><span>Plan payment with trade-finance options such as letters of credit.</span></div></li>
+<li><span class="lp-pillar-ico"><i data-lucide="ship"></i></span><div><strong>Move</strong><span>Follow shipments, customs and delivery in one workspace.</span></div></li>
+</ul>
+</div></section>
+
+<section class="lp-section" id="market" aria-labelledby="lpCatTitle"><div class="lp-wrap">
+<div class="lp-head"><div><p class="lp-kicker">Marketplace</p><h2 id="lpCatTitle">Shop by category</h2><p class="lp-sub">36 categories, from vehicles and machinery to everyday goods.</p></div>
+<div class="lp-rail-ctl"><button type="button" class="lp-arrow" data-lp-scroll="-1" aria-label="Previous categories"><i data-lucide="chevron-left"></i></button><button type="button" class="lp-arrow" data-lp-scroll="1" aria-label="Next categories"><i data-lucide="chevron-right"></i></button><a class="lp-textlink" href="/marketplace.html">View all <i data-lucide="arrow-right"></i></a></div></div>
+<div class="lp-rail" id="lpRail" tabindex="0" role="region" aria-label="Product categories, scroll sideways for more">
+<a class="lp-cat" href="/marketplace.html?q=vehicle"><span class="lp-cat-ico"><i data-lucide="car"></i></span><span class="lp-cat-name">Cars &amp; Automobiles</span></a>
+<a class="lp-cat" href="/marketplace.html?q=tricycle"><span class="lp-cat-ico"><i data-lucide="bike"></i></span><span class="lp-cat-name">Motorcycles, Tricycles &amp; Mobility</span></a>
+<a class="lp-cat" href="/marketplace.html?q=bicycle"><span class="lp-cat-ico"><i data-lucide="bike"></i></span><span class="lp-cat-name">Bicycles &amp; Personal Mobility</span></a>
+<a class="lp-cat" href="/marketplace.html?q=medical"><span class="lp-cat-ico"><i data-lucide="heart-pulse"></i></span><span class="lp-cat-name">Medical Supplies &amp; Healthcare</span></a>
+<a class="lp-cat" href="/marketplace.html?q=agric"><span class="lp-cat-ico"><i data-lucide="wheat"></i></span><span class="lp-cat-name">Agriculture &amp; Farm Products</span></a>
+<a class="lp-cat" href="/marketplace.html?q=cloth"><span class="lp-cat-ico"><i data-lucide="shirt"></i></span><span class="lp-cat-name">Clothing &amp; Textiles</span></a>
+<a class="lp-cat" href="/marketplace.html?q=footwear"><span class="lp-cat-ico"><i data-lucide="footprints"></i></span><span class="lp-cat-name">Footwear</span></a>
+<a class="lp-cat" href="/marketplace.html?q=fashion"><span class="lp-cat-ico"><i data-lucide="shopping-bag"></i></span><span class="lp-cat-name">Fashion &amp; Accessories</span></a>
+<a class="lp-cat" href="/marketplace.html?q=watch"><span class="lp-cat-ico"><i data-lucide="watch"></i></span><span class="lp-cat-name">Watches &amp; Wearables</span></a>
+<a class="lp-cat" href="/marketplace.html?q=electronic"><span class="lp-cat-ico"><i data-lucide="laptop"></i></span><span class="lp-cat-name">Electronics &amp; Technology</span></a>
+<a class="lp-cat" href="/marketplace.html?q=furniture"><span class="lp-cat-ico"><i data-lucide="sofa"></i></span><span class="lp-cat-name">Home &amp; Furniture</span></a>
+<a class="lp-cat" href="/marketplace.html?q=appliance"><span class="lp-cat-ico"><i data-lucide="utensils"></i></span><span class="lp-cat-name">Kitchen &amp; Home Appliances</span></a>
+<a class="lp-cat" href="/marketplace.html?q=beauty"><span class="lp-cat-ico"><i data-lucide="sparkles"></i></span><span class="lp-cat-name">Beauty &amp; Personal Care</span></a>
+<a class="lp-cat" href="/marketplace.html?q=food"><span class="lp-cat-ico"><i data-lucide="utensils-crossed"></i></span><span class="lp-cat-name">Food &amp; Beverages</span></a>
+<a class="lp-cat" href="/marketplace.html?q=construction"><span class="lp-cat-ico"><i data-lucide="construction"></i></span><span class="lp-cat-name">Construction Equipment &amp; Machinery</span></a>
+<a class="lp-cat" href="/marketplace.html?q=tool"><span class="lp-cat-ico"><i data-lucide="wrench"></i></span><span class="lp-cat-name">Tools &amp; Hardware</span></a>
+<a class="lp-cat" href="/marketplace.html?q=machinery"><span class="lp-cat-ico"><i data-lucide="factory"></i></span><span class="lp-cat-name">Industrial Machinery &amp; Equipment</span></a>
+<a class="lp-cat" href="/marketplace.html?q=steel"><span class="lp-cat-ico"><i data-lucide="layers-3"></i></span><span class="lp-cat-name">Steel, Iron &amp; Metal Products</span></a>
+<a class="lp-cat" href="/marketplace.html?q=solar"><span class="lp-cat-ico"><i data-lucide="sun"></i></span><span class="lp-cat-name">Solar &amp; Renewable Energy</span></a>
+<a class="lp-cat" href="/marketplace.html?q=plumbing"><span class="lp-cat-ico"><i data-lucide="shower-head"></i></span><span class="lp-cat-name">Plumbing, Water &amp; Sanitary</span></a>
+<a class="lp-cat" href="/marketplace.html?q=packaging"><span class="lp-cat-ico"><i data-lucide="package"></i></span><span class="lp-cat-name">Packaging &amp; Printing</span></a>
+<a class="lp-cat" href="/marketplace.html?q=office"><span class="lp-cat-ico"><i data-lucide="paperclip"></i></span><span class="lp-cat-name">Office &amp; Business Supplies</span></a>
+<a class="lp-cat" href="/marketplace.html?q=baby"><span class="lp-cat-ico"><i data-lucide="baby"></i></span><span class="lp-cat-name">Baby &amp; Children Products</span></a>
+<a class="lp-cat" href="/marketplace.html?q=cleaning"><span class="lp-cat-ico"><i data-lucide="spray-can"></i></span><span class="lp-cat-name">Cleaning &amp; Household Supplies</span></a>
+<a class="lp-cat" href="/marketplace.html?q=bag"><span class="lp-cat-ico"><i data-lucide="luggage"></i></span><span class="lp-cat-name">Bags, Luggage &amp; Travel</span></a>
+<a class="lp-cat" href="/marketplace.html?q=retail"><span class="lp-cat-ico"><i data-lucide="store"></i></span><span class="lp-cat-name">Retail &amp; Commercial Equipment</span></a>
+<a class="lp-cat" href="/marketplace.html?q=catering"><span class="lp-cat-ico"><i data-lucide="utensils"></i></span><span class="lp-cat-name">Hotel, Restaurant &amp; Catering Equipment</span></a>
+<a class="lp-cat" href="/marketplace.html?q=factory"><span class="lp-cat-ico"><i data-lucide="factory"></i></span><span class="lp-cat-name">Factory &amp; Production Supplies</span></a>
+<a class="lp-cat" href="/marketplace.html?q=marine"><span class="lp-cat-ico"><i data-lucide="anchor"></i></span><span class="lp-cat-name">Marine &amp; Port Equipment</span></a>
+<a class="lp-cat" href="/marketplace.html?q=warehouse"><span class="lp-cat-ico"><i data-lucide="truck"></i></span><span class="lp-cat-name">Logistics, Transport &amp; Warehousing Equipment</span></a>
+<a class="lp-cat" href="/marketplace.html?q=building"><span class="lp-cat-ico"><i data-lucide="brick-wall"></i></span><span class="lp-cat-name">Building Materials</span></a>
+<a class="lp-cat" href="/marketplace.html?q=electrical"><span class="lp-cat-ico"><i data-lucide="plug-zap"></i></span><span class="lp-cat-name">Electrical &amp; Power Equipment</span></a>
+<a class="lp-cat" href="/marketplace.html?q=network"><span class="lp-cat-ico"><i data-lucide="radio-tower"></i></span><span class="lp-cat-name">Telecommunications &amp; Networking</span></a>
+<a class="lp-cat" href="/marketplace.html?q=industrial"><span class="lp-cat-ico"><i data-lucide="boxes"></i></span><span class="lp-cat-name">Industrial Materials</span></a>
+<a class="lp-cat" href="/marketplace.html?q=merchandise"><span class="lp-cat-ico"><i data-lucide="shopping-basket"></i></span><span class="lp-cat-name">General Merchandise</span></a>
+<a class="lp-cat" href="/marketplace.html?q=service"><span class="lp-cat-ico"><i data-lucide="globe-2"></i></span><span class="lp-cat-name">Import, Export &amp; Trade Services</span></a>
+</div>
+</div></section>
+
+<section class="lp-section lp-alt" id="atlas" aria-labelledby="lpAtlasTitle"><div class="lp-wrap lp-split">
+<div><p class="lp-kicker">Trade Atlas</p><h2 id="lpAtlasTitle">Explore the world of trade.</h2><p class="lp-sub">See the routes, ports and business locations connecting Africa and Asia, then open the full Trade Atlas to explore the wider network.</p><p><a class="lp-btn lp-btn-solid" href="/trade-atlas.html">Open Trade Atlas <i data-lucide="globe-2"></i></a></p></div>
+<figure class="lp-corridor" aria-label="Illustrative trade corridor between Asia and Lagos">
+<svg viewBox="0 0 480 280" role="img" aria-hidden="true"><path d="M92 70 C 200 70 270 160 388 204" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="5 7" opacity=".75"/><path d="M92 214 C 200 214 280 214 388 204" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="5 7" opacity=".75"/><g class="lp-node"><circle cx="92" cy="70" r="9"/><circle cx="92" cy="214" r="9"/><circle cx="388" cy="204" r="11"/></g></svg>
+<span class="lp-pin lp-pin-a"><b>Guangzhou</b><small>China</small></span><span class="lp-pin lp-pin-b"><b>Busan</b><small>South Korea</small></span><span class="lp-pin lp-pin-c"><b>Tin Can Island</b><small>Lagos, Nigeria</small></span>
+<figcaption>Illustrative corridor &mdash; not to scale.</figcaption></figure>
+</div></section>
+
+<section class="lp-section" id="ai" aria-labelledby="lpAiTitle"><div class="lp-wrap lp-split lp-split-rev">
+<div><p class="lp-kicker">VTG AI</p><h2 id="lpAiTitle">Clarity for every trade decision.</h2><p class="lp-sub">Get help exploring suppliers, understanding trade steps and finding your way around VTG.</p><p><a class="lp-btn lp-btn-solid" href="/vtg-ai.html">Explore VTG AI <i data-lucide="arrow-up-right"></i></a></p></div>
+<div class="lp-ask" aria-label="Example questions for VTG AI"><p class="lp-ask-label">Try asking</p><a href="/vtg-ai.html">Which documents do I need to import machinery into Nigeria?</a><a href="/vtg-ai.html">What should I check before paying a supplier?</a><a href="/vtg-ai.html">How does a letter of credit work for a first order?</a></div>
+</div></section>
+
+<section class="lp-cta" aria-labelledby="lpCtaTitle"><div class="lp-wrap">
+<h2 id="lpCtaTitle">Turn an idea into a real trade.</h2>
+<p>Sourcing, verification, finance and logistics, together in one workspace.</p>
+<div class="lp-cta-actions"><a class="lp-btn lp-btn-ivory" href="/marketplace.html">Explore the marketplace</a><a class="lp-btn lp-btn-line" href="/signin.html">Enter VTG</a><a class="lp-btn lp-btn-line" href="/partnerships.html">Become a partner</a></div>
+</div></section>
+</main>
 
 <footer class="footer vtgCompactFooter" id="vtgFooter"><div class="footerIn vtgFooterTop"><div class="vtgFooterBrand"><a href="/frontend-v3.html" aria-label="Vintage Trade Global homepage"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><p>Connecting Africa, China and the world through intelligent trade.</p></div><div class="vtgFooterLinks vtgFooterLinksSimple">
 <div><h4>Explore VTG</h4><a data-navkey="marketplace" href="/marketplace.html">Marketplace</a><a data-navkey="atlas" href="/trade-atlas.html" id="footAtlas">Trade Atlas</a><a data-navkey="ai" href="/vtg-ai.html" id="footAi">VTG AI</a></div>
 <div><h4>Company</h4><a data-navkey="about" href="/about-vintage.html">About VTG</a><a data-navkey="partnerships" href="/partnerships.html">Partnerships</a><a data-navkey="contact" href="/contact.html">Contact VTG</a></div>
 </div></div><div class="copyright vtgFooterBottom"><span>© 2026 Vintage Trade Global • Powered by Folayele Global Resources Limited</span><div><a data-navkey="privacy" href="/privacy.html">Privacy</a><a data-navkey="terms" href="/terms.html">Terms</a><a data-navkey="conduct" href="/code-of-conduct.html">Code of Conduct</a></div></div></footer>
+<script>
+(function(){
+  var rail=document.getElementById('lpRail');
+  if(!rail)return;
+  var prev=document.querySelector('[data-lp-scroll="-1"]'),next=document.querySelector('[data-lp-scroll="1"]');
+  function sync(){
+    if(prev)prev.disabled=rail.scrollLeft<=4;
+    if(next)next.disabled=rail.scrollLeft+rail.clientWidth>=rail.scrollWidth-4;
+  }
+  [prev,next].forEach(function(b){
+    if(!b)return;
+    b.addEventListener('click',function(){
+      rail.scrollBy({left:Number(b.getAttribute('data-lp-scroll'))*Math.max(240,rail.clientWidth*.85),behavior:'smooth'});
+    });
+  });
+  rail.addEventListener('scroll',sync,{passive:true});
+  window.addEventListener('resize',sync);
+  sync();
+  function icons(){if(window.lucide&&window.lucide.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.85}});}
+  // The icon library is loaded further down the page, so draw icons once everything has been parsed.
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',icons,{once:true});else icons();
+  window.addEventListener('load',icons,{once:true});
+})();
+</script>
+
 </div>
 <div class="portal" id="portal"><div class="portalWrap"><button class="portalBack" id="portalBack"><i data-lucide="arrow-left"></i> Back to landing</button><div class="accessHero"><span class="eyebrow">VTG Secure Access</span><h1 id="portalHeading">Enter your VTG workspace</h1><p id="portalIntro">One VTG account system, three specialized trade workspaces. Choose the role that matches how you use VTG.</p><div class="accessTrust"><span><i data-lucide="shield-check"></i> Secure account access</span><span><i data-lucide="layers-3"></i> Role-based workspace</span><span><i data-lucide="globe-2"></i> Africa • China • World</span></div></div><div class="rememberedRole" id="rememberedRole" hidden></div><div class="portalGrid"><div class="portalCard buyerCard" data-portal-role="buyer"><div class="portalCardTop"><div class="pIcon"><i data-lucide="shopping-cart"></i></div><span class="roleBadge">BUYER</span></div><span class="portalTag">SOURCE & IMPORT</span><h3>Buyer / Importer</h3><p>Find suppliers, compare products, request inspections, organize trade documents and coordinate your import journey.</p><div class="portalFeatures"><span>Supplier discovery</span><span>Inspection requests</span><span>Trade workspace</span></div><div class="portalActions"><a class="primary" href="/signin.html">Sign in</a><a class="portalCreate" href="/buyer-signup.html">Create buyer account <i data-lucide="arrow-right"></i></a></div></div><div class="portalCard supplierCard" data-portal-role="supplier"><div class="portalCardTop"><div class="pIcon"><i data-lucide="factory"></i></div><span class="roleBadge">SUPPLIER</span></div><span class="portalTag">SELL & EXPORT</span><h3>Supplier / Trading Company</h3><p>Build a verified company presence, showcase products, receive buyer enquiries and manage international sales activity.</p><div class="portalFeatures"><span>Company verification</span><span>Product catalogue</span><span>Buyer enquiries</span></div><div class="portalActions"><a class="primary" href="/signin.html">Sign in</a><a class="portalCreate" href="/supplier-signup.html">Create supplier account <i data-lucide="arrow-right"></i></a></div></div><div class="portalCard bankCard" data-portal-role="bank"><div class="portalCardTop"><div class="pIcon"><i data-lucide="landmark"></i></div><span class="roleBadge">FINANCE</span></div><span class="portalTag">FINANCE & SETTLEMENT</span><h3>Bank / Financial Institution</h3><p>Participate in trade finance, settlement coordination and institutional trade workflows through a verified bank profile.</p><div class="portalFeatures"><span>Institution verification</span><span>Trade finance</span><span>Settlement workflow</span></div><div class="portalActions"><a class="primary" href="/signin.html">Sign in</a><a class="portalCreate" href="/bank-signup.html">Create bank account <i data-lucide="arrow-right"></i></a></div></div></div><div class="accessNote"><i data-lucide="info"></i><span>Your last selected role is remembered on this device. You can switch roles at any time from the secure account screen.</span></div></div></div><div class="drawer" id="newsDrawer"><aside class="drawerPanel"><div class="drawerTop"><div><span class="eyebrow">Global market intelligence</span><h2>Trade News</h2></div><button class="close" data-close="newsDrawer" aria-label="Close news"><i data-lucide="x"></i></button></div><div class="ticker"><span>Vehicles • China trade • Freight • Ports • FX • Customs • Trade finance • Supply chains • Vehicles • China trade • Freight • Ports • FX • </span></div><div class="newsLarge"><article><img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=85&w=1000&auto=format&fit=crop" alt="Vehicle market"><div><h3>Chinese vehicle manufacturers are deepening African production and distribution links.</h3><p>Recent market reporting points to a stronger shift from pure vehicle exports toward local manufacturing and partnerships in African markets.</p><span class="newsSource"><i data-lucide="external-link"></i> Market source feed</span></div></article><article><img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1565610222536-ef125c59da2e?q=85&w=1000&auto=format&fit=crop" alt="Port logistics"><div><h3>Freight, shipbuilding and port conditions remain important trade signals.</h3><p>Container capacity, port congestion, energy prices and route disruptions can quickly change the landed cost of an import.</p><span class="newsSource"><i data-lucide="external-link"></i> Logistics source feed</span></div></article><article><img loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1521292270410-a8c4d716d518?q=85&w=1000&auto=format&fit=crop" alt="International finance"><div><h3>FX and financial-market movements continue to affect cross-border purchasing decisions.</h3><p>VTG's future intelligence layer can connect live currency and market data to each user's trade context.</p><span class="newsSource"><i data-lucide="external-link"></i> Finance source feed</span></div></article></div><div class="rates"><div class="rate"><b>USD / NGN</b><small>Provider integration status: not connected</small></div><div class="rate"><b>USD / CNY</b><small>Provider integration status: not connected</small></div><div class="rate"><b>BTC / USD</b><small>Provider integration status: not connected</small></div><div class="rate"><b>Freight & ports</b><small>Provider integration status: not connected</small></div></div></aside></div>
 <div class="drawer" id="mapDrawer"><aside class="drawerPanel"><div class="drawerTop"><div><span class="eyebrow">Current world atlas</span><h2>Find a trade location</h2></div><button class="close" data-close="mapDrawer" aria-label="Close map"><i data-lucide="x"></i></button></div><div class="mapSearch"><input id="mapSearch" placeholder="Search city, country, port or company location"><button id="mapSearchBtn"><i data-lucide="search"></i> Find</button><button class="locate" id="locateBtn"><i data-lucide="crosshair"></i> My location</button></div><div id="map"></div><div class="mapNote">Map data © OpenStreetMap contributors • OpenFreeMap • Search results are intended for business/trade location discovery.</div></aside></div>
@@ -349,35 +578,7 @@ window.VTGOpenAuth=openAuth;window.VTGOpenMarketIntel=()=>openVTGIntel("market")
 
 
 
-<style id="vtg-landing-hero-contrast-fix">
-/* The hero uses a dark photo overlay in both themes, so its foreground text stays light in both modes. */
-html body .hero .heroIn h1 { color:#fff!important; opacity:1!important; visibility:visible!important; text-shadow:0 1px 4px rgba(0,0,0,.45)!important; }
-html body .hero .heroIn h1 span { background:none!important; background-image:none!important; color:#ffd0cb!important; -webkit-text-fill-color:#ffd0cb!important; opacity:1!important; visibility:visible!important; text-shadow:0 1px 4px rgba(0,0,0,.6)!important; }
-html body .hero .heroIn > div:first-child > p { color:#f3f6f8!important; -webkit-text-fill-color:#f3f6f8!important; opacity:1!important; visibility:visible!important; text-shadow:0 1px 4px rgba(0,0,0,.65)!important; }
-html body .hero .heroIn > div:first-child > .eyebrow { color:#ffaaa2!important; -webkit-text-fill-color:#ffaaa2!important; opacity:1!important; }
-html body .hero .heroIn > div:first-child > .heroCore span { color:#fff!important; -webkit-text-fill-color:#fff!important; opacity:1!important; visibility:visible!important; }
-html body header.nav .navtools button#joinBtn.headerEnterBtn, html body .hero .heroIn .heroActions button#heroJoin { background:#a92722!important; background-image:none!important; color:#fff!important; -webkit-text-fill-color:#fff!important; border:2px solid #a92722!important; opacity:1!important; visibility:visible!important; text-shadow:none!important; filter:none!important; }
-html body header.nav .navtools button#joinBtn.headerEnterBtn *, html body .hero .heroIn .heroActions button#heroJoin * { color:#fff!important; -webkit-text-fill-color:#fff!important; stroke:#fff!important; opacity:1!important; visibility:visible!important; }
-@media(max-width:560px) { html body header.nav .navtools button#joinBtn.headerEnterBtn { width:auto!important; min-width:92px!important; padding:0 10px!important; justify-content:center!important; gap:6px!important; } html body header.nav .navtools button#joinBtn.headerEnterBtn span { display:inline!important; visibility:visible!important; opacity:1!important; } }
-</style>
-<style id="vtg-landing-contrast-final-20261013">
-/* Text sits directly over the hero photograph; no text-only background panels. */
-html body #heroJoin, html body #joinBtn {
- display:inline-flex!important;align-items:center!important;justify-content:center!important;
- min-height:44px!important;padding:10px 16px!important;box-sizing:border-box!important;
- background:#a92722!important;background-color:#a92722!important;background-image:none!important;
- color:#fff!important;-webkit-text-fill-color:#fff!important;border:2px solid #a92722!important;
- opacity:1!important;visibility:visible!important;text-decoration:none!important;filter:none!important;
- text-shadow:none!important;mix-blend-mode:normal!important;
-}
-html body #heroJoin *,html body #joinBtn *{color:#fff!important;-webkit-text-fill-color:#fff!important;stroke:#fff!important;opacity:1!important;visibility:visible!important}
-html body section.hero .heroIn>div:first-child>p{
- display:block!important;color:#fff!important;-webkit-text-fill-color:#fff!important;
- opacity:1!important;visibility:visible!important;background:transparent!important;
- border:0!important;border-radius:0!important;padding:0!important;box-shadow:none!important;
- text-shadow:0 2px 7px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.95)!important;mix-blend-mode:normal!important;
-}
-</style><div id="google_translate_element" aria-hidden="true"></div>
+<div id="google_translate_element" aria-hidden="true"></div>
 <script>
 (function(){
  var picker=document.getElementById('vtgLanguagePicker');
@@ -396,32 +597,4 @@ html body section.hero .heroIn>div:first-child>p{
  var sc=document.createElement('script');sc.src='https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';sc.async=true;document.head.appendChild(sc);
 })();
 </script>
-<style id="vtg-brighter-landing-20261021">
-/* Brighter daytime landing palette: preserve VTG red, remove the heavy photo tint. */
-:root{--navy:#20334a;--deep:#20334a;--teal:#148a83;--cyan:#1686c7;--gold:#d9272e;--cream:#f4f8fb;--white:#fff;--ink:#20334a;--muted:#5d6b7b;--line:#e2eaf0;--soft:#edf6fc;--shadow:0 18px 48px rgba(32,51,74,.09)}
-html:not([data-theme="dark"]) body{background:#fff;color:#20334a}
-html:not([data-theme="dark"]) .nav{background:rgba(255,255,255,.96);border-bottom-color:#e5edf3;box-shadow:0 6px 24px rgba(32,51,74,.07)}
-html:not([data-theme="dark"]) .brandText{color:#20334a}
-html:not([data-theme="dark"]) .brandText small{color:#66788a}
-html:not([data-theme="dark"]) .headerFeatureBtn{background:#f4f8fb;border-color:#e0e8ef;color:#30445a}
-html:not([data-theme="dark"]) .headerFeatureBtn:hover,html:not([data-theme="dark"]) .headerFeatureBtn:focus-visible{background:#e8f5fc;color:#126ca0;border-color:#8cc9e8}
-html:not([data-theme="dark"]) .hero{background:linear-gradient(90deg,rgba(9,35,57,.48) 0%,rgba(9,35,57,.22) 43%,rgba(9,35,57,.04) 100%),url('https://images.pexels.com/photos/20821680/pexels-photo-20821680.jpeg?auto=compress&cs=tinysrgb&w=2200') center/cover no-repeat}
-html:not([data-theme="dark"]) .hero:before{background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);background-size:46px 46px}
-html:not([data-theme="dark"]) .hero h1{color:#fff!important;text-shadow:0 2px 12px rgba(9,35,57,.3)!important}
-html:not([data-theme="dark"]) .hero h1 span{color:#ffe0dc!important;-webkit-text-fill-color:#ffe0dc!important;text-shadow:0 2px 10px rgba(9,35,57,.25)!important}
-html:not([data-theme="dark"]) .hero .heroIn>div:first-child>p{color:#fff!important;-webkit-text-fill-color:#fff!important;text-shadow:0 1px 8px rgba(9,35,57,.45)!important}
-html:not([data-theme="dark"]) .hero .heroIn>div:first-child>.eyebrow{color:#ffe2a8!important;-webkit-text-fill-color:#ffe2a8!important}
-html:not([data-theme="dark"]) .heroCore span{background:rgba(255,255,255,.17);border-color:rgba(255,255,255,.42);color:#fff}
-html:not([data-theme="dark"]) .heroCore .lucide{color:#ffd1cb}
-html:not([data-theme="dark"]) .section{background:#fff}
-html:not([data-theme="dark"]) .section:nth-of-type(even){background:#f5f9fc}
-html:not([data-theme="dark"]) .market{background:#eef7fc}
-html:not([data-theme="dark"]) .intel{background:#f5f9fc}
-html:not([data-theme="dark"]) .sectionHead h2,html:not([data-theme="dark"]) .intelCard h3{color:#20334a}
-html:not([data-theme="dark"]) .sectionHead p,html:not([data-theme="dark"]) .intelCard p{color:#5d6b7b}
-html:not([data-theme="dark"]) .card,html:not([data-theme="dark"]) .intelCard{border-color:#e2eaf0;box-shadow:0 10px 28px rgba(32,51,74,.045)}
-html:not([data-theme="dark"]) .topline{background:linear-gradient(90deg,#d9272e,#ff9a8f,#59b7e8,#148a83)}
-html[data-theme="dark"] .hero{background:linear-gradient(90deg,rgba(5,13,22,.72) 0%,rgba(5,13,22,.48) 48%,rgba(5,13,22,.18) 100%),url('https://images.pexels.com/photos/20821680/pexels-photo-20821680.jpeg?auto=compress&cs=tinysrgb&w=2200') center/cover no-repeat}
-@media(max-width:700px){html:not([data-theme="dark"]) .hero{background-position:58% center}html:not([data-theme="dark"]) .heroIn{padding-top:52px;padding-bottom:42px}}
-</style>
 </body></html>
