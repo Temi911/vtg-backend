@@ -1,231 +1,51 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Sign in to your Vintage Trade Global workspace.">
+<title>Sign in — Vintage Trade Global</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<title>Sign in — Vintage Trade Global</title>
-<style>
-:root{color-scheme:light;--bg:#f4f6f8;--panel:#fff;--ink:#20252c;--muted:#66717e;--line:#dfe4e9;--soft:#f8eeee;--red:#bd292d;--red-dark:#992126;--accent:#f5b8ad;--shadow:0 24px 70px rgba(24,32,42,.13)}
-html[data-theme="dark"]{color-scheme:dark;--bg:#0d1117;--panel:#141a21;--ink:#f2f5f7;--muted:#b3bec8;--line:#303944;--soft:#25191b;--red:#e05a4f;--red-dark:#bd3b35;--accent:#ff9b91;--shadow:0 24px 70px rgba(0,0,0,.3)}
-*{box-sizing:border-box}html{min-height:100%;background:var(--bg)}body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Manrope',sans-serif;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}a{color:inherit;text-decoration:none}button,input{font:inherit}.topline{height:4px;background:linear-gradient(90deg,#741a1b,#bd292d,#ef776d)}
-.page{min-height:calc(100vh - 4px);padding:22px;display:grid;place-items:center}.layout{width:min(1120px,100%);min-height:min(720px,calc(100vh - 48px));display:grid;grid-template-columns:1.04fr .96fr;background:var(--panel);border:1px solid var(--line);border-radius:28px;overflow:hidden;box-shadow:var(--shadow)}
-.story{position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:34px;color:#fff;background:#171d24 url('https://images.pexels.com/photos/11825324/pexels-photo-11825324.jpeg?auto=compress&cs=tinysrgb&w=1800') center/cover no-repeat}
-.story:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(145deg,rgba(14,19,25,.84),rgba(22,25,32,.53) 54%,rgba(112,22,25,.68))}
-.story:after{content:"";position:absolute;z-index:-1;width:340px;height:340px;border:1px solid rgba(255,255,255,.18);border-radius:50%;right:-150px;bottom:-125px;box-shadow:0 0 0 36px rgba(255,255,255,.035),0 0 0 72px rgba(255,255,255,.025)}
-.brandline{display:flex;align-items:center;gap:12px;position:relative;z-index:1}.logoWrap{width:52px;height:52px;background:#fff;border-radius:13px;padding:7px;display:grid;place-items:center;flex:none}.logoWrap img{display:block;width:100%;height:100%;object-fit:contain}.brandName{font-size:12px;font-weight:800;letter-spacing:.09em;line-height:1.45}.brandName small{display:block;font-size:9px;font-weight:600;letter-spacing:.04em;color:#d8e0e6;margin-top:3px}
-.storyCopy{position:relative;z-index:1;padding:52px 0 46px;max-width:470px}.kicker{display:inline-flex;align-items:center;gap:9px;color:#ffb0a7;text-transform:uppercase;font-size:10px;font-weight:800;letter-spacing:.16em}.kicker:before{content:"";width:22px;height:2px;background:#e05a4f}.story h1{font-size:clamp(34px,4.1vw,55px);line-height:1.06;letter-spacing:-.045em;margin:18px 0 17px;color:#fff}.story h1 em{font-style:normal;color:#ff9389}.storyCopy p{max-width:410px;margin:0;color:#e0e5e9;font-size:13px;line-height:1.85}.pillRow{display:flex;flex-wrap:wrap;gap:8px;margin-top:25px}.pill{display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.24);background:rgba(14,18,24,.32);border-radius:999px;padding:9px 11px;font-size:9px;font-weight:700;color:#f5f7f8;backdrop-filter:blur(8px)}.pill i{width:6px;height:6px;border-radius:50%;background:#ff8a80}.storyFoot{position:relative;z-index:1;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#d5dce1;font-size:9px}.storyFoot span{display:flex;align-items:center;gap:7px}.storyFoot b{color:#fff}
-.formSide{position:relative;display:flex;flex-direction:column;justify-content:center;padding:clamp(28px,4vw,58px);background:var(--panel)}.topActions{position:absolute;top:22px;right:24px;display:flex;align-items:center;gap:8px}.themeToggle{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:10px;padding:8px 10px;font-size:10px;font-weight:800;cursor:pointer}.homeLink{font-size:10px;color:var(--muted);font-weight:700;padding:8px}.homeLink:hover{color:var(--red)}
-.formIntro{margin-top:28px}.eyebrow{color:var(--red);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.14em}.formIntro h2{font-size:clamp(28px,3vw,37px);letter-spacing:-.045em;line-height:1.15;margin:10px 0 9px;color:var(--ink)}.sub{font-size:12px;line-height:1.7;color:var(--muted);margin:0 0 24px}
-.roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 22px}.roles button{min-height:43px;border:1px solid var(--line);background:var(--panel);border-radius:11px;padding:10px 6px;font-size:11px;font-weight:800;color:var(--muted);cursor:pointer;transition:background .18s,border-color .18s,color .18s}.roles button:hover{border-color:var(--red)}.roles button.active{background:var(--soft);border-color:var(--red);color:var(--red)}
-label{display:block;font-size:11px;font-weight:800;color:var(--ink);margin:15px 0 7px}.field{position:relative}.fieldIcon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);pointer-events:none}.field input{display:block;width:100%;min-height:48px;border:1px solid var(--line);border-radius:12px;padding:12px 75px 12px 40px;background:var(--panel);color:var(--ink);outline:none;font-size:12px;transition:border-color .18s,box-shadow .18s}.field input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(189,41,45,.12)}.field input::placeholder{color:var(--muted);opacity:.8}.toggle{position:absolute;right:7px;top:7px;min-width:54px;min-height:34px;border:0;background:var(--soft);border-radius:8px;padding:6px 9px;font-size:10px;font-weight:800;color:var(--red);cursor:pointer}
-.formMeta{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:15px;font-size:10px}.remember{display:flex;align-items:center;gap:7px;color:var(--muted);cursor:pointer}.remember input{accent-color:var(--red);width:14px;height:14px;margin:0}.forgot{color:var(--red);font-weight:800}.forgot:hover,.bottomLinks a:hover{text-decoration:underline}
-.primary{width:100%;min-height:49px;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:22px;border:0;border-radius:12px;background:var(--red);color:#fff;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 10px 22px rgba(189,41,45,.18);transition:transform .18s,background .18s}.primary:hover{background:var(--red-dark);transform:translateY(-1px)}.primary:focus-visible,.roles button:focus-visible,.themeToggle:focus-visible{outline:3px solid rgba(189,41,45,.35);outline-offset:2px}
-.msg{min-height:18px;margin:10px 0 -7px;font-size:10px;line-height:1.55;color:var(--red)}.msg.ok{color:#16835d}.bottomLinks{border-top:1px solid var(--line);margin-top:22px;padding-top:20px;text-align:center;color:var(--muted);font-size:11px}.bottomLinks a{color:var(--red);font-weight:800}.securityNote{display:flex;align-items:center;justify-content:center;gap:7px;color:var(--muted);font-size:9px;margin-top:22px}.securityNote span{color:#26956d}
-@media(min-width:1200px){.layout{min-height:690px}}
-@media(max-width:760px){.page{padding:12px;display:block}.layout{width:100%;min-height:calc(100vh - 28px);grid-template-columns:1fr;border-radius:20px}.story{min-height:245px;padding:20px 22px 22px;background-position:center 48%}.logoWrap{width:42px;height:42px;border-radius:11px}.brandName{font-size:10px}.storyCopy{padding:28px 0 8px}.story h1{font-size:clamp(28px,7vw,38px);margin:10px 0}.storyCopy p{font-size:11px;line-height:1.6;max-width:500px}.pillRow{margin-top:14px;gap:6px}.pill{font-size:8px;padding:7px 9px}.storyFoot{display:none}.formSide{padding:25px 22px 27px}.topActions{top:14px;right:15px}.formIntro{margin-top:29px}.formIntro h2{font-size:29px}.sub{margin-bottom:19px}.roles{margin-bottom:18px}}
-@media(max-width:380px){.page{padding:0}.layout{border-radius:0;border-left:0;border-right:0;min-height:100vh}.story{min-height:220px;padding:17px}.story h1{font-size:27px}.formSide{padding:22px 17px}.homeLink{display:none}.roles button{font-size:10px}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
-
-
-/* Contrast hardening: the photo panel intentionally stays dark in either theme so its white overlay copy remains readable. */
-.story{color:#fff!important;background-color:#171d24!important}
-.story:before{background:linear-gradient(145deg,rgba(7,12,18,.91),rgba(12,18,25,.76) 54%,rgba(91,16,21,.82))!important}
-.story .brandName,.story .brandName small,.story .storyCopy p,.story .storyFoot,.story .storyFoot span{color:#f1f5f7!important}
-.story .story h1,.story h1,.story h1 em{color:#fff!important}
-.story .story h1 em,.story h1 em{color:#ffaaa1!important}
-.story .kicker{color:#ffc0b7!important}
-.story .pill{color:#fff!important;background:rgba(7,12,18,.68)!important;border-color:rgba(255,255,255,.38)!important}
-.story .storyFoot b{color:#fff!important}
-.logoWrap{background:#fff!important}
-.logoWrap img{filter:none!important}
-html[data-theme="light"] .formSide,html[data-theme="light"] .layout{color:#20252c}
-html[data-theme="dark"] .formSide,html[data-theme="dark"] .layout{color:#f2f5f7}
-.formSide .formIntro h2,.formSide label{color:var(--ink)!important}
-.formSide .sub,.formSide .remember,.formSide .securityNote,.formSide .bottomLinks{color:var(--muted)!important}
-.formSide input{color:var(--ink)!important;background:var(--panel)!important;border-color:var(--line)!important;opacity:1}
-.formSide input::placeholder{color:var(--muted)!important;opacity:1!important}
-.formSide input:-webkit-autofill,.formSide input:-webkit-autofill:hover,.formSide input:-webkit-autofill:focus{-webkit-text-fill-color:var(--ink)!important;box-shadow:0 0 0 1000px var(--panel) inset!important;caret-color:var(--ink)}
-.formSide .roles button{color:var(--muted)!important;background:var(--panel)!important;border-color:var(--line)!important}
-.formSide .roles button.active{color:var(--red)!important;background:var(--soft)!important;border-color:var(--red)!important}
-.formSide .toggle{color:var(--red)!important;background:var(--soft)!important}
-.formSide .forgot,.formSide .bottomLinks a{color:var(--red)!important}
-.formSide .msg{color:var(--red)!important}
-.formSide .msg.ok{color:#16835d!important}
-html[data-theme="dark"] .formSide .msg.ok{color:#65d6a9!important}
-.formSide .securityNote span{color:#16835d!important}
-html[data-theme="dark"] .formSide .securityNote span{color:#65d6a9!important}
-
-
-
-/* Explicit light-mode fixes for the exact sign-in copy reported as unreadable. */
-html[data-theme="light"] body .page .layout .story,
-html[data-theme="light"] body .page .layout .story *{
-  color:#fff!important;
-  -webkit-text-fill-color:currentColor!important;
-}
-html[data-theme="light"] body .page .layout .story{
-  background-color:#151b22!important;
-  background-blend-mode:normal!important;
-}
-html[data-theme="light"] body .page .layout .story:before{
-  background:linear-gradient(145deg,rgba(5,10,16,.94),rgba(8,14,21,.86) 54%,rgba(91,16,21,.88))!important;
-}
-html[data-theme="light"] body .page .layout .story .brandName,
-html[data-theme="light"] body .page .layout .story .brandName small,
-html[data-theme="light"] body .page .layout .story .kicker,
-html[data-theme="light"] body .page .layout .story .storyCopy p,
-html[data-theme="light"] body .page .layout .story .storyFoot,
-html[data-theme="light"] body .page .layout .story .storyFoot span{
-  color:#f5f7f9!important;
-  -webkit-text-fill-color:#f5f7f9!important;
-  text-shadow:0 1px 3px rgba(0,0,0,.5)!important;
-}
-html[data-theme="light"] body .page .layout .story h1,
-html[data-theme="light"] body .page .layout .story h1 em,
-html[data-theme="light"] body .page .layout .story .storyFoot b{
-  color:#fff!important;
-  -webkit-text-fill-color:#fff!important;
-  text-shadow:0 2px 5px rgba(0,0,0,.55)!important;
-}
-html[data-theme="light"] body .page .layout .story h1 em{color:#ffaaa1!important;-webkit-text-fill-color:#ffaaa1!important}
-html[data-theme="light"] body .page .layout .story .pill{
-  color:#fff!important;-webkit-text-fill-color:#fff!important;
-  background:rgba(5,10,16,.82)!important;border-color:rgba(255,255,255,.48)!important;
-}
-html[data-theme="light"] body .page .layout .formSide,
-html[data-theme="light"] body .page .layout .formSide *{
-  -webkit-text-fill-color:currentColor;
-}
-html[data-theme="light"] body .page .layout .formSide .formIntro h1,
-html[data-theme="light"] body .page .layout .formSide .formIntro h2,
-html[data-theme="light"] body .page .layout .formSide h1,
-html[data-theme="light"] body .page .layout .formSide h2{
-  color:#17212b!important;-webkit-text-fill-color:#17212b!important;
-}
-html[data-theme="light"] body .page .layout .formSide .eyebrow,
-html[data-theme="light"] body .page .layout .formSide .formIntro .eyebrow{
-  color:#a52228!important;-webkit-text-fill-color:#a52228!important;
-}
-html[data-theme="light"] body .page .layout .formSide .sub{
-  color:#526273!important;-webkit-text-fill-color:#526273!important;
-}
-html[data-theme="light"] body .page .layout .formSide label,
-html[data-theme="light"] body .page .layout .formSide .remember{
-  color:#263442!important;-webkit-text-fill-color:#263442!important;
-}
-html[data-theme="light"] body .page .layout .formSide .securityNote,
-html[data-theme="light"] body .page .layout .formSide .bottomLinks{
-  color:#526273!important;-webkit-text-fill-color:#526273!important;
-}
-
-
-/* Final sign-in intro contrast guard: readable in light mode and dark mode. */
-html[data-theme="light"] body .page .layout .formSide .formIntro .eyebrow {
-  color: #a52228 !important;
-  -webkit-text-fill-color: #a52228 !important;
-  opacity: 1 !important;
-}
-html[data-theme="light"] body .page .layout .formSide .formIntro #signin-title {
-  color: #17212b !important;
-  -webkit-text-fill-color: #17212b !important;
-  opacity: 1 !important;
-  text-shadow: none !important;
-}
-html[data-theme="light"] body .page .layout .formSide .formIntro .sub {
-  color: #435365 !important;
-  -webkit-text-fill-color: #435365 !important;
-  opacity: 1 !important;
-  text-shadow: none !important;
-}
-html[data-theme="dark"] body .page .layout .formSide .formIntro .eyebrow {
-  color: #ffaaa1 !important;
-  -webkit-text-fill-color: #ffaaa1 !important;
-  opacity: 1 !important;
-}
-html[data-theme="dark"] body .page .layout .formSide .formIntro #signin-title {
-  color: #f7f9fb !important;
-  -webkit-text-fill-color: #f7f9fb !important;
-  opacity: 1 !important;
-}
-html[data-theme="dark"] body .page .layout .formSide .formIntro .sub {
-  color: #c2ccd5 !important;
-  -webkit-text-fill-color: #c2ccd5 !important;
-  opacity: 1 !important;
-}
-
-
-/* Light is the default when no data-theme attribute exists; cover that state too. */
-html:not([data-theme="dark"]) body .page .layout .formSide .formIntro .eyebrow {
-  color: #a52228 !important;
-  -webkit-text-fill-color: #a52228 !important;
-  opacity: 1 !important;
-}
-html:not([data-theme="dark"]) body .page .layout .formSide .formIntro #signin-title {
-  color: #17212b !important;
-  -webkit-text-fill-color: #17212b !important;
-  opacity: 1 !important;
-  text-shadow: none !important;
-  visibility: visible !important;
-}
-html:not([data-theme="dark"]) body .page .layout .formSide .formIntro .sub {
-  color: #435365 !important;
-  -webkit-text-fill-color: #435365 !important;
-  opacity: 1 !important;
-  text-shadow: none !important;
-  visibility: visible !important;
-}
-
-</style>
-<script>(function(){try{document.documentElement.setAttribute('data-theme',((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark'))}catch(e){}})();</script><link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
+<link rel="stylesheet" href="/vtg-auth.css?v=20261030-1">
 </head>
-<body><div class="topline"></div>
-<main class="page">
-  <div class="layout">
-    <section class="story" aria-label="VTG international trade">
-      <div class="brandline">
-        <div class="logoWrap"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global logo"></div>
-        <div class="brandName">VINTAGE TRADE GLOBAL<small>Africa · China · South Korea · World</small></div>
-      </div>
-      <div class="storyCopy">
-        <span class="kicker">Your trade workspace</span>
-        <h1>Trade beyond<br><em>borders.</em></h1>
-        <p>Connect sourcing, verified suppliers, logistics and trade finance in one workspace built for cross-border business.</p>
-        <div class="pillRow"><span class="pill"><i></i> Supplier connections</span><span class="pill"><i></i> Shipment visibility</span><span class="pill"><i></i> Trade finance</span></div>
-      </div>
-      <div class="storyFoot"><span>Built for global trade <b>·</b> Designed for connection</span><span>VTG · Secure workspace</span></div>
-    </section>
-    <section class="formSide" aria-labelledby="signin-title">
-      <div class="topActions"><button class="themeToggle" id="themeToggle" type="button" aria-label="Switch color theme">☼ / ◐ Theme</button><a class="homeLink" href="/">← VTG home</a></div>
-      <div class="formIntro">
-        <span class="eyebrow">Secure access</span>
-        <h2 id="signin-title">Welcome back to global trade.</h2>
-        <p class="sub">Secure access to your VTG workspace.</p>
-      </div>
-      <div class="roles" aria-label="Choose account type">
-        <button type="button" data-role="buyer" class="active">Buyer</button>
-        <button type="button" data-role="supplier">Supplier</button>
-        <button type="button" data-role="bank">Bank</button>
-      </div>
-      <form id="form">
-        <label for="email">Email address</label>
-        <div class="field"><span class="fieldIcon" aria-hidden="true">✉</span><input id="email" name="email" type="email" autocomplete="email" placeholder="Enter your registered email" required></div>
-        <label for="password">Password</label>
-        <div class="field"><span class="fieldIcon" aria-hidden="true">⌑</span><input id="password" name="password" type="password" minlength="8" autocomplete="current-password" placeholder="Enter your password" required><button class="toggle" id="toggle" type="button" aria-label="Show password">Show</button></div>
-        <div class="formMeta"><label class="remember" for="remember"><input id="remember" type="checkbox" name="remember"> Remember me</label><a class="forgot" id="accountHelpLink" href="/account-help.html?role=buyer">Need sign-in help?</a></div>
-        <div id="msg" class="msg" role="status" aria-live="polite"></div>
-        <button class="primary" type="submit"><span>Sign in to VTG</span><span aria-hidden="true">→</span></button>
-      </form>
-      <div class="bottomLinks">New to VTG? <a id="signup" href="/signup.html">Create an account</a></div>
-      <div class="securityNote"><span aria-hidden="true">●</span> Your account access is protected by VTG authentication.</div>
-   </section>
-  </div>
+<body>
+<div id="vsHeader" data-active=""></div>
+<script src="/vtg-shell.js?v=20261030-1"></script>
+<main id="main" class="au">
+<section class="au-form" aria-labelledby="signin-title"><div class="au-card">
+<span class="vs-eyebrow">Secure access</span>
+<h1 id="signin-title">Welcome back.</h1>
+<p class="sub">Sign in to your VTG workspace.</p>
+<div class="roles" role="group" aria-label="Choose account type">
+<button type="button" data-role="buyer" class="active">Buyer</button>
+<button type="button" data-role="supplier">Supplier</button>
+<button type="button" data-role="bank">Bank</button>
+</div>
+<form id="form">
+<div><label for="email">Email address</label><div class="field"><input id="email" name="email" type="email" autocomplete="email" placeholder="you@company.com" required></div></div>
+<div><label for="password">Password</label><div class="field"><input id="password" name="password" type="password" minlength="8" autocomplete="current-password" placeholder="Your password" required><button class="toggle" id="toggle" type="button" aria-label="Show password">Show</button></div></div>
+<div class="formMeta"><label class="remember" for="remember"><input id="remember" type="checkbox" name="remember"> Remember me</label><a class="forgot" id="accountHelpLink" href="/account-help.html?role=buyer">Need sign-in help?</a></div>
+<div id="msg" class="msg" role="status" aria-live="polite"></div>
+<button class="primary" type="submit"><span>Sign in to VTG</span><span aria-hidden="true">&rarr;</span></button>
+</form>
+<p class="au-links">New to VTG? <a id="signup" href="/signup.html">Create an account</a></p>
+<p class="au-secure">Your account access is protected by VTG authentication.</p>
+</div></section>
+<aside class="au-side" style="background-image:url('https://images.pexels.com/photos/7572149/pexels-photo-7572149.jpeg?auto=compress&cs=tinysrgb&w=1400')" aria-label="Why trade with VTG">
+<h2>Trade beyond borders.</h2>
+<ul>
+<li><span><b>Verified suppliers</b>Browse supplier storefronts in China and South Korea.</span></li>
+<li><span><b>Inspection and finance</b>Check goods before dispatch and plan payment.</span></li>
+<li><span><b>Shipment visibility</b>Follow customs and delivery in one workspace.</span></li>
+</ul>
+</aside>
 </main>
+<div id="vsFooter"></div>
 <script>
 const API=window.VTG_API_BASE||'';
-document.getElementById('themeToggle').onclick=()=>{const root=document.documentElement;const next=root.getAttribute('data-theme')==='dark'?'light':'dark';root.setAttribute('data-theme',next);try{localStorage.setItem('vtg-theme',next);localStorage.setItem('vtg-theme-mode','manual')}catch(e){}};
-try{const saved=localStorage.getItem('vtg-theme');if(saved==='dark'||saved==='light')document.documentElement.setAttribute('data-theme',saved)}catch(e){}
 let role=['buyer','supplier','bank'].includes(new URLSearchParams(location.search).get('role'))?new URLSearchParams(location.search).get('role'):'buyer';const nextPath=new URLSearchParams(location.search).get('next');const allowedNextByRole={buyer:['/buyer-dashboard.html','/intelligence-centre.html'],supplier:['/supplier-dashboard.html','/intelligence-centre.html'],bank:['/bank-trade-os.html','/intelligence-centre.html']};const safeNext=(allowedNextByRole[role]||[]).includes(nextPath)?nextPath:'';
 const signup=document.getElementById('signup'),msg=document.getElementById('msg'),accountHelpLink=document.getElementById('accountHelpLink');
 signup.href=({buyer:'/buyer-signup.html',supplier:'/supplier-signup.html',bank:'/bank-signup.html'})[role]||'/signup.html';
@@ -235,6 +55,5 @@ syncRole();
 document.getElementById('toggle').onclick=()=>{const p=document.getElementById('password'),b=document.getElementById('toggle');p.type=p.type==='password'?'text':'password';b.textContent=p.type==='password'?'Show':'Hide'};
 document.getElementById('form').onsubmit=async e=>{e.preventDefault();msg.className='msg';msg.textContent='';const d=Object.fromEntries(new FormData(e.currentTarget));try{const r=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:d.email,password:d.password})});const out=await r.json();if(!r.ok)throw Error(out.message||'Sign in failed');if(out.user?.role&&String(out.user.role).toLowerCase()!==role){const names={buyer:'Buyer',supplier:'Supplier',bank:'Bank'};throw Error('This account is registered as a '+(names[out.user.role]||out.user.role)+'. Please select '+(names[out.user.role]||out.user.role)+' above.')}if(out.accessToken){localStorage.setItem('vtg_access_token',out.accessToken);localStorage.setItem('vtg-auth',JSON.stringify({user:out.user,accessToken:out.accessToken,refreshToken:out.refreshToken||null}));localStorage.setItem('vtg-language',out.user?.preferredLanguage||'en');localStorage.setItem('vtg-country',out.user?.country||'')}msg.className='msg ok';msg.textContent='Signed in successfully. Opening your VTG workspace…';setTimeout(()=>{if(out.agreementRequired){location.href='/signup-agreement.html';return}if(safeNext&&String(out.user?.role||'').toLowerCase()===role){location.href=safeNext;return}if(String(out.user?.role||'').toLowerCase()==='supplier'){location.href='/supplier-dashboard.html';return}if(String(out.user?.role||'').toLowerCase()==='bank'){location.href='/bank-trade-os.html';return}location.href=String(out.user?.role||'').toLowerCase()==='buyer'?'/buyer-dashboard.html':'/'},450)}catch(err){msg.textContent=err.message||'Sign in failed'}};
 </script>
-<script src="/page-visuals.js?v=20261013-auth-layout-redesign-1"></script>
-<script src="/vtg-site-navigation.js?v=20261020-universal-header-1" defer></script>
-</body></html>
+</body>
+</html>
