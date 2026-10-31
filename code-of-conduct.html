@@ -1,23 +1,22 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#5b1712">
+<meta name="description" content="">
 <title>VTG Code of Conduct | Vintage Trade Global</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{--red:#8f1d17;--ink:#2f1110;--muted:#5f6874;--line:#e4e7ec;--paper:#f5f8f8;--card:#fff}
-html[data-theme="dark"]{--ink:#eef3f6;--muted:#b9c5ce;--line:#2b3640;--paper:#0d1117;--card:#11161d}
-*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Manrope,Arial,sans-serif}.page{width:min(920px,calc(100% - 32px));margin:36px auto 52px;padding:clamp(22px,4vw,44px);background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:0 18px 50px rgba(0,0,0,.06)}.eyebrow{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--red)}h1{font-size:clamp(30px,5vw,46px);line-height:1.1;margin:10px 0 14px;color:var(--red)}.intro{font-size:15px;line-height:1.8;color:var(--muted);max-width:740px}h2{font-size:18px;margin:28px 0 8px}p,li{font-size:13px;line-height:1.8;color:var(--muted)}ul{padding-left:21px}.note{padding:15px 17px;border:1px solid var(--line);border-radius:12px;background:rgba(143,29,23,.045);font-size:12px;line-height:1.75}@media(max-width:600px){.page{margin:20px auto 36px}}
-</style>
-<script>(function(){try{document.documentElement.setAttribute('data-theme',((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark'))}catch(e){}})();</script>
-<link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
+<link rel="stylesheet" href="/vtg-content.css?v=20261030-1">
+
 </head>
 <body>
-<main class="page">
+<div id="vsHeader" data-active=""></div>
+<script src="/vtg-shell.js?v=20261030-1"></script>
+<main id="main">
+<article class="legal">
 <div class="eyebrow">Vintage Trade Global · Responsible Trade</div>
 <h1>Code of Conduct</h1>
 <p class="intro">VTG connects buyers, suppliers, financial institutions, service partners and trade professionals. Everyone using the platform is expected to act honestly, respectfully and responsibly throughout trade-related activity.</p>
@@ -36,7 +35,10 @@ html[data-theme="dark"]{--ink:#eef3f6;--muted:#b9c5ce;--line:#2b3640;--paper:#0d
 <h2>7. Reporting and response</h2>
 <p>Concerns about suspected misconduct can be raised through the <a href="/contact.html">VTG Contact page</a> or by emailing vintageafricatrade@gmail.com. VTG may review reports and restrict or suspend access where appropriate, subject to its applicable platform terms and processes.</p>
 <div class="note">This page summarises expected platform conduct. It should be read together with the <a href="/terms.html">VTG Signup &amp; Platform Agreement</a> and <a href="/privacy.html">Privacy Policy</a>. It does not replace legal advice or applicable law.</div>
+</article>
 </main>
-<script src="/vtg-site-navigation.js?v=20261020-universal-header-1" defer></script>
+<div id="vsFooter"></div>
+
+
 </body>
 </html>
