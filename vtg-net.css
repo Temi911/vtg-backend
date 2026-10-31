@@ -1,0 +1,125 @@
+/* Trade network (public group + account feed) — shell tokens, readable sizes */
+body.net{background:var(--vs-bg);color:var(--vs-ink)}
+.net .wrap{width:min(1320px,calc(100% - 40px));margin:0 auto}
+.net .muted{color:var(--vs-muted)}
+.net .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:0 16px;border-radius:10px;border:1px solid var(--vs-line-2);background:var(--vs-paper);color:var(--vs-ink);font-weight:700;font-size:.9375rem;cursor:pointer;text-decoration:none}
+.net .btn:hover{border-color:var(--vs-blue);color:var(--vs-blue)}
+.net .btn.primary{background:var(--vs-blue);border-color:var(--vs-blue);color:#fff}
+html[data-theme="dark"] .net .btn.primary{color:#08162A}
+.net .btn.primary:hover{background:var(--vs-blue-h);color:#fff}
+html[data-theme="dark"] .net .btn.primary:hover{color:#08162A}
+.net .btn.small{min-height:34px;padding:0 12px;font-size:.875rem}
+.net .btn[disabled]{opacity:.55;cursor:not-allowed}
+.net .icon,.net svg.icon{width:16px;height:16px;flex:none}
+.net .intro{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding:36px 0 24px}
+.net .eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:.8125rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--vs-blue)}
+.net .eyebrow::before{content:"";width:22px;height:3px;border-radius:2px;background:var(--vs-sun)}
+.net h1{font-size:clamp(1.9rem,3.6vw,2.7rem);letter-spacing:-.03em;line-height:1.1;margin:10px 0}
+.net .intro p{max-width:64ch;color:var(--vs-ink-2);line-height:1.7;font-size:1.0625rem}
+.net .intro-side{display:flex;flex-direction:column;align-items:flex-end;gap:12px}
+.net .liveflag{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--vs-line-2);border-radius:999px;padding:8px 14px;background:var(--vs-paper);color:var(--vs-ink-2);font-size:.8125rem;font-weight:700}
+.net .liveflag i{width:8px;height:8px;border-radius:50%;background:var(--vs-ok)}
+.net .layout{display:grid;grid-template-columns:240px minmax(0,1fr) 300px;gap:20px;align-items:start;padding-bottom:40px}
+.net .panel{background:var(--vs-paper);border:1px solid var(--vs-line);border-radius:14px;box-shadow:var(--vs-shadow);min-width:0;overflow:hidden}
+.net .left,.net .right{position:sticky;top:84px}
+.net .sidebox{padding:18px;margin-bottom:16px}
+.net .side-title{font-size:.8125rem;color:var(--vs-muted);font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin:0 0 12px}
+.net .filters{display:grid;gap:4px}
+.net .filter{width:100%;display:flex;align-items:center;gap:10px;min-height:44px;text-align:left;background:transparent;border:1px solid transparent;color:var(--vs-ink-2);border-radius:10px;padding:0 12px;font-size:.9375rem;font-weight:700;cursor:pointer}
+.net .filter svg{width:18px;height:18px;color:var(--vs-muted)}
+.net .filter:hover{background:var(--vs-tint)}
+.net .filter.active{background:var(--vs-blue-soft);border-color:var(--vs-blue);color:var(--vs-ink);box-shadow:inset 3px 0 0 var(--vs-sun)}
+.net .filter.active svg{color:var(--vs-blue)}
+.net .side-note{font-size:.875rem;line-height:1.65;color:var(--vs-muted);margin:0 0 8px}
+.net .side-note strong{color:var(--vs-ink)}
+.net .center{min-width:0}
+.net .composer{padding:20px;margin-bottom:16px}
+.net .public-composer{background:var(--vs-tint)}
+.net .public-feed-note p{color:var(--vs-ink-2);font-size:.9375rem;line-height:1.65;margin:6px 0 0}
+.net .composer-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.net .avatar{width:42px;height:42px;flex:none;border-radius:12px;display:grid;place-items:center;background:var(--vs-blue);color:#fff;font-weight:800;font-size:.875rem;overflow:hidden}
+html[data-theme="dark"] .net .avatar{color:#08162A}
+.net .avatar img{width:100%;height:100%;object-fit:cover}
+.net .composer-title{font-size:1rem;font-weight:800}
+.net .composer textarea{display:block;width:100%;resize:vertical;min-height:96px;background:var(--vs-paper);border:1px solid var(--vs-line-2);border-radius:12px;padding:14px;color:var(--vs-ink);outline:none;font-size:1rem;line-height:1.6}
+.net .composer textarea:focus,.net .composer input:focus,.net .composer select:focus,.net .comment-form input:focus{border-color:var(--vs-blue);box-shadow:0 0 0 4px color-mix(in srgb,var(--vs-blue) 18%,transparent)}
+.net .compose-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.net .compose-tools select,.net .compose-tools input{min-width:0;min-height:42px;background:var(--vs-paper);color:var(--vs-ink);border:1px solid var(--vs-line-2);border-radius:10px;padding:0 12px;font-size:.9375rem}
+.net .compose-tools input[type=url]{flex:1;min-width:180px}
+.net .filepick{display:none}
+.net .filehint{font-size:.8125rem;color:var(--vs-muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.net .compose-notice{font-size:.8125rem;color:var(--vs-muted);line-height:1.6;margin-top:12px}
+.net .feedtop{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 2px 12px}
+.net .feedtop h2{font-size:1.25rem;margin:0}
+.net .feedtop select{min-height:40px;background:var(--vs-paper);border:1px solid var(--vs-line-2);color:var(--vs-ink);border-radius:10px;padding:0 12px;font-size:.9375rem}
+.net .post{padding:20px;margin-bottom:16px}
+.net .posthead{display:flex;align-items:flex-start;gap:12px}
+.net .postmeta{flex:1;min-width:0}
+.net .authorline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.net .author{font-size:1rem;font-weight:800}
+.net .verified{display:inline-flex;align-items:center;gap:4px;color:var(--vs-ok);font-size:.75rem;font-weight:800}
+.net .verified svg{width:14px;height:14px}
+.net .role{border:1px solid var(--vs-line-2);color:var(--vs-ink-2);background:var(--vs-tint);padding:3px 8px;border-radius:6px;text-transform:uppercase;font-size:.6875rem;font-weight:800;letter-spacing:.06em}
+.net .role.bank{background:var(--vs-blue-soft);color:var(--vs-ink)}
+.net .role.supplier{background:var(--vs-ok-soft);color:var(--vs-ok);border-color:transparent}
+.net .role.buyer{background:var(--vs-sun-soft);color:var(--vs-ink);border-color:transparent}
+.net .posttime{font-size:.8125rem;color:var(--vs-muted);margin-top:4px}
+.net .typepill{font-size:.75rem;font-weight:800;color:var(--vs-ink-2);border:1px solid var(--vs-line-2);border-radius:999px;padding:4px 10px;white-space:nowrap}
+.net .typepill.advert{background:var(--vs-sun-soft);color:var(--vs-ink);border-color:transparent}
+.net .typepill.news{background:var(--vs-blue-soft);color:var(--vs-ink);border-color:transparent}
+.net .postbody{font-size:1rem;line-height:1.75;color:var(--vs-ink);white-space:pre-wrap;overflow-wrap:anywhere;margin:14px 0}
+.net .postlink{display:inline-flex;align-items:center;gap:6px;color:var(--vs-blue);font-size:.9375rem;font-weight:800;margin:0 0 10px;text-decoration:underline;text-underline-offset:3px}
+.net .media-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:12px 0;border-radius:12px;overflow:hidden}
+.net .media-grid img,.net .media-grid video{width:100%;height:220px;object-fit:cover;background:var(--vs-tint)}
+.net .statsline{display:flex;justify-content:space-between;gap:10px;color:var(--vs-muted);font-size:.875rem;padding:10px 0;border-bottom:1px solid var(--vs-line)}
+.net .postactions{display:flex;gap:6px;align-items:center;padding-top:10px}
+.net .postactions button{flex:1;min-width:0;min-height:42px;background:transparent;border:1px solid transparent;border-radius:10px;padding:0 6px;color:var(--vs-ink-2);display:flex;align-items:center;justify-content:center;gap:8px;font-size:.9375rem;font-weight:700;cursor:pointer}
+.net .postactions button:hover{background:var(--vs-tint);color:var(--vs-ink)}
+.net .postactions button.liked{color:var(--vs-blue);background:var(--vs-blue-soft)}
+.net .postactions svg{width:18px;height:18px}
+.net .comments{display:none;border-top:1px solid var(--vs-line);margin-top:10px;padding-top:14px}
+.net .comments.open{display:block}
+.net .comment-list{display:grid;gap:10px;margin-bottom:12px}
+.net .comment{background:var(--vs-tint);border:1px solid var(--vs-line);border-radius:10px;padding:12px;font-size:.9375rem;line-height:1.6}
+.net .comment strong{display:block;margin-bottom:2px}
+.net .comment-form{display:flex;gap:8px}
+.net .comment-form input{flex:1;min-width:0;min-height:42px;background:var(--vs-paper);color:var(--vs-ink);border:1px solid var(--vs-line-2);border-radius:10px;padding:0 12px;font-size:1rem}
+.net .comment-empty{font-size:.9375rem;color:var(--vs-muted);padding:6px 0}
+.net .news-source{background:var(--vs-blue-soft)}
+.net .news-source .news-label{display:flex;align-items:center;gap:8px;color:var(--vs-blue);font-size:.8125rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em}
+.net .news-source h3{font-size:1.1875rem;line-height:1.45;margin:12px 0 8px}
+.net .news-source .summary{font-size:.9688rem;line-height:1.7;color:var(--vs-ink-2)}
+.net .news-source .postactions{border-top:1px solid var(--vs-line-2);margin-top:12px}
+.net .rightbox{padding:18px;margin-bottom:16px}
+.net .rightbox h3{font-size:1rem;margin:0 0 12px}
+.net .suggestion{display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--vs-line)}
+.net .suggestion:first-of-type{border-top:0;padding-top:0}
+.net .suggestion .avatar{width:38px;height:38px;border-radius:10px}
+.net .suggestion-info{min-width:0;flex:1}
+.net .suggestion-info strong{font-size:.9375rem;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.net .suggestion-info span{font-size:.8125rem;color:var(--vs-muted);display:block;margin-top:2px}
+.net .suggestion button{min-height:36px;border:1px solid var(--vs-blue);background:transparent;color:var(--vs-blue);border-radius:8px;padding:0 12px;font-size:.875rem;font-weight:800;cursor:pointer}
+.net .suggestion button:hover{background:var(--vs-blue-soft)}
+.net .trend{padding:12px 0;border-top:1px solid var(--vs-line)}
+.net .trend:first-of-type{border-top:0;padding-top:0}
+.net .trend span{font-size:.75rem;color:var(--vs-blue);font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.net .trend strong{display:block;font-size:.9688rem;margin:4px 0;line-height:1.5}
+.net .trend p{font-size:.875rem;color:var(--vs-muted);line-height:1.6;margin:0}
+.net .empty{padding:36px 20px;text-align:center;color:var(--vs-muted);font-size:1rem;line-height:1.7}
+.net .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--vs-ink);color:var(--vs-bg);border-radius:10px;padding:12px 18px;box-shadow:0 12px 40px #0005;font-size:.9375rem;font-weight:700;z-index:400;display:none;max-width:calc(100% - 30px)}
+@media (max-width:1120px){.net .layout{grid-template-columns:220px minmax(0,1fr)}.net .right{display:none}}
+@media (max-width:760px){
+ .net .wrap{width:calc(100% - 24px)}
+ .net .intro{flex-direction:column;align-items:flex-start;padding-top:22px}
+ .net .intro-side{align-items:flex-start}
+ .net .layout{grid-template-columns:1fr;gap:12px}
+ .net .left,.net .right{position:static}
+ .net .left{display:block}
+ .net .left .sidebox:nth-child(2){display:none}
+ .net .filters{display:flex;overflow-x:auto;gap:8px;padding-bottom:4px}
+ .net .filter{width:auto;flex:none;white-space:nowrap;border-color:var(--vs-line)}
+ .net .right{display:block}.net .right .rightbox{display:none}.net .right .rightbox.suggestions{display:block}
+ .net .post{padding:16px}.net .media-grid img,.net .media-grid video{height:160px}
+}
+.net .layout>*{min-width:0}
+.net .filters{max-width:100%}
