@@ -9,7 +9,7 @@ html[data-theme="light"] body,html:not([data-theme]) body{
 html[data-theme="dark"] body{
  --bg:#08162A;--panel:#0F2340;--panel2:#132B4C;--surface:#0F2340;--surface2:#132B4C;--card:#0F2340;
  --ink:#EEF4FC;--text:#EEF4FC;--muted:#A9BAD0;--line:#233C5E;
- --red:#5A9BFF;--accent:#5A9BFF;--accent2:#82B3FF;--r:#5A9BFF;--teal:#5A9BFF;
+ --red:#6BA6FF;--accent:#6BA6FF;--accent2:#8DB8FF;--r:#6BA6FF;--teal:#6BA6FF;
  --soft:#173560;--redSoft:#173560;--green:#4BD39B;--amber:#FFC83D;--blue:#82B3FF;
  --shadow:none}
 body{font-family:Manrope,Inter,system-ui,sans-serif}
@@ -21,3 +21,7 @@ html body .topbar{background:var(--panel,var(--surface,#fff))}
 html body :focus-visible{outline:3px solid #FFB81C;outline-offset:2px}
 html[data-theme="dark"] body .eyebrow,html[data-theme="dark"] body .panelHead .eyebrow{color:#8DB8FF}
 html[data-theme="dark"] body .commandHero .eyebrow{color:#FFD772}
+html[data-theme="dark"] body .btn.primary,html[data-theme="dark"] body button.primary,html[data-theme="dark"][data-skin] body .btn.primary,html[data-theme="dark"][data-skin] .btn.primary,html[data-theme="dark"][data-skin] button.primary{color:#06101F!important}
+html[data-theme="dark"] body .stat-icon,html[data-theme="dark"] body .statIcon,html[data-theme="dark"] body .tile .ico{color:#8DB8FF}
+html[data-theme="dark"] body .task-mark{color:#8DB8FF}
+html[data-theme="dark"] body :is(.ico,.metricIcon,.eyebrow,.pill,.mark,.healthSymbol,.queueicon,.quickIcon,.sidebar a.active,.sidebar .active,nav a.active,.items a.active,a.active){color:#8DB8FF!important}
