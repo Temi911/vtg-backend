@@ -1,0 +1,39 @@
+/* App-page skin: re-colours legacy working pages (verification, inspections) to the VTG shell look.
+   Loaded after each page's own <style>; presentation only, no markup or logic changes. */
+html body.app{--r:var(--vs-blue);--accent:var(--vs-blue);--bg:var(--vs-bg);--card:var(--vs-paper);--ink:var(--vs-ink);--muted:var(--vs-muted);--line:var(--vs-line);--good:var(--vs-ok);--warn:#8A5A00;--bad:var(--vs-bad);--soft:var(--vs-tint);
+ background:var(--vs-bg);color:var(--vs-ink);font-family:var(--vs-font);line-height:1.6}
+html[data-theme="dark"] body.app{--warn:#F2C66D}
+html body.app .wrap{max-width:1100px;padding:28px 20px 40px}
+html body.app .top{justify-content:flex-end;margin-bottom:18px}
+html body.app .top .brand,body.app .top>a:first-child{display:none}
+html body.app h1{font-size:clamp(1.7rem,3.2vw,2.2rem);letter-spacing:-.03em;color:var(--vs-ink)}
+html body.app h2{font-size:1.25rem;color:var(--vs-ink)}
+html body.app h3{color:var(--vs-ink)}
+html body.app .card{background:var(--vs-paper);border:1px solid var(--vs-line);border-radius:14px;box-shadow:var(--vs-shadow);color:var(--vs-ink)}
+html body.app .item,body.app .doc,body.app .adminStat,body.app .adminApplicant,body.app .adminDoc{background:var(--vs-paper);border:1px solid var(--vs-line);border-radius:12px;color:var(--vs-ink)}
+html body.app .sub,body.app .muted,body.app .doc p{color:var(--vs-muted);font-size:.9375rem;line-height:1.6}
+html body.app .hero{background:linear-gradient(120deg,#0B2A55,#1558D6);border-radius:16px;color:#fff;position:relative;overflow:hidden}
+html body.app .hero::after{content:"";position:absolute;right:-60px;top:-80px;width:200px;height:200px;border-radius:50%;background:var(--vs-sun);opacity:.9;pointer-events:none}
+html body.app .hero h1,body.app .hero h2{color:#fff;position:relative}
+html body.app .hero p,body.app .hero small{color:#E3EEFF;position:relative}
+html body.app .hero small{letter-spacing:.12em;font-weight:800;color:#FFD772}
+html body.app .btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--vs-blue);border-radius:10px;background:var(--vs-blue);color:#fff;font-weight:800;font-size:.9375rem;padding:0 18px;text-decoration:none;cursor:pointer}
+html[data-theme="dark"] body.app .btn{color:#08162A}
+html body.app .btn:hover{background:var(--vs-blue-h);border-color:var(--vs-blue-h)}
+html body.app .btn.secondary,body.app .btn.alt{background:var(--vs-paper);border-color:var(--vs-line-2);color:var(--vs-ink)}
+html[data-theme="dark"] body.app .btn.secondary,html[data-theme="dark"] body.app .btn.alt{background:var(--vs-paper);color:var(--vs-ink)}
+html body.app .btn.secondary:hover,body.app .btn.alt:hover{border-color:var(--vs-blue);color:var(--vs-blue)}
+html body.app .btn:disabled{opacity:.55;cursor:not-allowed}
+html body.app .tag,body.app .status{font-size:.75rem;font-weight:800;letter-spacing:.04em;padding:5px 10px;border-radius:999px;background:var(--vs-sun-soft);color:#6B4700}
+html[data-theme="dark"] body.app .tag,html[data-theme="dark"] body.app .status{background:var(--vs-sun-soft);color:#FFD772}
+html body.app .approved,body.app .status.verified{background:var(--vs-ok-soft);color:var(--vs-ok)}
+html body.app .pending{background:var(--vs-sun-soft);color:#6B4700}
+html body.app .rejected,body.app .status.rejected{background:var(--vs-bad-soft);color:var(--vs-bad)}
+html body.app .notice{background:var(--vs-tint);color:var(--vs-ink-2);border:1px solid var(--vs-line);border-radius:10px;font-size:.9375rem}
+html body.app input,body.app select,body.app textarea{background:var(--vs-paper);color:var(--vs-ink);border:1px solid var(--vs-line-2);border-radius:10px;font-family:inherit;font-size:1rem;min-height:44px;padding:8px 12px}
+html body.app input[type="file"]{font-size:.9375rem;padding:8px}
+html body.app input:focus,body.app select:focus,body.app textarea:focus{outline:none;border-color:var(--vs-blue);box-shadow:0 0 0 4px color-mix(in srgb,var(--vs-blue) 18%,transparent)}
+html body.app .msg{font-size:.9375rem}
+html body.app main a:not(.btn){color:var(--vs-blue)}
+html body.app .btn,body.app .vs-btn{text-decoration:none}
+@media (max-width:650px){body.app .wrap{padding:18px 14px 32px}body.app .hero{padding:22px 18px}body.app .grid{grid-template-columns:1fr}}
