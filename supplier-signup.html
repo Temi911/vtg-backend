@@ -1,59 +1,21 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#a51f25">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Register your supplier or trading company with Vintage Trade Global.">
+<title>Supplier registration — Vintage Trade Global</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<title>Supplier registration — Vintage Trade Global</title>
-<style>
-:root{color-scheme:light;--bg:#f3f5f7;--panel:#fff;--ink:#1b252f;--muted:#647180;--line:#dfe4e8;--soft:#fff2f1;--red:#b9252b;--red-dark:#8f1d23;--ok:#16794b;--shadow:0 24px 75px rgba(20,32,43,.12)}
-html[data-theme="dark"]{color-scheme:dark;--bg:#0c1117;--panel:#141a21;--ink:#f1f4f6;--muted:#b5c0ca;--line:#303944;--soft:#2a191b;--red:#ed6b61;--red-dark:#d84d44;--ok:#54d39a;--shadow:0 24px 75px rgba(0,0,0,.32)}
-*{box-sizing:border-box}html,body{min-height:100%;margin:0}body{font-family:Manrope,Arial,sans-serif;background:radial-gradient(ellipse at 10% 0,rgba(185,37,43,.09),transparent 35%),var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}button,input,select{font:inherit}
-.topline{height:4px;background:linear-gradient(90deg,#671317,#b9252b,#ef8075)}.page{width:min(1180px,100%);margin:0 auto;padding:26px 22px 44px}.layout{display:grid;grid-template-columns:minmax(260px,.78fr) minmax(0,1.22fr);gap:24px;align-items:stretch}
-.story{position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;min-height:680px;padding:30px;border-radius:24px;background:linear-gradient(150deg,#311113,#761b20 54%,#b9252b);color:#fff;box-shadow:0 20px 55px rgba(110,20,25,.2)}
-.story:before,.story:after{content:"";position:absolute;z-index:-1;border:1px solid rgba(255,255,255,.14);border-radius:50%;pointer-events:none}.story:before{width:440px;height:440px;right:-260px;top:100px;box-shadow:0 0 0 34px rgba(255,255,255,.025)}.story:after{width:310px;height:310px;right:-190px;top:165px}
-.brandBox{display:inline-flex;align-items:center;justify-content:center;width:min(100%,260px);min-height:72px;padding:8px 14px;border-radius:14px;background:#fff}.brandBox img{display:block;width:100%;height:58px;object-fit:contain;object-position:left center}
-.eyebrow{display:flex;align-items:center;gap:9px;color:#ffd8d4;text-transform:uppercase;font-size:10px;font-weight:800;letter-spacing:.16em}.eyebrow:before{content:"";width:22px;height:2px;background:#ffaca4}.story h1{margin:18px 0 15px;color:#fff;font-size:clamp(31px,3.2vw,43px);line-height:1.1;letter-spacing:-.045em}.story p{margin:0;color:#f9e8e7;font-size:13px;line-height:1.85}.benefits{display:grid;gap:13px;margin-top:27px}.benefit{display:flex;gap:11px;align-items:flex-start;font-size:12px;line-height:1.6;color:#fff}.check{display:grid;place-items:center;flex:none;width:24px;height:24px;border:1px solid rgba(255,255,255,.35);border-radius:8px;font-weight:800}.storyFoot{border-top:1px solid rgba(255,255,255,.22);padding-top:17px;margin-top:36px;color:#f5dedd;font-size:10px;line-height:1.7}
-.formPanel{min-width:0;padding:clamp(22px,3.2vw,38px);border:1px solid var(--line);border-radius:24px;background:var(--panel);box-shadow:var(--shadow)}.formTop{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:20px}.roleTag{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border-radius:999px;background:var(--soft);color:var(--red);font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}.secureTag{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:10px;font-weight:700}.secureDot{width:7px;height:7px;border-radius:50%;background:var(--ok)}
-.formPanel h2{margin:0;color:var(--ink);font-size:clamp(25px,3vw,33px);line-height:1.2;letter-spacing:-.04em}.intro{margin:9px 0 22px;color:var(--muted);font-size:12px;line-height:1.75}
-.stepMeta{display:flex;justify-content:space-between;gap:10px;margin-bottom:9px;color:var(--muted);font-size:11px;font-weight:800}.stepMeta strong{color:var(--red)}.track{height:5px;border-radius:999px;background:var(--line);overflow:hidden;margin-bottom:22px}.track span{display:block;width:0;height:100%;border-radius:999px;background:var(--red);transition:width .22s ease}
-.step[hidden]{display:none!important}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.field{min-width:0;display:grid;align-content:start;gap:7px}.field.full{grid-column:1/-1}.field label{color:var(--muted);font-size:11px;font-weight:800}.field input,.field select{width:100%;min-height:46px;border:1px solid var(--line);border-radius:11px;padding:11px 12px;background:var(--panel);color:var(--ink);font-size:13px;outline:none}.field input::placeholder{color:#8793a0}.field input:focus,.field select:focus{border-color:var(--red);box-shadow:0 0 0 3px color-mix(in srgb,var(--red) 16%,transparent)}.hint{font-size:10px;color:var(--muted);line-height:1.5}.phoneRow,.verifyRow,.passwordRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.phoneRow{grid-template-columns:minmax(112px,.72fr) minmax(0,1.28fr)}.miniButton{min-height:44px;padding:0 13px;border:1px solid var(--line);border-radius:10px;background:var(--soft);color:var(--ink);font-size:11px;font-weight:800;cursor:pointer}.miniButton:disabled{opacity:.55;cursor:wait}
-.notice{padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:var(--soft);color:var(--muted);font-size:11px;line-height:1.7}.notice strong{display:block;color:var(--ink);margin-bottom:3px}.checkline{display:flex;align-items:flex-start;gap:9px;margin-top:8px;color:var(--muted);font-size:11px;font-weight:600}.checkline input{width:16px;height:16px;min-height:16px;margin:1px 0 0;accent-color:var(--red)}
-.actions{display:flex;justify-content:space-between;gap:10px;margin-top:24px}.actionButton{min-height:46px;padding:12px 18px;border:1px solid var(--line);border-radius:11px;background:var(--panel);color:var(--ink);font-size:12px;font-weight:800;cursor:pointer}.actionButton:disabled{opacity:.45;cursor:not-allowed}.actionButton.primary{margin-left:auto;background:var(--red);border-color:var(--red);color:#fff}.actionButton.primary:hover{background:var(--red-dark)}.message{min-height:20px;margin-top:14px;color:var(--red);font-size:12px;line-height:1.6}.message.ok{color:var(--ok)}.bottomLinks{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:18px;padding-top:17px;border-top:1px solid var(--line);color:var(--muted);font-size:11px}.bottomLinks a{color:var(--red);font-weight:800}.footnote{margin:15px 0 0;color:var(--muted);font-size:10px;line-height:1.7}
-:focus-visible{outline:3px solid color-mix(in srgb,var(--red) 45%,transparent);outline-offset:3px}
-#vtgPageNavigation{display:none!important}
-/* Theme-aware story panel: dark text on a light surface in light mode, white text on red in dark mode. */
-html:not([data-theme="dark"]) .story{background:linear-gradient(150deg,#ffffff,#fff5f4 58%,#ffe8e6)!important;color:#1b252f!important;box-shadow:0 20px 55px rgba(20,32,43,.10)!important}
-html:not([data-theme="dark"]) .story h1{color:#1b252f!important}
-html:not([data-theme="dark"]) .story p,html:not([data-theme="dark"]) .story .benefit,html:not([data-theme="dark"]) .story .storyFoot{color:#394653!important}
-html:not([data-theme="dark"]) .story .eyebrow{color:#9f2026!important}
-html:not([data-theme="dark"]) .story .eyebrow:before{background:#b9252b!important}
-html:not([data-theme="dark"]) .story .check{color:#b9252b!important;border-color:#e6a5a4!important;background:#fff!important}
-html:not([data-theme="dark"]) .story:before,html:not([data-theme="dark"]) .story:after{border-color:rgba(185,37,43,.13)!important}
-html[data-theme="dark"] .story{background:linear-gradient(150deg,#311113,#761b20 54%,#b9252b)!important;color:#fff!important}
-html[data-theme="dark"] .story h1,html[data-theme="dark"] .story p,html[data-theme="dark"] .story .benefit,html[data-theme="dark"] .story .storyFoot{color:#fff!important}
-html[data-theme="dark"] .story .eyebrow{color:#ffe7e4!important}
-html[data-theme="dark"] .story .check{color:#fff!important;border-color:rgba(255,255,255,.5)!important}
-@media(max-width:850px){.layout{grid-template-columns:1fr;max-width:720px;margin:0 auto}.story{min-height:0;padding:24px}.story .storyFoot{margin-top:24px}.story h1{max-width:560px}.benefits{grid-template-columns:repeat(2,minmax(0,1fr))}.formPanel{padding:26px}}
-@media(max-width:520px){.page{padding:13px 10px 24px}.layout{gap:13px}.story{padding:20px;border-radius:18px}.brandBox{min-height:56px;width:215px}.brandBox img{height:44px}.story h1{font-size:30px}.story p{font-size:12px}.benefits{grid-template-columns:1fr;gap:9px;margin-top:18px}.benefit{font-size:11px}.storyFoot{font-size:9px}.formPanel{padding:19px 15px;border-radius:18px}.formTop{align-items:flex-start}.secureTag{font-size:9px}.fields{grid-template-columns:1fr;gap:13px}.field.full{grid-column:auto}.phoneRow{grid-template-columns:minmax(100px,.78fr) minmax(0,1.22fr)}.actions .actionButton{flex:1;padding:11px 12px}.bottomLinks{font-size:10px}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important}}
-</style>
-<script>(function(){try{var pref=localStorage.getItem('vtg-theme-preference');var saved=localStorage.getItem('vtg-theme');var theme=pref==='light'||pref==='dark'?pref:(saved==='light'||saved==='dark'?saved:((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark'));document.documentElement.setAttribute('data-theme',theme)}catch(e){document.documentElement.setAttribute('data-theme',(new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark')}})();</script>
-<link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
+<link rel="stylesheet" href="/vtg-signup.css?v=20261030-1">
 </head>
 <body>
-<div class="topline"></div>
-<main class="page"><div class="layout">
-<aside class="story">
-<a class="brandBox" href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a>
-<div><span class="eyebrow">A clearer way to trade</span><h1>Bring your business to global buyers.</h1><p>Create your company profile so buyers can understand your products, capabilities and business credentials.</p>
-<div class="benefits"><div class="benefit"><span class="check">✓</span><span>Dedicated supplier workspace and relevant tools</span></div><div class="benefit"><span class="check">✓</span><span>Secure email verification during registration</span></div><div class="benefit"><span class="check">✓</span><span>Verification steps for trusted trade relationships</span></div></div></div>
-<div class="storyFoot">Vintage Trade Global · Connecting Africa, China, South Korea and the world.</div>
-</aside>
+<div id="vsHeader" data-active=""></div>
+<script src="/vtg-shell.js?v=20261030-1"></script>
+<main id="main" class="vs-wrap sg">
+<aside class="sg-side"><span class="eyebrow">A clearer way to trade</span><h1>Bring your business to global buyers.</h1><p>Create your company profile so buyers can understand your products, capabilities and business credentials.</p><div class="benefits"><div class="benefit"><span class="check">✓</span><span>Dedicated supplier workspace and relevant tools</span></div><div class="benefit"><span class="check">✓</span><span>Secure email verification during registration</span></div><div class="benefit"><span class="check">✓</span><span>Verification steps for trusted trade relationships</span></div></div></div></aside>
 <section class="formPanel" aria-label="Supplier registration form">
 <div class="formTop"><span class="roleTag">Supplier / Trading Company</span><span class="secureTag"><span class="secureDot"></span> Secure registration</span></div>
 <p class="intro">Tell us about your company, authorised representative and products. Verification documents are handled in the next stage.</p>
@@ -90,7 +52,9 @@ html[data-theme="dark"] .story .check{color:#fff!important;border-color:rgba(255
 <div class="bottomLinks"><span>Already registered? <a href="/signin.html">Sign in</a></span><a href="/signup.html">Choose another account type</a></div>
 <p class="footnote">By creating an account, you agree to complete VTG’s applicable account and business verification steps. Do not submit passwords or verification codes to anyone outside the VTG signup flow.</p>
 </section>
-</div></main>
+
+</main>
+<div id="vsFooter"></div>
 <script>
 const API=window.VTG_API_BASE||'';
 const AFRICA=[["🇩🇿","Algeria","+213"],["🇦🇴","Angola","+244"],["🇧🇯","Benin","+229"],["🇧🇼","Botswana","+267"],["🇧🇫","Burkina Faso","+226"],["🇧🇮","Burundi","+257"],["🇨🇻","Cabo Verde","+238"],["🇨🇲","Cameroon","+237"],["🇨🇫","Central African Republic","+236"],["🇹🇩","Chad","+235"],["🇰🇲","Comoros","+269"],["🇨🇩","DR Congo","+243"],["🇨🇬","Republic of the Congo","+242"],["🇨🇮","Côte d’Ivoire","+225"],["🇩🇯","Djibouti","+253"],["🇪🇬","Egypt","+20"],["🇬🇶","Equatorial Guinea","+240"],["🇪🇷","Eritrea","+291"],["🇸🇿","Eswatini","+268"],["🇪🇹","Ethiopia","+251"],["🇬🇦","Gabon","+241"],["🇬🇲","Gambia","+220"],["🇬🇭","Ghana","+233"],["🇬🇳","Guinea","+224"],["🇬🇼","Guinea-Bissau","+245"],["🇰🇪","Kenya","+254"],["🇱🇸","Lesotho","+266"],["🇱🇷","Liberia","+231"],["🇱🇾","Libya","+218"],["🇲🇬","Madagascar","+261"],["🇲🇼","Malawi","+265"],["🇲🇱","Mali","+223"],["🇲🇷","Mauritania","+222"],["🇲🇺","Mauritius","+230"],["🇲🇦","Morocco","+212"],["🇲🇿","Mozambique","+258"],["🇳🇦","Namibia","+264"],["🇳🇪","Niger","+227"],["🇳🇬","Nigeria","+234"],["🇷🇼","Rwanda","+250"],["🇸🇹","São Tomé and Príncipe","+239"],["🇸🇳","Senegal","+221"],["🇸🇨","Seychelles","+248"],["🇸🇱","Sierra Leone","+232"],["🇸🇴","Somalia","+252"],["🇿🇦","South Africa","+27"],["🇸🇸","South Sudan","+211"],["🇸🇩","Sudan","+249"],["🇹🇿","Tanzania","+255"],["🇹🇬","Togo","+228"],["🇹🇳","Tunisia","+216"],["🇺🇬","Uganda","+256"],["🇿🇲","Zambia","+260"],["🇿🇼","Zimbabwe","+263"]];
@@ -117,6 +81,5 @@ const pass=$('[name=password]');const toggle=$('#passwordToggle');if(pass&&toggl
 const send=$('#sendCode');if(send)send.addEventListener('click',async()=>{const email=$('[name=email]').value.trim(),m=$('#msg');if(!email){m.textContent='Enter your email address first.';showStep(STEPS.findIndex(s=>s.fields.includes('email')));$('[name=email]').focus();return;}send.disabled=true;const original='Send code';try{const r=await fetch(API+'/api/auth/send-verification-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,preferredLanguage:$('[name=preferredLanguage]')?.value||'en'})});const out=await r.json();if(!r.ok)throw Error(out.message||'Could not send the verification code');m.className='message ok';m.textContent='Verification code sent. Check your email inbox.';let seconds=45;send.textContent='Resend in '+seconds+'s';const timer=setInterval(()=>{seconds--;if(seconds<=0){clearInterval(timer);send.disabled=false;send.textContent=original;}else send.textContent='Resend in '+seconds+'s';},1000);}catch(err){m.className='message';m.textContent=err.message;send.disabled=false;send.textContent=original;}});
 showStep(0);
 </script>
-<script src="/page-visuals.js?v=20261013-registration-heading-cleanup"></script>
-<script src="/vtg-site-navigation.js?v=20261020-universal-header-1" defer></script>
-</body></html>
+</body>
+</html>

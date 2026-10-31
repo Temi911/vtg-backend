@@ -52,10 +52,13 @@ html[data-theme="dark"] .searchRow input{background:#091219;color:var(--text);bo
 @media(max-width:850px){.headline,.sectionHead{align-items:flex-start;flex-direction:column}.atlasThemeTools{align-items:flex-start;flex-direction:row;flex-wrap:wrap;justify-content:flex-start}.atlasThemeTools .statusPill{order:0}.atlasThemeLabel{align-self:center;margin-left:4px}.atlasThemeTools select{min-width:165px}.portGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.directoryIntro{align-items:stretch;flex-direction:column}.directoryControls{justify-content:flex-start}.privateGrid{grid-template-columns:1fr}.globeStage{min-height:410px}.globeCanvas{height:410px}.stageHeader{top:14px;left:14px;right:14px}.globeLegend{left:14px;bottom:13px}}
 @media(max-width:560px){.selectedHub{grid-template-columns:100px minmax(0,1fr);gap:11px}.selectedHub img{height:100px}.shell{padding:0 15px}.atlasTop{padding-top:34px}.headline h1{font-size:2.4rem}.portGrid{grid-template-columns:1fr}.portPhoto{height:190px}.globeStage{margin-top:20px;border-radius:16px;min-height:360px}.globeCanvas{height:360px}.stageLabel{font-size:.68rem}.stageHint{max-width:190px;font-size:.68rem}.stageControls{gap:5px}.roundBtn{width:34px;height:34px}.globeLegend{gap:6px}.legendItem{font-size:.65rem;padding:6px 8px}.featureList{grid-template-columns:1fr}.searchRow{flex-direction:column}.searchRow .btn{width:100%}.accessRow{align-items:flex-start;flex-wrap:wrap}.accessRow .btn{margin-left:50px}.portMeta{flex-wrap:wrap}}
 </style>
-<link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
+<link rel="stylesheet" href="/vtg-atlas.css?v=20261030-1">
 </head>
 <body>
-<main>
+<div id="vsHeader" data-active="atlas"></div>
+<script src="/vtg-shell.js?v=20261030-1"></script>
+<main id="main">
 <section class="atlasTop">
  <div class="shell">
   <div class="headline"><div><span class="eyebrow">Vintage Trade Global · Phase 10</span><h1>The <span>Trade Atlas.</span><br>See trade in motion.</h1><p class="lede">Explore the public trade geography connecting Africa and Asia — ports, trade hubs and key corridors. When you sign in, the Atlas becomes your private window into shipments and transactions you are authorized to access.</p><div class="headActions"><a class="btn primary" href="#explore">Explore trade hubs</a><a class="btn" href="#workspace">Open my trade workspace</a></div></div><div class="atlasThemeTools"><div class="statusPill"><span class="dot"></span> Public Atlas · No account needed</div></div></div>
@@ -79,6 +82,7 @@ html[data-theme="dark"] .searchRow input{background:#091219;color:var(--text);bo
 </section>
 <div class="atlasFooterSpace"></div>
 </main>
+<div id="vsFooter"></div>
 
 <script src="https://unpkg.com/globe.gl" defer></script>
 <script src="https://unpkg.com/lucide@latest" defer></script>
@@ -290,6 +294,5 @@ function init(){
 window.addEventListener('load',()=>setTimeout(init,80));
 })();
 </script>
-<script src="/vtg-site-navigation.js?v=20261020-universal-header-1" defer></script>
 </body>
 </html>

@@ -59,7 +59,7 @@
   document.querySelectorAll('body footer').forEach(el=>el.remove());
   const status=document.getElementById('vf-status');
   function say(s){status.textContent=s;status.style.display='block';clearTimeout(say.t);say.t=setTimeout(()=>status.style.display='none',4500)}
-  const palettes={executive:'#a5232b','ocean-finance':'#176b87','emerald-trade':'#18734d','copper-ledger':'#985b3d','indigo-intel':'#6258b8','crimson-ops':'#bd344c','mono-pro':'#586575',sandstone:'#92733e','arctic-blue':'#356fc0','midnight-harbor':'#167d99'};
+  const palettes={executive:'#1558D6','ocean-finance':'#176b87','emerald-trade':'#18734d','copper-ledger':'#985b3d','indigo-intel':'#6258b8','crimson-ops':'#bd344c','mono-pro':'#586575',sandstone:'#92733e','arctic-blue':'#356fc0','midnight-harbor':'#167d99'};
   let currentSkin='executive';
   function applyPalette(mode){const accent=palettes[currentSkin]||palettes.executive;const dark=mode==='dark';const values={'--red':accent,'--accent':accent,'--skin-accent':accent,'--soft':dark?accent+'33':accent+'12','--skin-soft':dark?accent+'33':accent+'12','--redSoft':dark?accent+'33':accent+'12','--bg':dark?'#0b1016':'#f4f6f8','--surface':dark?'#141b23':'#ffffff','--card':dark?'#141b23':'#ffffff','--panel':dark?'#141b23':'#ffffff','--ink':dark?'#f3f5f7':'#20252d','--muted':dark?'#b4c0cb':'#687586','--line':dark?'#2b3743':'#e1e6ed'};Object.entries(values).forEach(([k,v])=>root.style.setProperty(k,v));}
   function resolveTheme(mode){return mode==='auto'?((new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark'):mode}

@@ -1,0 +1,32 @@
+/* Focused single-card flows (agreement, payment check). Uses shell tokens. */
+body.flow{min-height:100vh;display:flex;flex-direction:column}
+.flow-top{height:4px;background:var(--vs-sun)}
+.flow-bar{background:var(--vs-paper);border-bottom:1px solid var(--vs-line)}
+.flow-bar .vs-wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.flow-bar img{height:30px;display:block}
+.flow-bar a.back{font-weight:700;font-size:.9375rem;color:var(--vs-ink-2);text-decoration:none;padding:10px 0}
+.flow-main{flex:1;width:100%;max-width:820px;margin:0 auto;padding:36px 20px 64px}
+.flow-card{background:var(--vs-paper);border:1px solid var(--vs-line);border-radius:16px;padding:32px;box-shadow:var(--vs-shadow)}
+.flow-card .brand{font-size:.8125rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--vs-blue)}
+.flow-card .eyebrow{display:inline-flex;align-items:center;gap:10px;margin-top:18px;font-size:.8125rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--vs-blue)}
+.flow-card .eyebrow::before{content:"";width:22px;height:3px;border-radius:2px;background:var(--vs-sun)}
+.flow-card .title,.flow-card h1{font-size:clamp(1.7rem,3.4vw,2.3rem);letter-spacing:-.03em;margin:10px 0 12px}
+.flow-card .lead{color:var(--vs-ink-2);line-height:1.7}
+.flow-card .section{padding-top:20px;margin-top:20px;border-top:1px solid var(--vs-line)}
+.flow-card .section h2{font-size:1.125rem;margin-bottom:8px}
+.flow-card p,.flow-card li{color:var(--vs-ink-2);line-height:1.7}
+.flow-card ul{padding-left:20px;margin:8px 0 0}
+.flow-card a{color:var(--vs-blue);font-weight:700}
+.flow-card .check{display:flex;gap:12px;align-items:flex-start;margin-top:24px;padding:16px;border:1px solid var(--vs-line-2);border-radius:12px;background:var(--vs-tint);cursor:pointer}
+.flow-card .check input{width:22px;height:22px;margin-top:2px;flex:none;accent-color:var(--vs-blue)}
+.flow-card .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.flow-card .btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 24px;border-radius:10px;border:1px solid var(--vs-line-2);background:var(--vs-paper);color:var(--vs-ink);font-weight:800;font-size:.9375rem;cursor:pointer;text-decoration:none}
+.flow-card .btn.primary{background:var(--vs-blue);border-color:var(--vs-blue);color:#fff}
+html[data-theme="dark"] .flow-card .btn.primary{color:#08162A}
+.flow-card .btn[disabled]{opacity:.5;cursor:not-allowed}
+.flow-card .msg{min-height:1.4em;margin-top:12px;color:var(--vs-bad);font-weight:600}
+.flow-card .msg.ok{color:var(--vs-ok)}
+.flow-card .note,.flow-card .muted,.flow-card .loading{color:var(--vs-muted);font-size:.875rem;line-height:1.6}
+.flow-card.center{text-align:center}
+.flow-card .icon{font-size:2.6rem;margin:16px 0}
+@media (max-width:600px){.flow-main{padding:20px 12px 40px}.flow-card{padding:22px 18px}.flow-card .actions{flex-direction:column}.flow-card .btn{width:100%}}

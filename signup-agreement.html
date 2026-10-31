@@ -3,25 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Privacy & Signup Agreement | VTG</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<title>VTG — Privacy & Signup Agreement</title>
-<style>
-:root{--red:#8f1d17;--deep:#210b09;--cream:#f5f8f8;--white:#fff;--ink:#251311;--muted:#667085;--line:#e4e7ec;--soft:#f9eeee}
-*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:'Manrope',sans-serif}.top{height:5px;background:linear-gradient(90deg,#a93226,#f0ca76,#c0392b,#8f1d17)}
-.wrap{max-width:860px;margin:38px auto;padding:0 20px}.card{background:var(--white);border:1px solid var(--line);border-radius:22px;padding:30px;box-shadow:0 18px 55px rgba(7,31,48,.10)}.brand{color:var(--red);font-weight:800;letter-spacing:.08em;font-size:12px;text-transform:uppercase}.eyebrow{color:var(--red);font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-top:25px}.title{font-size:34px;line-height:1.1;margin:8px 0 10px}.lead{color:var(--muted);line-height:1.7;font-size:14px}.section{padding-top:22px;border-top:1px solid var(--line);margin-top:22px}.section h2{font-size:18px;margin:0 0 8px}.section p,.section li{font-size:12px;line-height:1.7;color:#53606b}.section ul{padding-left:20px}.check{margin-top:24px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--soft);display:flex;gap:11px;align-items:flex-start;font-size:12px;line-height:1.6}.check input{width:18px;height:18px;accent-color:var(--red);margin-top:2px}.check a{color:var(--red);font-weight:700}.actions{display:flex;gap:10px;align-items:center;margin-top:18px}.btn{border:0;border-radius:11px;padding:12px 17px;font-weight:800;cursor:pointer}.primary{background:var(--red);color:#fff}.primary:disabled{opacity:.45;cursor:not-allowed}.outline{background:#fff;border:1px solid var(--line);color:var(--red)}.msg{min-height:18px;margin-top:10px;font-size:11px;color:#b42318}.msg.ok{color:#23855b}.note{font-size:10px;color:var(--muted);margin-top:18px}.loading{text-align:center;padding:60px;color:var(--muted)}
-@media(max-width:600px){.wrap{margin:18px auto;padding:0 12px}.card{padding:21px}.title{font-size:28px}.actions{flex-direction:column;align-items:stretch}.actions .btn{width:100%}}
-</style>
-<link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+<link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
+<link rel="stylesheet" href="/vtg-flow.css?v=20261031-1">
+<script>try{var p=localStorage.getItem('vtg-theme-preference');document.documentElement.setAttribute('data-theme',p==='dark'||(p!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light')}catch(e){}</script>
 </head>
-<body><div class="top"></div><main class="wrap"><div class="card" id="app"><div class="loading">Loading your VTG agreement…</div></div></main>
+<body class="flow">
+<div class="flow-top"></div>
+<div class="flow-bar"><div class="vs-wrap"><a href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><a class="back" href="/frontend-v3.html">Back to site</a></div></div>
+<main class="flow-main" id="main"><div class="flow-card" id="app"><div class="loading">Loading your VTG agreement…</div></div></main>
 <script>
 const API='';
 const auth=JSON.parse(localStorage.getItem('vtg-auth')||'{}'); const token=localStorage.getItem('vtg_access_token')||auth.accessToken||'';
 const app=document.getElementById('app');
 function nextForRole(role){if(role==='supplier'||role==='bank')return '/verification.html';if(role==='agent')return '/agent-dashboard.html';if(role==='admin'||role==='administrator')return '/admin-dashboard-preview.html';if(role==='buyer')return '/buyer-dashboard.html';return '/workforce-dashboard.html'}
-async function api(path,options={}){return fetch(API+path,{...options,headers:{'Content-Type':'application/json',Authorization:'Bearer '+token,...(options.headers||{})})}
+async function api(path,options={}){return fetch(API+path,{...options,headers:{'Content-Type':'application/json',Authorization:'Bearer '+token,...(options.headers||{})}})}
 async function load(){
  if(!token){location.href='/';return}
  try{
@@ -50,6 +50,5 @@ async function load(){
 }
 load();
 </script>
-<script src="/page-visuals.js"></script>
-<script src="/vtg-site-navigation.js?v=20261020-universal-header-1" defer></script>
-</body></html>
+</body>
+</html>

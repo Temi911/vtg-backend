@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 :root{
   --vtg-dash-font:"Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  --vtg-dash-body:13px;
+  --vtg-dash-body:14px;
   --vtg-dash-line:1.55;
   --vtg-dash-heading:#17212b;
 }

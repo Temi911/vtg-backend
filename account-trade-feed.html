@@ -8,45 +8,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.js"></script>
-<style>
-:root{--bg:#091522;--panel:#101f2d;--panel2:#142737;--line:#263c4c;--text:#eef5f8;--muted:#9cafbd;--red:#c94138;--teal:#5dd2c3;--blue:#6eafea;--gold:#e9bf70;--radius:16px}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Manrope,system-ui,sans-serif;font-size:13px}a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit}button{cursor:pointer}.wrap{width:min(1450px,calc(100% - 34px));margin:auto}
-header{position:sticky;top:0;z-index:10;background:#091522ed;backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{min-height:70px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand img{width:150px;max-height:44px;object-fit:contain}.navlinks{display:flex;gap:22px;align-items:center;color:#bfd0da;font-size:11px;font-weight:700}.navlinks a:hover{color:white}.navactions{display:flex;align-items:center;gap:8px}
-.btn{border:1px solid var(--line);border-radius:10px;padding:10px 13px;background:var(--panel2);color:var(--text);font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:7px}.btn:hover{border-color:#5b8397}.btn.primary{background:var(--red);border-color:var(--red);color:white}.btn.ghost{background:transparent}.btn.small{padding:7px 10px;font-size:10px}.icon{width:15px;height:15px;flex:none}
-.intro{padding:26px 0 19px;display:flex;align-items:end;justify-content:space-between;gap:20px}.eyebrow{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.15em;color:var(--teal)}h1{font-size:clamp(26px,3vw,36px);letter-spacing:-.04em;line-height:1.12;margin:7px 0}.intro p{margin:8px 0 0;max-width:620px;color:var(--muted);font-size:11px;line-height:1.8}.liveflag{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:9px 12px;color:#b8cbd4;font-size:9px;font-weight:800;white-space:nowrap}.liveflag i{width:7px;height:7px;border-radius:50%;background:var(--teal)}
-.layout{display:grid;grid-template-columns:225px minmax(0,1fr) 270px;gap:17px;align-items:start;padding-bottom:50px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.sidebox{padding:16px;margin-bottom:13px}.side-title{font-size:10px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin:0 0 12px}.filters{display:grid;gap:5px}.filter{width:100%;display:flex;align-items:center;gap:10px;text-align:left;background:transparent;border:1px solid transparent;color:#b8c8d2;border-radius:10px;padding:10px;font-size:11px;font-weight:700}.filter svg{width:16px;height:16px;color:#90a7b7}.filter:hover,.filter.active{background:#1b3444;border-color:#2b4b5e;color:white}.filter.active svg{color:var(--teal)}.side-note{font-size:10px;line-height:1.7;color:var(--muted)}.side-note strong{color:#e7f0f4}
-.center{min-width:0}.composer{padding:16px;margin-bottom:13px}.composer-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}.avatar{width:38px;height:38px;flex:none;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#1e6671,#31507b);color:white;font-weight:800;overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover}.composer-title{font-size:12px;font-weight:800}.muted{color:var(--muted)}.composer textarea{display:block;width:100%;resize:vertical;min-height:76px;background:#0b1925;border:1px solid var(--line);border-radius:12px;padding:13px;color:var(--text);outline:none;font-size:11px;line-height:1.7}.composer textarea:focus,.composer input:focus,.composer select:focus{border-color:#4f8e9b}.compose-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}.compose-tools select,.compose-tools input{min-width:0;background:#0b1925;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:9px;font-size:10px}.compose-tools input[type=url]{flex:1}.filepick{display:none}.filehint{font-size:9px;color:var(--muted);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.compose-notice{font-size:9px;color:var(--muted);line-height:1.6;margin-top:9px}.feedtop{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:20px 2px 11px}.feedtop h2{font-size:15px;margin:0}.feedtop select{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:9px;padding:8px;font-size:10px}
-.post{padding:16px;margin-bottom:12px}.posthead{display:flex;align-items:flex-start;gap:10px}.posthead .avatar{width:42px;height:42px}.postmeta{flex:1;min-width:0}.authorline{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.author{font-size:11px;font-weight:800}.verified{display:inline-flex;align-items:center;gap:3px;color:var(--teal);font-size:8px;font-weight:800}.verified svg{width:12px;height:12px}.role{border:1px solid #355365;color:#b4c8d3;background:#172c3a;padding:4px 6px;border-radius:6px;text-transform:uppercase;font-size:7px;font-weight:800;letter-spacing:.06em}.role.bank{color:#9ec7ff;border-color:#304c75;background:#162941}.role.supplier{color:#9de2cb}.role.buyer{color:#f0d08b}.posttime{font-size:9px;color:var(--muted);margin-top:4px}.typepill{font-size:8px;font-weight:800;color:#b5c7d0;border:1px solid var(--line);border-radius:999px;padding:5px 8px;white-space:nowrap}.typepill.advert{color:#f0c779;border-color:#655331}.typepill.news{color:#88bfff;border-color:#315276}.postbody{font-size:12px;line-height:1.85;color:#dce7ed;white-space:pre-wrap;overflow-wrap:anywhere;margin:14px 0}.postlink{display:inline-flex;align-items:center;gap:6px;color:var(--teal);font-size:10px;font-weight:800;margin:0 0 10px}.media-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:10px 0;border-radius:12px;overflow:hidden}.media-grid img{width:100%;height:190px;object-fit:cover;background:#172b39}.statsline{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:9px;padding:10px 0;border-bottom:1px solid var(--line)}.postactions{display:flex;gap:5px;align-items:center;padding-top:8px}.postactions button{flex:1;min-width:0;background:transparent;border:1px solid transparent;border-radius:9px;padding:9px 4px;color:#a9bbc6;display:flex;align-items:center;justify-content:center;gap:6px;font-size:10px;font-weight:800}.postactions button:hover{background:#1a3040;color:white}.postactions button.liked{color:var(--teal);background:#16343b}.postactions svg{width:15px;height:15px}.comments{display:none;border-top:1px solid var(--line);margin-top:10px;padding-top:12px}.comments.open{display:block}.comment-list{display:grid;gap:9px;margin-bottom:10px}.comment{background:#0b1925;border:1px solid #203746;border-radius:10px;padding:10px;font-size:10px;line-height:1.6}.comment strong{display:block;margin-bottom:3px}.comment-form{display:flex;gap:7px}.comment-form input{flex:1;min-width:0;background:#0b1925;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:10px;font-size:10px}.comment-empty{font-size:10px;color:var(--muted);padding:7px 0}.news-source{background:linear-gradient(135deg,#112b3a,#102131);border-color:#2a5064}.news-source .news-label{display:flex;align-items:center;gap:7px;color:#8ec6ff;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em}.news-source h3{font-size:14px;line-height:1.55;margin:13px 0 7px}.news-source .summary{font-size:10px;line-height:1.8;color:#b7c8d2}.news-source .postactions{border-top:1px solid var(--line);margin-top:12px}
-.rightbox{padding:15px;margin-bottom:13px}.rightbox h3{font-size:11px;margin:0 0 12px}.suggestion{display:flex;align-items:center;gap:9px;padding:10px 0;border-top:1px solid #243947}.suggestion:first-of-type{border-top:0;padding-top:0}.suggestion .avatar{width:34px;height:34px;border-radius:10px}.suggestion-info{min-width:0;flex:1}.suggestion-info strong{font-size:10px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.suggestion-info span{font-size:9px;color:var(--muted);display:block;margin-top:4px}.suggestion button{border:1px solid #345165;background:#172d3c;color:#cde0e8;border-radius:8px;padding:7px;font-size:9px;font-weight:800}.trend{padding:10px 0;border-top:1px solid #243947}.trend:first-of-type{border-top:0;padding-top:0}.trend span{font-size:8px;color:var(--teal);font-weight:800;text-transform:uppercase;letter-spacing:.1em}.trend strong{display:block;font-size:10px;margin:5px 0;line-height:1.6}.trend p{font-size:9px;color:var(--muted);line-height:1.6;margin:0}.empty{padding:30px 18px;text-align:center;color:var(--muted);font-size:11px;line-height:1.8}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#eaf7f4;color:#0c463f;border-radius:10px;padding:11px 15px;box-shadow:0 12px 40px #0005;font-size:11px;font-weight:800;z-index:50;display:none;max-width:calc(100% - 30px)}.footer{padding:24px 0 32px;border-top:1px solid var(--line);color:var(--muted);font-size:9px;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
-@media(max-width:1120px){.layout{grid-template-columns:190px minmax(0,1fr)}.right{display:none}}@media(max-width:720px){.wrap{width:calc(100% - 22px)}.nav{min-height:62px}.brand img{width:120px}.navlinks{display:none}.intro{align-items:flex-start;flex-direction:column;padding-top:20px}.layout{grid-template-columns:1fr;gap:10px}.left{display:none}.right{display:block}.right .sidebox{margin-bottom:10px}.right .rightbox{display:none}.compose-tools{align-items:stretch}.compose-tools select{flex:1}.compose-tools .btn{flex:1}.post{padding:13px}.media-grid img{height:140px}.liveflag{white-space:normal}.rightbox.suggestions{display:block}}
-</style>
-<style id="vtg-contrast-repair-20261010">
-html[data-theme="dark"] body{color:#eef3f6!important}
-html[data-theme="dark"] body :is(.sidebox,.rightbox,.toolPanel,.heroCard,.item,.card,.panel,.composer,.composerBox,.feedCard,.postCard,.metric,.searchbox,.tableWrap,.table-container){color:#eef3f6!important;border-color:#34404b}
-html[data-theme="dark"] body :is(.sidebox,.rightbox,.toolPanel,.heroCard,.item,.card,.panel,.composer,.composerBox,.feedCard,.postCard,.metric,.searchbox,.tableWrap,.table-container) :is(h1,h2,h3,h4,h5,p,li,span,strong,b,small,label,td,th,dt,dd){color:#eef3f6!important}
-html[data-theme="dark"] body :is(.sidebox,.rightbox,.toolPanel,.heroCard,.item,.card,.panel,.composer,.composerBox,.feedCard,.postCard,.metric,.searchbox,.tableWrap,.table-container) :is(p,li,small,label,.hint,.sub,.description,.muted){color:#c1cbd3!important}
-html[data-theme="dark"] body :is(input,select,textarea){background:#0d1117!important;color:#eef3f6!important;border-color:#465360!important;-webkit-text-fill-color:#eef3f6!important;caret-color:#fff!important}
-html[data-theme="dark"] body :is(input,textarea)::placeholder{color:#aab6c0!important;opacity:1!important}
-html[data-theme="dark"] body select option{background:#11161d!important;color:#eef3f6!important}
-html[data-theme="dark"] body :is(table,thead,tbody,tr,th,td){border-color:#34404b!important}
-html[data-theme="dark"] body :is(.tableWrap,.table-container,table) :is(th,td){color:#eef3f6!important}
-html[data-theme="light"] body :is(.sidebox,.rightbox,.toolPanel,.heroCard,.item,.card,.panel,.composer,.composerBox,.feedCard,.postCard,.metric,.searchbox,.tableWrap,.table-container) :is(h2,h3,h4,h5,p,li,span,strong,b,small,label,td,th,dt,dd){color:#243441}
-html[data-theme="light"] body :is(.sidebox,.rightbox,.toolPanel,.heroCard,.item,.card,.panel,.composer,.composerBox,.feedCard,.postCard,.metric,.searchbox,.tableWrap,.table-container) :is(p,li,small,label,.hint,.sub,.description,.muted){color:#52616d}
-html[data-theme="light"] body :is(input,select,textarea){background:#fff!important;color:#18232d!important;border-color:#cbd3da!important;-webkit-text-fill-color:#18232d!important;caret-color:#18232d!important}
-html[data-theme="light"] body :is(input,textarea)::placeholder{color:#687783!important;opacity:1!important}
-html[data-theme="light"] body select option{background:#fff!important;color:#18232d!important}
-</style>
 
-<link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
+
+
+
+<link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
+<link rel="stylesheet" href="/vtg-net.css?v=20261031-1">
 </head>
-<body>
-<header><div class="wrap nav">
-<a class="brand" href="/" aria-label="Vintage Trade Global"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a>
-<nav class="navlinks"><a href="/">Home</a><a href="/marketplace.html">Marketplace</a><a href="/trade-feed.html">Public group</a><a href="/signin.html">My workspace</a></nav>
-<div class="navactions"><a class="btn ghost" href="/signin.html">My workspace <i data-lucide="arrow-up-right" class="icon"></i></a><button class="btn primary" id="signInBtn">Sign in</button></div>
-</div></header>
-<main class="wrap">
-<section class="intro"><div><div class="eyebrow">VTG social trade network</div><h1>Your trade network, in one place.</h1><p>Publish updates, share product offers, discuss trade opportunities and build relationships with buyers, suppliers and financial institutions.</p></div><div class="liveflag"><i></i><span id="feedStatus">Connecting to the trade network</span></div></section>
+<body class="net">
+<div id="vsHeader" data-active=""></div>
+<script src="/vtg-shell.js?v=20261030-1"></script>
+<main class="wrap" id="main">
+<section class="intro"><div><div class="eyebrow">VTG social trade network</div><h1>Your trade network, in one place.</h1><p>Publish updates, share product offers, discuss trade opportunities and build relationships with buyers, suppliers and financial institutions.</p></div><div class="intro-side"><button class="btn primary" id="signInBtn" type="button">Sign in</button><div class="liveflag"><i></i><span id="feedStatus">Connecting to the trade network</span></div></div></section>
 <div class="layout">
 <aside class="left">
 <section class="panel sidebox"><h3 class="side-title">Your feed</h3><div class="filters" id="filters">
@@ -82,7 +55,7 @@ html[data-theme="light"] body select option{background:#fff!important;color:#182
 <section class="panel rightbox"><h3>Trust reminder</h3><p class="side-note">A profile, advert, follower count or news post is not proof that a company or financial institution is licensed. Verify identity, regulatory status and payment instructions independently.</p></section>
 </aside>
 </div>
-<footer class="footer"><span>© <span id="year"></span> Vintage Trade Global · Social Trade Network</span><span>Account feed · Respectful, relevant and responsible trade communication.</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a></span></footer>
+<span id="year" hidden></span>
 </main>
 <div class="toast" id="toast" role="status"></div>
 <script>
@@ -148,52 +121,9 @@ function updateComposer(){const logged=!!token();$('#composerTitle').textContent
 $('#year').textContent=new Date().getFullYear();updateComposer();iconRefresh();
 (async()=>{await loadFollowing();await loadFeed();renderSuggestions()})();
 </script>
-<script src="/vtg-site-navigation.js?v=20261020-universal-header-1" defer></script>
 
-<style id="vtg-trade-feed-light-contrast-20261012">
-/* Light-mode contrast for feed status, category filters and supplier-advert navigation. */
-html[data-theme="light"] body .liveflag {
-  background:#fff!important;border-color:#cbd5dd!important;color:#334452!important;
-}
-html[data-theme="light"] body #feedStatus {
-  color:#263744!important;-webkit-text-fill-color:#263744!important;
-  opacity:1!important;visibility:visible!important;
-}
-html[data-theme="light"] body .liveflag i {background:#16856f!important}
-html[data-theme="light"] body .filters .filter {
-  color:#344553!important;background:#fff!important;border-color:transparent!important;
-}
-html[data-theme="light"] body .filters .filter svg {
-  color:#536777!important;stroke:currentColor!important;
-}
-html[data-theme="light"] body .filters .filter:hover,
-html[data-theme="light"] body .filters .filter.active {
-  color:#8f211b!important;background:#fff0ee!important;border-color:#e9c2bd!important;
-}
-html[data-theme="light"] body .filters .filter:hover svg,
-html[data-theme="light"] body .filters .filter.active svg {color:#a92d24!important}
-html[data-theme="light"] body .side-title {color:#435563!important}
-html[data-theme="light"] body .side-note {color:#52616d!important}
-html[data-theme="light"] body .side-note strong {color:#263744!important}
-html[data-theme="light"] body .empty {color:#52616d!important}
-html[data-theme="light"] body .feedtop h2 {color:#243441!important}
-html[data-theme="light"] body .post .postbody,
-html[data-theme="light"] body .news-source .summary {color:#344553!important;-webkit-text-fill-color:#344553!important}
-html[data-theme="light"] body .post .posttime,
-html[data-theme="light"] body .post .statsline,
-html[data-theme="light"] body .news-source .statsline {color:#586875!important}
-html[data-theme="light"] body .post .role,
-html[data-theme="light"] body .post .typepill {opacity:1!important}
-html[data-theme="light"] body .postactions button {
-  color:#435563!important;border-color:#e1e6ea!important;
-}
-html[data-theme="light"] body .postactions button:hover {
-  background:#f3f6f8!important;color:#172b38!important;
-}
-html[data-theme="light"] body .suggestion-info strong {color:#243441!important}
-html[data-theme="light"] body .suggestion-info span {color:#586875!important}
-html[data-theme="light"] body .trend strong {color:#243441!important}
-html[data-theme="light"] body .trend p {color:#586875!important}
-</style>
 
+
+
+<div id="vsFooter"></div>
 </body></html>

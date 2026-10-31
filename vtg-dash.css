@@ -1,0 +1,23 @@
+/* VTG workspace skin — brand colours and calmer surfaces for the signed-in dashboards.
+   Loaded last. Remaps each dashboard's own variables, so layout and behaviour are untouched. */
+html[data-theme="light"] body,html:not([data-theme]) body{
+ --bg:#F3F7FC;--panel:#FFFFFF;--panel2:#EEF4FC;--surface:#FFFFFF;--surface2:#EEF4FC;--card:#FFFFFF;
+ --ink:#0B1F3A;--text:#0B1F3A;--muted:#52667E;--line:#D5E0EE;
+ --red:#1558D6;--accent:#1558D6;--accent2:#0F46AE;--r:#1558D6;--teal:#1558D6;
+ --soft:#E4EEFC;--redSoft:#E4EEFC;--green:#0C7A4F;--amber:#8A5A00;--blue:#1558D6;
+ --shadow:0 1px 2px rgba(11,31,58,.05),0 8px 24px rgba(11,31,58,.06)}
+html[data-theme="dark"] body{
+ --bg:#08162A;--panel:#0F2340;--panel2:#132B4C;--surface:#0F2340;--surface2:#132B4C;--card:#0F2340;
+ --ink:#EEF4FC;--text:#EEF4FC;--muted:#A9BAD0;--line:#233C5E;
+ --red:#5A9BFF;--accent:#5A9BFF;--accent2:#82B3FF;--r:#5A9BFF;--teal:#5A9BFF;
+ --soft:#173560;--redSoft:#173560;--green:#4BD39B;--amber:#FFC83D;--blue:#82B3FF;
+ --shadow:none}
+body{font-family:Manrope,Inter,system-ui,sans-serif}
+html body .topline{background:linear-gradient(90deg,#FFB81C 0 96px,#1558D6 96px)}
+html body .btn.primary,html body button.primary,html body .primary.btn{background:var(--accent,var(--red,#1558D6));border-color:var(--accent,var(--red,#1558D6));color:#fff}
+html[data-theme="dark"] body .btn.primary,html[data-theme="dark"] body button.primary,html[data-theme="dark"] body .primary.btn{color:#06101F}
+html body .btn:hover,html body .iconBtn:hover{border-color:var(--accent,var(--red,#1558D6))}
+html body .topbar{background:var(--panel,var(--surface,#fff))}
+html body :focus-visible{outline:3px solid #FFB81C;outline-offset:2px}
+html[data-theme="dark"] body .eyebrow,html[data-theme="dark"] body .panelHead .eyebrow{color:#8DB8FF}
+html[data-theme="dark"] body .commandHero .eyebrow{color:#FFD772}
