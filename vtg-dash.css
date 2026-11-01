@@ -25,3 +25,28 @@ html[data-theme="dark"] body .btn.primary,html[data-theme="dark"] body button.pr
 html[data-theme="dark"] body .stat-icon,html[data-theme="dark"] body .statIcon,html[data-theme="dark"] body .tile .ico{color:#8DB8FF}
 html[data-theme="dark"] body .task-mark{color:#8DB8FF}
 html[data-theme="dark"] body :is(.ico,.metricIcon,.eyebrow,.pill,.mark,.healthSymbol,.queueicon,.quickIcon,.sidebar a.active,.sidebar .active,nav a.active,.items a.active,a.active){color:#8DB8FF!important}
+
+/* ===== v2 professional layer: offsets below the shared 64px header ===== */
+:root{--vf-h:64px}
+@media(max-width:720px){:root{--vf-h:58px}}
+body .sidebar,body aside.side,body .side{top:var(--vf-h)!important;height:calc(100vh - var(--vf-h))!important;height:calc(100dvh - var(--vf-h))!important;max-height:none}
+@media(max-width:1000px){
+  body .sidebar,body aside.side,body .side{z-index:60}
+  body .sidebar.mobileOpen,body .side.mobileOpen{top:var(--vf-h)!important;inset:var(--vf-h) auto 0 0!important}
+}
+/* sticky in-page headers must clear the shared bar */
+body .topbar,body header.top{top:var(--vf-h)!important}
+/* shared header hamburger */
+#vtg-shared-footer .vf-menu svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+/* surfaces: consistent professional card treatment */
+body .panel,body .card,body .stat,body .metric,body .tile,body .module-card,body .quickCard{border-radius:12px;box-shadow:0 1px 2px rgba(10,30,70,.06),0 6px 18px -12px rgba(10,30,70,.18)}
+body table th{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase}
+body .tableWrap,body .tablewrap{border-radius:12px;overflow:auto}
+body button:focus-visible,body a:focus-visible,body input:focus-visible,body select:focus-visible{outline:2px solid #1558D6;outline-offset:2px}
+/* group buttons: readable in both themes */
+html[data-theme="light"] body .sidebar .groupBtn,html[data-theme="light"] body .sidebar .groupBtn[aria-expanded]{background:transparent!important;color:#1f2f46!important;box-shadow:none!important}
+html[data-theme="light"] body .sidebar .groupBtn:hover,html[data-theme="light"] body .sidebar .groupBtn[aria-expanded="true"]{background:#EAF1FD!important;color:#0B3D91!important;box-shadow:inset 3px 0 #1558D6!important}
+html[data-theme="dark"] body .sidebar .groupBtn[aria-expanded]{color:#E3ECF7!important;background:transparent!important}
+html[data-theme="dark"] body .sidebar .groupBtn:hover,html[data-theme="dark"] body .sidebar .groupBtn[aria-expanded="true"]{background:#16294A!important;color:#fff!important;box-shadow:inset 3px 0 #6BA6FF!important}
+html[data-theme="light"] body .sidebar .profile small,html[data-theme="light"] body .sidebar .brand small,html[data-theme="light"] body .sidebar .label{color:#4b5b6e!important}
+html[data-theme="light"] body .sidebar .profile strong,html[data-theme="light"] body .sidebar .brand strong{color:#14233a}

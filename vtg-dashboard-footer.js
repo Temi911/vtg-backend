@@ -34,26 +34,46 @@
   ];
   const style=document.createElement('style');
   style.textContent=`
-  #vtg-shared-footer{position:fixed;z-index:9998;left:0;right:0;top:0;background:var(--surface,#fff);color:var(--ink,#20252d);border-top:1px solid var(--line,#dfe4e9);box-shadow:0 -5px 22px rgba(10,20,30,.08);font:11px/1.35 Manrope,Arial,sans-serif}
+  #vtg-shared-footer{position:fixed;z-index:9998;left:0;right:0;top:0;background:var(--panel,var(--surface,#fff));color:var(--ink,#0B1F3A);border-bottom:1px solid var(--line,#D5E0EE);font:14px/1.4 Manrope,Inter,system-ui,sans-serif}
+  #vtg-shared-footer::after{content:"";position:absolute;left:0;bottom:-1px;width:72px;height:3px;background:#FFB81C}
   #vtg-shared-footer *{box-sizing:border-box}
-  #vtg-shared-footer .vf-main{max-width:1600px;margin:auto;min-height:58px;padding:8px 16px;display:flex;align-items:center;gap:12px}
-  #vtg-shared-footer .vf-brand{font-weight:800;white-space:nowrap;color:var(--red,#a5232b);min-width:0}#vtg-shared-footer .vf-crumb{font-weight:700;white-space:nowrap;color:var(--ink,#20252d);margin-right:auto}#vtg-shared-footer .vf-links{display:none!important}#vtg-theme-mode{display:none!important}
-  #vtg-shared-footer .vf-links{display:flex;align-items:center;gap:4px;flex:1;overflow-x:auto;scrollbar-width:thin}
-  #vtg-shared-footer a{color:inherit;text-decoration:none;white-space:nowrap;padding:7px 8px;border-radius:7px;font-weight:700}
-  #vtg-shared-footer a:hover{background:var(--soft,#fff0ef);color:var(--red,#a5232b)}
-  #vtg-shared-footer a[aria-current=page],#vtg-shared-footer span[aria-current=page]{background:var(--soft,#fff0ef);color:var(--red,#a5232b);box-shadow:inset 0 -2px 0 var(--red,#a5232b)}
-  #vtg-shared-footer .vf-links span[aria-current=page]{white-space:nowrap;padding:7px 8px;border-radius:7px;font-weight:800}\n  #vtg-shared-footer .vf-controls{display:flex;align-items:center;gap:6px;flex-shrink:0}
-  #vtg-shared-footer select,#vtg-shared-footer button{max-width:160px;background:var(--surface,#fff);color:var(--ink,#20252d);border:1px solid var(--line,#dfe4e9);border-radius:7px;padding:7px 8px;font:inherit}
-  #vtg-shared-footer button{font-weight:800;cursor:pointer}
-  #vtg-shared-footer .vf-status{display:none;padding:0 16px 7px;color:var(--muted,#687586);font-size:10px}
-  body{padding-top:58px!important;padding-bottom:0!important}header.topbar,header.top,div.topbar,div.top{display:none!important}
-  @media(max-width:900px){#vtg-shared-footer .vf-main{flex-wrap:wrap;gap:6px;padding:7px 10px}#vtg-shared-footer .vf-controls{width:auto;max-width:100%;margin-left:auto}#vtg-shared-footer select{flex:0 1 auto;max-width:165px}body{padding-top:58px!important}}
-  @media(max-width:520px){#vtg-shared-footer .vf-main{min-height:56px}#vtg-shared-footer .vf-brand{font-size:10px}#vtg-shared-footer .vf-crumb{display:none}#vtg-shared-footer .vf-controls{gap:4px}#vtg-shared-footer select{min-width:0;max-width:118px;font-size:10px;padding:7px 5px}#vtg-shared-footer #vf-language{max-width:92px}}
+  #vtg-shared-footer .vf-main{max-width:none;height:64px;padding:0 clamp(12px,2.2vw,28px);display:flex;align-items:center;gap:16px}
+  #vtg-shared-footer .vf-logo{display:flex;align-items:center;flex:none;padding:0}
+  #vtg-shared-footer .vf-logo img{height:32px;width:auto;display:block}
+  #vtg-shared-footer .vf-logo .logo-light{display:none}
+  html[data-theme="dark"] #vtg-shared-footer .vf-logo .logo-dark{display:none}
+  html[data-theme="dark"] #vtg-shared-footer .vf-logo .logo-light{display:block}
+  #vtg-shared-footer .vf-divider{width:1px;height:28px;background:var(--line,#D5E0EE);flex:none}
+  #vtg-shared-footer .vf-title{display:flex;flex-direction:column;min-width:0;line-height:1.2}
+  #vtg-shared-footer .vf-title small{font-size:12px;font-weight:700;color:var(--muted,#52667E);letter-spacing:.02em}
+  #vtg-shared-footer .vf-title strong{font-size:16px;font-weight:800;color:var(--ink,#0B1F3A);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #vtg-shared-footer .vf-links{display:none!important}
+  #vtg-shared-footer .vf-controls{display:flex;align-items:center;gap:8px;margin-left:auto;flex:none}
+  #vtg-shared-footer .vf-icon,#vtg-shared-footer .vf-prefs>summary{width:40px;height:40px;display:grid;place-items:center;border-radius:10px;border:1px solid var(--line,#D5E0EE);background:var(--panel,#fff);color:var(--ink,#0B1F3A);cursor:pointer;padding:0;list-style:none;font:inherit}
+  #vtg-shared-footer .vf-prefs>summary::-webkit-details-marker{display:none}
+  #vtg-shared-footer .vf-icon:hover,#vtg-shared-footer .vf-prefs>summary:hover,#vtg-shared-footer .vf-prefs[open]>summary{border-color:var(--accent,var(--red,#1558D6));color:var(--accent,var(--red,#1558D6))}
+  #vtg-shared-footer .vf-icon svg,#vtg-shared-footer .vf-prefs>summary svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  #vtg-shared-footer .vf-prefs{position:relative}
+  #vtg-shared-footer .vf-pop{position:absolute;right:0;top:calc(100% + 10px);width:280px;max-width:calc(100vw - 24px);padding:16px;border-radius:14px;background:var(--panel,#fff);border:1px solid var(--line,#D5E0EE);box-shadow:0 18px 50px rgba(11,31,58,.18);display:grid;gap:14px}
+  #vtg-shared-footer .vf-pop label{display:grid;gap:6px;font-size:13px;font-weight:700;color:var(--ink,#0B1F3A)}
+  #vtg-shared-footer select{width:100%;min-height:42px;background:var(--panel,#fff);color:var(--ink,#0B1F3A);border:1px solid var(--line,#D5E0EE);border-radius:10px;padding:0 10px;font:inherit;font-size:14px}
+  #vtg-shared-footer .vf-home{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border-radius:10px;border:1px solid var(--line,#D5E0EE);font-weight:800;font-size:14px;color:var(--ink,#0B1F3A);text-decoration:none;white-space:nowrap}
+  #vtg-shared-footer .vf-home:hover{border-color:var(--accent,var(--red,#1558D6));color:var(--accent,var(--red,#1558D6))}
+  #vtg-shared-footer .vf-switch{padding:12px 0 0;border-top:1px solid var(--line,#D5E0EE);display:grid;gap:6px}
+  #vtg-shared-footer .vf-switch b{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted,#52667E)}
+  #vtg-shared-footer .vf-switch div{display:flex;flex-wrap:wrap;gap:6px}
+  #vtg-shared-footer .vf-switch a{padding:7px 10px;border-radius:8px;border:1px solid var(--line,#D5E0EE);font-size:13px;font-weight:700;color:var(--ink,#0B1F3A);text-decoration:none}
+  #vtg-shared-footer .vf-switch a[aria-current=page]{background:var(--soft,#E4EEFC);border-color:var(--accent,var(--red,#1558D6));color:var(--accent,var(--red,#1558D6))}
+  #vtg-shared-footer .vf-status{position:absolute;right:clamp(12px,2.2vw,28px);top:72px;display:none;padding:10px 14px;border-radius:10px;background:var(--ink,#0B1F3A);color:var(--bg,#fff);font-size:13px;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,.2)}
+  body{padding-top:64px!important;padding-bottom:0!important}header.topbar,header.top,div.topbar,div.top{display:none!important}
+  #vtg-shared-footer .vf-menu{display:none}@media(max-width:1000px){#vtg-shared-footer .vf-menu:not([hidden]){display:inline-flex}}
+  @media(max-width:720px){#vtg-shared-footer .vf-main{height:58px;gap:10px}#vtg-shared-footer .vf-logo img{height:26px}#vtg-shared-footer .vf-divider{display:none}#vtg-shared-footer .vf-title small{display:none}#vtg-shared-footer .vf-title strong{font-size:15px}#vtg-shared-footer .vf-home{display:none}#vtg-shared-footer .vf-controls{gap:6px}#vtg-shared-footer .vf-icon,#vtg-shared-footer .vf-prefs>summary{width:38px;height:38px}body{padding-top:58px!important}}
+  @media(max-width:380px){#vtg-shared-footer #vf-notifications{display:none}}
   `;
   document.head.appendChild(style);
   const footer=document.createElement('header');footer.id='vtg-shared-footer';footer.setAttribute('aria-label','VTG workspace header');
   const workspace=({ 'supplier-dashboard.html':'Supplier workspace','buyer-dashboard.html':'Buyer workspace','bank-trade-os.html':'Finance workspace','agent-dashboard.html':'Agent workspace','agent-network-dashboard.html':'Agent Network','workforce-dashboard.html':'Staff & Operations','admin-dashboard-preview.html':'Admin workspace','vtg-ai-dashboard.html':'VTG AI workspace'})[path]||'VTG workspace';
-  footer.innerHTML='<div class="vf-main"><span class="vf-brand">VTG /</span><span class="vf-crumb">'+workspace+' / <strong>Command centre</strong></span><nav class="vf-links" aria-label="VTG workspaces"></nav><div class="vf-controls"><select id="vf-theme-mode" aria-label="Appearance mode" title="Automatic by local time, light or dark"><option value="auto">Theme: Auto</option><option value="light">Theme: Light</option><option value="dark">Theme: Dark</option></select><label for="vf-skin" style="font-weight:800;white-space:nowrap">Workspace theme</label><select id="vf-skin" aria-label="Workspace theme" title="Workspace colour theme">'+skins.map(s=>'<option value="'+s[0]+'">'+s[1]+'</option>').join('')+'</select><select id="vf-language" aria-label="Language preference" title="Language preference">'+supportedLangs.map(l=>'<option value="'+l+'">'+langNames[l]+'</option>').join('')+'</select><button id="vf-notifications" type="button" title="Notifications" aria-label="Notifications">♧</button><button id="vf-theme-toggle" type="button" title="Switch light or dark mode" aria-label="Switch light or dark mode">◐</button><a href="/frontend-v3.html" aria-label="Home" style="white-space:nowrap;padding:7px 8px;border:1px solid var(--line,#dfe4e9);border-radius:7px;font-weight:800">Home</a></div></div><div class="vf-status" id="vf-status" role="status" aria-live="polite"></div>';
+  footer.innerHTML='<div class="vf-main"><button class="vf-icon vf-menu" id="vf-menu" type="button" aria-label="Open navigation" aria-expanded="false" hidden><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><a class="vf-logo" href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img class="logo-dark" src="/assets/vtg-logo.svg" alt="Vintage Trade Global"><img class="logo-light" src="/assets/vtg-logo-light.svg" alt="" aria-hidden="true"></a><span class="vf-divider"></span><div class="vf-title"><small>'+workspace+'</small><strong>Command centre</strong></div><nav class="vf-links" aria-label="VTG workspaces"></nav><div class="vf-controls"><button class="vf-icon" id="vf-notifications" type="button" title="Notifications" aria-label="Notifications"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></button><button class="vf-icon" id="vf-theme-toggle" type="button" title="Switch light or dark mode" aria-label="Switch light or dark mode"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18" /><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg></button><details class="vf-prefs"><summary aria-label="Preferences" title="Preferences"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></summary><div class="vf-pop"><label>Appearance<select id="vf-theme-mode" aria-label="Appearance mode"><option value="auto">Automatic (by local time)</option><option value="light">Light</option><option value="dark">Dark</option></select></label><label>Accent colour<select id="vf-skin" aria-label="Workspace theme">'+skins.map(s=>'<option value="'+s[0]+'">'+s[1]+'</option>').join('')+'</select></label><label>Language<select id="vf-language" aria-label="Language preference">'+supportedLangs.map(l=>'<option value="'+l+'">'+langNames[l]+'</option>').join('')+'</select></label><div class="vf-switch"><b>Switch workspace</b><div>'+pages.filter(p=>p[0]!=='Home').map(p=>'<a href="'+p[1]+'"'+(p[2]===activePath?' aria-current="page"':'')+'>'+p[0]+'</a>').join('')+'</div></div></div></details><a class="vf-home" href="/frontend-v3.html" aria-label="Home">Home</a></div></div><div class="vf-status" id="vf-status" role="status" aria-live="polite"></div>';
   document.body.insertBefore(footer,document.body.firstChild);
   document.querySelectorAll('header.topbar,header.top,div.topbar,div.top').forEach(el=>{if(el!==footer){el.setAttribute('aria-hidden','true');el.style.display='none'}});
   document.querySelectorAll('body footer').forEach(el=>el.remove());
@@ -110,4 +130,28 @@
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&document.getElementById('vf-theme-mode').value==='auto')applyTheme('auto',false)});
   window.addEventListener('focus',()=>{if(document.getElementById('vf-theme-mode').value==='auto')applyTheme('auto',false)});
   setInterval(()=>{if(document.getElementById('vf-theme-mode').value==='auto')applyTheme('auto',false)},60000);
+
+  // Preferences popover: close on outside click or Escape.
+  (function(){const prefs=footer.querySelector('.vf-prefs');if(!prefs)return;
+    document.addEventListener('click',e=>{if(prefs.open&&!prefs.contains(e.target))prefs.open=false});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&prefs.open){prefs.open=false;prefs.querySelector('summary').focus()}});})();
+  // Sidebar: keep the group that holds the current page open so navigation is visible.
+  (function(){const open=()=>{const groups=[...document.querySelectorAll('.sidebar .items')];if(!groups.length)return;
+      let target=groups.find(g=>g.querySelector('a.active,a[aria-current="page"]'))||groups[0];
+      groups.forEach(g=>{if(g===target){g.classList.remove('closed');const b=g.previousElementSibling;if(b&&b.setAttribute)b.setAttribute('aria-expanded','true')}});};
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(open,0),{once:true});else setTimeout(open,0);})();
+
+  (function(){
+    var btn=document.getElementById('vf-menu');if(!btn)return;
+    var own=['menuBtn','mobileMenu','mobilemenu'].map(function(i){return document.getElementById(i)}).filter(Boolean)[0];
+    var side=document.getElementById('sidebar')||document.querySelector('aside.sidebar,aside.side,.side,aside');
+    if(!own&&!side)return;
+    btn.hidden=false;
+    btn.addEventListener('click',function(){
+      if(own){own.click();}
+      else if(side){side.classList.toggle('open');side.classList.toggle('mobileOpen');}
+      setTimeout(function(){var o=side&&(side.classList.contains('open')||side.classList.contains('mobileOpen'));btn.setAttribute('aria-expanded',o?'true':'false');},50);
+    });
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'&&side){side.classList.remove('open','mobileOpen');btn.setAttribute('aria-expanded','false');}});
+  })();
 })();
