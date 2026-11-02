@@ -328,9 +328,6 @@ html body #landing#landing .lp-pillar-ico svg{width:22px;height:22px}
 html body #landing#landing .lp-pillars strong{display:block;font-size:17px!important;color:inherit!important;line-height:1.3!important}
 html body #landing#landing .lp-pillars li div>span{display:block;margin-top:2px;font-size:14.5px!important;line-height:1.55!important;color:#3E5671!important}
 html[data-theme="dark"] body #landing#landing .lp-pillars li div>span{color:#C9D8EC!important}
-html body #landing#landing .lp-dots{position:absolute;left:0;right:0;bottom:28px;display:flex;justify-content:center;gap:10px}
-html body #landing#landing .lp-dot{width:34px;height:8px;padding:0;border:0;border-radius:99px;background:rgba(255,255,255,.55);cursor:pointer}
-html body #landing#landing .lp-dot.is-on{background:#FFB81C}
 
 /* Sections */
 html body #landing#landing .lp-section{padding:72px 0}
@@ -374,6 +371,51 @@ html body #landing#landing .lp-pick svg{width:16px;height:16px;color:var(--lp-te
 html body #landing#landing .lp-pick:hover{border-color:var(--lp-accent)}
 html body #landing#landing .lp-pick.is-on{background:#0A58CA;border-color:#0A58CA;color:#FFFFFF!important}
 html body #landing#landing .lp-pick.is-on svg{color:#FFD152!important}
+
+/* Category showcase v2 */
+html body #landing#landing .lp-car{position:relative;padding:0;border:0;background:transparent;box-shadow:none;overflow:visible}
+html body #landing#landing .lp-car-stage{background:var(--lp-surface);border:1px solid var(--lp-line);border-radius:28px;box-shadow:0 30px 70px -40px rgba(10,60,140,.55);padding:22px;overflow:hidden;position:relative}
+html body #landing#landing .lp-cslide{gap:44px;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)}
+html body #landing#landing .lp-c-media{aspect-ratio:16/10.5;border-radius:20px;isolation:isolate}
+html body #landing#landing .lp-c-media::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(6,24,56,.05) 35%,rgba(6,24,56,.55));pointer-events:none}
+html body #landing#landing .lp-c-media img{transform:scale(1.001);transition:transform 6s ease-out}
+html body #landing#landing .lp-cslide.is-on .lp-c-media img{transform:scale(1.07)}
+html body #landing#landing .lp-c-ghost{position:absolute;left:22px;bottom:6px;z-index:2;font:800 clamp(64px,9vw,120px)/1 var(--vtg-head);letter-spacing:-.04em;color:transparent;-webkit-text-stroke:2px rgba(255,255,255,.85);pointer-events:none}
+html body #landing#landing .lp-c-chip{position:absolute;left:18px;top:18px;z-index:2;display:inline-flex;align-items:center;gap:8px;padding:8px 14px 8px 10px;border-radius:999px;background:rgba(255,255,255,.92);color:#0C2340!important;font-size:12.5px!important;font-weight:800;letter-spacing:.08em;text-transform:uppercase;backdrop-filter:blur(6px)}
+html body #landing#landing .lp-c-chip svg{width:18px;height:18px;color:#0A58CA!important}
+html body #landing#landing .lp-c-body{padding:6px 10px 6px 0;display:flex;flex-direction:column;align-items:flex-start}
+html body #landing#landing .lp-c-count{display:inline-flex;align-items:baseline;gap:6px;padding:0;margin:0 0 14px;font-size:14px!important;letter-spacing:.12em}
+html body #landing#landing .lp-c-count b{font-size:34px;letter-spacing:-.03em;color:#0A58CA;font-weight:800;line-height:1}
+html body #landing#landing .lp-c-body h3{font-size:clamp(26px,3vw,38px)!important;letter-spacing:-.03em}
+html body #landing#landing .lp-car-bar{margin:0;padding:18px 6px 0;gap:16px}
+html body #landing#landing .lp-prog{height:4px;background:rgba(10,88,202,.14)}
+html body #landing#landing .lp-prog span.run{transition:width 5s linear}
+html body #landing#landing .lp-ctl{display:flex;gap:8px;flex:none}
+html body #landing#landing .lp-ctl .lp-arrow{width:42px;height:42px}
+html body #landing#landing .lp-rail{position:relative;margin-top:14px}
+html body #landing#landing .lp-rail::before,html body #landing#landing .lp-rail::after{content:"";position:absolute;top:0;bottom:8px;width:44px;z-index:2;pointer-events:none}
+html body #landing#landing .lp-rail::before{left:0;background:linear-gradient(90deg,var(--lp-bg),transparent)}
+html body #landing#landing .lp-rail::after{right:0;background:linear-gradient(270deg,var(--lp-bg),transparent)}
+html body #landing#landing .lp-picker{gap:10px;padding:6px 40px 12px;scroll-behavior:smooth}
+html body #landing#landing .lp-pick{flex-direction:column;justify-content:center;gap:6px;width:104px;min-height:84px;padding:12px 8px;border-radius:16px;text-align:center;white-space:normal;line-height:1.2;font-size:12px!important;background:var(--lp-surface);transition:transform .2s,border-color .2s,box-shadow .2s}
+html body #landing#landing .lp-pick svg{width:22px;height:22px}
+html body #landing#landing .lp-pick:hover{transform:translateY(-2px);box-shadow:0 10px 22px -14px rgba(10,60,140,.6)}
+html body #landing#landing .lp-pick.is-on{background:linear-gradient(160deg,#0A58CA,#0B3D91);border-color:#0A58CA;box-shadow:0 14px 26px -14px rgba(10,88,202,.9)}
+html body #landing#landing .lp-pick span{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+html[data-theme="dark"] body #landing#landing .lp-rail::before{background:linear-gradient(90deg,var(--lp-bg),transparent)}
+html body #landing#landing .lp-car .lp-arrow,html body #landing#landing .lp-car .lp-pick{border:1px solid var(--lp-line)!important;background-color:var(--lp-surface)}
+html body #landing#landing .lp-car .lp-arrow:hover,html body #landing#landing .lp-car .lp-pick:hover{border-color:var(--lp-accent)!important}
+html body #landing#landing .lp-car .lp-pick.is-on{border-color:#0A58CA!important;background:linear-gradient(160deg,#0A58CA,#0B3D91);color:#fff!important}
+html body #landing#landing .lp-c-count b{color:var(--lp-text-accent)!important}
+html body #landing#landing .lp-car .lp-arrow,html body #landing#landing .lp-car .lp-arrow svg{color:var(--lp-ink)!important}
+html body #landing#landing .lp-arrow svg{display:block}
+@media(max-width:860px){
+ html body #landing#landing .lp-car-stage{padding:14px;border-radius:22px}
+ html body #landing#landing .lp-cslide{grid-template-columns:1fr;gap:16px}
+ html body #landing#landing .lp-c-ghost{font-size:72px}
+ html body #landing#landing .lp-pick{width:92px;min-height:78px}
+}
+@media(prefers-reduced-motion:reduce){html body #landing#landing .lp-c-media img,html body #landing#landing .lp-cslide.is-on .lp-c-media img{transform:none;transition:none}}
 
 /* Split sections + globe */
 html body #landing#landing .lp-split{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
@@ -443,7 +485,7 @@ html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter :is(.vtgFooter
 html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter :is(#vtgThemeControl,#vtgThemePresetControl) label,html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter .vtgFooterBottom label{color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important;font-size:13px!important;opacity:1!important}
 html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter select{background:#FFFFFF!important;color:#0C2340!important;-webkit-text-fill-color:#0C2340!important;font-size:13px!important;border:1px solid #FFB81C!important;opacity:1!important}
 </style>
-</head>
+<link rel="stylesheet" href="/vtg-type.css"></head>
 <body>
 <div id="landing">
 <header class="lp-header"><div class="lp-wrap lp-header-in">
@@ -475,7 +517,6 @@ html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter select{backgro
 <li><span class="lp-pillar-ico"><i data-lucide="ship"></i></span><div><strong>Move</strong><span>Follow shipments, customs and delivery in one workspace.</span></div></li>
 </ul>
 </div>
-<div class="lp-dots" role="group" aria-label="Hero photos"><button type="button" class="lp-dot is-on" data-i="0" aria-label="Show photo 1 of 3"></button><button type="button" class="lp-dot" data-i="1" aria-label="Show photo 2 of 3"></button><button type="button" class="lp-dot" data-i="2" aria-label="Show photo 3 of 3"></button></div>
 </section>
 
 <section class="lp-section" id="market" aria-labelledby="lpCatTitle"><div class="lp-wrap">
@@ -558,30 +599,57 @@ html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter select{backgro
   Array.prototype.forEach.call(document.querySelectorAll('#landing .lp-c-media img,#landing #lpGlobe'),guard);
 
   /* Hero: three ship photos, a new one every 7 seconds */
-  var heroImgs=[].slice.call(document.querySelectorAll('#landing .lp-hero-img')),dots=[].slice.call(document.querySelectorAll('#landing .lp-dot')),h=0,ht=null;
+  var heroImgs=[].slice.call(document.querySelectorAll('#landing .lp-hero-img')),h=0,ht=null;
   heroImgs.forEach(guard);
   function showHero(n){
     h=(n+heroImgs.length)%heroImgs.length;
     load(heroImgs[h]);
     heroImgs.forEach(function(im,i){im.classList.toggle('is-on',i===h&&!im.classList.contains('bad'));});
-    dots.forEach(function(d,i){d.classList.toggle('is-on',i===h);d.setAttribute('aria-current',i===h?'true':'false');});
   }
   function heroLoop(){clearInterval(ht);if(reduce||heroImgs.length<2)return;ht=setInterval(function(){showHero(h+1);},7000);}
-  dots.forEach(function(d){d.addEventListener('click',function(){showHero(Number(d.getAttribute('data-i')));heroLoop();});});
   window.addEventListener('load',function(){heroImgs.forEach(load);heroLoop();Array.prototype.forEach.call(document.querySelectorAll('#landing .lp-c-media img,#landing #lpGlobe'),function(im){if(im.getAttribute('src')&&im.complete&&im.naturalWidth===0)im.classList.add('bad');});},{once:true});
 
-  /* Category carousel: 36 pictures, a new one every 5 seconds, no controls */
-  var slides=[].slice.call(document.querySelectorAll('#lpStage .lp-cslide')),cur=0,timer=null;
-  if(!slides.length)return;
-  function go(n){
-    cur=(n+slides.length)%slides.length;
+  /* Category showcase: 36 categories, a new one every 5 seconds, with arrows, pause and a category rail */
+  var slides=[].slice.call(document.querySelectorAll('#lpStage .lp-cslide')),cur=0,timer=null,paused=false,car=document.getElementById('lpCar');
+  if(!slides.length||!car)return;
+  var total=slides.length;
+  function pad(n){return (n<10?'0':'')+n;}
+  slides.forEach(function(s,i){
+    var name=s.querySelector('h3').textContent,ic=s.querySelector('.lp-c-fallback i'),icon=ic?ic.getAttribute('data-lucide'):'package',media=s.querySelector('.lp-c-media');
+    var g=document.createElement('span');g.className='lp-c-ghost';g.setAttribute('aria-hidden','true');g.textContent=pad(i+1);media.appendChild(g);
+    var c=document.createElement('span');c.className='lp-c-chip';c.innerHTML='<i data-lucide="'+icon+'"></i>Category';media.appendChild(c);
+    var cnt=s.querySelector('.lp-c-count');if(cnt)cnt.innerHTML='<b>'+pad(i+1)+'</b> / '+total;
+  });
+  var bar=document.createElement('div');bar.className='lp-car-bar';
+  bar.innerHTML='<div class="lp-prog" aria-hidden="true"><span></span></div><div class="lp-ctl"><button type="button" class="lp-arrow" data-act="prev" aria-label="Previous category"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><button type="button" class="lp-arrow" data-act="pause" aria-label="Pause automatic changes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg></button><button type="button" class="lp-arrow" data-act="next" aria-label="Next category"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>';
+  car.appendChild(bar);
+  var rail=document.createElement('div');rail.className='lp-rail';var picker=document.createElement('div');picker.className='lp-picker';picker.setAttribute('role','tablist');picker.setAttribute('aria-label','Choose a category');
+  slides.forEach(function(s,i){
+    var b=document.createElement('button');b.type='button';b.className='lp-pick';b.setAttribute('role','tab');b.setAttribute('data-i',i);
+    var ic=s.querySelector('.lp-c-fallback i');b.innerHTML='<i data-lucide="'+(ic?ic.getAttribute('data-lucide'):'package')+'"></i><span>'+s.querySelector('h3').textContent+'</span>';picker.appendChild(b);
+  });
+  rail.appendChild(picker);car.appendChild(rail);
+  if(window.lucide)window.lucide.createIcons();
+  var prog=bar.querySelector('.lp-prog span'),picks=[].slice.call(picker.children),pauseBtn=bar.querySelector('[data-act=pause]');
+  function runBar(){prog.classList.remove('run');prog.style.width='0';void prog.offsetWidth;if(!paused&&!reduce){prog.classList.add('run');prog.style.width='';}}
+  function go(n,fromUser){
+    cur=(n+total)%total;
     slides.forEach(function(s,i){var on=i===cur;s.classList.toggle('is-on',on);s.setAttribute('aria-hidden',on?'false':'true');});
-    load(slides[cur].querySelector('img'));load(slides[(cur+1)%slides.length].querySelector('img'));
+    picks.forEach(function(p,i){var on=i===cur;p.classList.toggle('is-on',on);p.setAttribute('aria-selected',on?'true':'false');});
+    var p=picks[cur];picker.scrollTo({left:p.offsetLeft-(picker.clientWidth-p.offsetWidth)/2,behavior:reduce?'auto':'smooth'});
+    load(slides[cur].querySelector('img'));load(slides[(cur+1)%total].querySelector('img'));
+    runBar();if(fromUser)start();
   }
-  function start(){clearInterval(timer);if(reduce||document.hidden)return;timer=setInterval(function(){go(cur+1);},5000);}
+  function start(){clearInterval(timer);if(reduce||paused||document.hidden)return;timer=setInterval(function(){go(cur+1);},5000);}
+  function setPaused(v){paused=v;pauseBtn.setAttribute('aria-label',v?'Resume automatic changes':'Pause automatic changes');pauseBtn.innerHTML=v?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5l11 7-11 7z"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>';if(window.lucide)window.lucide.createIcons();runBar();start();}
+  bar.addEventListener('click',function(e){var b=e.target.closest('[data-act]');if(!b)return;var a=b.getAttribute('data-act');if(a==='prev')go(cur-1,true);else if(a==='next')go(cur+1,true);else setPaused(!paused);});
+  picker.addEventListener('click',function(e){var b=e.target.closest('.lp-pick');if(b)go(Number(b.getAttribute('data-i')),true);});
+  car.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){go(cur+1,true);}else if(e.key==='ArrowLeft'){go(cur-1,true);}});
+  car.addEventListener('mouseenter',function(){clearInterval(timer);prog.style.width=getComputedStyle(prog).width;prog.classList.remove('run');});
+  car.addEventListener('mouseleave',function(){runBar();start();});
   document.addEventListener('visibilitychange',start);
   load(slides[1]&&slides[1].querySelector('img'));
-  start();
+  go(0);start();
   window.__vtgLanding={go:go,intervals:{hero:7000,category:5000}};
 })();
 </script>
