@@ -417,6 +417,19 @@ html body #landing#landing .lp-arrow svg{display:block}
 }
 @media(prefers-reduced-motion:reduce){html body #landing#landing .lp-c-media img,html body #landing#landing .lp-cslide.is-on .lp-c-media img{transform:none;transition:none}}
 
+/* larger showcase, no media controls */
+html body #landing#landing .lp-car{width:min(1380px,calc(100vw - 32px));position:relative;left:50%;transform:translateX(-50%)}
+html body #landing#landing .lp-car-stage{padding:30px;border-radius:32px}
+html body #landing#landing .lp-cslide{grid-template-columns:minmax(0,1.45fr) minmax(0,.75fr);gap:52px}
+html body #landing#landing .lp-c-media{aspect-ratio:16/10.8;border-radius:24px}
+html body #landing#landing .lp-c-body h3{font-size:clamp(30px,3.4vw,46px)!important}
+html body #landing#landing .lp-c-detail{font-size:18px!important}
+html body #landing#landing .lp-c-count b{font-size:42px}
+html body #landing#landing .lp-car-bar{justify-content:flex-end;padding-top:16px}
+html body #landing#landing .lp-car-count{display:none}
+html body #landing#landing .lp-pick{width:116px;min-height:92px}
+@media(max-width:860px){html body #landing#landing .lp-car{width:calc(100vw - 24px)}html body #landing#landing .lp-car-stage{padding:14px;border-radius:22px}html body #landing#landing .lp-cslide{grid-template-columns:1fr;gap:16px}html body #landing#landing .lp-c-media{aspect-ratio:16/11}html body #landing#landing .lp-pick{width:96px;min-height:80px}}
+
 /* Split sections + globe */
 html body #landing#landing .lp-split{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
 html body #landing#landing .lp-split-rev>:first-child{order:2}
@@ -610,7 +623,7 @@ html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter select{backgro
   window.addEventListener('load',function(){heroImgs.forEach(load);heroLoop();Array.prototype.forEach.call(document.querySelectorAll('#landing .lp-c-media img,#landing #lpGlobe'),function(im){if(im.getAttribute('src')&&im.complete&&im.naturalWidth===0)im.classList.add('bad');});},{once:true});
 
   /* Category showcase: 36 categories, a new one every 5 seconds, with arrows, pause and a category rail */
-  var slides=[].slice.call(document.querySelectorAll('#lpStage .lp-cslide')),cur=0,timer=null,paused=false,car=document.getElementById('lpCar');
+  var slides=[].slice.call(document.querySelectorAll('#lpStage .lp-cslide')),cur=0,timer=null,car=document.getElementById('lpCar');
   if(!slides.length||!car)return;
   var total=slides.length;
   function pad(n){return (n<10?'0':'')+n;}
@@ -621,7 +634,7 @@ html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter select{backgro
     var cnt=s.querySelector('.lp-c-count');if(cnt)cnt.innerHTML='<b>'+pad(i+1)+'</b> / '+total;
   });
   var bar=document.createElement('div');bar.className='lp-car-bar';
-  bar.innerHTML='<div class="lp-prog" aria-hidden="true"><span></span></div><div class="lp-ctl"><button type="button" class="lp-arrow" data-act="prev" aria-label="Previous category"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><button type="button" class="lp-arrow" data-act="pause" aria-label="Pause automatic changes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg></button><button type="button" class="lp-arrow" data-act="next" aria-label="Next category"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>';
+  bar.innerHTML='<div class="lp-car-count" aria-hidden="true"></div><div class="lp-ctl"><button type="button" class="lp-arrow" data-act="prev" aria-label="Previous category"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><button type="button" class="lp-arrow" data-act="next" aria-label="Next category"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>';
   car.appendChild(bar);
   var rail=document.createElement('div');rail.className='lp-rail';var picker=document.createElement('div');picker.className='lp-picker';picker.setAttribute('role','tablist');picker.setAttribute('aria-label','Choose a category');
   slides.forEach(function(s,i){
@@ -630,8 +643,8 @@ html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter select{backgro
   });
   rail.appendChild(picker);car.appendChild(rail);
   if(window.lucide)window.lucide.createIcons();
-  var prog=bar.querySelector('.lp-prog span'),picks=[].slice.call(picker.children),pauseBtn=bar.querySelector('[data-act=pause]');
-  function runBar(){prog.classList.remove('run');prog.style.width='0';void prog.offsetWidth;if(!paused&&!reduce){prog.classList.add('run');prog.style.width='';}}
+  var picks=[].slice.call(picker.children);
+  function runBar(){}
   function go(n,fromUser){
     cur=(n+total)%total;
     slides.forEach(function(s,i){var on=i===cur;s.classList.toggle('is-on',on);s.setAttribute('aria-hidden',on?'false':'true');});
@@ -640,13 +653,12 @@ html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter select{backgro
     load(slides[cur].querySelector('img'));load(slides[(cur+1)%total].querySelector('img'));
     runBar();if(fromUser)start();
   }
-  function start(){clearInterval(timer);if(reduce||paused||document.hidden)return;timer=setInterval(function(){go(cur+1);},5000);}
-  function setPaused(v){paused=v;pauseBtn.setAttribute('aria-label',v?'Resume automatic changes':'Pause automatic changes');pauseBtn.innerHTML=v?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5l11 7-11 7z"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>';if(window.lucide)window.lucide.createIcons();runBar();start();}
-  bar.addEventListener('click',function(e){var b=e.target.closest('[data-act]');if(!b)return;var a=b.getAttribute('data-act');if(a==='prev')go(cur-1,true);else if(a==='next')go(cur+1,true);else setPaused(!paused);});
+  function start(){clearInterval(timer);if(reduce||document.hidden)return;timer=setInterval(function(){go(cur+1);},5000);}
+  bar.addEventListener('click',function(e){var b=e.target.closest('[data-act]');if(!b)return;var a=b.getAttribute('data-act');if(a==='prev')go(cur-1,true);else if(a==='next')go(cur+1,true);});
   picker.addEventListener('click',function(e){var b=e.target.closest('.lp-pick');if(b)go(Number(b.getAttribute('data-i')),true);});
   car.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){go(cur+1,true);}else if(e.key==='ArrowLeft'){go(cur-1,true);}});
-  car.addEventListener('mouseenter',function(){clearInterval(timer);prog.style.width=getComputedStyle(prog).width;prog.classList.remove('run');});
-  car.addEventListener('mouseleave',function(){runBar();start();});
+  car.addEventListener('mouseenter',function(){clearInterval(timer);});
+  car.addEventListener('mouseleave',start);
   document.addEventListener('visibilitychange',start);
   load(slides[1]&&slides[1].querySelector('img'));
   go(0);start();
