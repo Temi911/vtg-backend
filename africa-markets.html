@@ -3,52 +3,241 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="VTG Africa market coverage catalogue. Review country-level planning information, currencies, languages and reference ports.">
-<title>Africa Market Coverage | VTG</title>
+<meta name="description" content="Africa Markets by VTG: explore African import markets, plan a shipment corridor, estimate landed cost and see how to pay safely.">
+<title>Africa Markets | VTG</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
-<link rel="stylesheet" href="/vtg-content.css?v=20261030-1">
-
+<link rel="stylesheet" href="/vtg-africa.css?v=20261102-1">
 <link rel="stylesheet" href="/vtg-type.css"></head>
 <body>
 <div id="vsHeader" data-active="markets"></div>
 <script src="/vtg-shell.js?v=20261030-1"></script>
-<main id="main">
-<section class="hero"><div class="eyebrow">Africa Markets · Phase 6 Africa scale</div><h1>One trade workspace.<br>Country-aware by design.</h1><p class="muted" style="max-width:760px">Explore VTG’s initial Africa market catalogue, including local currency, supported locale references, time zone and reference seaports. Coverage status is shown honestly so planning data is not mistaken for an operational service.</p>
-<div class="notice" role="note"><div aria-hidden="true">ⓘ</div><div><strong>Planning catalogue — not a live logistics feed</strong><span class="muted">Port entries are reference information only. This page does not confirm port operations, carrier schedules, customs requirements, regional representatives, exchange rates or route availability.</span></div></div></section><div class="vs-banner"><figure><img src="https://images.pexels.com/photos/30179958/pexels-photo-30179958.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Vendors at a busy African market" loading="lazy" onerror="this.closest('.vs-banner').remove()"><figcaption>Where African demand meets global supply</figcaption></figure></div>
-<div class="toolbar"><input id="search" type="search" placeholder="Search country, region, currency or port" aria-label="Search markets"><select id="status" aria-label="Filter by market status"><option value="">All statuses</option><option value="foundation">Foundation market</option><option value="planned">Planned markets</option></select><span class="count" id="count" aria-live="polite">Loading markets…</span></div>
-<section class="grid" id="markets" aria-live="polite"><div class="state">Loading the market catalogue…</div></section>
-<p class="bottom-note">Before a market is launched, VTG must verify local regulatory sources, freight and inland partners, support coverage, country-specific payment and landed-cost requirements, and any local representatives. This page does not constitute legal, customs or tax advice.</p>
+<main id="main" class="am-page">
+
+<section class="am-hero"><div class="am am-hero-grid">
+<div>
+<span class="am-kicker">Africa Markets</span>
+<h1>Trade into Africa with the full picture.</h1>
+<p class="am-lede">See where African demand is strongest, plan the import route and paperwork for your destination, estimate your landed cost, and choose a safe way to pay. One workspace for buyers and suppliers moving goods between China, Korea and Africa.</p>
+<div class="am-actions"><a class="am-btn primary" href="#planner">Plan a shipment</a><a class="am-btn" href="#markets">Explore markets</a></div>
+</div>
+<figure class="am-hero-photo"><img src="https://images.pexels.com/photos/30179958/pexels-photo-30179958.jpeg?auto=compress&cs=tinysrgb&w=1400" alt="Vendors at a busy African market" loading="eager" onerror="this.closest('figure').remove()"><figcaption>Where African demand meets global supply</figcaption></figure>
+</div>
+<div class="am"><div class="am-facts" aria-label="Key trade facts, with sources">
+<div class="am-fact"><b>$225bn</b><span>China’s exports to Africa in 2025, a record</span><a href="https://intelpoint.co/?p=8233" target="_blank" rel="noopener">Source: Intelpoint</a></div>
+<div class="am-fact"><b>31.2%</b><span>of Nigeria’s Q4 2025 imports came from China (₦5.39tn of ₦17.25tn)</span><a href="https://nairametrics.com/2026/03/12/china-us-netherlands-dominate-nigerias-n17-25-trillion-import-market-in-q4-2025/" target="_blank" rel="noopener">Source: Nairametrics</a></div>
+<div class="am-fact"><b>54</b><span>AfCFTA signatory nations, about 1.4 billion people</span><a href="https://allbusiness.africa/insights/afcfta-implementation-2026" target="_blank" rel="noopener">Source: AllBusiness Africa, Apr 2026</a></div>
+<div class="am-fact"><b>28</b><span>countries on PAPSS, with 190+ banks and fintechs</span><a href="https://www.warpnews.org/africa/africas-own-payment-system-reaches-28-countries-transfers-in-seconds-instead-of-days-and-billions-in-saved-fees/" target="_blank" rel="noopener">Source: Warp News</a></div>
+</div></div>
+</section>
+
+<div class="am">
+
+<section class="am-sec" id="demand">
+<div class="am-head"><div><span class="am-kicker">What Africa is buying</span><h2>Chinese goods in demand in Nigeria</h2><p>Nigeria’s largest import line items from China in Q4 2025, by value. Select a bar to plan that kind of shipment.</p></div></div>
+<div class="am-bars" id="bars" role="list"></div>
+<p class="am-muted" style="font-size:.85rem;margin-top:16px">Values in naira billions, from reporting on National Bureau of Statistics Q4 2025 data. <a href="https://nairametrics.com/2026/03/12/china-us-netherlands-dominate-nigerias-n17-25-trillion-import-market-in-q4-2025/" target="_blank" rel="noopener">Nairametrics</a>. Nigeria is shown because it is VTG’s foundation market; other countries are added as their data is verified.</p>
+</section>
+
+<section class="am-sec" id="markets">
+<div class="am-head"><div><span class="am-kicker">Market explorer</span><h2>Countries in the VTG catalogue</h2><p>Currency, time zone, language references and reference seaports for each market. Save the ones you are watching.</p></div></div>
+<div class="am-note" role="note"><div aria-hidden="true">ⓘ</div><div><strong>Planning catalogue, not a live logistics feed</strong><p>Port entries are reference information only. This page does not confirm port operations, carrier schedules, customs requirements, regional representatives, exchange rates or route availability.</p></div></div>
+<div class="am-toolbar"><input id="search" type="search" placeholder="Search country, region, currency or port" aria-label="Search markets"><select id="status" aria-label="Filter markets"><option value="">All markets</option><option value="foundation">Foundation market</option><option value="planned">Planned markets</option><option value="saved">My saved markets</option></select><span class="am-count" id="count" aria-live="polite"></span></div>
+<div class="am-grid" id="markets-list" aria-live="polite"><div class="am-state">Loading the market catalogue…</div></div>
+</section>
+
+<section class="am-sec" id="planner">
+<div class="am-head"><div><span class="am-kicker">Corridor planner</span><h2>Plan the route and paperwork</h2><p>Choose where you are importing to and what you are buying. You get the sequence of steps, the agencies to check and the documents to prepare.</p></div></div>
+<div class="am-two">
+<div class="am-panel"><form class="am-form" id="planForm" onsubmit="return false">
+<label class="am-field">Importing into<select id="pDest"></select></label>
+<label class="am-field">Shipping from<select id="pOrigin"><option value="cn">China (Guangzhou, Shenzhen, Shanghai, Ningbo-Zhoushan)</option><option value="kr">South Korea (Busan, Incheon)</option></select></label>
+<label class="am-field">What you are importing<select id="pCat">
+<option value="general">General merchandise</option>
+<option value="vehicles">Vehicles, tractors and machinery</option>
+<option value="electronics">Electronics and telecom equipment</option>
+<option value="solar">Solar panels and electrical equipment</option>
+<option value="chemicals">Chemicals, plastics and raw materials</option>
+<option value="food">Food, drinks, cosmetics and medicines</option>
+</select></label>
+<p class="am-muted" style="font-size:.85rem">This is a general guide built from official guidance. Your HS code decides the exact duty, levies and agencies, so confirm it with a licensed customs agent.</p>
+<div class="am-actions"><a class="am-btn sm" href="/inspection-request.html">Book a pre-shipment inspection</a><a class="am-btn sm" href="/logistics-shipping.html">Talk to logistics</a></div>
+</form></div>
+<div class="am-panel" id="planOut" aria-live="polite"></div>
+</div>
+</section>
+
+<section class="am-sec" id="cost">
+<div class="am-head"><div><span class="am-kicker">Landed-cost estimator</span><h2>Know the real cost before you pay</h2><p>Enter your supplier quote and the rates from your HS code lookup. VTG does not guess duty rates for you, so the result is only as good as the numbers you enter.</p></div></div>
+<div class="am-two">
+<div class="am-panel"><form class="am-form" id="costForm" onsubmit="return false">
+<div class="am-row2"><label class="am-field">Goods value (USD)<input id="cGoods" type="number" min="0" step="any" inputmode="decimal" value="10000"></label><label class="am-field">Units<input id="cUnits" type="number" min="1" step="1" inputmode="numeric" value="100"></label></div>
+<div class="am-row2"><label class="am-field">Freight (USD)<input id="cFreight" type="number" min="0" step="any" inputmode="decimal" value="1500"></label><label class="am-field">Insurance (USD)<input id="cIns" type="number" min="0" step="any" inputmode="decimal" value="100"></label></div>
+<div class="am-row2"><label class="am-field">Import duty %<input id="cDuty" type="number" min="0" step="any" inputmode="decimal" value="0"><small>From your HS code lookup</small></label><label class="am-field">Other levies %<input id="cLevy" type="number" min="0" step="any" inputmode="decimal" value="0"><small>For example CISS or other charges</small></label></div>
+<div class="am-row2"><label class="am-field">VAT %<input id="cVat" type="number" min="0" step="any" inputmode="decimal" value="0"></label><label class="am-field"><span id="cFxLabel">Local currency per USD</span><input id="cFx" type="number" min="0" step="any" inputmode="decimal" value="1"><small>Use your bank’s current rate</small></label></div>
+<label class="am-field">Local handling, clearing and delivery (<span id="cLocalCur">local currency</span>)<input id="cLocal" type="number" min="0" step="any" inputmode="decimal" value="0"></label>
+<p class="am-muted" style="font-size:.82rem">The values above are example starting numbers. Replace them with your own quote.</p>
+</form></div>
+<div class="am-panel"><div class="am-muted" style="font-weight:700;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase">Estimated landed cost</div><div class="am-big" id="rTotal">—</div><div class="am-muted" id="rUnit" style="margin:4px 0 14px;font-weight:600"></div>
+<dl class="am-result" id="rList"></dl>
+<p class="am-muted" style="font-size:.82rem;margin-top:14px">Duty and levies are applied to the CIF value (goods, freight and insurance). VAT is applied to CIF plus duty and levies. Your customs agent’s assessment is the one that counts.</p></div>
+</div>
+</section>
+
+<section class="am-sec" id="pay">
+<div class="am-head"><div><span class="am-kicker">Pay safely</span><h2>Choose the right way to pay</h2><p>The right payment route depends on where your supplier is and how much trust has been built.</p></div></div>
+<div class="am-rails">
+<article class="am-rail"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6M5 10v8M9 10v8M15 10v8M19 10v8M3 21h18"/></svg></div><h3>Paying suppliers in China or Korea</h3><p>For first orders and larger values, use a bank-backed method rather than paying the full amount up front.</p><ul><li>Letter of credit, with payment released against agreed documents</li><li>Bank transfer in stages, tied to inspection</li><li>Keep the proforma invoice and Form M aligned</li></ul><a class="am-btn sm" href="/finance-payments.html">See VTG finance options</a></article>
+<article class="am-rail"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg></div><h3>Paying inside Africa</h3><p>PAPSS lets participating banks settle African trade payments in local currency, without routing through the US dollar. It reports 28 countries and 190+ banks and fintechs.</p><ul><li>Availability depends on your bank and your counterparty’s country</li><li>Reported as not yet fully operational for the BEAC (CEMAC) region</li><li>A BCEAO pilot is scheduled, not started</li></ul><a class="am-btn sm" href="https://www.warpnews.org/africa/africas-own-payment-system-reaches-28-countries-transfers-in-seconds-instead-of-days-and-billions-in-saved-fees/" target="_blank" rel="noopener">Read the report</a></article>
+<article class="am-rail"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div><h3>Check before you release money</h3><p>Most import losses come from paying before the goods are verified. Inspect the product and the supplier first.</p><ul><li>Verify the supplier and the product</li><li>Inspect at the factory or before loading</li><li>Release payment against documents and photos</li></ul><a class="am-btn sm" href="/product-verification.html">Verify a product</a></article>
+</div>
+</section>
+
+<section class="am-sec" id="tools">
+<div class="am-head"><div><span class="am-kicker">Official tools</span><h2>Where to confirm the rules</h2><p>VTG points you to the authorities. Always check the official source for your product and country.</p></div></div>
+<div class="am-tools">
+<a class="am-tool" href="https://tip.nsw.gov.ng/trading-with-nigeria/import-procedure" target="_blank" rel="noopener"><b>Nigeria National Single Window</b><span>Official import procedure, HS code lookup, permits and Form M guidance for Nigeria.</span></a>
+<a class="am-tool" href="https://au-afcfta.org" target="_blank" rel="noopener"><b>AfCFTA Secretariat</b><span>Continental free-trade agreement documents, news and the Guided Trade Initiative.</span></a>
+<a class="am-tool" href="https://www.wcoomd.org/en/media/newsroom/2024/december/update-of-the-afcfta-etariff-book-provides-essential-trade-information-for-african-businesses.aspx" target="_blank" rel="noopener"><b>AfCFTA e-Tariff Book</b><span>Preferential tariff schedules and rules-of-origin information for trade inside Africa, described by the World Customs Organization.</span></a>
+<a class="am-tool" href="https://www.trade.gov/market-intelligence/afcfta-data-portal" target="_blank" rel="noopener"><b>AfCFTA data portal</b><span>US International Trade Administration market intelligence on AfCFTA markets.</span></a>
+</div>
+</section>
+
+<section class="am-sec" id="reps">
+<div class="am-cta"><div><h2>Grow with VTG in your country</h2><p>Our representative directory is not open yet for any country. If you know your market, sell, inspect or move goods there, apply to become a VTG partner or agent.</p></div><div class="am-actions"><a class="am-btn" href="/agent.html">Become an agent</a><a class="am-btn ghost" href="/partnerships.html">Partner with VTG</a></div></div>
+</section>
+
+<section class="am-sec" id="sources">
+<h2 style="font-size:1.2rem">Sources and notes</h2>
+<ol class="am-sources">
+<li>Intelpoint, “Post-pandemic trade reset lifts China–Africa exports to a record $225bn in 2025”. <a href="https://intelpoint.co/?p=8233" target="_blank" rel="noopener">intelpoint.co</a></li>
+<li>Nairametrics, “China, US, Netherlands dominate Nigeria’s N17.25 trillion import market in Q4 2025”, 12 March 2026. <a href="https://nairametrics.com/2026/03/12/china-us-netherlands-dominate-nigerias-n17-25-trillion-import-market-in-q4-2025/" target="_blank" rel="noopener">nairametrics.com</a></li>
+<li>AllBusiness Africa, “AfCFTA Implementation 2026”, 12 April 2026. The article gives no figure for tariff liberalisation achieved to date. <a href="https://allbusiness.africa/insights/afcfta-implementation-2026" target="_blank" rel="noopener">allbusiness.africa</a></li>
+<li>Warp News, PAPSS reaches 28 countries. The $5bn annual fee saving is the source’s estimate. <a href="https://www.warpnews.org/africa/africas-own-payment-system-reaches-28-countries-transfers-in-seconds-instead-of-days-and-billions-in-saved-fees/" target="_blank" rel="noopener">warpnews.org</a></li>
+<li>Nigeria National Single Window, “Import procedure”. <a href="https://tip.nsw.gov.ng/trading-with-nigeria/import-procedure" target="_blank" rel="noopener">tip.nsw.gov.ng</a></li>
+</ol>
+<p class="am-muted" style="font-size:.85rem;margin-top:14px">Before a market is launched, VTG must verify local regulatory sources, freight and inland partners, support coverage, country-specific payment and landed-cost requirements, and any local representatives. This page does not constitute legal, customs or tax advice.</p>
+</section>
+
+</div>
 </main>
 <div id="vsFooter"></div>
 <script>
 (function(){
- const root=document.documentElement,themeButton=document.createElement('button');
- function autoTheme(){return new Date().getHours()>=6&&new Date().getHours()<18?'light':'dark'}
- let manual=localStorage.getItem('vtg_theme_override');
- root.dataset.theme=manual==='light'||manual==='dark'?manual:autoTheme();
- themeButton.textContent='Use '+(root.dataset.theme==='light'?'dark':'light')+' theme';
- themeButton.addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='light'?'dark':'light';manual=root.dataset.theme;localStorage.setItem('vtg_theme_override',manual);themeButton.textContent='Use '+(manual==='light'?'dark':'light')+' theme'});
- const list=document.getElementById('markets'),search=document.getElementById('search'),status=document.getElementById('status'),count=document.getElementById('count');
- let markets=[];
- const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ var $=function(id){return document.getElementById(id)};
+ var esc=function(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+ var markets=[],saved=[];
+ try{saved=JSON.parse(localStorage.getItem('vtg-am-saved')||'[]')||[]}catch(e){saved=[]}
+ function persist(){try{localStorage.setItem('vtg-am-saved',JSON.stringify(saved))}catch(e){}}
+
+ /* demand bars: Nigeria Q4 2025, China-origin line items, naira billions */
+ var DEMAND=[
+  {n:'New single-axle tractors',v:227.27,cat:'vehicles'},
+  {n:'Communication machines',v:170.32,cat:'electronics'},
+  {n:'PVC (plastics)',v:105.13,cat:'chemicals'},
+  {n:'Photovoltaic panels',v:100.83,cat:'solar'}];
+ var max=Math.max.apply(null,DEMAND.map(function(d){return d.v}));
+ $('bars').innerHTML=DEMAND.map(function(d){return '<div class="am-bar is-pickable" role="listitem" tabindex="0" data-cat="'+d.cat+'"><span>'+esc(d.n)+'</span><i><u style="width:'+(d.v/max*100).toFixed(1)+'%"></u></i><b>₦'+d.v.toFixed(2)+'bn</b></div>'}).join('');
+ function pickCat(cat){$('pCat').value=cat;if($('pDest').value!=='NG'&&[].some.call($('pDest').options,function(o){return o.value==='NG'}))$('pDest').value='NG';plan();$('planner').scrollIntoView({behavior:'smooth',block:'start'})}
+ $('bars').addEventListener('click',function(e){var b=e.target.closest('[data-cat]');if(b)pickCat(b.getAttribute('data-cat'))});
+ $('bars').addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){var b=e.target.closest('[data-cat]');if(b){e.preventDefault();pickCat(b.getAttribute('data-cat'))}}});
+
+ /* explorer */
+ var list=$('markets-list'),search=$('search'),status=$('status'),count=$('count');
+ var STAR='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2 6.3 20.3l1.2-6.4L2.8 9.5l6.4-.8z"/></svg>';
  function render(){
-  const q=search.value.trim().toLowerCase(),s=status.value;
-  const filtered=markets.filter(m=>(!s||m.marketStatus===s)&&(!q||[m.country,m.countryCode,m.region,m.currency?.code,m.currency?.name,...(m.locales||[]),...(m.ports||[]).map(p=>p.name+' '+p.city)].join(' ').toLowerCase().includes(q)));
-  count.textContent=filtered.length+' of '+markets.length+' markets';
-  if(!filtered.length){list.innerHTML='<div class="state">No markets match this search.</div>';return}
-  list.innerHTML=filtered.map(m=>{
-   const isFoundation=m.marketStatus==='foundation';
-   const ports=(m.ports||[]).map(p=>'<span class="port">'+esc(p.name)+'</span>').join('');
-   return '<article class="market"><div class="market-head"><div><div class="eyebrow">'+esc(m.region)+'</div><h2>'+esc(m.country)+'</h2><div class="muted">'+esc(m.countryCode)+'</div></div><span class="badge '+(isFoundation?'foundation':'planned')+'">'+(isFoundation?'Foundation':'Planned')+'</span></div><div class="meta"><div><small>Currency reference</small><b>'+esc(m.currency?.code)+' · '+esc(m.currency?.name)+'</b></div><div><small>Time zone</small><b>'+esc(m.timeZone)+'</b></div><div><small>Locales</small><b>'+esc((m.locales||[]).join(', '))+'</b></div><div><small>Representatives</small><b>Not configured</b></div></div><div><div class="eyebrow" style="margin-bottom:8px">Reference ports</div><div class="ports">'+(ports||'<span class="muted">No reference ports listed</span>')+'</div></div><div class="footnote">Compliance: authority/professional verification required. '+(isFoundation?'Foundation configuration only; this does not assert full operational coverage.':'Planned market; not launched.')+'</div></article>';
-  }).join('');
+  var q=search.value.trim().toLowerCase(),s=status.value;
+  var f=markets.filter(function(m){
+   var okS=!s||(s==='saved'?saved.indexOf(m.countryCode)>-1:m.marketStatus===s);
+   var hay=[m.country,m.countryCode,m.region,m.currency&&m.currency.code,m.currency&&m.currency.name].concat(m.locales||[]).concat((m.ports||[]).map(function(p){return p.name+' '+p.city})).join(' ').toLowerCase();
+   return okS&&(!q||hay.indexOf(q)>-1)});
+  count.textContent=f.length+' of '+markets.length+' markets';
+  if(!f.length){list.innerHTML='<div class="am-state">'+(s==='saved'?'You have not saved any markets yet. Use the star on a market card.':'No markets match this search.')+'</div>';return}
+  list.innerHTML=f.map(function(m){
+   var isF=m.marketStatus==='foundation',on=saved.indexOf(m.countryCode)>-1;
+   var ports=(m.ports||[]).map(function(p){return '<span class="am-port">'+esc(p.name)+'</span>'}).join('');
+   var rep=m.representativeDirectory&&m.representativeDirectory.status==='not_configured'?'Representative directory not open yet':'Representatives available';
+   return '<article class="am-card'+(($('pDest').value===m.countryCode)?' is-pick':'')+'"><div class="am-card-top"><div><div class="am-region">'+esc(m.region)+'</div><h3>'+esc(m.country)+'</h3></div><span class="am-badge '+(isF?'foundation':'planned')+'">'+(isF?'Foundation market':'Planned')+'</span></div>'
+   +'<dl class="am-meta"><div><dt>Currency</dt><dd>'+esc(m.currency&&m.currency.code)+' · '+esc(m.currency&&m.currency.name)+'</dd></div><div><dt>Time zone</dt><dd>'+esc(m.timeZone)+'</dd></div><div><dt>Locales</dt><dd>'+esc((m.locales||[]).join(', '))+'</dd></div><div><dt>Country code</dt><dd>'+esc(m.countryCode)+'</dd></div></dl>'
+   +'<div><div class="am-region">Reference seaports</div><div class="am-ports">'+ports+'</div></div>'
+   +'<p class="am-rep">'+esc(rep)+'. '+esc(m.compliance&&m.compliance.note||'')+'</p>'
+   +'<div class="am-card-foot"><button class="am-btn sm primary" type="button" data-plan="'+esc(m.countryCode)+'">Plan a shipment here</button><button class="am-star" type="button" data-save="'+esc(m.countryCode)+'" aria-pressed="'+on+'" aria-label="'+(on?'Remove '+esc(m.country)+' from saved markets':'Save '+esc(m.country))+'">'+STAR+'</button></div></article>'}).join('');
  }
+ list.addEventListener('click',function(e){
+  var p=e.target.closest('[data-plan]'),sv=e.target.closest('[data-save]');
+  if(p){$('pDest').value=p.getAttribute('data-plan');syncCur();plan();render();$('planner').scrollIntoView({behavior:'smooth',block:'start'})}
+  if(sv){var c=sv.getAttribute('data-save'),i=saved.indexOf(c);if(i>-1)saved.splice(i,1);else saved.push(c);persist();render()}
+ });
  search.addEventListener('input',render);status.addEventListener('change',render);
- fetch('/api/africa/markets',{headers:{Accept:'application/json'},cache:'no-store'}).then(async r=>{const d=await r.json();if(!r.ok)throw new Error(d.error?.message||'Market catalogue unavailable');if(d.status!=='planning_data'||d.liveProviderData!==false||!Array.isArray(d.markets))throw new Error('The market catalogue returned an unexpected response.');markets=d.markets;render()}).catch(err=>{count.textContent='Catalogue unavailable';list.innerHTML='<div class="state">We could not load the market catalogue. '+esc(err.message)+'<br><br><button type="button" id="retry">Try again</button></div>';document.getElementById('retry').addEventListener('click',()=>location.reload())});
+
+ /* planner */
+ var NG_STEPS=[
+  ['Register as an importer','Incorporate with the Corporate Affairs Commission, get a TIN from the Nigeria Revenue Service, and register on the National Single Window, B’odogwu and Tax Promax.'],
+  ['Check the HS code','Use the HS Code Lookup on the National Single Window to confirm duty rates, levies such as CET and CISS, and the agencies that apply.'],
+  ['Get licences and certificates','Apply through the National Single Window for the permits your product needs.'],
+  ['Open Form M','Apply through an authorised dealer bank on the B’odogwu platform.'],
+  ['Get the Pre-Arrival Assessment Report (PAAR)','Apply to the Nigeria Customs Service through B’odogwu.'],
+  ['Clear the goods','Submit the goods declaration through B’odogwu and pay duties, VAT and levies. A licensed customs agent is required.'],
+  ['Inspection and release','Goods may be examined or scanned. A release order follows the compliance checks.'],
+  ['Delivery','Goods move from the port to your destination. A post-clearance audit may follow if flagged.']];
+ var NG_DOCS=['Proforma or commercial invoice','Form M','Bill of lading, airway bill or road waybill','Combined Certificate of Value and Origin (CCVO)','Packing list','Insurance certificate'];
+ var AGENCY={
+  general:['SON (SONCAP), where it applies to your product'],
+  vehicles:['SON (SONCAP)','NESREA (environmental permits)'],
+  electronics:['SON (SONCAP)'],
+  solar:['SON (SONCAP)','NESREA (environmental permits)'],
+  chemicals:['NAFDAC (chemicals)','NESREA (environmental permits)','Chemical analysis report, if applicable'],
+  food:['NAFDAC (food, drugs, cosmetics)','Product certificate or phytosanitary certificate, if applicable','Federal Ministry of Agriculture and Food Security, for agricultural produce']};
+ var GEN_STEPS=function(c){return [
+  ['Identify the HS code','Classify your product and find the duty, VAT and other charges that apply in '+c+'.'],
+  ['Confirm standards and permits','Check which product standards, licences or health permits '+c+' requires for this product.'],
+  ['Register and prepare payment','Confirm importer registration and how foreign-currency payments are approved by your bank.'],
+  ['Clear the goods','Use a licensed customs agent in '+c+' to declare and clear the goods.'],
+  ['Delivery','Arrange inland transport from the port to your destination.']]};
+ var ORIGIN={cn:'China: Guangzhou, Shenzhen, Shanghai or Ningbo-Zhoushan',kr:'South Korea: Busan or Incheon'};
+ function plan(){
+  var code=$('pDest').value,m=markets.filter(function(x){return x.countryCode===code})[0];if(!m){$('planOut').innerHTML='<div class="am-state">Choose a destination.</div>';return}
+  var cat=$('pCat').value,ng=code==='NG';
+  var steps=ng?NG_STEPS:GEN_STEPS(m.country);
+  var ports=(m.ports||[]).map(function(p){return p.name}).join(', ');
+  var h='<h3>'+esc(ORIGIN[$('pOrigin').value].split(':')[0])+' → '+esc(m.country)+'</h3><p class="am-muted" style="margin:6px 0 16px">Ports to discuss with your supplier and forwarder. Origin: '+esc(ORIGIN[$('pOrigin').value].split(': ')[1])+'. Destination: '+esc(ports)+'. Port names are reference information, not a confirmed route.</p>';
+  if(ng){h+='<div style="margin-bottom:16px"><div class="am-region">Agencies to check for this product</div>'+AGENCY[cat].map(function(a){return '<span class="am-tag">'+esc(a)+'</span>'}).join('')+'</div>'}
+  else{h+='<div class="am-note"><div aria-hidden="true">ⓘ</div><div><strong>General checklist</strong><p>Detailed official steps for '+esc(m.country)+' are not yet in the VTG catalogue. Use this as a guide and confirm every step with the local authorities and a licensed customs agent.</p></div></div>'}
+  h+='<ol class="am-steps">'+steps.map(function(s){return '<li><b>'+esc(s[0])+'</b><span>'+esc(s[1])+'</span></li>'}).join('')+'</ol>';
+  if(ng){h+='<div class="am-region" style="margin-top:6px">Documents to prepare</div><div class="am-docs">'+NG_DOCS.map(function(d){return '<span class="am-doc">'+esc(d)+'</span>'}).join('')+'</div><p class="am-muted" style="font-size:.82rem;margin-top:14px">Source: Nigeria National Single Window, import procedure. Procedures vary by product category and some steps can run in parallel.</p>'}
+  $('planOut').innerHTML=h;
+ }
+ ['pDest','pOrigin','pCat'].forEach(function(id){$(id).addEventListener('change',function(){if(id==='pDest')syncCur();plan();render()})});
+
+ /* landed cost */
+ function num(id){var v=parseFloat($(id).value);return isFinite(v)&&v>=0?v:0}
+ function fmt(v,cur){try{return new Intl.NumberFormat('en',{style:'currency',currency:cur,maximumFractionDigits:2}).format(v)}catch(e){return cur+' '+v.toFixed(2)}}
+ function syncCur(){var m=markets.filter(function(x){return x.countryCode===$('pDest').value})[0];var c=m&&m.currency?m.currency.code:'local currency';$('cFxLabel').textContent=c+' per 1 USD';$('cLocalCur').textContent=c;cost()}
+ function cost(){
+  var m=markets.filter(function(x){return x.countryCode===$('pDest').value})[0],cur=m&&m.currency?m.currency.code:'USD';
+  var goods=num('cGoods'),fr=num('cFreight'),ins=num('cIns'),cif=goods+fr+ins;
+  var duty=cif*num('cDuty')/100,levy=cif*num('cLevy')/100,vat=(cif+duty+levy)*num('cVat')/100;
+  var fx=num('cFx')||1,local=num('cLocal'),unitsN=Math.max(1,num('cUnits'));
+  var totalUsd=cif+duty+levy+vat+(fx?local/fx:0),totalLocal=totalUsd*fx;
+  $('rTotal').textContent=cur==='USD'?fmt(totalUsd,'USD'):fmt(totalLocal,cur);
+  $('rUnit').textContent=(cur==='USD'?fmt(totalUsd/unitsN,'USD'):fmt(totalLocal/unitsN,cur))+' per unit · '+fmt(totalUsd,'USD')+' total in USD';
+  var rows=[['Goods',goods],['Freight',fr],['Insurance',ins],['CIF value',cif],['Import duty',duty],['Other levies',levy],['VAT',vat],['Local handling (converted)',fx?local/fx:0]];
+  $('rList').innerHTML=rows.map(function(r){return '<div><dt>'+r[0]+'</dt><dd>'+fmt(r[1],'USD')+'</dd></div>'}).join('')+'<div class="total"><dt>Total landed</dt><dd>'+fmt(totalUsd,'USD')+'</dd></div>';
+ }
+ [].forEach.call(document.querySelectorAll('#costForm input'),function(i){i.addEventListener('input',cost)});
+
+ function init(){
+  $('pDest').innerHTML=markets.map(function(m){return '<option value="'+esc(m.countryCode)+'">'+esc(m.country)+'</option>'}).join('');
+  var f=markets.filter(function(m){return m.marketStatus==='foundation'})[0];if(f)$('pDest').value=f.countryCode;
+  syncCur();plan();render();
+ }
+ fetch('/api/africa/markets',{headers:{Accept:'application/json'},cache:'no-store'}).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.error&&d.error.message||'Market catalogue unavailable');if(d.status!=='planning_data'||d.liveProviderData!==false||!Array.isArray(d.markets))throw new Error('The market catalogue response was not recognised.');markets=d.markets;init()})}).catch(function(e){
+  list.innerHTML='<div class="am-state">The market catalogue could not be loaded. '+esc(e.message)+'</div>';count.textContent='';$('planOut').innerHTML='<div class="am-state">Planner unavailable until the catalogue loads.</div>';$('rTotal').textContent='—';
+ });
+ cost();
 })();
 </script>
-
 </body>
 </html>
