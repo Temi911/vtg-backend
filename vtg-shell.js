@@ -90,9 +90,9 @@
 
   var FOOTER = '<footer class="vs-footer"><div class="vs-wrap vs-footer-in">' +
     '<div class="vs-footer-brand"><a href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img data-vs-logo src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><p>Connecting Africa, China and the world through trusted trade.</p></div>' +
-    '<div><h4>Explore</h4><ul><li><a href="/marketplace.html">Marketplace</a></li><li><a href="/trade-atlas.html">Trade Atlas</a></li><li><a href="/vtg-ai.html">VTG AI</a></li><li><a href="/africa-markets.html">Africa Markets</a></li></ul></div>' +
+    '<div><h4>Explore</h4><ul><li><a href="/marketplace.html">Marketplace</a></li><li><a href="/trade-atlas.html">Trade Atlas</a></li><li><a href="/market-intelligence.html">Market Intelligence</a></li><li><a href="/vtg-ai.html">VTG AI</a></li><li><a href="/trade-feed.html">Trade Feed</a></li><li><a href="/africa-markets.html">Africa Markets</a></li></ul></div>' +
     '<div><h4>Trade</h4><ul><li><a href="/sourcing-suppliers.html">Sourcing &amp; Suppliers</a></li><li><a href="/product-verification.html">Product Verification</a></li><li><a href="/logistics-shipping.html">Logistics &amp; Shipping</a></li><li><a href="/finance-payments.html">Finance &amp; Payments</a></li></ul></div>' +
-    '<div><h4>Business</h4><ul><li><a href="/trade-guide.html">Trade Guide</a></li><li><a href="/partnerships.html">Partnerships</a></li><li><a href="/agent.html">Become an Agent</a></li><li><a href="/workforce-access.html">Staff Access</a></li></ul></div>' +
+    '<div><h4>Business</h4><ul><li><a href="/trade-guide.html">Trade Guide</a></li><li><a href="/partnerships.html">Partnerships</a></li><li><a href="/agent.html">Become an Agent</a></li><li><a href="/workforce-access.html">Workforce &amp; Staff Access</a></li></ul></div>' +
     '<div><h4>Company</h4><ul><li><a href="/about-vintage.html">About VTG</a></li><li><a href="/contact.html">Contact</a></li><li><a href="/privacy.html">Privacy</a></li><li><a href="/terms.html">Terms</a></li><li><a href="/code-of-conduct.html">Code of Conduct</a></li></ul></div>' +
     '</div><div class="vs-footer-base"><div class="vs-wrap"><span>&copy; ' + new Date().getFullYear() + ' Vintage Trade Global &middot; Powered by Folayele Global Resources Limited</span><span>Lagos &middot; Guangzhou &middot; Busan</span></div></div></footer>';
 

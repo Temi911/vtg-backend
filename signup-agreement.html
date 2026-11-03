@@ -15,7 +15,7 @@
 <body class="flow">
 <div class="flow-top"></div>
 <div class="flow-bar"><div class="vs-wrap"><a href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><a class="back" href="/frontend-v3.html">Back to site</a></div></div>
-<main class="flow-main" id="main"><div class="flow-card" id="app"><div class="loading">Loading your VTG agreement…</div></div></main>
+<main class="flow-main" id="main"><div class="vs-banner"><figure><img src="https://images.pexels.com/photos/7641842/pexels-photo-7641842.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="A person signing a contract" loading="lazy" onerror="this.closest('.vs-banner').remove()"><figcaption>Review and accept the agreement</figcaption></figure></div><div class="flow-card" id="app"><div class="loading">Loading your VTG agreement…</div></div></main>
 <script>
 const API='';
 const auth=JSON.parse(localStorage.getItem('vtg-auth')||'{}'); const token=localStorage.getItem('vtg_access_token')||auth.accessToken||'';
