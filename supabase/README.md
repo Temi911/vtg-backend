@@ -162,3 +162,16 @@ The workforce invitation flow was tightened after implementation review: each in
 - Verification document review workflow, trust-risk flags, compliance workflows, agent applications, full wallet/FX, external trade intelligence feeds, email notifications and remaining legacy Express route compatibility remain.
 - No frontend-wide endpoint switch, production routing change, Railway shutdown or production data cutover has occurred.
 - Supabase Auth leaked-password protection remains disabled according to the current security advisor; enable it in Auth settings before production sign-off.
+
+
+### Wallet foundation (2026-11-04)
+
+- Added `vtg_wallet_accounts`, `vtg_wallet_transfers` and `vtg_wallet_ledger` with per-user read RLS and no client write grants.
+- Added `vtg_wallet_transfer` as a service-role-only transaction. It locks both accounts in stable order, checks available balance, writes debit and credit ledger entries, updates both balances atomically, and enforces idempotency.
+- Deployed `vtg-wallet` (ACTIVE v1) for authenticated balance/transaction reads and email-addressed peer transfers.
+- **Funding is intentionally not exposed to clients.** Until verified settlement/top-up integration exists, newly created accounts have zero balances and transfers cannot spend unverified funds. No deposit, cash-out, FX conversion or real-money payout capability is claimed.
+
+### CI correction
+
+- Updated the frontend flow test to assert the new direct Supabase signup routes and absence of legacy frontend auth endpoints.
+- The first edit contained escaped line breaks and caused a JavaScript syntax error. This was corrected in commit `b60ab0b`; the newest full workflow run is being checked.
