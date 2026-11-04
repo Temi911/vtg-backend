@@ -77,7 +77,7 @@ Deno.serve(async(req)=>{
   if(!member.data)return out({error:"An active approved workforce inspector is required"},422);
   const {data:item}=await own();if(!item)return out({error:"Inspection not found"},404);
   if(item.payment_status!=="paid")return out({error:"Verified inspection payment is required before assignment"},409);
-  const q=await db.from("vtg_inspection_requests").update({inspector_id:agentId,status:"accepted",updated_at:new Date().toISOString()}).eq("id",item.id).is("inspector_id",null).select().maybeSingle();
+  const q=await db.from("vtg_inspection_requests").update({inspector_id:agentId,status:"accepted",assigned_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq("id",item.id).is("inspector_id",null).select().maybeSingle();
   return q.error||!q.data?out({error:"Assignment conflict; refresh and retry"},409):out({request:q.data});
  }
  if(parts[0]==="requests"&&parts[1]&&parts[2]==="start"&&req.method==="POST"){
@@ -113,15 +113,14 @@ Deno.serve(async(req)=>{
   const summary=text(body.summary);if(summary.length<20||summary.length>5000)return out({error:"Inspection report must be 20–5000 characters"},400);
   const evidence=await db.from("vtg_inspection_evidence").select("id").eq("inspection_id",item.id).eq("uploaded_by",user.id).limit(1);
   if(evidence.error||!evidence.data?.length)return out({error:"Upload at least one evidence item before submitting"},422);
-  const q=await db.from("vtg_inspection_requests").update({findings:summary,status:"completed",completed_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq("id",item.id).eq("inspector_id",user.id).eq("status","in_progress").select().single();
+  const q=await db.from("vtg_inspection_requests").update({findings:summary,inspection_summary:summary,status:"completed",completed_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq("id",item.id).eq("inspector_id",user.id).eq("status","in_progress").select().single();
   return q.error?out({error:"Could not submit report"},409):out({request:q.data});
  }
  if(parts[0]==="requests"&&parts[1]&&parts[2]==="decision"&&req.method==="PATCH"){
   const {data:item}=await own();if(!item||item.requested_by!==user.id||item.status!=="completed")return out({error:"Completed inspection not found for this buyer"},404);
   const decision=text(body.decision),notes=text(body.notes);
   if(!["approved","needs_clarification","rejected"].includes(decision))return out({error:"Invalid buyer decision"},400);
-  const status=decision==="approved"?"completed":decision==="rejected"?"rejected":"accepted";
-  const q=await db.from("vtg_inspection_requests").update({status,findings:(item.findings??"")+(notes?"\nBuyer: "+notes:""),updated_at:new Date().toISOString()}).eq("id",item.id).eq("requested_by",user.id).eq("status","completed").select().single();
+  const q=await db.from("vtg_inspection_requests").update({buyer_decision:decision,buyer_notes:notes||null,updated_at:new Date().toISOString()}).eq("id",item.id).eq("requested_by",user.id).eq("status","completed").is("buyer_decision",null).select().single();
   return q.error?out({error:"Decision could not be recorded"},409):out({request:q.data});
  }
  return out({error:"Route not found"},404);
