@@ -10,7 +10,7 @@
     '<div class="footerIn vtgFooterTop"><div class="vtgFooterBrand"><a href="/frontend-v3.html" aria-label="Vintage Trade Global homepage"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><p>Connecting Africa, China and the world through intelligent trade.</p></div><div class="vtgFooterLinks">',
     '<div><h4>Explore</h4><a data-navkey="marketplace" href="/marketplace.html">Marketplace</a><a data-navkey="atlas" href="/trade-atlas.html" id="footAtlas">Trade Atlas</a><a data-navkey="intelligence" href="/market-intelligence.html" id="footIntel">Market Intelligence</a><a data-navkey="ai" href="/vtg-ai.html" id="footAi">VTG AI</a><a data-navkey="trade-feed" href="/trade-feed.html" id="footTradeFeed">Trade Feed</a><a data-navkey="africa-markets" href="/africa-markets.html" id="footAfricaMarkets">Africa Markets</a></div>',
     '<div><h4>Trade</h4><a data-navkey="verification" href="/product-verification.html">Product Verification</a><a data-navkey="logistics" href="/logistics-shipping.html">Logistics &amp; Shipping</a></div>',
-    '<div><h4>Business</h4><a data-navkey="sourcing" href="/sourcing-suppliers.html">Sourcing &amp; Suppliers</a><a data-navkey="finance" href="/finance-payments.html">Finance &amp; Payments</a><a data-navkey="guide" href="/trade-guide.html">Trade Guide</a><a data-navkey="agent" href="/agent.html">Become an Agent</a></div>',
+    '<div><h4>Business</h4><a class="vtg-footer-feature-link" data-navkey="sourcing" href="/sourcing-suppliers.html">Sourcing &amp; Suppliers</a><a class="vtg-footer-feature-link" data-navkey="finance" href="/finance-payments.html">Finance &amp; Payments</a><a data-navkey="guide" href="/trade-guide.html">Trade Guide</a><a data-navkey="agent" href="/agent.html">Become an Agent</a></div>',
     '<div><h4>Company</h4><a data-navkey="about" href="/about-vintage.html">About VTG</a><a data-navkey="partnerships" href="/partnerships.html">Partnerships</a><a data-navkey="contact" href="/contact.html">Contact VTG</a><a data-navkey="workforce" href="/workforce-access.html">Workforce &amp; Staff Access</a></div>',
     '</div></div>',
     '<div class="vtgFooterControls" id="vtgFooterControls" aria-label="Site preferences"></div>',
@@ -66,6 +66,13 @@
         'footer#vtgFooter.vtgCompactFooter .vtgFooterBottom a{display:inline-block!important;margin:0!important;padding:1px 0!important;color:#8c99a3!important;font-size:8.5px!important;line-height:1.5!important;text-decoration:none!important}',
         '@media(max-width:800px){footer#vtgFooter.vtgCompactFooter .footerIn.vtgFooterTop{grid-template-columns:1fr!important;gap:25px!important;padding:30px 16px 22px!important}footer#vtgFooter.vtgCompactFooter .vtgFooterLinks{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:20px 15px!important}footer#vtgFooter.vtgCompactFooter .vtgFooterBottom.copyright{padding:12px 16px!important;align-items:flex-start!important;flex-direction:column!important;gap:8px!important}footer#vtgFooter.vtgCompactFooter .vtgFooterBottom>div{gap:12px!important}}',
         '@media(max-width:420px){footer#vtgFooter.vtgCompactFooter .vtgFooterLinks{grid-template-columns:repeat(2,minmax(0,1fr))!important}footer#vtgFooter.vtgCompactFooter .vtgFooterBottom.copyright{font-size:8px!important}}',
+    'footer#vtgFooter.vtgCompactFooter .vtgFooterLinks a.vtg-footer-feature-link{font-size:10px!important;font-weight:800!important;line-height:1.4!important;color:#f0c7a5!important;display:table!important;visibility:visible!important;opacity:1!important}',
+    'html[data-theme="light"] body footer#vtgFooter.vtgCompactFooter .vtgFooterLinks a.vtg-footer-feature-link{color:#702a30!important}',
+    'html[data-theme="dark"] body footer#vtgFooter.vtgCompactFooter .vtgFooterLinks a.vtg-footer-feature-link{color:#f0c7a5!important}',
+    '.lp-header .vtg-landing-nav-extra{display:flex;align-items:center;gap:7px;margin-left:10px}',
+    '.lp-header .vtg-landing-nav-extra button,.lp-header .vtg-landing-nav-extra a{display:inline-flex;align-items:center;justify-content:center;min-height:32px;padding:0 10px;border:1px solid rgba(255,255,255,.35);border-radius:6px;background:rgba(12,18,24,.58);color:#fff;text-decoration:none;font:700 10px/1.2 Manrope,Arial,sans-serif;cursor:pointer;white-space:nowrap}',
+    '.lp-header .vtg-landing-nav-extra button:hover,.lp-header .vtg-landing-nav-extra a:hover{background:#702a30;border-color:#b49a70;color:#fff}',
+    '@media(max-width:700px){.lp-header .vtg-landing-nav-extra{gap:4px;margin-left:4px}.lp-header .vtg-landing-nav-extra button,.lp-header .vtg-landing-nav-extra a{min-height:29px;padding:0 7px;font-size:9px}}',
     '@media(prefers-reduced-motion:reduce){.vtgCompactFooter *,.vtg-page-nav *{transition:none!important}}',
     'html[data-vtg-skin][data-theme="light"] body :is(.nav,.site-nav,.site-header,.siteHeader,.topbar,.top-bar,.page-header,.pageHeader,.vtg-page-nav,#vtgPageNavigation){background:#fff!important;background-color:#fff!important;color:#17212b!important;border-color:#dedede!important}',
     'html[data-vtg-skin][data-theme="dark"] body :is(.nav,.site-nav,.site-header,.siteHeader,.topbar,.top-bar,.page-header,.pageHeader,.vtg-page-nav,#vtgPageNavigation){background:#000!important;background-color:#000!important;color:#fff!important;border-color:#303030!important}',
@@ -233,6 +240,30 @@
     document.querySelectorAll('body > header, body > .topline, body > .top, body > .topbar, body > .site-header, body > .siteHeader, body > .navbar, body > .main-header, body > .page-header, body > div.header, body > div.navbar, body > div.navbar-wrap').forEach(function (el) { el.remove(); });
     if (!vtgPublicShellPage) removePublicShellElements();
   }
+  function ensureLandingNavigationActions() {
+    if (!isHomePage() || isWorkspaceDashboardPage()) return;
+    var headerActions = document.querySelector('#landing .lp-header .lp-actions');
+    if (!headerActions || headerActions.querySelector('.vtg-landing-nav-extra')) return;
+    var extra = document.createElement('div');
+    extra.className = 'vtg-landing-nav-extra';
+    extra.innerHTML = '<button type="button" aria-label="Go back to the previous page">← Back</button><a href="' + HOME + '" aria-label="Go to the VTG homepage">⌂ Home</a>';
+    extra.querySelector('button').addEventListener('click', function () {
+      var referrer = document.referrer;
+      if (referrer) {
+        try {
+          var previous = new URL(referrer);
+          if (previous.origin === window.location.origin && (previous.pathname !== window.location.pathname || previous.search !== window.location.search || previous.hash !== window.location.hash)) {
+            window.history.back();
+            return;
+          }
+        } catch (error) {}
+      }
+      if (window.history.length > 1) window.history.back();
+      else window.location.assign(HOME);
+    });
+    headerActions.appendChild(extra);
+  }
+
   function addPageNavigation() {
     // Public inner pages get clear text navigation. Workspace dashboards keep
     // their own purpose-built navigation and must not receive this public header.
@@ -928,6 +959,7 @@
     adaptHomeAnchors();
     simplifyPageHeader();
     addPageNavigation();
+    ensureLandingNavigationActions();
     ensureLogoInEveryHeader();
     syncBrandLogos();
     enforceShellTextContrast();
