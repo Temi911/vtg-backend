@@ -142,3 +142,43 @@ th,td{padding-block:0.65rem}
   font-size:10px!important;
   line-height:1.5!important;
 }
+
+
+/* Second footer refinement: smaller copy and less vertical footprint site-wide. */
+:where(footer,.footer,.site-footer,.page-footer,.vtg-footer,.vtgCompactFooter,#vtg-shared-footer) {
+  font-size:10px!important;
+  line-height:1.4!important;
+}
+:where(footer,.footer,.site-footer,.page-footer,.vtg-footer,.vtgCompactFooter,#vtg-shared-footer) :where(p,li,span,small,a,button,label) {
+  font-size:10px!important;
+  line-height:1.45!important;
+}
+:where(footer,.footer,.site-footer,.page-footer,.vtg-footer,.vtgCompactFooter,#vtg-shared-footer) :where(h1,h2,h3,h4,h5,h6,strong,b) {
+  font-size:11px!important;
+  line-height:1.35!important;
+}
+:where(footer,.footer,.site-footer,.page-footer,.vtg-footer,.vtgCompactFooter) {
+  padding-top:24px!important;
+  padding-bottom:14px!important;
+}
+:where(.vtgCompactFooter .vtgFooterTop,.footerTop,.footerGrid) {
+  gap:18px!important;
+  padding-bottom:18px!important;
+}
+:where(.vtgCompactFooter .vtgFooterLinks,.footerLinks,.links) {
+  gap:16px!important;
+}
+:where(.vtgCompactFooter .vtgFooterLinks a,.footerLinks a,.links a) {
+  margin-bottom:6px!important;
+}
+:where(.vtgCompactFooter .vtgFooterBottom,.footerBottom,.bottom) {
+  margin-top:14px!important;
+  padding-top:12px!important;
+  gap:10px!important;
+  font-size:9px!important;
+}
+@media(max-width:720px){
+  :where(footer,.footer,.site-footer,.page-footer,.vtg-footer,.vtgCompactFooter){padding-top:18px!important;padding-bottom:12px!important}
+  :where(.vtgCompactFooter .vtgFooterTop,.footerTop,.footerGrid){gap:14px!important;padding-bottom:14px!important}
+  :where(.vtgCompactFooter .vtgFooterLinks,.footerLinks,.links){gap:10px!important}
+}
