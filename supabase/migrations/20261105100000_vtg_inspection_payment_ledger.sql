@@ -10,6 +10,7 @@ create table if not exists public.vtg_inspection_payments (
  provider_reference text unique,
  status text not null default 'unpaid' check(status in ('unpaid','pending','paid','failed','abandoned')),
  provider_status text,
+ checkout_url text,
  paid_at timestamptz,
  created_at timestamptz not null default now(),
  updated_at timestamptz not null default now()
