@@ -801,8 +801,8 @@ $('liveInspectionRows')?.addEventListener('click',async e=>{
  const headers={Accept:'application/json',Authorization:'Bearer '+token};
  try{
   if(b.dataset.livePay){
-   b.disabled=true;const r=await fetch('/api/inspections/requests/'+encodeURIComponent(b.dataset.livePay)+'/payment/initialize',{method:'POST',headers,cache:'no-store'});let d={};try{d=await r.json()}catch(_){}
-   if(!r.ok)throw new Error(d.message||d.error?.message||'Unable to initialize inspection payment');
+   b.disabled=true;const r=await fetch('https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-payments',{method:'POST',headers:{...headers,'Content-Type':'application/json','apikey':'sb_publishable_WX5_k_ie2eO8aIWeUD4YhQ_koVO2TWT'},body:JSON.stringify({action:'initialize',inspectionId:b.dataset.livePay}),cache:'no-store'});let d={};try{d=await r.json()}catch(_){}
+   if(!r.ok)throw new Error(d.error||d.message||'Unable to initialize inspection payment');
    if(d.paid){say('Inspection payment is confirmed.');return loadLiveInspections()}
    if(!d.authorizationUrl)throw new Error('Payment checkout is unavailable. Contact VTG support.');
    location.href=d.authorizationUrl;return;
