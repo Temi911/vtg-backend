@@ -39,8 +39,10 @@ Deno.serve(async(req)=>{
   try{checkout=await paystack("/transaction/initialize",secret,{email:profile.email||user.email,amount:kobo,currency:"NGN",reference,callback_url:callbackUrl,metadata:{inspectionId:inspection.id,inspectionReference:inspection.reference,buyerId:user.id,amountUsd:usd,exchangeRate:rate}})}
   catch(e){return json({error:e.message||"Could not initialize payment"},502)}
   const row={inspection_id:inspection.id,buyer_id:user.id,amount_usd:usd,amount_ngn:ngn,currency:"NGN",provider:"paystack",provider_reference:checkout.reference||reference,status:"pending",provider_status:"initialized",checkout_url:checkout.authorization_url,updated_at:new Date().toISOString()};
-  const saved=await db.from("vtg_inspection_payments").upsert(row,{onConflict:"inspection_id"}).select("id,provider_reference,amount_ngn,status").single();
-  if(saved.error)return json({error:"Checkout created but VTG could not save its payment record. Contact support before paying again."},500);
+  const saved=existing
+   ? await db.from("vtg_inspection_payments").update(row).eq("id",existing.id).eq("buyer_id",user.id).neq("status","paid").select("id,provider_reference,amount_ngn,status").maybeSingle()
+   : await db.from("vtg_inspection_payments").insert(row).select("id,provider_reference,amount_ngn,status").single();
+  if(saved.error||!saved.data)return json({error:"Checkout created but the VTG payment record changed concurrently. Contact support before paying again."},409);
   await db.from("vtg_inspection_requests").update({payment_status:"pending",updated_at:new Date().toISOString()}).eq("id",inspection.id).eq("requested_by",user.id).neq("payment_status","paid");
   return json({paid:false,authorizationUrl:checkout.authorization_url,reference:saved.data.provider_reference,amountNgn:ngn,currency:"NGN"});
  }
