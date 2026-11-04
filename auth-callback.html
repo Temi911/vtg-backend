@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#17191b"><title>Confirming your VTG account</title><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#17191b;color:#f3efe6;font:15px Manrope,Arial,sans-serif;padding:24px}.panel{width:min(480px,100%);padding:38px;border:1px solid #514b43;border-radius:18px;background:#202326;text-align:center}.mark{font-size:12px;letter-spacing:.2em;color:#b49a70}.title{font-size:25px;margin:18px 0 10px}.copy{color:#c9c4ba;line-height:1.7}.error{color:#f1a29a}.link{display:inline-block;margin-top:20px;color:#e2c99e}
+</style><script src="/vtg-supabase-auth.js?v=20261105-auth-1"></script></head><body><main class="panel"><div class="mark">VINTAGE AFRICA TRADE</div><h1 class="title" id="title">Confirming your account</h1><p class="copy" id="copy">Please wait while we securely complete your sign-in.</p><a class="link" id="link" href="/signin.html" hidden>Return to sign in</a></main>
+<script>
+(async()=>{const title=document.getElementById("title"),copy=document.getElementById("copy"),link=document.getElementById("link");try{
+ const auth=await window.VTG_AUTH_READY;
+ const {data,error}=await auth.client.auth.getSession();if(error)throw error;
+ if(!data.session)throw new Error("The confirmation link is invalid, expired or has already been used. Please request a new one.");
+ const session=data.session;const {data:row,error:profileError}=await auth.client.from("profiles").select("id,email,full_name,phone,role,preferred_language,country,city,is_active").eq("id",session.user.id).maybeSingle();
+ if(profileError)throw profileError;
+ const user={id:row?.id||session.user.id,email:row?.email||session.user.email,fullName:row?.full_name||session.user.user_metadata?.full_name||"",phone:row?.phone||"",role:row?.role||"buyer",preferredLanguage:row?.preferred_language||"en",country:row?.country||"",city:row?.city||"",isActive:row?.is_active!==false};
+ if(!user.isActive)throw new Error("Your account is inactive. Please contact VTG support.");
+ auth.save(session,user);
+ const requested=session.user.user_metadata?.requested_role;
+ title.textContent="Email confirmed";
+ if(requested&&requested!=="buyer"&&user.role==="buyer"){
+   copy.textContent="Your email is confirmed. Your business account application is awaiting VTG administrator review.";
+   setTimeout(()=>location.replace("/verification.html"),1800);
+ }else{
+   copy.textContent="Your VTG account is ready. Opening your workspace…";
+   const dest=({buyer:"/buyer-dashboard.html",supplier:"/supplier-dashboard.html",bank:"/bank-trade-os.html",agent:"/trade-os.html",admin:"/admin-os.html"})[user.role]||"/";
+   setTimeout(()=>location.replace(dest),1200);
+ }
+ }catch(e){title.textContent="We couldn't complete confirmation";copy.className="copy error";copy.textContent=e.message||"Please try signing in again.";link.hidden=false;}
+})();
+</script></body></html>
