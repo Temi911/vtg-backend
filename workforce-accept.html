@@ -15,10 +15,10 @@ main{width:min(100%,520px);padding:42px;border:1px solid var(--line);background:
 <script type="module">
 import { vtgSupabase, VTG_SUPABASE_URL, VTG_SUPABASE_PUBLISHABLE_KEY } from "/supabase/vtg-client.js";
 const status=document.getElementById("status"),button=document.getElementById("accept");
-const invitation=new URLSearchParams(location.search).get("invitation");
+const params=new URLSearchParams(location.search);\nconst invitation=params.get("invitation");\nconst inviteToken=params.get("token");
 let currentUser=null;
 async function init(){
- if(!invitation){status.textContent="This invitation link is incomplete.";return;}
+ if(!invitation||!inviteToken){status.textContent="This invitation link is incomplete or missing its secure token.";return;}
  const {data,error}=await vtgSupabase.auth.getSession();
  currentUser=data.session?.user??null;
  if(error||!currentUser){status.textContent="Please sign in with the invited email address, then return to this invitation.";button.disabled=false;button.textContent="Go to workforce sign in";button.onclick=()=>location.href="/workforce-signin.html?next="+encodeURIComponent(location.pathname+location.search);return;}
@@ -29,7 +29,7 @@ button.addEventListener("click",async()=>{
  if(!currentUser){location.href="/workforce-signin.html?next="+encodeURIComponent(location.pathname+location.search);return;}
  button.disabled=true;status.textContent="Validating invitation…";
  const session=(await vtgSupabase.auth.getSession()).data.session;
- const result=await fetch(VTG_SUPABASE_URL+"/functions/v1/workforce-invitations/accept",{method:"POST",headers:{apikey:VTG_SUPABASE_PUBLISHABLE_KEY,Authorization:"Bearer "+session.access_token,"Content-Type":"application/json"},body:JSON.stringify({invitation_id:invitation})});
+ const result=await fetch(VTG_SUPABASE_URL+"/functions/v1/workforce-invitations/accept",{method:"POST",headers:{apikey:VTG_SUPABASE_PUBLISHABLE_KEY,Authorization:"Bearer "+session.access_token,"Content-Type":"application/json"},body:JSON.stringify({invitation_id:invitation,token:inviteToken})});
  const payload=await result.json().catch(()=>({}));
  if(!result.ok){status.textContent=payload.error??"The invitation could not be accepted.";button.disabled=false;return;}
  status.textContent="Invitation accepted. Your workspace access is now active.";
