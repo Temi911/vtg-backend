@@ -123,3 +123,10 @@ The workforce sign-in page now authenticates with Supabase Auth and checks for a
 - `workforce-accept.html`: added to the feature branch and calls the acceptance sub-route with the signed-in user's access token.
 - The invitation email uses Supabase Auth's `inviteUserByEmail`; SMTP delivery and redirect URL configuration remain operational prerequisites.
 - No Railway rewrite was changed and no production cutover was performed.
+
+
+### Additional native Supabase services (2026-11-04)
+
+- **Notifications:** created `public.vtg_notifications` with per-user RLS, unread index, and authenticated `vtg-notifications` Edge Function (ACTIVE v1) for listing and marking the current user's notifications read. Server-side notification producers still need to be connected to order, shipment, message and review events.
+- **Administrator role reviews:** added `vtg_admin_review_role_request` transactional RPC and `vtg-admin-roles` Edge Function (ACTIVE v1). The function verifies the caller's Supabase session and database admin role, lists role requests, and processes approval/rejection. Approval provisions the supplier or bank profile and changes the account role in the same database transaction; all decisions write an audit event. End-to-end tests with a non-production admin and test requests remain required.
+- **Route inventory confirmed from the Express router files:** auth, agent applications, notifications, integrations, trade intelligence, payments, wallet, inspection, compliance, audit, marketplace, verification, documents, communications, quotes, shipments and trade risk. The currently deployed `vtg-api` is not yet a complete compatibility replacement for these route families.
