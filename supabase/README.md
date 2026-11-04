@@ -135,3 +135,30 @@ The workforce sign-in page now authenticates with Supabase Auth and checks for a
 #### Invitation token hardening
 
 The workforce invitation flow was tightened after implementation review: each invite now carries a cryptographically random URL token, only its SHA-256 hash is stored, and the acceptance RPC checks that hash together with the invited email while holding a row lock. The token is single-use because acceptance changes the invitation state in the same transaction. The accept page now requires both invitation ID and token. Notification clients are granted update permission only on `read_at`, not on notification content.
+
+
+### Trade operations, finance and inspection services (2026-11-04)
+
+- Added `trade_quotes` with participant-scoped RLS. Buyers can request quotes only against their own existing order and the matching supplier/product. Suppliers can respond to requested quotes; direct client updates are restricted to response fields.
+- Added `shipment_events` with order-party read access and supplier/admin event creation.
+- Deployed `vtg-trade-operations` (ACTIVE v1): `GET|POST /quotes`, `PATCH /quotes/:id`, and `GET|POST /shipments/:id/events`.
+- Added `vtg_payment_intents` with buyer/order ownership, currency/purpose constraints, idempotency key uniqueness and read-only payment status for clients. Deployed `vtg-finance-inspections` (ACTIVE v1) for creating/listing payment intents and inspection requests. **This records payment intent only; no card/bank funds are collected and no provider is connected.** Provider settlement callbacks must be implemented and signature-verified before payment can be marked successful.
+- Added `vtg_inspection_requests` and `vtg_inspection_evidence`, with participant-scoped RLS and a private `vtg-inspection-evidence` Storage bucket (50 MB cap; restricted MIME types). Evidence objects use `inspection-id/user-id/filename` paths.
+- Added foreign-key indexes and optimized notification RLS policies after advisor review.
+
+### Current native Edge Functions
+
+- `vtg-api` (v4): initial profiles, products, orders, role requests, shipments, LCs, conversations/messages and documents.
+- `workforce-invitations` (v2): admin invitation lifecycle and token-bound acceptance.
+- `vtg-notifications` (v1): current user's notifications.
+- `vtg-admin-roles` (v1): admin supplier/bank role-request review.
+- `vtg-trade-operations` (v1): quotations and shipment event history.
+- `vtg-finance-inspections` (v1): payment-intent records and inspection request intake.
+
+### Remaining blockers and explicit non-claims
+
+- Payment processor integration, verified webhooks and reconciliation are not implemented; payment intents are not payments.
+- Inspection assignment/status workflow, evidence metadata upload UI and inspector workspace integration remain.
+- Verification document review workflow, trust-risk flags, compliance workflows, agent applications, full wallet/FX, external trade intelligence feeds, email notifications and remaining legacy Express route compatibility remain.
+- No frontend-wide endpoint switch, production routing change, Railway shutdown or production data cutover has occurred.
+- Supabase Auth leaked-password protection remains disabled according to the current security advisor; enable it in Auth settings before production sign-off.
