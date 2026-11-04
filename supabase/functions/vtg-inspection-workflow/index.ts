@@ -18,6 +18,18 @@ Deno.serve(async(req)=>{
  const isAdmin=profile.role==="admin",isAgent=(workforce??[]).some(x=>x.workspace_role==="agent");
  const u=new URL(req.url),parts=u.pathname.split("/vtg-inspection-workflow").pop()?.split("/").filter(Boolean)??[],action=parts.join("/"),body=req.method==="GET"?{}:await req.json().catch(()=>({}));
  const own=()=>db.from("vtg_inspection_requests").select("*").eq("id",parts[1]).maybeSingle();
+ if(action==="admin/pricing"&&(req.method==="POST"||req.method==="PATCH")){
+  if(!isAdmin)return out({error:"Administrator required"},403);
+  const country=text(body.country),category=text(body.category).toLowerCase()||"general-merchandise",level=text(body.serviceLevel),min=Number(body.minQuantity??1),max=body.maxQuantity==null?null:Number(body.maxQuantity),buyer=Number(body.buyerFeeUsd),payout=Number(body.agentPayoutUsd);
+  if(!["China","South Korea"].includes(country)||!["basic","standard","advanced"].includes(level)||!Number.isInteger(min)||min<1||max!==null&&(!Number.isInteger(max)||max<min)||!Number.isFinite(buyer)||buyer<0||!Number.isFinite(payout)||payout<0||payout>buyer)return out({error:"Invalid inspection pricing rule"},400);
+  const row={country,category,service_level:level,min_quantity:min,max_quantity:max,buyer_fee_usd:buyer,agent_payout_usd:payout,active:body.active!==false,updated_at:new Date().toISOString()};
+  if(req.method==="PATCH"&&text(body.id)){
+   const q=await db.from("vtg_inspection_pricing").update(row).eq("id",text(body.id)).select().single();
+   return q.error?out({error:"Could not update pricing rule"},400):out({pricing:q.data});
+  }
+  const q=await db.from("vtg_inspection_pricing").insert(row).select().single();
+  return q.error?out({error:"Could not create pricing rule"},400):out({pricing:q.data},201);
+ }
  if(action==="pricing"&&req.method==="GET"){
   const q=await db.from("vtg_inspection_pricing").select("country,category,service_level,min_quantity,max_quantity,buyer_fee_usd,agent_payout_usd").eq("active",true);
   return q.error?out({error:"Pricing unavailable"},500):out({pricing:q.data});
