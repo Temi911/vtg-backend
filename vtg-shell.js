@@ -44,52 +44,32 @@
   function renderHeader() {
     var host = document.getElementById('vsHeader');
     if (!host) return;
-    var active = host.getAttribute('data-active') || '';
     var dark = root.getAttribute('data-theme') === 'dark';
-    var links = NAV.map(function (n) {
-      return '<a href="' + n[1] + '"' + (n[0] === active ? ' aria-current="page"' : '') + '>' + n[2] + '</a>';
-    }).join('');
     host.innerHTML =
-      '<a class="vs-skip" href="#main">Skip to content</a>' +
-      '<header class="vs-header"><div class="vs-wrap vs-header-in">' +
-      '<a class="vs-logo" href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img data-vs-logo src="' + (dark ? '/assets/vtg-logo-light.svg' : '/assets/vtg-logo.svg') + '" alt="Vintage Trade Global"></a>' +
-      '<nav class="vs-nav" aria-label="Primary">' + links + '</nav>' +
-      '<div class="vs-actions">' +
-      '<button type="button" class="vs-theme" id="vsTheme"></button>' +
-      '<a class="vs-btn vs-btn-line vs-btn-sm vs-hide-s" href="/signin.html" id="vsSignin">Sign in</a>' +
-      '<button type="button" class="vs-btn vs-btn-primary vs-btn-sm" id="accountBtn">' + (token() ? 'My dashboard' : 'Create account') + '</button>' +
-      '<button type="button" class="vs-burger" id="vsBurger" aria-label="Open menu" aria-expanded="false" aria-controls="vsDrawer">' + ICON.menu + '</button>' +
-      '</div></div></header>' +
-      '<nav class="vs-drawer" id="vsDrawer" aria-label="Menu">' + links + '<a href="/signin.html">Sign in</a><a href="/contact.html">Contact</a></nav>';
-
-    var themeBtn = document.getElementById('vsTheme');
+      '<style id="vtg-inner-nav-style">' +
+      '.vtg-inner-nav{position:relative;z-index:1200;display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;padding:10px max(16px,calc((100vw - 1260px)/2));background:#0b1016;border-bottom:1px solid rgba(255,255,255,.10);box-sizing:border-box;font-family:Manrope,Arial,sans-serif}' +
+      '.vtg-inner-nav .vtg-inner-logo img{display:block;width:auto;max-width:150px;max-height:38px;object-fit:contain}' +
+      '.vtg-inner-actions{display:flex;align-items:center;gap:8px}' +
+      '.vtg-inner-actions button,.vtg-inner-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 13px;border:1px solid rgba(255,255,255,.16);border-radius:8px;background:transparent;color:#f4f6f8;text-decoration:none;font:700 10px/1.2 Manrope,Arial,sans-serif;cursor:pointer}' +
+      '.vtg-inner-actions button:hover,.vtg-inner-actions a:hover{background:#211a1b;border-color:#77403b;color:#ffaaa2}' +
+      '@media(max-width:480px){.vtg-inner-nav{padding:8px 12px}.vtg-inner-nav .vtg-inner-logo img{max-width:112px;max-height:32px}.vtg-inner-actions{gap:5px}.vtg-inner-actions button,.vtg-inner-actions a{min-height:33px;padding:0 9px;font-size:9px}}' +
+      '</style>' +
+      '<header class="vtg-inner-nav">' +
+      '<a class="vtg-inner-logo" href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img data-vs-logo src="' + (dark ? '/assets/vtg-logo-light.svg' : '/assets/vtg-logo.svg') + '" alt="Vintage Trade Global"></a>' +
+      '<div class="vtg-inner-actions"><button type="button" id="vtgPageBack">Previous</button><a href="/frontend-v3.html">Home</a></div>' +
+      '</header>';
     apply(root.getAttribute('data-theme') || 'light');
-    themeBtn.addEventListener('click', function () {
-      var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      try { localStorage.setItem(KEY, next); } catch (e) {}
-      apply(next);
-    });
-
-    var burger = document.getElementById('vsBurger'), drawer = document.getElementById('vsDrawer');
-    function setOpen(open) {
-      drawer.classList.toggle('open', open);
-      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
-      burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-      burger.innerHTML = open ? ICON.close : ICON.menu;
-      document.body.style.overflow = open ? 'hidden' : '';
-    }
-    burger.addEventListener('click', function () { setOpen(!drawer.classList.contains('open')); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setOpen(false); });
-    window.addEventListener('resize', function () { if (window.innerWidth > 960) setOpen(false); });
-
-    // Default behaviour of the account button; pages may override it with their own handler.
-    document.getElementById('accountBtn').addEventListener('click', function () {
-      window.location.href = token() ? '/buyer-dashboard.html' : '/signup.html';
+    var back = document.getElementById('vtgPageBack');
+    if (back) back.addEventListener('click', function () {
+      try {
+        if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) history.back();
+        else location.href = '/frontend-v3.html';
+      } catch (e) { location.href = '/frontend-v3.html'; }
     });
   }
 
   var FOOTER = '<footer class="vs-footer"><div class="vs-wrap vs-footer-in">' +
-    '<div class="vs-footer-brand"><a href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img data-vs-logo src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><p>Connecting Africa, China and the world through trusted trade.</p></div>' +
+    '<div class="vs-footer-brand"><a href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img data-vs-logo src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><p>Connecting Africa, China and the world through intelligent trade.</p></div>' +
     '<div><h4>Explore</h4><ul><li><a href="/marketplace.html">Marketplace</a></li><li><a href="/trade-atlas.html">Trade Atlas</a></li><li><a href="/market-intelligence.html">Market Intelligence</a></li><li><a href="/vtg-ai.html">VTG AI</a></li><li><a href="/trade-feed.html">Trade Feed</a></li><li><a href="/africa-markets.html">Africa Markets</a></li></ul></div>' +
     '<div><h4>Trade</h4><ul><li><a href="/sourcing-suppliers.html">Sourcing &amp; Suppliers</a></li><li><a href="/product-verification.html">Product Verification</a></li><li><a href="/logistics-shipping.html">Logistics &amp; Shipping</a></li><li><a href="/finance-payments.html">Finance &amp; Payments</a></li></ul></div>' +
     '<div><h4>Business</h4><ul><li><a href="/trade-guide.html">Trade Guide</a></li><li><a href="/partnerships.html">Partnerships</a></li><li><a href="/agent.html">Become an Agent</a></li><li><a href="/workforce-access.html">Workforce &amp; Staff Access</a></li></ul></div>' +
