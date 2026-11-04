@@ -101,11 +101,11 @@ The live Supabase database now includes:
 - `vtg_workforce_invitations`: invitation records with hashed tokens, expiry, accepted/revoked/expired states and inviter identity.
 - RLS: users can read their own membership; only database-verified VTG admins can manage memberships and invitations.
 
-The workforce sign-in page now authenticates with Supabase Auth and checks for an active matching membership before opening the requested workforce workspace. This is not yet a complete invitation lifecycle: secure Edge Functions to create, deliver, validate and accept invitations are still required. No public self-enrolment or client-side role assignment is permitted. Existing workforce dashboard data calls and session checks still need migration to Supabase.
+The workforce sign-in page now authenticates with Supabase Auth and checks for an active matching membership before opening the requested workforce workspace. The invitation lifecycle is implemented in the `workforce-invitations` Edge Function and `workforce-accept.html`. No public self-enrolment or client-side role assignment is permitted. Existing workforce dashboard data calls and session checks still need migration to Supabase.
 
 ### Remaining migration work
 
-- Build and deploy secure workforce invitation lifecycle Edge Functions; use cryptographically random one-time tokens, store only token hashes, enforce expiry and single-use acceptance, and send invitations through configured Supabase Auth/SMTP email.
+- **Workforce invitation lifecycle (implemented 2026-11-04):** the `workforce-invitations` Edge Function now provides admin-only invitation creation/list/revocation and authenticated email-matched acceptance. Invitations expire after seven days, use one-time records, and acceptance is transactionally serialized by a Postgres RPC. Invitation delivery uses Supabase Auth email; custom SMTP still must be configured and tested. The `workforce-accept.html` page handles acceptance. Test the complete new-user and existing-user paths before enabling workforce onboarding.
 - Inventory every Express route and every frontend caller. Extend `vtg-api` or add focused Edge Functions for each required workflow; do not assume the current function is API-compatible with Express.
 - Rebuild missing capabilities in Supabase where no existing counterpart exists (for example notification delivery, admin review operations, workforce administration, scheduled expiry/reminders, trade intelligence persistence, audit trails and external-service adapters).
 - For third-party capabilities (maps, FX, shipping carriers, AI providers, email), Supabase owns the secure server-side adapter, secrets and persistence; the external provider remains the provider for its own live data. Never pretend Supabase itself supplies an external live-data feed.
@@ -113,3 +113,13 @@ The workforce sign-in page now authenticates with Supabase Auth and checks for a
 - Configure custom SMTP and enable leaked-password protection in Supabase Auth before production authentication sign-off.
 - Keep the Vercel rewrite unchanged until the route inventory, replacement coverage, tests and preview acceptance are complete. Only then route `/api/*` to the Supabase implementation and retire Railway.
 
+
+
+### Workforce invitation deployment record (2026-11-04)
+
+- Supabase migration `workforce_pending_membership_lifecycle`: allows pending/active/suspended membership states and adds lookup indexes.
+- Supabase migration `workforce_invitation_atomic_acceptance`: adds a service-role-only transactional acceptance RPC. It locks the invitation row, checks status/expiry/email, activates membership, and marks the invitation accepted in one transaction.
+- Edge Function `workforce-invitations`: deployed ACTIVE (version 1); it verifies the caller's Supabase identity and database admin role itself. JWT gateway verification is disabled only because the handler performs explicit `auth.getUser` verification on every request.
+- `workforce-accept.html`: added to the feature branch and calls the acceptance sub-route with the signed-in user's access token.
+- The invitation email uses Supabase Auth's `inviteUserByEmail`; SMTP delivery and redirect URL configuration remain operational prerequisites.
+- No Railway rewrite was changed and no production cutover was performed.
