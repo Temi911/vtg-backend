@@ -88,3 +88,28 @@ The feature branch now uses Supabase Auth on the public sign-in and buyer/suppli
 **Not yet cut over:** the legacy landing-page auth modal, workforce sign-in, dashboard API calls and a number of other `/api/*` integrations still depend on the Express API contract. The Edge Function currently implements only the route list above plus limited compatibility endpoints; it is not yet a drop-in replacement for the full legacy API. Keep the Vercel Railway rewrite unchanged until route inventory, API parity, authenticated role tests, storage tests and preview acceptance are complete. Do not retire the Railway service until then.
 
 **Email delivery:** Supabase Auth currently sends its configured confirmation email. Custom SMTP is still required before treating VTG email delivery as production-ready. Configure a dedicated VTG sender in Supabase Auth > SMTP Settings; use a Google Workspace mailbox on the VTG domain where available. Never commit the SMTP password or Google app password. A six-digit OTP requires the Supabase email template to use the `{{ .Token }}` variable and the frontend to call `verifyOtp`; the current registration screens use confirmation-link signup, not a separate pre-signup code request.
+
+
+## Supabase-first rebuild policy (2026-11-04)
+
+The migration policy is to remove the Railway dependency completely after a safe, tested cutover. If a legacy service cannot be ported directly, implement an equivalent VTG-owned service using Supabase PostgreSQL, Auth, Storage, Edge Functions and/or scheduled functions. Do not preserve a permanent Railway dependency merely because a legacy Express route has no direct equivalent. Preserve current page interfaces and request/response contracts where practical; document intentional API changes and update callers together.
+
+### Workforce access foundation
+
+The live Supabase database now includes:
+- `vtg_workforce_members`: one or more workspace-role assignments per authenticated user, with active/suspended status.
+- `vtg_workforce_invitations`: invitation records with hashed tokens, expiry, accepted/revoked/expired states and inviter identity.
+- RLS: users can read their own membership; only database-verified VTG admins can manage memberships and invitations.
+
+The workforce sign-in page now authenticates with Supabase Auth and checks for an active matching membership before opening the requested workforce workspace. This is not yet a complete invitation lifecycle: secure Edge Functions to create, deliver, validate and accept invitations are still required. No public self-enrolment or client-side role assignment is permitted. Existing workforce dashboard data calls and session checks still need migration to Supabase.
+
+### Remaining migration work
+
+- Build and deploy secure workforce invitation lifecycle Edge Functions; use cryptographically random one-time tokens, store only token hashes, enforce expiry and single-use acceptance, and send invitations through configured Supabase Auth/SMTP email.
+- Inventory every Express route and every frontend caller. Extend `vtg-api` or add focused Edge Functions for each required workflow; do not assume the current function is API-compatible with Express.
+- Rebuild missing capabilities in Supabase where no existing counterpart exists (for example notification delivery, admin review operations, workforce administration, scheduled expiry/reminders, trade intelligence persistence, audit trails and external-service adapters).
+- For third-party capabilities (maps, FX, shipping carriers, AI providers, email), Supabase owns the secure server-side adapter, secrets and persistence; the external provider remains the provider for its own live data. Never pretend Supabase itself supplies an external live-data feed.
+- Migrate workforce and all buyer/supplier/bank/admin dashboard data calls, then test authorization boundaries for every role.
+- Configure custom SMTP and enable leaked-password protection in Supabase Auth before production authentication sign-off.
+- Keep the Vercel rewrite unchanged until the route inventory, replacement coverage, tests and preview acceptance are complete. Only then route `/api/*` to the Supabase implementation and retire Railway.
+
