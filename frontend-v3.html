@@ -364,7 +364,7 @@ html body #landing#landing .lp-car-bar{display:flex;align-items:center;gap:18px;
 html body #landing#landing .lp-car-ctl{display:flex;gap:10px;flex:none}
 html body #landing#landing .lp-prog{flex:1;height:6px;border-radius:99px;background:rgba(10,88,202,.15);overflow:hidden}
 html body #landing#landing .lp-prog span{display:block;height:100%;width:0;background:linear-gradient(90deg,#0A58CA,#FFB81C);border-radius:99px}
-html body #landing#landing .lp-prog span.run{width:100%;transition:width 5s linear}
+html body #landing#landing .lp-prog span.run{width:100%;transition:width 3s linear}
 html body #landing#landing .lp-picker{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:thin;scrollbar-color:#0A58CA transparent}
 html body #landing#landing .lp-pick{flex:none;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:1px solid var(--lp-line);background:var(--lp-bg);color:var(--lp-ink)!important;font-family:inherit;font-size:13.5px!important;font-weight:700;cursor:pointer;white-space:nowrap}
 html body #landing#landing .lp-pick svg{width:16px;height:16px;color:var(--lp-text-accent)!important}
@@ -389,7 +389,7 @@ html body #landing#landing .lp-c-count b{font-size:34px;letter-spacing:-.03em;co
 html body #landing#landing .lp-c-body h3{font-size:clamp(26px,3vw,38px)!important;letter-spacing:-.03em}
 html body #landing#landing .lp-car-bar{margin:0;padding:18px 6px 0;gap:16px}
 html body #landing#landing .lp-prog{height:4px;background:rgba(10,88,202,.14)}
-html body #landing#landing .lp-prog span.run{transition:width 5s linear}
+html body #landing#landing .lp-prog span.run{transition:width 3s linear}
 html body #landing#landing .lp-ctl{display:flex;gap:8px;flex:none}
 html body #landing#landing .lp-ctl .lp-arrow{width:42px;height:42px}
 html body #landing#landing .lp-rail{position:relative;margin-top:14px}
@@ -624,7 +624,7 @@ html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter select{backgro
   function heroLoop(){clearInterval(ht);if(reduce||heroImgs.length<2)return;ht=setInterval(function(){showHero(h+1);},7000);}
   window.addEventListener('load',function(){heroImgs.forEach(load);heroLoop();Array.prototype.forEach.call(document.querySelectorAll('#landing .lp-c-media img,#landing #lpGlobe'),function(im){if(im.getAttribute('src')&&im.complete&&im.naturalWidth===0)im.classList.add('bad');});},{once:true});
 
-  /* Category showcase: 36 categories, a new one every 5 seconds, with arrows, pause and a category rail */
+  /* Category showcase: 36 categories, a new one every 3 seconds, with arrows, hover-pause and a category rail */
   var slides=[].slice.call(document.querySelectorAll('#lpStage .lp-cslide')),cur=0,timer=null,car=document.getElementById('lpCar');
   if(!slides.length||!car)return;
   var total=slides.length;
@@ -655,7 +655,7 @@ html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter select{backgro
     load(slides[cur].querySelector('img'));load(slides[(cur+1)%total].querySelector('img'));
     runBar();if(fromUser)start();
   }
-  function start(){clearInterval(timer);if(reduce||document.hidden)return;timer=setInterval(function(){go(cur+1);},5000);}
+  function start(){clearInterval(timer);if(reduce||document.hidden)return;timer=setInterval(function(){go(cur+1);},3000);}
   bar.addEventListener('click',function(e){var b=e.target.closest('[data-act]');if(!b)return;var a=b.getAttribute('data-act');if(a==='prev')go(cur-1,true);else if(a==='next')go(cur+1,true);});
   picker.addEventListener('click',function(e){var b=e.target.closest('.lp-pick');if(b)go(Number(b.getAttribute('data-i')),true);});
   car.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){go(cur+1,true);}else if(e.key==='ArrowLeft'){go(cur-1,true);}});
@@ -664,7 +664,7 @@ html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter select{backgro
   document.addEventListener('visibilitychange',start);
   load(slides[1]&&slides[1].querySelector('img'));
   go(0);start();
-  window.__vtgLanding={go:go,intervals:{hero:7000,category:5000}};
+  window.__vtgLanding={go:go,intervals:{hero:7000,category:3000}};
 })();
 </script>
 
