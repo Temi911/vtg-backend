@@ -18,7 +18,10 @@ test('current VTG frontend exposes the core trade interface', () => {
 
 test('frontend includes trade calculator, cart and currency conversion hooks', () => {
   assert.match(html, /vtg-cart-calculator\.js/);
-  assert.match(html, /api\/auth\/send-verification-code/);
+  assert.match(html, /buyer-signup\.html/);
+  assert.match(html, /supplier-signup\.html/);
+  assert.match(html, /bank-signup\.html/);
+  assert.doesNotMatch(html, /api\/auth\/(send-verification-code|login|signup)/);
   assert.match(html, /vtg-market-news\.js/);
   assert.match(html, /vtg-country-intelligence\.js/);
 });

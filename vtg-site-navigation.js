@@ -187,7 +187,8 @@
   }
   function isWorkspaceDashboardPage() {
     var path = (window.location.pathname || '').toLowerCase();
-    return /(?:^|\/)[^/]*dashboard[^/]*\.html$/.test(path) || /(?:^|\/)(?:bank-trade-os|trade-os|inspection-admin)\.html$/.test(path);
+    var isBankWorkspace = path.endsWith('/bank-trade-os.html');
+    return /(?:^|\/)[^/]*dashboard[^/]*\.html$/.test(path) || isBankWorkspace || /(?:^|\/)(?:trade-os|inspection-admin)\.html$/.test(path);
   }
   function hasDownstreamPageLinks() {
     if (isHomePage() || isWorkspaceDashboardPage()) return true;
@@ -443,7 +444,19 @@
     var presets = [
       ['trade-classic','Trade Classic','VTG red, clean and familiar'],
       ['ocean-route','Ocean Route','Ocean blue and teal'],
-      ['graphite-port','Graphite Port','Quiet graphite and steel']
+      ['graphite-port','Graphite Port','Quiet graphite and steel'],
+    ];
+    var workspacePresets = [
+      ['executive','Executive','Executive command workspace'],,
+      ['ocean-finance','Ocean Finance','Ocean finance workspace'],,
+      ['emerald-trade','Emerald Trade','Emerald trade workspace'],,
+      ['copper-ledger','Copper Ledger','Copper ledger workspace'],,
+      ['indigo-intel','Indigo Intelligence','Intelligence workspace'],,
+      ['crimson-ops','Crimson Operations','Operations workspace'],,
+      ['mono-pro','Monochrome Pro','Monochrome workspace'],,
+      ['sandstone','Sandstone','Sandstone workspace'],,
+      ['arctic-blue','Arctic Blue','Arctic blue workspace'],,
+      ['midnight-harbor','Midnight Harbor','Midnight harbor workspace']
     ];
 
     var root = document.documentElement;
