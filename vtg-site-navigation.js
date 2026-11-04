@@ -228,7 +228,7 @@
       return target !== current && target !== '/' && !target.endsWith('/frontend-v3.html');
     });
   }
-  var vtgPublicShellPage = hasDownstreamPageLinks();
+  // Every non-home, non-dashboard page is part of the public shell, including terminal and leaf pages.\n  var vtgPublicShellPage = !isHomePage() && !isWorkspaceDashboardPage();
   function removePublicShellElements() {
     document.querySelectorAll('#vtgPageNavigation, #vtgFooter, #vtgThemeControl, #vtgThemePresetControl, footer, .vtgCompactFooter, .site-footer, .footer').forEach(function (el) { el.remove(); });
     document.querySelectorAll('body > header, body > .topline, body > .top, body > .topbar, body > .site-header, body > .siteHeader, body > .navbar, body > .main-header, body > .page-header, body > div.header, body > div.navbar, body > div.navbar-wrap').forEach(function (el) { el.remove(); });
