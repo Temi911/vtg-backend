@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Accept VTG Workforce Invitation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#17191b;--panel:#222528;--ink:#f3efe6;--muted:#aaa69e;--accent:#b49a70;--line:#393a39}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at 50% 0%,#34302a 0%,var(--bg) 58%);color:var(--ink);font-family:Manrope, sans-serif}
+main{width:min(100%,520px);padding:42px;border:1px solid var(--line);background:rgba(34,37,40,.94);border-radius:18px;box-shadow:0 24px 80px #0006}
+.brand{letter-spacing:.18em;color:var(--accent);font-size:12px;font-weight:800}h1{font-size:28px;line-height:1.2;margin:20px 0 12px}p{color:var(--muted);line-height:1.7}.status{margin:26px 0;padding:16px;border:1px solid var(--line);border-radius:10px;line-height:1.6}button{width:100%;border:0;border-radius:8px;padding:15px;background:var(--accent);color:#17191b;font:800 14px Manrope;cursor:pointer}button:disabled{opacity:.5;cursor:wait}.small{font-size:12px}
+</style>
+</head>
+<body><main><div class="brand">VTG · THE PRIVATE TRADE HOUSE</div><h1>Workforce invitation</h1><p>Confirm your invitation to join the VTG operations workspace. You must be signed in with the email address the invitation was sent to.</p><div id="status" class="status">Checking your invitation…</div><button id="accept" disabled>Accept invitation</button><p class="small">Invitation links expire after seven days and can only be accepted once.</p></main>
+<script type="module">
+import { vtgSupabase } from "/supabase/vtg-client.js";
+const status=document.getElementById("status"),button=document.getElementById("accept");
+const invitation=new URLSearchParams(location.search).get("invitation");
+let currentUser=null;
+async function init(){
+ if(!invitation){status.textContent="This invitation link is incomplete.";return;}
+ const {data,error}=await vtgSupabase.auth.getSession();
+ currentUser=data.session?.user??null;
+ if(error||!currentUser){status.textContent="Please sign in with the invited email address, then return to this invitation.";button.disabled=false;button.textContent="Go to workforce sign in";button.onclick=()=>location.href="/workforce-signin.html?next="+encodeURIComponent(location.pathname+location.search);return;}
+ status.textContent="Signed in as "+(currentUser.email??"your account")+". Select Accept to activate your assigned workspace access.";
+ button.disabled=false;
+}
+button.addEventListener("click",async()=>{
+ if(!currentUser){location.href="/workforce-signin.html?next="+encodeURIComponent(location.pathname+location.search);return;}
+ button.disabled=true;status.textContent="Validating invitation…";
+ const {data,error}=await vtgSupabase.functions.invoke("workforce-invitations",{body:{invitation_id:invitation},method:"POST"});
+ // The accept route is a sub-path; call it directly to preserve the function's endpoint contract.
+ const result=await fetch(vtgSupabase.supabaseUrl+"/functions/v1/workforce-invitations/accept",{method:"POST",headers:{apikey:vtgSupabase.supabaseKey,Authorization:"Bearer "+(await vtgSupabase.auth.getSession()).data.session.access_token,"Content-Type":"application/json"},body:JSON.stringify({invitation_id:invitation})});
+ const payload=await result.json().catch(()=>({}));
+ if(!result.ok){status.textContent=payload.error??error?.message??"The invitation could not be accepted.";button.disabled=false;return;}
+ status.textContent="Invitation accepted. Your workspace access is now active.";
+ button.textContent="Open workforce workspace";button.disabled=false;button.onclick=()=>location.href="/workforce-signin.html";
+});
+init();
+</script></body></html>
