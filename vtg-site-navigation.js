@@ -68,6 +68,18 @@
     'html[data-vtg-skin][data-theme="dark"] body footer#vtgFooter.vtgCompactFooter{background:#080b0f!important;background-color:#080b0f!important;color:#aeb9c2!important;border-color:#2b3640!important}',
     'html[data-vtg-skin][data-theme="light"] body footer#vtgFooter.vtgCompactFooter :is(h1,h2,h3,h4,h5,h6){color:#fff!important}html[data-vtg-skin][data-theme="light"] body footer#vtgFooter.vtgCompactFooter .vtgFooterBrand p,html[data-vtg-skin][data-theme="light"] body footer#vtgFooter.vtgCompactFooter .vtgFooterLinks a{color:#98a2b3!important}',
     'html[data-vtg-skin][data-theme="dark"] body footer#vtgFooter.vtgCompactFooter :is(h1,h2,h3,h4,h5,h6){color:#f3f6f8!important}html[data-vtg-skin][data-theme="dark"] body footer#vtgFooter.vtgCompactFooter .vtgFooterBrand p,html[data-vtg-skin][data-theme="dark"] body footer#vtgFooter.vtgCompactFooter .vtgFooterLinks a{color:#aeb9c2!important}'
+    /* Final compact footer override: override the original oversized shell spacing. */
+    'footer#vtgFooter.vtgCompactFooter .footerIn.vtgFooterTop{padding:10px 18px 8px!important;grid-template-columns:150px minmax(0,1fr)!important;gap:14px!important;align-items:start!important}',
+    'footer#vtgFooter.vtgCompactFooter .vtgFooterBrand img{max-width:112px!important;max-height:27px!important;margin:0 0 5px!important}',
+    'footer#vtgFooter.vtgCompactFooter .vtgFooterBrand p{max-width:145px!important;margin:0!important;font-size:8px!important;line-height:1.35!important}',
+    'footer#vtgFooter.vtgCompactFooter .vtgFooterLinks{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:10px!important}',
+    'footer#vtgFooter.vtgCompactFooter .vtgFooterLinks h4{margin:0 0 4px!important;font-size:9px!important;line-height:1.2!important}',
+    'footer#vtgFooter.vtgCompactFooter .vtgFooterLinks a{margin:0 0 3px!important;padding:0!important;font-size:8px!important;line-height:1.25!important}',
+    'footer#vtgFooter.vtgCompactFooter .vtgFooterBottom.copyright{min-height:0!important;padding:6px 18px!important;gap:8px!important;font-size:7.5px!important;line-height:1.25!important}',
+    'footer#vtgFooter.vtgCompactFooter .vtgFooterBottom>span,footer#vtgFooter.vtgCompactFooter .vtgFooterBottom a{font-size:7.5px!important;line-height:1.25!important}',
+    'footer#vtgFooter.vtgCompactFooter .vtgFooterBottom>div{gap:10px!important}',
+    '@media(max-width:800px){footer#vtgFooter.vtgCompactFooter .footerIn.vtgFooterTop{grid-template-columns:1fr!important;gap:8px!important;padding:10px 14px 7px!important}footer#vtgFooter.vtgCompactFooter .vtgFooterBrand{display:flex!important;align-items:center!important;gap:9px!important}footer#vtgFooter.vtgCompactFooter .vtgFooterBrand img{max-width:92px!important;max-height:23px!important;margin:0!important}footer#vtgFooter.vtgCompactFooter .vtgFooterBrand p{max-width:none!important;font-size:7.5px!important}footer#vtgFooter.vtgCompactFooter .vtgFooterLinks{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important}footer#vtgFooter.vtgCompactFooter .vtgFooterBottom.copyright{padding:6px 14px!important;align-items:center!important;flex-direction:row!important;flex-wrap:wrap!important;gap:6px!important;text-align:left!important}footer#vtgFooter.vtgCompactFooter .vtgFooterBottom>div{gap:8px!important}}',
+    '@media(max-width:480px){footer#vtgFooter.vtgCompactFooter .vtgFooterLinks{grid-template-columns:repeat(2,minmax(0,1fr))!important;row-gap:7px!important}footer#vtgFooter.vtgCompactFooter .vtgFooterBottom.copyright{flex-direction:column!important;align-items:flex-start!important}}',
   ].join('\n');
   var CONTRAST_CSS = [
     /* Shared contrast baseline for all VTG pages; image overlays and branded dark sections retain their own palettes. */
