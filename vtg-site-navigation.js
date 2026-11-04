@@ -241,30 +241,6 @@
     document.querySelectorAll('body > header, body > .topline, body > .top, body > .topbar, body > .site-header, body > .siteHeader, body > .navbar, body > .main-header, body > .page-header, body > div.header, body > div.navbar, body > div.navbar-wrap').forEach(function (el) { el.remove(); });
     if (!vtgPublicShellPage) removePublicShellElements();
   }
-  function ensureLandingNavigationActions() {
-    if (!isHomePage() || isWorkspaceDashboardPage()) return;
-    var headerActions = document.querySelector('#landing .lp-header .lp-actions');
-    if (!headerActions || headerActions.querySelector('.vtg-landing-nav-extra')) return;
-    var extra = document.createElement('div');
-    extra.className = 'vtg-landing-nav-extra';
-    extra.innerHTML = '<button type="button" aria-label="Go back to the previous page">← Back</button><a href="' + HOME + '" aria-label="Go to the VTG homepage">⌂ Home</a>';
-    extra.querySelector('button').addEventListener('click', function () {
-      var referrer = document.referrer;
-      if (referrer) {
-        try {
-          var previous = new URL(referrer);
-          if (previous.origin === window.location.origin && (previous.pathname !== window.location.pathname || previous.search !== window.location.search || previous.hash !== window.location.hash)) {
-            window.history.back();
-            return;
-          }
-        } catch (error) {}
-      }
-      if (window.history.length > 1) window.history.back();
-      else window.location.assign(HOME);
-    });
-    headerActions.appendChild(extra);
-  }
-
   function addPageNavigation() {
     // Public inner pages get clear text navigation. Workspace dashboards keep
     // their own purpose-built navigation and must not receive this public header.
@@ -960,7 +936,7 @@
     adaptHomeAnchors();
     simplifyPageHeader();
     addPageNavigation();
-    ensureLandingNavigationActions();
+
     ensureLogoInEveryHeader();
     syncBrandLogos();
     enforceShellTextContrast();
