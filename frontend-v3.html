@@ -655,12 +655,10 @@ html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter select{backgro
     load(slides[cur].querySelector('img'));load(slides[(cur+1)%total].querySelector('img'));
     runBar();if(fromUser)start();
   }
-  function start(){clearInterval(timer);if(reduce||document.hidden)return;timer=setInterval(function(){go(cur+1);},3000);}
+  function start(){clearInterval(timer);if(document.hidden)return;timer=setInterval(function(){go(cur+1);},3000);}
   bar.addEventListener('click',function(e){var b=e.target.closest('[data-act]');if(!b)return;var a=b.getAttribute('data-act');if(a==='prev')go(cur-1,true);else if(a==='next')go(cur+1,true);});
   picker.addEventListener('click',function(e){var b=e.target.closest('.lp-pick');if(b)go(Number(b.getAttribute('data-i')),true);});
   car.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){go(cur+1,true);}else if(e.key==='ArrowLeft'){go(cur-1,true);}});
-  car.addEventListener('mouseenter',function(){clearInterval(timer);});
-  car.addEventListener('mouseleave',start);
   document.addEventListener('visibilitychange',start);
   load(slides[1]&&slides[1].querySelector('img'));
   go(0);start();
