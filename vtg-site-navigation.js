@@ -13,6 +13,7 @@
     '<div><h4>Business</h4><a data-navkey="sourcing" href="/sourcing-suppliers.html">Sourcing &amp; Suppliers</a><a data-navkey="finance" href="/finance-payments.html">Finance &amp; Payments</a><a data-navkey="guide" href="/trade-guide.html">Trade Guide</a><a data-navkey="agent" href="/agent.html">Become an Agent</a></div>',
     '<div><h4>Company</h4><a data-navkey="about" href="/about-vintage.html">About VTG</a><a data-navkey="partnerships" href="/partnerships.html">Partnerships</a><a data-navkey="contact" href="/contact.html">Contact VTG</a><a data-navkey="workforce" href="/workforce-access.html">Workforce &amp; Staff Access</a></div>',
     '</div></div>',
+    '<div class="vtgFooterControls" id="vtgFooterControls" aria-label="Site preferences"></div>',
     '<div class="copyright vtgFooterBottom"><span>© 2026 Vintage Trade Global • Powered by Folayele Global Resources Limited</span><div><a data-navkey="privacy" href="/privacy.html">Privacy</a><a data-navkey="terms" href="/terms.html">Terms</a><a data-navkey="conduct" href="/code-of-conduct.html">Code of Conduct</a></div></div>',
     '</footer>'
   ].join(''); 
@@ -30,6 +31,12 @@
     '#vtgFooter.vtgCompactFooter .vtgFooterLinks a[data-navkey][aria-current="page"]:after,#vtgFooter.vtgCompactFooter .vtgFooterBottom a[data-navkey][aria-current="page"]:after{content:""!important;display:block!important;position:absolute!important;left:0!important;right:0!important;bottom:-3px!important;height:2px!important;border-radius:2px!important;background:#ff8b82!important;opacity:1!important}',
     '.vtgCompactFooter .vtgFooterBottom{position:relative;width:100%;max-width:none;margin:0 auto;display:block;justify-content:initial;align-items:initial;gap:0;border-top:1px solid rgba(255,255,255,.08);padding:14px;text-align:center;color:#98a2b3;font-size:8px}',
     '.vtgCompactFooter .vtgFooterBottom div{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}',
+    '.vtgCompactFooter .vtgFooterControls{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;width:100%;max-width:1260px;margin:0 auto;padding:7px 18px 8px;border-top:1px solid rgba(255,255,255,.06)}',
+    '.vtgCompactFooter .vtgFooterControls>div{display:flex;align-items:center;gap:6px;margin:0!important;padding:0!important;font:600 9px/1.25 Manrope,Arial,sans-serif}',
+    '.vtgCompactFooter .vtgFooterControls label{font-size:9px!important;line-height:1.2!important;color:#aeb9c2!important}',
+    '.vtgCompactFooter .vtgFooterControls select{max-width:145px;min-height:27px;padding:3px 20px 3px 7px;border:1px solid rgba(150,165,180,.4);border-radius:5px;background:#151b22;color:#f3f6f8;font:600 9px/1.2 Manrope,Arial,sans-serif}',
+    '@media(max-width:600px){.vtgCompactFooter .vtgFooterControls{justify-content:flex-start;padding:7px 14px;gap:9px}.vtgCompactFooter .vtgFooterControls>div{gap:5px}.vtgCompactFooter .vtgFooterControls select{max-width:125px}}',
+
     '.vtgCompactFooter .vtgFooterBottom a{position:relative;color:#8c99a3;text-decoration:none;padding:1px 0}',
     'body.vtg-simple-header-page [data-vtg-replaced-header="true"]{display:none!important}',
     '.vtg-page-nav{position:relative;z-index:1200;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:8px max(16px,calc((100vw - 1260px)/2));border-bottom:1px solid rgba(255,255,255,.10);background:#0b1016;font-family:Manrope,Arial,sans-serif;box-sizing:border-box}',
@@ -430,7 +437,7 @@
       '@media(prefers-reduced-motion:reduce){#vtgThemeControl *{transition:none!important}}'
     ].join('\n');
     document.head.appendChild(style);
-    var footerHost = document.querySelector('#vtgFooter .vtgFooterBottom');
+    var footerHost = document.querySelector('#vtgFooterControls') || document.querySelector('#vtgFooter .vtgFooterBottom');
     if (footerHost) footerHost.appendChild(wrap);
     else document.body.appendChild(wrap);
     var select = wrap.querySelector('select');
@@ -443,6 +450,52 @@
       wrap.setAttribute('data-current-theme', event.detail.theme);
     });
   }
+
+  function ensureFooterLanguageControl() {
+    if (isWorkspaceDashboardPage() || !vtgPublicShellPage || document.getElementById('vtgLanguagePicker')) return;
+    var host = document.getElementById('vtgFooterControls');
+    if (!host) return;
+    var wrap = document.createElement('div');
+    wrap.className = 'vtg-language-wrap';
+    wrap.innerHTML = '<label for="vtgLanguagePicker">Language</label><select id="vtgLanguagePicker" aria-label="Choose language"><option value="en">English</option><option value="fr">Français</option><option value="zh-CN">中文</option><option value="ko">한국어</option><option value="es">Español</option><option value="ar">العربية</option></select>';
+    host.appendChild(wrap);
+    var picker = wrap.querySelector('select');
+    var current = 'en';
+    try { current = localStorage.getItem('vtg-language') || 'en'; } catch (_) {}
+    var cookie = document.cookie.match(/(?:^|;\\s*)googtrans=([^;]+)/);
+    if (cookie) { try { var bits = decodeURIComponent(cookie[1]).split('/'); if (bits[2]) current = bits[2]; } catch (_) {} }
+    picker.value = current === 'zh' ? 'zh-CN' : current;
+    picker.addEventListener('change', function () {
+      var selected = picker.value;
+      try { localStorage.setItem('vtg-language', selected === 'zh-CN' ? 'zh' : selected); } catch (_) {}
+      if (selected === 'en') {
+        document.cookie = 'googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+        document.cookie = 'googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=' + location.hostname;
+      } else {
+        var value = '/en/' + selected;
+        document.cookie = 'googtrans=' + value + ';path=/;max-age=31536000;SameSite=Lax';
+        document.cookie = 'googtrans=' + value + ';path=/;domain=' + location.hostname + ';max-age=31536000;SameSite=Lax';
+      }
+      location.reload();
+    });
+    if (!document.getElementById('google_translate_element')) {
+      var hidden = document.createElement('div'); hidden.id = 'google_translate_element'; hidden.setAttribute('aria-hidden','true');
+      hidden.style.cssText = 'position:absolute!important;left:-9999px!important;top:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important';
+      document.body.appendChild(hidden);
+    }
+    if (!window.googleTranslateElementInit) {
+      window.googleTranslateElementInit = function () {
+        if (window.google && google.translate && document.getElementById('google_translate_element')) {
+          new google.translate.TranslateElement({pageLanguage:'en',includedLanguages:'en,fr,zh-CN,ko,es,ar',autoDisplay:false},'google_translate_element');
+        }
+      };
+      var script = document.createElement('script');
+      script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+      script.async = true;
+      document.head.appendChild(script);
+    }
+  }
+
   function ensureThemePresets() {
     // Load the saved visitor palette on every non-dashboard page, even pages without the shared public shell.
     if (isWorkspaceDashboardPage()) return;
@@ -562,7 +615,7 @@
     });
     wrap.appendChild(label);
     wrap.appendChild(select);
-    var host = document.querySelector('#vtgFooter .vtgFooterBottom') || document.querySelector('#vtgThemeControl') || document.body;
+    var host = document.querySelector('#vtgFooterControls') || document.querySelector('#vtgFooter .vtgFooterBottom') || document.querySelector('#vtgThemeControl') || document.body;
     host.appendChild(wrap);
   }
 
@@ -816,6 +869,7 @@
     }
     ensureThemeControl();
     ensureThemePresets();
+    ensureFooterLanguageControl();
     ensureVisitorPaletteCoverage();
     adaptHomeAnchors();
     simplifyPageHeader();
