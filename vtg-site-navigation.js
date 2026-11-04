@@ -234,15 +234,14 @@
     if (!vtgPublicShellPage) removePublicShellElements();
   }
   function addPageNavigation() {
-    // Every non-landing page uses the same restrained header: VTG logo on the
-    // left, Previous and Home on the right. Language, Trade Atlas and Enter VTG
-    // remain available through the landing page/footer rather than every header.
-    if (isHomePage() || document.getElementById('vtgPageNavigation')) return;
+    // Public inner pages get clear text navigation. Workspace dashboards keep
+    // their own purpose-built navigation and must not receive this public header.
+    if (isHomePage() || isWorkspaceDashboardPage() || document.getElementById('vtgPageNavigation')) return;
     var nav = document.createElement('nav');
     nav.id = 'vtgPageNavigation';
     nav.className = 'vtg-page-nav';
     nav.setAttribute('aria-label', 'Page navigation');
-    nav.innerHTML = '<a class="vtg-nav-brand" href="' + HOME + '" aria-label="Vintage Trade Global home"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><div class="vtg-nav-actions"><button type="button" id="vtgPreviousPage" aria-label="Return to previous VTG page"><span aria-hidden="true">←</span> Previous</button><a href="' + HOME + '" aria-label="Return to VTG homepage"><span aria-hidden="true">⌂</span> Home</a></div>';
+    nav.innerHTML = '<a class="vtg-nav-brand" href="' + HOME + '" aria-label="Vintage Trade Global home"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><div class="vtg-nav-actions"><button type="button" id="vtgPreviousPage" aria-label="Go back to the previous page"><span aria-hidden="true">←</span> <span>Back</span></button><a href="' + HOME + '" aria-label="Go to the VTG homepage"><span aria-hidden="true">⌂</span> <span>Home</span></a></div>';
     document.body.insertBefore(nav, document.body.firstChild);
     document.getElementById('vtgPreviousPage').addEventListener('click', function () {
       var canReturn = false;
@@ -255,8 +254,12 @@
              previous.hash !== window.location.hash);
         }
       } catch (_) {}
-      if (canReturn && window.history.length > 1) window.history.back();
-      else window.location.href = HOME;
+      if (canReturn && window.history.length > 1) {
+        window.history.back();
+      } else {
+        // A direct visit has no safe in-site page to return to.
+        window.location.assign(HOME);
+      }
     });
   }
   function applyTimeBasedTheme() {
