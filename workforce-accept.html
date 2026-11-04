@@ -13,7 +13,7 @@ main{width:min(100%,520px);padding:42px;border:1px solid var(--line);background:
 </head>
 <body><main><div class="brand">VTG · THE PRIVATE TRADE HOUSE</div><h1>Workforce invitation</h1><p>Confirm your invitation to join the VTG operations workspace. You must be signed in with the email address the invitation was sent to.</p><div id="status" class="status">Checking your invitation…</div><button id="accept" disabled>Accept invitation</button><p class="small">Invitation links expire after seven days and can only be accepted once.</p></main>
 <script type="module">
-import { vtgSupabase } from "/supabase/vtg-client.js";
+import { vtgSupabase, VTG_SUPABASE_URL, VTG_SUPABASE_PUBLISHABLE_KEY } from "/supabase/vtg-client.js";
 const status=document.getElementById("status"),button=document.getElementById("accept");
 const invitation=new URLSearchParams(location.search).get("invitation");
 let currentUser=null;
@@ -28,11 +28,10 @@ async function init(){
 button.addEventListener("click",async()=>{
  if(!currentUser){location.href="/workforce-signin.html?next="+encodeURIComponent(location.pathname+location.search);return;}
  button.disabled=true;status.textContent="Validating invitation…";
- const {data,error}=await vtgSupabase.functions.invoke("workforce-invitations",{body:{invitation_id:invitation},method:"POST"});
- // The accept route is a sub-path; call it directly to preserve the function's endpoint contract.
- const result=await fetch(vtgSupabase.supabaseUrl+"/functions/v1/workforce-invitations/accept",{method:"POST",headers:{apikey:vtgSupabase.supabaseKey,Authorization:"Bearer "+(await vtgSupabase.auth.getSession()).data.session.access_token,"Content-Type":"application/json"},body:JSON.stringify({invitation_id:invitation})});
+ const session=(await vtgSupabase.auth.getSession()).data.session;
+ const result=await fetch(VTG_SUPABASE_URL+"/functions/v1/workforce-invitations/accept",{method:"POST",headers:{apikey:VTG_SUPABASE_PUBLISHABLE_KEY,Authorization:"Bearer "+session.access_token,"Content-Type":"application/json"},body:JSON.stringify({invitation_id:invitation})});
  const payload=await result.json().catch(()=>({}));
- if(!result.ok){status.textContent=payload.error??error?.message??"The invitation could not be accepted.";button.disabled=false;return;}
+ if(!result.ok){status.textContent=payload.error??"The invitation could not be accepted.";button.disabled=false;return;}
  status.textContent="Invitation accepted. Your workspace access is now active.";
  button.textContent="Open workforce workspace";button.disabled=false;button.onclick=()=>location.href="/workforce-signin.html";
 });
