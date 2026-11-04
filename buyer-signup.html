@@ -81,8 +81,9 @@ html[data-theme="dark"] .story .check{color:#fff!important;border-color:rgba(255
 <p class="footnote">By creating an account, you agree to complete VTG’s applicable account and business verification steps. Do not submit passwords or verification codes to anyone outside the VTG signup flow.</p>
 </section>
 </div></main>
+<script src="/vtg-supabase-auth.js?v=20261105-auth-1"></script>
 <script>
-const API=window.VTG_API_BASE||'';
+
 const AFRICA=[["🇩🇿","Algeria","+213"],["🇦🇴","Angola","+244"],["🇧🇯","Benin","+229"],["🇧🇼","Botswana","+267"],["🇧🇫","Burkina Faso","+226"],["🇧🇮","Burundi","+257"],["🇨🇻","Cabo Verde","+238"],["🇨🇲","Cameroon","+237"],["🇨🇫","Central African Republic","+236"],["🇹🇩","Chad","+235"],["🇰🇲","Comoros","+269"],["🇨🇩","DR Congo","+243"],["🇨🇬","Republic of the Congo","+242"],["🇨🇮","Côte d’Ivoire","+225"],["🇩🇯","Djibouti","+253"],["🇪🇬","Egypt","+20"],["🇬🇶","Equatorial Guinea","+240"],["🇪🇷","Eritrea","+291"],["🇸🇿","Eswatini","+268"],["🇪🇹","Ethiopia","+251"],["🇬🇦","Gabon","+241"],["🇬🇲","Gambia","+220"],["🇬🇭","Ghana","+233"],["🇬🇳","Guinea","+224"],["🇬🇼","Guinea-Bissau","+245"],["🇰🇪","Kenya","+254"],["🇱🇸","Lesotho","+266"],["🇱🇷","Liberia","+231"],["🇱🇾","Libya","+218"],["🇲🇬","Madagascar","+261"],["🇲🇼","Malawi","+265"],["🇲🇱","Mali","+223"],["🇲🇷","Mauritania","+222"],["🇲🇺","Mauritius","+230"],["🇲🇦","Morocco","+212"],["🇲🇿","Mozambique","+258"],["🇳🇦","Namibia","+264"],["🇳🇪","Niger","+227"],["🇳🇬","Nigeria","+234"],["🇷🇼","Rwanda","+250"],["🇸🇹","São Tomé and Príncipe","+239"],["🇸🇳","Senegal","+221"],["🇸🇨","Seychelles","+248"],["🇸🇱","Sierra Leone","+232"],["🇸🇴","Somalia","+252"],["🇿🇦","South Africa","+27"],["🇸🇸","South Sudan","+211"],["🇸🇩","Sudan","+249"],["🇹🇿","Tanzania","+255"],["🇹🇬","Togo","+228"],["🇹🇳","Tunisia","+216"],["🇺🇬","Uganda","+256"],["🇿🇲","Zambia","+260"],["🇿🇼","Zimbabwe","+263"]];
 const CHINA_KOREA=[["🇨🇳","China","+86"],["🇰🇷","South Korea","+82"]];
 const BANK_COUNTRIES=[...AFRICA,...CHINA_KOREA];
@@ -98,13 +99,36 @@ function showStep(index){current=Math.max(0,Math.min(index,sections.length-1));s
 function validateStep(index){const els=Array.from(sections[index].querySelectorAll('input,select,textarea')).filter(el=>!el.disabled);for(const el of els){if(!el.checkValidity()){showStep(index);el.reportValidity();el.focus({preventScroll:true});return false;}}return true;}
 $('#backStep').addEventListener('click',()=>showStep(current-1));
 $('#nextStep').addEventListener('click',()=>{if(validateStep(current))showStep(current+1)});
-$('#signupForm').addEventListener('submit',async e=>{e.preventDefault();for(let i=0;i<sections.length;i++){const invalid=Array.from(sections[i].querySelectorAll('input,select,textarea')).find(el=>!el.disabled&&!el.checkValidity());if(invalid){showStep(i);invalid.reportValidity();invalid.focus({preventScroll:true});return;}}
-const d=Object.fromEntries(new FormData(e.currentTarget));const m=$('#msg');m.className='message';m.textContent='Creating your account…';$('#submitForm').disabled=true;
-try{const phoneCode=$('#phoneCountry').selectedOptions[0]?.dataset?.code||'';const payload={email:d.email,password:d.password,fullName:d.fullName,phone:phoneCode+' '+d.phone,phoneCountry:d.phoneCountry,verificationCode:d.verificationCode,preferredLanguage:d.preferredLanguage||'en',marketingSubscribed:d.marketingSubscribed==='true',country:d.country,city:d.city,buyerType:d.buyerType,companyName:d.companyName||undefined};const r=await fetch(API+'/api/auth/signup/buyer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const out=await r.json();if(!r.ok)throw Error(out.message||'Account creation failed');if(out.accessToken){localStorage.setItem('vtg_access_token',out.accessToken);localStorage.setItem('vtg-auth',JSON.stringify({user:out.user,accessToken:out.accessToken,refreshToken:out.refreshToken||null}));}m.className='message ok';m.textContent='Account created successfully. Opening your VTG workspace…';setTimeout(()=>location.href=out.agreementRequired?'/signup-agreement.html':'/trade-os.html',500);
-}catch(err){m.className='message';m.textContent=err.message||'Account creation failed. Please try again.';$('#submitForm').disabled=false;}
+// Supabase Auth replaces the legacy Railway signup and email-code endpoints.
+$('#verificationCode')?.closest('.field')?.remove();
+const sendCodeButton=$('#sendCode');if(sendCodeButton)sendCodeButton.remove();
+$('#signupForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ for(let i=0;i<sections.length;i++){
+  const invalid=Array.from(sections[i].querySelectorAll('input,select,textarea')).find(el=>!el.disabled&&!el.checkValidity());
+  if(invalid){showStep(i);invalid.reportValidity();invalid.focus({preventScroll:true});return;}
+ }
+ const d=Object.fromEntries(new FormData(e.currentTarget));const m=$('#msg');m.className='message';m.textContent='Creating your secure VTG account…';$('#submitForm').disabled=true;
+ try{
+  const auth=await window.VTG_AUTH_READY;
+  const phoneCode=$('#phoneCountry')?.selectedOptions[0]?.dataset?.code||'';
+  const metadata={
+  full_name:d.fullName,phone:phoneCode+" "+d.phone,preferred_language:d.preferredLanguage||"en",
+  country:d.country,city:d.city,buyer_type:d.buyerType||"business",company_name:d.companyName||"",
+  registration_no:d.registrationNo||"",state:d.state||""
+ };
+  const {data,error}=await auth.signUp(d.email,d.password,metadata);
+  if(error)throw error;
+  if(data.session){
+   const current=await auth.getCurrent();
+   m.className='message ok';m.textContent='Account created. Opening your VTG workspace…';
+   setTimeout(()=>location.href='/buyer-dashboard.html',900);
+  }else{
+   m.className='message ok';m.textContent='Your account has been created. Check your email and follow the confirmation link before signing in.';
+   $('#submitForm').disabled=false;
+  }
+ }catch(err){m.className='message';m.textContent=err.message||'Account creation failed. Please try again.';$('#submitForm').disabled=false;}
 });
-const pass=$('[name=password]');const toggle=$('#passwordToggle');if(pass&&toggle)toggle.addEventListener('click',()=>{pass.type=pass.type==='password'?'text':'password';toggle.textContent=pass.type==='password'?'Show':'Hide'});
-const send=$('#sendCode');if(send)send.addEventListener('click',async()=>{const email=$('[name=email]').value.trim(),m=$('#msg');if(!email){m.textContent='Enter your email address first.';showStep(STEPS.findIndex(s=>s.fields.includes('email')));$('[name=email]').focus();return;}send.disabled=true;const original='Send code';try{const r=await fetch(API+'/api/auth/send-verification-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,preferredLanguage:$('[name=preferredLanguage]')?.value||'en'})});const out=await r.json();if(!r.ok)throw Error(out.message||'Could not send the verification code');m.className='message ok';m.textContent='Verification code sent. Check your email inbox.';let seconds=45;send.textContent='Resend in '+seconds+'s';const timer=setInterval(()=>{seconds--;if(seconds<=0){clearInterval(timer);send.disabled=false;send.textContent=original;}else send.textContent='Resend in '+seconds+'s';},1000);}catch(err){m.className='message';m.textContent=err.message;send.disabled=false;send.textContent=original;}});
 showStep(0);
 </script>
 <script src="/page-visuals.js?v=20261013-new-signup-forms"></script>
