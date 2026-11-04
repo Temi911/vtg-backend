@@ -74,7 +74,7 @@
     '<div><h4>Trade</h4><ul><li><a href="/sourcing-suppliers.html">Sourcing &amp; Suppliers</a></li><li><a href="/product-verification.html">Product Verification</a></li><li><a href="/logistics-shipping.html">Logistics &amp; Shipping</a></li><li><a href="/finance-payments.html">Finance &amp; Payments</a></li></ul></div>' +
     '<div><h4>Business</h4><ul><li><a href="/trade-guide.html">Trade Guide</a></li><li><a href="/partnerships.html">Partnerships</a></li><li><a href="/agent.html">Become an Agent</a></li><li><a href="/workforce-access.html">Workforce &amp; Staff Access</a></li></ul></div>' +
     '<div><h4>Company</h4><ul><li><a href="/about-vintage.html">About VTG</a></li><li><a href="/contact.html">Contact</a></li><li><a href="/privacy.html">Privacy</a></li><li><a href="/terms.html">Terms</a></li><li><a href="/code-of-conduct.html">Code of Conduct</a></li></ul></div>' +
-    '</div><div class="vs-footer-base"><div class="vs-wrap"><span>&copy; ' + new Date().getFullYear() + ' Vintage Trade Global &middot; Powered by Folayele Global Resources Limited</span><span>Lagos &middot; Guangzhou &middot; Busan</span></div></div></footer>';
+    '</div><div class="vs-footer-base"><div class="vs-wrap"><span>&copy; 2026 Vintage Trade Global &middot; Powered by Folayele Global Resources Limited</span></div></div></footer>';
 
   function renderFooter() {
     var host = document.getElementById('vsFooter');
