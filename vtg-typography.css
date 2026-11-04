@@ -123,3 +123,22 @@ th,td{padding-block:0.65rem}
 }
 :where(.footerGrid a,.bottom a,.site-footer a,.footer a){font-size:max(0.6875rem,11px)!important}
 :where(input,select,textarea){min-height:2.4rem}
+
+
+/* VTG footer scale: keep footer copy compact and consistent across every page. */
+:where(footer,.footer,.site-footer,.page-footer,.vtg-footer,.vtgCompactFooter,.footerGrid,.footerIn,.footerTop,.footerBottom) {
+  font-size:11px!important;
+  line-height:1.5!important;
+}
+:where(footer,.footer,.site-footer,.page-footer,.vtg-footer,.vtgCompactFooter,.footerGrid,.footerIn,.footerTop,.footerBottom) :where(p,li,span,small,a,button,label) {
+  font-size:11px!important;
+  line-height:1.55!important;
+}
+:where(footer,.footer,.site-footer,.page-footer,.vtg-footer,.vtgCompactFooter,.footerGrid,.footerIn,.footerTop,.footerBottom) :where(h1,h2,h3,h4,h5,h6,strong,b) {
+  font-size:12px!important;
+  line-height:1.4!important;
+}
+:where(footer,.footer,.site-footer,.page-footer,.vtg-footer,.vtgCompactFooter) :where(.bottom,.footerBottom,.copyright,.legal,.footer-meta) {
+  font-size:10px!important;
+  line-height:1.5!important;
+}
