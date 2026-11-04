@@ -175,3 +175,12 @@ The workforce invitation flow was tightened after implementation review: each in
 
 - Updated the frontend flow test to assert the new direct Supabase signup routes and absence of legacy frontend auth endpoints.
 - The first edit contained escaped line breaks and caused a JavaScript syntax error. This was corrected in commit `b60ab0b`; the newest full workflow run is being checked.
+
+
+### Native inspection and verification workflows (2026-11-05)
+
+- Deployed `vtg-inspection-workflow` v2. It provides pricing lookup/quotes, buyer inspection requests attached to the buyer's existing trade order, inspector queue, admin queue, admin assignment to active workforce agent members, inspector start/report submission, secure evidence upload URL issuance and metadata registration, and buyer decision recording.
+- Extended `vtg_inspection_requests` with assignment, commercial, location, payment-state and report fields; created `vtg_inspection_pricing`. Pricing is intentionally not seeded with invented fees; an administrator must configure approved China/South Korea pricing before quote/request creation can succeed.
+- Deployed `vtg-verification` v1. It provides private document upload URL issuance, document registration/listing, admin review queue, review decisions, and short-lived signed downloads. It supports supplier, bank and workforce-agent document categories.
+- Created private `vtg-verification-documents` Storage bucket, 50 MB limit, MIME allowlist, and `vtg_verification_documents` RLS-protected metadata table.
+- These new services are deployed in Supabase and their Edge Function source is in this branch. Dashboard UI integration, document malware scanning, business profile status roll-up, notifications, and complete end-to-end tests remain outstanding. The legacy filesystem upload path has not been used by these new functions.
