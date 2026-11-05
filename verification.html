@@ -87,7 +87,7 @@ async function uploadLogo(){
 }
 $('#logoBtn').onclick=uploadLogo;
 async function loadMine(){
- const {data,error}=await client.from('vtg_verification_documents').select('id,account_role,doc_type,file_name,storage_path,mime_type,file_size_bytes,status,review_notes,reviewed_at,uploaded_at,expires_at').eq('user_id',currentUser.id).order('uploaded_at',{ascending:false});
+ const {data,error}=await client.from('vtg_verification_documents').select('id,account_role,doc_type,file_name,storage_path,mime_type,file_size_bytes,status,review_notes,reviewer_id,reviewed_at,uploaded_at,expires_at').eq('user_id',currentUser.id).order('uploaded_at',{ascending:false});
  if(error)throw error;
  const docs=data||[];
  if(role!=='admin'){
@@ -95,7 +95,7 @@ async function loadMine(){
   else if(verificationStatus!=='verified'&&docs.length)verificationStatus='under_review';
   updateVerificationState();
  }
- $('#list').innerHTML=docs.length?docs.map(x=>'<div class="doc" style="margin-bottom:8px"><div class="row"><strong>'+esc(x.file_name)+'</strong><span class="status '+(x.status==='verified'?'verified':x.status==='rejected'?'rejected':'')+'">'+esc(x.status)+'</span></div><div class="small">'+esc(x.doc_type.replace(/_/g,' '))+' • Uploaded '+esc(new Date(x.uploaded_at).toLocaleString())+(x.reviewed_at?' • Reviewed '+esc(new Date(x.reviewed_at).toLocaleString()):'')+(x.review_notes?' • Review note: '+esc(x.review_notes):'')+'</div></div>').join(''):'<div class="small">No documents submitted yet.</div>';
+ $('#list').innerHTML=docs.length?docs.map(x=>'<div class="doc" style="margin-bottom:8px"><div class="row"><strong>'+esc(x.file_name)+'</strong><span class="status '+(x.status==='verified'?'verified':x.status==='rejected'?'rejected':'')+'">'+esc(x.status)+'</span></div><div class="small">'+esc(x.doc_type.replace(/_/g,' '))+' • Uploaded '+esc(new Date(x.uploaded_at).toLocaleString())+(x.reviewed_at?' • Reviewed '+esc(new Date(x.reviewed_at).toLocaleString()):'')+(x.reviewer_id?' • Reviewer reference: '+esc(x.reviewer_id):'')+(x.expires_at?' • Expires '+esc(new Date(x.expires_at).toLocaleDateString()):'')+(x.review_notes?' • Review note: '+esc(x.review_notes):'')+'</div></div>').join(''):'<div class="small">No documents submitted yet.</div>';
 }
 async function loadAdmin(){
  $('#adminLastUpdated').textContent='Loading Supabase verification queue…';
