@@ -1,30 +1,10 @@
 (function(){
  'use strict';
  const $=id=>document.getElementById(id);
- const KEY='vtg-buyer-verification-drafts-v1';
  const esc=v=>typeof window.esc==='function'?window.esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let busy=false;
  const preview=()=>false;
- function readDrafts(){try{const v=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(v)?v:[]}catch(_){return[]}}
- function writeDrafts(rows){localStorage.setItem(KEY,JSON.stringify(rows));}
  function selectedChecks(form){const el=form.elements.checks;return el?.multiple?[...el.selectedOptions].map(o=>o.value):[el?.value].filter(Boolean)}
- function renderDrafts(){
-  const host=$('verifyRows');if(!host)return;
-  const rows=readDrafts();
-  host.innerHTML=rows.length?rows.map(d=>'<article class="row" style="display:block;padding:12px 0"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><strong>'+esc(d.product)+'</strong><span class="chip">Local draft</span></div><p class="small muted">Supplier / factory: '+esc(d.supplier||'Not specified')+'</p><p class="small">Checks: '+esc((d.checks||[]).join(', '))+'</p>'+(d.notes?'<p class="small">'+esc(d.notes)+'</p>':'')+'<p class="small muted">Saved '+esc(new Date(d.updatedAt||d.createdAt).toLocaleString())+' · This draft is stored only in this browser.</p><button class="btn" type="button" data-delete-draft="'+esc(d.id)+'">Delete draft</button></article>').join(''):'<div class="empty">No verification drafts saved in this browser yet.</div>';
-  host.querySelectorAll('[data-delete-draft]').forEach(b=>b.addEventListener('click',()=>{writeDrafts(readDrafts().filter(x=>x.id!==b.dataset.deleteDraft));renderDrafts()}));
- }
- function bindDraftForm(){
-  const form=$('verifyForm');if(!form||form.dataset.bound)return;form.dataset.bound='1';
-  form.addEventListener('submit',e=>{
-   e.preventDefault();const fd=new FormData(form),product=String(fd.get('product')||'').trim();
-   if(!product){form.elements.product.focus();return;}
-   const rows=readDrafts(),now=new Date().toISOString();
-   rows.unshift({id:(crypto.randomUUID?crypto.randomUUID():'draft-'+Date.now()),product,supplier:String(fd.get('supplier')||'').trim(),checks:selectedChecks(form),notes:String(fd.get('notes')||'').trim(),createdAt:now,updatedAt:now});
-   try{writeDrafts(rows.slice(0,100));form.reset();renderDrafts();const notice=document.querySelector('#verifyForm')?.parentElement?.querySelector('.notice');if(notice)notice.textContent='Draft saved in this browser only. No inspection has been booked, no inspector contacted and no fee charged.';}
-   catch(_){const notice=document.querySelector('#verifyForm')?.parentElement?.querySelector('.notice');if(notice)notice.textContent='Could not save this draft in browser storage. Check available browser storage and try again.';}
-  });
- }
  async function clientForBuyer(){
   let auth;
   try{auth=await window.VTG_AUTH_READY;}catch(err){if(window.VTG_SUPABASE)auth={client:window.VTG_SUPABASE};else throw err;}
@@ -46,7 +26,7 @@
     .select('id,reference,order_id,requested_by,supplier_id,inspection_type,requested_date,location,scope,status,inspector_id,findings,completed_at,created_at,country,city,supplier_name,product_name,category,quantity,service_level,buyer_fee_usd,payment_status,assigned_at,inspection_summary,buyer_decision,buyer_notes')
     .order('created_at',{ascending:false}).limit(100);
    if(error)throw error;
-   if(!rows?.length){host.innerHTML='<div class="empty">No live inspection requests are linked to this buyer account yet. Your local drafts are kept separately and have not been submitted.</div>';return;}
+   if(!rows?.length){host.innerHTML='<div class="empty">No live inspection requests are linked to this buyer account yet. Inspection requests must be created against an eligible confirmed trade order; no local draft or booking is created here.</div>';return;}
    const cards=await Promise.all(rows.map(async x=>{
     const [{data:evidence,error:ee},{data:payments,error:pe}]=await Promise.all([
      client.from('vtg_inspection_evidence').select('id,evidence_type,file_name,mime_type,file_size_bytes,notes,created_at').eq('inspection_id',x.id).order('created_at',{ascending:false}).limit(50),
@@ -67,6 +47,6 @@
   }catch(e){const msg=String(e?.message||'Supabase request failed');host.innerHTML='<div class="empty">Could not load live inspections. '+esc(msg)+' <button class="btn" type="button" id="retryLiveInspections">Try again</button></div>';$('retryLiveInspections')?.addEventListener('click',load);}
   finally{busy=false;}
  }
- window.VTGBuyerInspections={load,renderDrafts};
- document.addEventListener('DOMContentLoaded',()=>{bindDraftForm();renderDrafts();$('refreshLiveInspections')?.addEventListener('click',load);load();},{once:true});
+ window.VTGBuyerInspections={load};
+ document.addEventListener('DOMContentLoaded',()=>{$('refreshLiveInspections')?.addEventListener('click',load);load();},{once:true});
 })();
