@@ -21,7 +21,7 @@ test('buyer FX planner labels rates as user supplied and captures provenance', (
 test('buyer FX planning notes use authenticated Supabase buyer-owned storage', () => {
   assert.match(dashboard, /vtg-buyer-finance-supabase\.js/);
   assert.match(financeClient, /window\.VTG_AUTH_READY/);
-  assert.match(financeClient, /profile\?\.role!=='buyer'/);
+  assert.match(financeClient, /p\?\.role!=='buyer'/);
   assert.match(financeClient, /from\('buyer_fx_planning_notes'\)/);
   assert.match(migration, /enable row level security/i);
   assert.match(migration, /buyer_id=\(select auth\.uid\(\)\)/i);
