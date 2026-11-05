@@ -2,7 +2,7 @@
  'use strict';
  const $=id=>document.getElementById(id);
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const preview=new URLSearchParams(location.search).get('preview')==='1';
+ const preview=false;
  let client=null,buyerId=null,drafts=[];
  function setNotice(message,error=false){const n=$('rfqForm')?.querySelector('.notice');if(n){n.textContent=message;n.style.color=error?'var(--danger, #b42318)':'';}}
  async function session(){
