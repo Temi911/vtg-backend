@@ -27,24 +27,50 @@ test('public sign-in presents only buyer, supplier and bank roles', () => {
   assert.doesNotMatch(signin, /data-role="agent"|data-role="admin"|workforce/i);
 });
 
+test('public auth refuses private staff identities', () => {
+  const auth = read('../vtg-supabase-auth.js');
+  assert.match(auth, /accountEnvironment === 'staff'/);
+  assert.match(auth, /signInWorkforce/);
+  assert.match(auth, /signInAdmin/);
+  assert.match(auth, /Public trade accounts cannot use workforce sign-in/);
+});
+
 test('staff entry pages are noindex and independent of public navigation', () => {
-  for (const file of ['../workforce-access.html', '../workforce-signin.html', '../admin-signin.html', '../agent.html']) {
+  for (const file of ['../workforce-access.html', '../workforce-signin.html', '../admin-signin.html', '../agent.html', '../workforce-accept.html']) {
     const page = read(file);
     assert.match(page, /name="robots" content="noindex/i);
     assert.doesNotMatch(page, /vtg-shell\.js|id="vsHeader"|id="vsFooter"|frontend-v3\.html/i);
   }
 });
 
-test('staff dashboards require authenticated role checks and disable public previews', () => {
+test('staff dashboards use Supabase account and membership checks', () => {
   const pages = ['../workforce-dashboard.html', '../admin-dashboard-preview.html', '../agent-dashboard.html', '../agent-network-dashboard.html'];
   for (const file of pages) {
     const page = read(file);
     assert.match(page, /name="robots" content="noindex/i);
-    assert.match(page, /\/api\/auth\/me/);
-    assert.doesNotMatch(page, /vtg-dashboard-footer\.js|frontend-v3\.html/i);
+    assert.match(page, /vtg-supabase-auth\.js/);
+    assert.doesNotMatch(page, /\/api\/auth\/me|vtg-dashboard-footer\.js|frontend-v3\.html/i);
   }
-  assert.match(read('../workforce-dashboard.html'), /preview=false/);
-  assert.match(read('../agent-dashboard.html'), /preview=false/);
+  assert.match(read('../workforce-dashboard.html'), /workforceMemberships/);
+  assert.match(read('../agent-dashboard.html'), /workspace_role==="agent"/);
+  assert.match(read('../admin-dashboard-preview.html'), /staffInviteForm/);
+});
+
+test('staff invitations are admin-gated and acceptance is bound to a one-time token', () => {
+  const edge = read('../../supabase/functions/workforce-invitations/index.ts');
+  assert.match(edge, /profile\.role !== "admin"/);
+  assert.match(edge, /auth\.admin\.inviteUserByEmail/);
+  assert.match(edge, /p_token_hash/);
+  assert.match(edge, /parts\[0\] === "accept"/);
+  assert.match(edge, /status: "suspended"/);
+  assert.match(edge, /status: "removed"/);
+});
+
+test('Agent cannot be requested or approved through public trade role applications', () => {
+  const migration = read('../../supabase/migrations/20261105113000_vtg_make_agent_access_staff_only.sql');
+  assert.match(migration, /requested_role IN \('supplier'::public\.vtg_account_role,'bank'::public\.vtg_account_role\)/);
+  assert.match(migration, /Internal staff roles are invitation-only/);
+  assert.doesNotMatch(migration, /ELSIF req\.requested_role='agent'/);
 });
 
 test('public agent application is replaced with a staff-only access notice', () => {
