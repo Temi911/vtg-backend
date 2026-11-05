@@ -1,0 +1,66 @@
+/* VTG Forms — shared, accessible form system for public pages */
+:root{
+ --vtgf-surface:#fff;--vtgf-page:#f5f2ec;--vtgf-ink:#17191b;--vtgf-muted:#69717b;
+ --vtgf-line:#d8dce1;--vtgf-focus:#1558d6;--vtgf-soft:#f2f5fa;--vtgf-accent:#702a30;
+ --vtgf-success:#16794b;--vtgf-danger:#b3261e;--vtgf-radius:12px;
+}
+html[data-theme="dark"]{
+ --vtgf-surface:#171c22;--vtgf-page:#0e1217;--vtgf-ink:#f3efe6;--vtgf-muted:#b4bdc8;
+ --vtgf-line:#343d47;--vtgf-focus:#78aaff;--vtgf-soft:#202a36;--vtgf-accent:#d48b8f;
+ --vtgf-success:#65d6a9;--vtgf-danger:#ff938b;
+}
+.vtg-form,.formPanel form,.formSide form,.form-card form,.formCard form{color:var(--vtgf-ink)}
+.vtg-form :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=submit]),select,textarea),
+.formPanel form :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=submit]),select,textarea),
+.formSide form :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=submit]),select,textarea){
+ width:100%;min-width:0;min-height:48px;padding:12px 14px;border:1px solid var(--vtgf-line);
+ border-radius:var(--vtgf-radius);background:var(--vtgf-surface);color:var(--vtgf-ink);
+ font:500 14px/1.45 Manrope,system-ui,sans-serif;box-shadow:0 1px 2px rgba(18,26,36,.035);
+ transition:border-color .16s ease,box-shadow .16s ease,background-color .16s ease;
+}
+.vtg-form textarea,.formPanel form textarea,.formSide form textarea{min-height:124px;resize:vertical;line-height:1.6}
+.vtg-form select,.formPanel form select,.formSide form select{cursor:pointer;padding-right:38px}
+.vtg-form :is(input,select,textarea):hover,.formPanel form :is(input,select,textarea):hover,.formSide form :is(input,select,textarea):hover{border-color:color-mix(in srgb,var(--vtgf-focus) 48%,var(--vtgf-line))}
+.vtg-form :is(input,select,textarea):focus,.formPanel form :is(input,select,textarea):focus,.formSide form :is(input,select,textarea):focus{
+ outline:none;border-color:var(--vtgf-focus);box-shadow:0 0 0 4px color-mix(in srgb,var(--vtgf-focus) 15%,transparent)
+}
+.vtg-form :is(input,select,textarea)::placeholder,.formPanel form :is(input,select,textarea)::placeholder,.formSide form :is(input,select,textarea)::placeholder{color:var(--vtgf-muted);opacity:.78}
+.vtg-form label,.formPanel form label,.formSide form label{display:block;margin:0 0 6px;color:var(--vtgf-ink);font-size:12px;font-weight:800;letter-spacing:.005em}
+.vtg-form .field,.formPanel form .field,.formSide form .field{display:grid;align-content:start;gap:7px;min-width:0}
+.vtg-form .fields,.formPanel form .fields,.formSide form .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.vtg-form .field.full,.formPanel form .field.full,.formSide form .field.full{grid-column:1/-1}
+.vtg-form fieldset{min-width:0;margin:0;padding:18px;border:1px solid var(--vtgf-line);border-radius:14px;background:var(--vtgf-soft)}
+.vtg-form legend{padding:0 8px;color:var(--vtgf-ink);font-size:13px;font-weight:800}
+.vtg-form :is(input[type=checkbox],input[type=radio]){width:18px;height:18px;min-height:18px;margin:2px 0 0;accent-color:var(--vtgf-focus);flex:none}
+.vtg-form .checkline,.vtg-form .remember,.vtg-form .choice{display:flex;align-items:flex-start;gap:10px}
+.vtg-form .hint,.vtg-form .help-text,.vtg-form .form-hint{color:var(--vtgf-muted);font-size:12px;line-height:1.55}
+.vtg-form :is(.message,.msg,.form-message,[role=status]){min-height:1.4em;font-size:13px;line-height:1.55}
+.vtg-form :is(.message.ok,.msg.ok,.success){color:var(--vtgf-success)}
+.vtg-form :is(.error,[aria-invalid=true]){color:var(--vtgf-danger)}
+.vtg-form :is(input,select,textarea)[aria-invalid=true]{border-color:var(--vtgf-danger);box-shadow:0 0 0 3px color-mix(in srgb,var(--vtgf-danger) 12%,transparent)}
+.vtg-form input[type=file]{min-height:52px;padding:9px;border:1px dashed var(--vtgf-line);background:var(--vtgf-soft)}
+.vtg-form input[type=file]::file-selector-button{margin-right:12px;padding:8px 12px;border:0;border-radius:8px;background:var(--vtgf-focus);color:white;font:700 12px Manrope,system-ui,sans-serif;cursor:pointer}
+.vtg-form :is(button[type=submit],.submit,.primary[type=submit],.actionButton.primary){
+ min-height:50px;padding:0 22px;border:1px solid #1558d6;border-radius:11px;background:#1558d6;color:#fff;
+ font:800 13px Manrope,system-ui,sans-serif;letter-spacing:.01em;cursor:pointer;transition:transform .15s ease,background .15s ease,box-shadow .15s ease;
+}
+.vtg-form :is(button[type=submit],.submit,.primary[type=submit],.actionButton.primary):hover{background:#1047b5;box-shadow:0 8px 20px rgba(21,88,214,.18);transform:translateY(-1px)}
+.vtg-form :is(button[type=submit],.submit,.primary[type=submit],.actionButton.primary):disabled{opacity:.55;cursor:wait;transform:none;box-shadow:none}
+.vtg-form .form-section,.vtg-form .section-heading{margin:24px 0 16px;padding-bottom:12px;border-bottom:1px solid var(--vtgf-line)}
+.vtg-form .section-heading strong{display:block;font-size:15px;letter-spacing:-.01em}
+.vtg-form .section-heading p{margin-top:4px;color:var(--vtgf-muted);font-size:12px;line-height:1.5}
+.formPanel{border-radius:18px!important;box-shadow:0 18px 50px rgba(20,32,43,.08)!important}
+.formPanel .formTop{padding-bottom:16px;border-bottom:1px solid var(--vtgf-line)}
+.formPanel .stepMeta{margin-top:18px}
+.formPanel .track{height:7px;border-radius:99px}
+.formPanel .track>span{border-radius:99px}
+.formPanel .actions{padding-top:16px;border-top:1px solid var(--vtgf-line)}
+.formPanel .message{padding:9px 12px;border-radius:9px;background:var(--vtgf-soft)}
+.formPanel .bottomLinks{font-size:12px}
+@media(max-width:640px){
+ .vtg-form .fields,.formPanel form .fields,.formSide form .fields{grid-template-columns:1fr;gap:14px}
+ .vtg-form .field.full,.formPanel form .field.full,.formSide form .field.full{grid-column:auto}
+ .vtg-form fieldset{padding:14px}
+ .formPanel{padding:22px 16px!important}
+}
+@media(prefers-reduced-motion:reduce){.vtg-form *{transition:none!important}}

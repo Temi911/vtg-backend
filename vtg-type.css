@@ -1,0 +1,12 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap");
+/* VTG type system
+   Headings: Manrope 700/800 — geometric, confident, matches the brand wordmark.
+   Body and interface: Inter 400/500/600 — the most legible UI face at small sizes, with clear numerals.
+   Figures (prices, balances, references): Inter with tabular numerals so columns line up. */
+:root{--vtg-head:"Manrope","Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--vtg-body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+html body,html body :is(button,input,select,textarea,.btn,.lp-btn){font-family:var(--vtg-body)!important}
+html body{font-feature-settings:"cv11","ss03";font-optical-sizing:auto}
+html body :is(h1,h2,h3,h4,.vs-display,.lp-kicker,.eyebrow,.brand strong,.vf-title strong,.lp-c-count){font-family:var(--vtg-head)!important;font-feature-settings:normal}
+html body :is(h1,h2){letter-spacing:-.025em}
+html body :is(table,td,th,.stat strong,.metric strong,.price,.amount,[class*="price"],[class*="amount"],[class*="count"]){font-variant-numeric:tabular-nums lining-nums}
+html body :is(p,li,td){font-weight:400}

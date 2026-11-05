@@ -328,9 +328,6 @@ html body #landing#landing .lp-pillar-ico svg{width:22px;height:22px}
 html body #landing#landing .lp-pillars strong{display:block;font-size:17px!important;color:inherit!important;line-height:1.3!important}
 html body #landing#landing .lp-pillars li div>span{display:block;margin-top:2px;font-size:14.5px!important;line-height:1.55!important;color:#3E5671!important}
 html[data-theme="dark"] body #landing#landing .lp-pillars li div>span{color:#C9D8EC!important}
-html body #landing#landing .lp-dots{position:absolute;left:0;right:0;bottom:28px;display:flex;justify-content:center;gap:10px}
-html body #landing#landing .lp-dot{width:34px;height:8px;padding:0;border:0;border-radius:99px;background:rgba(255,255,255,.55);cursor:pointer}
-html body #landing#landing .lp-dot.is-on{background:#FFB81C}
 
 /* Sections */
 html body #landing#landing .lp-section{padding:72px 0}
@@ -367,13 +364,71 @@ html body #landing#landing .lp-car-bar{display:flex;align-items:center;gap:18px;
 html body #landing#landing .lp-car-ctl{display:flex;gap:10px;flex:none}
 html body #landing#landing .lp-prog{flex:1;height:6px;border-radius:99px;background:rgba(10,88,202,.15);overflow:hidden}
 html body #landing#landing .lp-prog span{display:block;height:100%;width:0;background:linear-gradient(90deg,#0A58CA,#FFB81C);border-radius:99px}
-html body #landing#landing .lp-prog span.run{width:100%;transition:width 5s linear}
+html body #landing#landing .lp-prog span.run{width:100%;transition:width 3s linear}
 html body #landing#landing .lp-picker{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:thin;scrollbar-color:#0A58CA transparent}
 html body #landing#landing .lp-pick{flex:none;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:1px solid var(--lp-line);background:var(--lp-bg);color:var(--lp-ink)!important;font-family:inherit;font-size:13.5px!important;font-weight:700;cursor:pointer;white-space:nowrap}
 html body #landing#landing .lp-pick svg{width:16px;height:16px;color:var(--lp-text-accent)!important}
 html body #landing#landing .lp-pick:hover{border-color:var(--lp-accent)}
 html body #landing#landing .lp-pick.is-on{background:#0A58CA;border-color:#0A58CA;color:#FFFFFF!important}
 html body #landing#landing .lp-pick.is-on svg{color:#FFD152!important}
+
+/* Category showcase v2 */
+html body #landing#landing .lp-car{position:relative;padding:0;border:0;background:transparent;box-shadow:none;overflow:visible}
+html body #landing#landing .lp-car-stage{background:var(--lp-surface);border:1px solid var(--lp-line);border-radius:28px;box-shadow:0 30px 70px -40px rgba(10,60,140,.55);padding:22px;overflow:hidden;position:relative}
+html body #landing#landing .lp-cslide{gap:44px;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)}
+html body #landing#landing .lp-c-media{aspect-ratio:16/10.5;border-radius:20px;isolation:isolate}
+html body #landing#landing .lp-c-media::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(6,24,56,.05) 35%,rgba(6,24,56,.55));pointer-events:none}
+html body #landing#landing .lp-c-media img{transform:scale(1.001);transition:transform 6s ease-out}
+html body #landing#landing .lp-cslide.is-on .lp-c-media img{transform:scale(1.07)}
+html body #landing#landing .lp-c-ghost{position:absolute;left:22px;bottom:6px;z-index:2;font:800 clamp(64px,9vw,120px)/1 var(--vtg-head);letter-spacing:-.04em;color:transparent;-webkit-text-stroke:2px rgba(255,255,255,.85);pointer-events:none}
+html body #landing#landing .lp-c-chip{position:absolute;left:18px;top:18px;z-index:2;display:inline-flex;align-items:center;gap:8px;padding:8px 14px 8px 10px;border-radius:999px;background:rgba(255,255,255,.92);color:#0C2340!important;font-size:12.5px!important;font-weight:800;letter-spacing:.08em;text-transform:uppercase;backdrop-filter:blur(6px)}
+html body #landing#landing .lp-c-chip svg{width:18px;height:18px;color:#0A58CA!important}
+html body #landing#landing .lp-c-body{padding:6px 10px 6px 0;display:flex;flex-direction:column;align-items:flex-start}
+html body #landing#landing .lp-c-count{display:inline-flex;align-items:baseline;gap:6px;padding:0;margin:0 0 14px;font-size:14px!important;letter-spacing:.12em}
+html body #landing#landing .lp-c-count b{font-size:34px;letter-spacing:-.03em;color:#0A58CA;font-weight:800;line-height:1}
+html body #landing#landing .lp-c-body h3{font-size:clamp(26px,3vw,38px)!important;letter-spacing:-.03em}
+html body #landing#landing .lp-car-bar{margin:0;padding:18px 6px 0;gap:16px}
+html body #landing#landing .lp-prog{height:4px;background:rgba(10,88,202,.14)}
+html body #landing#landing .lp-prog span.run{transition:width 3s linear}
+html body #landing#landing .lp-ctl{display:flex;gap:8px;flex:none}
+html body #landing#landing .lp-ctl .lp-arrow{width:42px;height:42px}
+html body #landing#landing .lp-rail{position:relative;margin-top:14px}
+html body #landing#landing .lp-rail::before,html body #landing#landing .lp-rail::after{content:"";position:absolute;top:0;bottom:8px;width:44px;z-index:2;pointer-events:none}
+html body #landing#landing .lp-rail::before{left:0;background:linear-gradient(90deg,var(--lp-bg),transparent)}
+html body #landing#landing .lp-rail::after{right:0;background:linear-gradient(270deg,var(--lp-bg),transparent)}
+html body #landing#landing .lp-picker{gap:10px;padding:6px 40px 12px;scroll-behavior:smooth}
+html body #landing#landing .lp-pick{flex-direction:column;justify-content:center;gap:6px;width:104px;min-height:84px;padding:12px 8px;border-radius:16px;text-align:center;white-space:normal;line-height:1.2;font-size:12px!important;background:var(--lp-surface);transition:transform .2s,border-color .2s,box-shadow .2s}
+html body #landing#landing .lp-pick svg{width:22px;height:22px}
+html body #landing#landing .lp-pick:hover{transform:translateY(-2px);box-shadow:0 10px 22px -14px rgba(10,60,140,.6)}
+html body #landing#landing .lp-pick.is-on{background:linear-gradient(160deg,#0A58CA,#0B3D91);border-color:#0A58CA;box-shadow:0 14px 26px -14px rgba(10,88,202,.9)}
+html body #landing#landing .lp-pick span{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+html[data-theme="dark"] body #landing#landing .lp-rail::before{background:linear-gradient(90deg,var(--lp-bg),transparent)}
+html body #landing#landing .lp-car .lp-arrow,html body #landing#landing .lp-car .lp-pick{border:1px solid var(--lp-line)!important;background-color:var(--lp-surface)}
+html body #landing#landing .lp-car .lp-arrow:hover,html body #landing#landing .lp-car .lp-pick:hover{border-color:var(--lp-accent)!important}
+html body #landing#landing .lp-car .lp-pick.is-on{border-color:#0A58CA!important;background:linear-gradient(160deg,#0A58CA,#0B3D91);color:#fff!important}
+html body #landing#landing .lp-c-count b{color:var(--lp-text-accent)!important}
+html body #landing#landing .lp-car .lp-arrow,html body #landing#landing .lp-car .lp-arrow svg{color:var(--lp-ink)!important}
+html body #landing#landing .lp-arrow svg{display:block}
+@media(max-width:860px){
+ html body #landing#landing .lp-car-stage{padding:14px;border-radius:22px}
+ html body #landing#landing .lp-cslide{grid-template-columns:1fr;gap:16px}
+ html body #landing#landing .lp-c-ghost{font-size:72px}
+ html body #landing#landing .lp-pick{width:92px;min-height:78px}
+}
+@media(prefers-reduced-motion:reduce){html body #landing#landing .lp-c-media img,html body #landing#landing .lp-cslide.is-on .lp-c-media img{transform:none;transition:none}}
+
+/* larger showcase, no media controls */
+html body #landing#landing .lp-car{width:min(1380px,calc(100vw - 32px));position:relative;left:50%;transform:translateX(-50%)}
+html body #landing#landing .lp-car-stage{padding:30px;border-radius:32px}
+html body #landing#landing .lp-cslide{grid-template-columns:minmax(0,1.45fr) minmax(0,.75fr);gap:52px}
+html body #landing#landing .lp-c-media{aspect-ratio:16/10.8;border-radius:24px}
+html body #landing#landing .lp-c-body h3{font-size:clamp(30px,3.4vw,46px)!important}
+html body #landing#landing .lp-c-detail{font-size:18px!important}
+html body #landing#landing .lp-c-count b{font-size:42px}
+html body #landing#landing .lp-car-bar{justify-content:flex-end;padding-top:16px}
+html body #landing#landing .lp-car-count{display:none}
+html body #landing#landing .lp-pick{width:116px;min-height:92px}
+@media(max-width:860px){html body #landing#landing .lp-car{width:calc(100vw - 24px)}html body #landing#landing .lp-car-stage{padding:14px;border-radius:22px}html body #landing#landing .lp-cslide{grid-template-columns:1fr;gap:16px}html body #landing#landing .lp-c-media{aspect-ratio:16/11}html body #landing#landing .lp-pick{width:96px;min-height:80px}}
 
 /* Split sections + globe */
 html body #landing#landing .lp-split{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
@@ -427,23 +482,23 @@ html body #landing#landing .lp-cta-actions .lp-btn{width:100%}
 </style>
 <style id="vtg-landing-footer-v5">
 html body footer#vtgFooter#vtgFooter.vtgCompactFooter{background:linear-gradient(180deg,#0A3A7A,#072B5C)!important;color:#E6F0FF!important;border-top:4px solid #FFB81C!important}
-html body footer#vtgFooter#vtgFooter .vtgFooterBrand p{color:#E6F0FF!important;font-size:14px!important;line-height:1.6!important;max-width:320px!important}
+html body footer#vtgFooter#vtgFooter .vtgFooterBrand p{color:#E6F0FF!important;font-size:13px!important;line-height:1.6!important;max-width:320px!important}
 html body footer#vtgFooter#vtgFooter .vtgFooterBrand img{max-height:44px!important;max-width:180px!important;padding:6px 10px!important;border-radius:10px!important}
 html:not([data-theme="dark"]) body footer#vtgFooter#vtgFooter .vtgFooterBrand img{background:#FFFFFF!important}
-html body footer#vtgFooter#vtgFooter .vtgFooterLinks h4{color:#FFD152!important;font-size:13px!important;letter-spacing:.12em!important}
-html body footer#vtgFooter#vtgFooter .vtgFooterLinks a{color:#FFFFFF!important;font-size:15px!important;line-height:1.5!important;margin:0 0 10px!important}
+html body footer#vtgFooter#vtgFooter .vtgFooterLinks h4{color:#FFD152!important;font-size:11.5px!important;letter-spacing:.12em!important}
+html body footer#vtgFooter#vtgFooter .vtgFooterLinks a{color:#FFFFFF!important;font-size:13px!important;line-height:1.5!important;margin:0 0 8px!important}
 html body footer#vtgFooter#vtgFooter .vtgFooterLinks a:hover,html body footer#vtgFooter#vtgFooter .vtgFooterBottom a:hover{color:#FFD152!important}
-html body footer#vtgFooter#vtgFooter .vtgFooterBottom.copyright{color:#D5E5FF!important;font-size:13px!important;border-top:1px solid rgba(255,255,255,.22)!important}
-html body footer#vtgFooter#vtgFooter .vtgFooterBottom a{color:#FFFFFF!important;font-size:13px!important}
-html body footer#vtgFooter#vtgFooter .vtgFooterBottom *{font-size:13px!important}
+html body footer#vtgFooter#vtgFooter .vtgFooterBottom.copyright{color:#D5E5FF!important;font-size:12px!important;border-top:1px solid rgba(255,255,255,.22)!important}
+html body footer#vtgFooter#vtgFooter .vtgFooterBottom a{color:#FFFFFF!important;font-size:12px!important}
+html body footer#vtgFooter#vtgFooter .vtgFooterBottom *{font-size:12px!important}
 html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter :is(.vtgFooterBrand p,.vtgFooterLinks a,.vtgFooterBottom,.vtgFooterBottom>span,.vtgFooterBottom a){color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important}
 html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter :is(.vtgFooterBrand p,.vtgFooterBottom,.vtgFooterBottom>span){color:#E6F0FF!important;-webkit-text-fill-color:#E6F0FF!important}
 html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter .vtgFooterLinks h4{color:#FFD152!important;-webkit-text-fill-color:#FFD152!important}
 html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter :is(.vtgFooterLinks a,.vtgFooterBottom a):hover{color:#FFD152!important;-webkit-text-fill-color:#FFD152!important}
 html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter :is(#vtgThemeControl,#vtgThemePresetControl) label,html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter .vtgFooterBottom label{color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important;font-size:13px!important;opacity:1!important}
-html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter select{background:#FFFFFF!important;color:#0C2340!important;-webkit-text-fill-color:#0C2340!important;font-size:13px!important;border:1px solid #FFB81C!important;opacity:1!important}
+html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter select{background:#FFFFFF!important;color:#0C2340!important;-webkit-text-fill-color:#0C2340!important;font-size:12px!important;border:1px solid #FFB81C!important;opacity:1!important}
 </style>
-</head>
+<link rel="stylesheet" href="/vtg-type.css"><style id="vtg-footer-standard">.vtgCompactFooter{margin-top:0;background:#17191B!important;color:#F3EFE6!important;border-top:2px solid #B49A70!important}html[data-theme="light"] .vtgCompactFooter{background:#e5f7fb!important;color:#173044!important;border-top-color:#087f9f!important}.vtgCompactFooter .vtgFooterTop{display:grid;grid-template-columns:1.35fr repeat(4,minmax(0,1fr));gap:30px;padding:34px 24px 27px;max-width:1320px;margin:auto}.vtgCompactFooter .vtgFooterBrand img{height:38px;width:auto;max-width:160px;object-fit:contain}.vtgCompactFooter .vtgFooterBrand p{margin-top:13px;max-width:31ch;color:rgba(243,239,230,.72);font-size:10px;line-height:1.8}html[data-theme="light"] .vtgCompactFooter .vtgFooterBrand p{color:#526b78}.vtgCompactFooter .vtgFooterBrand p strong{color:#B49A70;font-size:9px;letter-spacing:.14em}.vtgCompactFooter .vtgFooterLinks{display:contents}.vtgCompactFooter .vtgFooterLinks>div{min-width:0}.vtgCompactFooter .vtgFooterLinks h4{margin:0 0 11px;color:#B49A70;font-size:9px;letter-spacing:.15em;text-transform:uppercase}html[data-theme="light"] .vtgCompactFooter .vtgFooterLinks h4{color:#087f9f}.vtgCompactFooter .vtgFooterLinks a{display:block;padding:2px 0;margin:0 0 5px;color:rgba(243,239,230,.76);font-size:10px;line-height:1.55;text-decoration:none}html[data-theme="light"] .vtgCompactFooter .vtgFooterLinks a{color:#36596a}html[data-theme="light"] .vtgCompactFooter .vtgFooterLinks a:hover,html[data-theme="light"] .vtgCompactFooter .vtgFooterLinks a[aria-current=page]{color:#075d79}.vtgCompactFooter .vtgFooterLinks a:hover,.vtgCompactFooter .vtgFooterLinks a[aria-current=page]{color:#D8B98A}.vtgCompactFooter .vtgFooterBottom{max-width:none;padding:12px max(24px,calc((100vw - 1272px)/2)) 14px;border-top:1px solid rgba(243,239,230,.13);color:rgba(243,239,230,.58);font-size:9px}html[data-theme="light"] .vtgCompactFooter .vtgFooterBottom{border-top-color:rgba(23,48,68,.16);color:#526b78}html[data-theme="light"] .vtgCompactFooter .vtgFooterBottom a{color:#36596a}.vtgCompactFooter .vtgFooterBottom div{display:flex;gap:8px 18px;flex-wrap:wrap}.vtgCompactFooter .vtgFooterBottom a{color:rgba(243,239,230,.68);text-decoration:none}.vtgCompactFooter .vtgFooterBottom a:hover{color:#D8B98A}@media(max-width:900px){.vtgCompactFooter .vtgFooterTop{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 18px;padding:30px 20px 22px}.vtgCompactFooter .vtgFooterBrand{grid-column:1/-1}}@media(max-width:560px){.vtgCompactFooter .vtgFooterTop{padding:28px 16px 20px;gap:20px 14px}.vtgCompactFooter .vtgFooterLinks h4{font-size:8px}.vtgCompactFooter .vtgFooterLinks a{font-size:9px}.vtgCompactFooter .vtgFooterBottom{padding:12px 16px;align-items:flex-start;flex-direction:column;gap:8px}}.vtgCompactFooter .vtgFooterControls{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;padding:12px 24px;border-top:1px solid rgba(243,239,230,.14);border-bottom:1px solid rgba(243,239,230,.14)}.vtgCompactFooter .vtg-pref{display:flex;align-items:center;gap:7px;font:600 11px/1.3 Manrope,Arial,sans-serif}.vtgCompactFooter .vtg-pref label{color:rgba(243,239,230,.78);white-space:nowrap}.vtgCompactFooter .vtg-pref select{min-height:32px;max-width:160px;padding:5px 26px 5px 9px;border:1px solid rgba(243,239,230,.3);border-radius:6px;background:#20262c;color:#f3efe6;font:600 11px/1.2 Manrope,Arial,sans-serif}html[data-theme="light"] .vtgCompactFooter .vtgFooterControls{border-color:rgba(23,48,68,.16)}html[data-theme="light"] .vtgCompactFooter .vtg-pref label{color:#36596a}html[data-theme="light"] .vtgCompactFooter .vtg-pref select{background:#f8fdff;color:#173044;border-color:#9bbdca}@media(max-width:600px){.vtgCompactFooter .vtgFooterControls{justify-content:flex-start;gap:10px;padding:12px 16px}.vtgCompactFooter .vtg-pref{flex:1 1 145px;justify-content:space-between}.vtgCompactFooter .vtg-pref select{max-width:115px;min-width:0}}</style></head>
 <body>
 <div id="landing">
 <header class="lp-header"><div class="lp-wrap lp-header-in">
@@ -475,7 +530,6 @@ html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter select{backgro
 <li><span class="lp-pillar-ico"><i data-lucide="ship"></i></span><div><strong>Move</strong><span>Follow shipments, customs and delivery in one workspace.</span></div></li>
 </ul>
 </div>
-<div class="lp-dots" role="group" aria-label="Hero photos"><button type="button" class="lp-dot is-on" data-i="0" aria-label="Show photo 1 of 3"></button><button type="button" class="lp-dot" data-i="1" aria-label="Show photo 2 of 3"></button><button type="button" class="lp-dot" data-i="2" aria-label="Show photo 3 of 3"></button></div>
 </section>
 
 <section class="lp-section" id="market" aria-labelledby="lpCatTitle"><div class="lp-wrap">
@@ -541,10 +595,12 @@ html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter select{backgro
 </div></section>
 </main>
 
-<footer class="footer vtgCompactFooter" id="vtgFooter"><div class="footerIn vtgFooterTop"><div class="vtgFooterBrand"><a href="/frontend-v3.html" aria-label="Vintage Trade Global homepage"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><p>Connecting Africa, China and the world through intelligent trade.</p></div><div class="vtgFooterLinks vtgFooterLinksSimple">
-<div><h4>Explore VTG</h4><a data-navkey="marketplace" href="/marketplace.html">Marketplace</a><a data-navkey="atlas" href="/trade-atlas.html" id="footAtlas">Trade Atlas</a><a data-navkey="ai" href="/vtg-ai.html" id="footAi">VTG AI</a></div>
-<div><h4>Company</h4><a data-navkey="about" href="/about-vintage.html">About VTG</a><a data-navkey="partnerships" href="/partnerships.html">Partnerships</a><a data-navkey="contact" href="/contact.html">Contact VTG</a></div>
-</div></div><div class="copyright vtgFooterBottom"><span>© 2026 Vintage Trade Global • Powered by Folayele Global Resources Limited</span><div><a data-navkey="privacy" href="/privacy.html">Privacy</a><a data-navkey="terms" href="/terms.html">Terms</a><a data-navkey="conduct" href="/code-of-conduct.html">Code of Conduct</a></div></div></footer>
+<footer class="footer vtgCompactFooter" id="vtgFooter"><div class="footerIn vtgFooterTop"><div class="vtgFooterBrand"><a href="/frontend-v3.html" aria-label="Vintage Trade Global homepage"><img src="/assets/vtg-logo-light.svg" alt="Vintage Trade Global"></a><p><strong>THE PRIVATE TRADE HOUSE</strong><br>Connecting Africa, China and the world through intelligent trade.</p></div><div class="vtgFooterLinks">
+<div><h4>Explore</h4><a data-navkey="marketplace" href="/marketplace.html">Marketplace</a><a data-navkey="atlas" href="/trade-atlas.html" id="footAtlas">Trade Atlas</a><a data-navkey="intelligence" href="/market-intelligence.html" id="footIntel">Market Intelligence</a><a data-navkey="ai" href="/vtg-ai.html" id="footAi">VTG AI</a><a data-navkey="trade-feed" href="/trade-feed.html" id="footTradeFeed">Trade Feed</a><a data-navkey="africa-markets" href="/africa-markets.html" id="footAfricaMarkets">Africa Markets</a></div>
+<div><h4>Trade</h4><a data-navkey="sourcing" href="/sourcing-suppliers.html">Sourcing &amp; Suppliers</a><a data-navkey="verification" href="/product-verification.html">Product Verification</a><a data-navkey="logistics" href="/logistics-shipping.html">Logistics &amp; Shipping</a><a data-navkey="finance" href="/finance-payments.html">Finance &amp; Payments</a><a data-navkey="workspace" href="/signin.html">Trade Workspace</a></div>
+<div><h4>Business</h4><a data-navkey="guide" href="/trade-guide.html">Trade Guide</a><a data-navkey="partnerships" href="/partnerships.html">Partnerships</a><a data-navkey="agent" href="/agent.html">Become an Agent</a><a data-navkey="workforce" href="/workforce-access.html">Workforce &amp; Staff Access</a></div>
+<div><h4>Company</h4><a data-navkey="about" href="/about-vintage.html">About VTG</a><a data-navkey="contact" href="/contact.html">Contact VTG</a></div>
+</div></div><div class="vtgFooterControls" id="vtgFooterControls" aria-label="Site preferences"></div><div class="copyright vtgFooterBottom"><span>© 2026 Vintage Trade Global · Powered by Folayele Global Resources Limited</span><div><a data-navkey="privacy" href="/privacy.html">Privacy</a><a data-navkey="terms" href="/terms.html">Terms</a><a data-navkey="conduct" href="/code-of-conduct.html">Code of Conduct</a></div></div></footer>
 <script>
 (function(){
   var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -558,31 +614,55 @@ html[data-theme] body footer#vtgFooter#vtgFooter.vtgCompactFooter select{backgro
   Array.prototype.forEach.call(document.querySelectorAll('#landing .lp-c-media img,#landing #lpGlobe'),guard);
 
   /* Hero: three ship photos, a new one every 7 seconds */
-  var heroImgs=[].slice.call(document.querySelectorAll('#landing .lp-hero-img')),dots=[].slice.call(document.querySelectorAll('#landing .lp-dot')),h=0,ht=null;
+  var heroImgs=[].slice.call(document.querySelectorAll('#landing .lp-hero-img')),h=0,ht=null;
   heroImgs.forEach(guard);
   function showHero(n){
     h=(n+heroImgs.length)%heroImgs.length;
     load(heroImgs[h]);
     heroImgs.forEach(function(im,i){im.classList.toggle('is-on',i===h&&!im.classList.contains('bad'));});
-    dots.forEach(function(d,i){d.classList.toggle('is-on',i===h);d.setAttribute('aria-current',i===h?'true':'false');});
   }
   function heroLoop(){clearInterval(ht);if(reduce||heroImgs.length<2)return;ht=setInterval(function(){showHero(h+1);},7000);}
-  dots.forEach(function(d){d.addEventListener('click',function(){showHero(Number(d.getAttribute('data-i')));heroLoop();});});
   window.addEventListener('load',function(){heroImgs.forEach(load);heroLoop();Array.prototype.forEach.call(document.querySelectorAll('#landing .lp-c-media img,#landing #lpGlobe'),function(im){if(im.getAttribute('src')&&im.complete&&im.naturalWidth===0)im.classList.add('bad');});},{once:true});
 
-  /* Category carousel: 36 pictures, a new one every 5 seconds, no controls */
-  var slides=[].slice.call(document.querySelectorAll('#lpStage .lp-cslide')),cur=0,timer=null;
-  if(!slides.length)return;
-  function go(n){
-    cur=(n+slides.length)%slides.length;
+  /* Category showcase: 36 categories, a new one every 3 seconds, with arrows, hover-pause and a category rail */
+  var slides=[].slice.call(document.querySelectorAll('#lpStage .lp-cslide')),cur=0,timer=null,car=document.getElementById('lpCar');
+  if(!slides.length||!car)return;
+  var total=slides.length;
+  function pad(n){return (n<10?'0':'')+n;}
+  slides.forEach(function(s,i){
+    var name=s.querySelector('h3').textContent,ic=s.querySelector('.lp-c-fallback i'),icon=ic?ic.getAttribute('data-lucide'):'package',media=s.querySelector('.lp-c-media');
+    var g=document.createElement('span');g.className='lp-c-ghost';g.setAttribute('aria-hidden','true');g.textContent=pad(i+1);media.appendChild(g);
+    var c=document.createElement('span');c.className='lp-c-chip';c.innerHTML='<i data-lucide="'+icon+'"></i>Category';media.appendChild(c);
+    var cnt=s.querySelector('.lp-c-count');if(cnt)cnt.innerHTML='<b>'+pad(i+1)+'</b> / '+total;
+  });
+  var bar=document.createElement('div');bar.className='lp-car-bar';
+  bar.innerHTML='<div class="lp-car-count" aria-hidden="true"></div><div class="lp-ctl"><button type="button" class="lp-arrow" data-act="prev" aria-label="Previous category"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><button type="button" class="lp-arrow" data-act="next" aria-label="Next category"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>';
+  car.appendChild(bar);
+  var rail=document.createElement('div');rail.className='lp-rail';var picker=document.createElement('div');picker.className='lp-picker';picker.setAttribute('role','tablist');picker.setAttribute('aria-label','Choose a category');
+  slides.forEach(function(s,i){
+    var b=document.createElement('button');b.type='button';b.className='lp-pick';b.setAttribute('role','tab');b.setAttribute('data-i',i);
+    var ic=s.querySelector('.lp-c-fallback i');b.innerHTML='<i data-lucide="'+(ic?ic.getAttribute('data-lucide'):'package')+'"></i><span>'+s.querySelector('h3').textContent+'</span>';picker.appendChild(b);
+  });
+  rail.appendChild(picker);car.appendChild(rail);
+  if(window.lucide)window.lucide.createIcons();
+  var picks=[].slice.call(picker.children);
+  function runBar(){}
+  function go(n,fromUser){
+    cur=(n+total)%total;
     slides.forEach(function(s,i){var on=i===cur;s.classList.toggle('is-on',on);s.setAttribute('aria-hidden',on?'false':'true');});
-    load(slides[cur].querySelector('img'));load(slides[(cur+1)%slides.length].querySelector('img'));
+    picks.forEach(function(p,i){var on=i===cur;p.classList.toggle('is-on',on);p.setAttribute('aria-selected',on?'true':'false');});
+    var p=picks[cur];picker.scrollTo({left:p.offsetLeft-(picker.clientWidth-p.offsetWidth)/2,behavior:reduce?'auto':'smooth'});
+    load(slides[cur].querySelector('img'));load(slides[(cur+1)%total].querySelector('img'));
+    runBar();if(fromUser)start();
   }
-  function start(){clearInterval(timer);if(reduce||document.hidden)return;timer=setInterval(function(){go(cur+1);},5000);}
+  function start(){clearInterval(timer);if(document.hidden)return;timer=setInterval(function(){go(cur+1);},3000);}
+  bar.addEventListener('click',function(e){var b=e.target.closest('[data-act]');if(!b)return;var a=b.getAttribute('data-act');if(a==='prev')go(cur-1,true);else if(a==='next')go(cur+1,true);});
+  picker.addEventListener('click',function(e){var b=e.target.closest('.lp-pick');if(b)go(Number(b.getAttribute('data-i')),true);});
+  car.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){go(cur+1,true);}else if(e.key==='ArrowLeft'){go(cur-1,true);}});
   document.addEventListener('visibilitychange',start);
   load(slides[1]&&slides[1].querySelector('img'));
-  start();
-  window.__vtgLanding={go:go,intervals:{hero:7000,category:5000}};
+  go(0);start();
+  window.__vtgLanding={go:go,intervals:{hero:7000,category:3000}};
 })();
 </script>
 
@@ -642,7 +722,7 @@ document.getElementById('joinBtn')?.addEventListener('click',e=>{e.preventDefaul
 window.VTGOpenAuth=openAuth;window.VTGOpenMarketIntel=()=>openVTGIntel("market");const __vtgAuthForm=document.getElementById("authForm");if(__vtgAuthForm){__vtgAuthForm.dataset.vtgAuthBound="1";window.VTGAuthSubmit=__vtgAuthForm.onsubmit;}</script>
 <script src="/vtg-country-intelligence.js" defer></script>
 <script src="/vtg-market-news.js" defer></script><script src="/vtg-interaction-recovery.js" defer></script><script src="/vtg-map-atlas-ui.js?v=20261016-osm-official-2" defer></script>
-<script src="/vtg-site-navigation.js?v=20261020-type-system-1" defer></script>
+<script src="/vtg-site-navigation.js?v=20261105-ocean-footer-controls" defer></script>
 
 
 
@@ -665,4 +745,5 @@ window.VTGOpenAuth=openAuth;window.VTGOpenMarketIntel=()=>openVTGIntel("market")
  var sc=document.createElement('script');sc.src='https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';sc.async=true;document.head.appendChild(sc);
 })();
 </script>
+<script src="/vtg-minimal-landing-restore.js?v=20261105-a8df-restore" defer></script>
 </body></html>

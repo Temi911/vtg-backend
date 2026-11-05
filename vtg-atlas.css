@@ -1,0 +1,25 @@
+/* Trade Atlas — re-themes the page's own styles with the shared shell tokens (loaded after the inline CSS) */
+html[data-theme]{--bg:var(--vs-bg);--panel:var(--vs-paper);--panel2:var(--vs-tint);--line:var(--vs-line);--text:var(--vs-ink);--muted:var(--vs-muted);--red:var(--vs-blue);--red2:var(--vs-blue);--blue:var(--vs-blue);--green:var(--vs-ok);--radius:14px}
+html[data-theme] body{background:var(--vs-bg);color:var(--vs-ink);font-family:var(--vs-font)}
+html[data-theme] .atlasTop{background:var(--vs-tint);border-bottom:1px solid var(--vs-line);padding-top:48px}
+html[data-theme] .eyebrow{color:var(--vs-blue);font-size:.8125rem;letter-spacing:.12em}
+html[data-theme] .headline h1{letter-spacing:-.035em;line-height:1.05;color:var(--vs-ink)}
+html[data-theme] .headline h1 span{color:var(--vs-blue)}
+html[data-theme] .lede{color:var(--vs-ink-2);font-size:1.0625rem;line-height:1.7}
+html[data-theme] .btn{min-height:44px;border-radius:10px;border:1px solid var(--vs-line-2);background:var(--vs-paper);color:var(--vs-ink);font-size:.9375rem}
+html[data-theme] .btn.primary{background:var(--vs-blue);border-color:var(--vs-blue);color:#fff}
+html[data-theme="dark"] .btn.primary{color:#08162A}
+html[data-theme] .btn:hover{filter:none;border-color:var(--vs-blue)}
+html[data-theme] .statusPill{background:var(--vs-ok-soft);border-color:var(--vs-ok);color:var(--vs-ok)}
+/* the globe stays a deep-blue night stage in both themes */
+html[data-theme] .globeStage{box-shadow:var(--vs-shadow);border-color:var(--vs-line-2)}
+html[data-theme] .section.shell,html[data-theme] .shell{max-width:var(--vs-wrap)}
+html[data-theme] .sectionHead h2{color:var(--vs-ink);letter-spacing:-.025em}
+html[data-theme] .sectionHead p,html[data-theme] .mapNote{color:var(--vs-muted)}
+html[data-theme] .sourcePanel,html[data-theme] .selectedHub,html[data-theme] .publicCard,html[data-theme] .privateCard,html[data-theme] .notice{background:var(--vs-paper);border-color:var(--vs-line);color:var(--vs-ink)}
+html[data-theme] .sourcePanel span,html[data-theme] .publicCard p,html[data-theme] .privateCard p,html[data-theme] .feature span{color:var(--vs-ink-2)}
+html[data-theme] .sourceLinks a{color:var(--vs-blue)}
+html[data-theme] #locationMap{border:1px solid var(--vs-line);border-radius:14px}
+html[data-theme] .feature i,html[data-theme] .feature svg{color:var(--vs-ok)}
+html[data-theme] a:focus-visible,html[data-theme] button:focus-visible{outline:3px solid var(--vs-sun)}
+@media (max-width:760px){html[data-theme] .atlasTop{padding-top:32px}html[data-theme] .headline{flex-direction:column;align-items:flex-start}html[data-theme] .atlasThemeTools{align-items:flex-start}}

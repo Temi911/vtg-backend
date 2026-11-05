@@ -1,0 +1,36 @@
+/* Sign-in / sign-up pages — built on vtg-shell.css */
+.au{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);min-height:calc(100vh - 68px)}
+.au-form{display:flex;align-items:center;justify-content:center;padding:48px 24px}
+.au-card{width:100%;max-width:460px}
+.au-card h1{font-size:clamp(1.9rem,3.4vw,2.5rem);margin:14px 0 10px;letter-spacing:-.03em}
+.au-card .sub{color:var(--vs-ink-2);margin-bottom:26px}
+.au-side{position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:56px 56px 48px;color:#fff;background:#0B3A78 center/cover no-repeat;isolation:isolate;overflow:hidden}
+.au-side::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,rgba(5,25,55,.92) 0%,rgba(5,25,55,.45) 55%,rgba(5,25,55,.15) 100%)}
+.au-side h2{color:#fff;font-size:clamp(1.6rem,2.6vw,2.2rem);max-width:16ch;margin-bottom:22px}
+.au-side ul{list-style:none;margin:0;padding:0;display:grid;gap:14px;max-width:44ch}
+.au-side li{display:grid;grid-template-columns:28px 1fr;gap:12px;font-size:1rem;color:#fff;line-height:1.5}
+.au-side li::before{content:"";width:28px;height:28px;border-radius:50%;background:var(--vs-sun) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B1F3A' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/16px no-repeat}
+.au-side li b{display:block;font-weight:800}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;margin-bottom:22px;background:var(--vs-tint);border:1px solid var(--vs-line);border-radius:12px}
+.roles button{min-height:42px;border:0;border-radius:9px;background:transparent;font-weight:700;color:var(--vs-ink-2);cursor:pointer}
+.roles button.active{background:var(--vs-paper);color:var(--vs-ink);box-shadow:0 1px 3px rgba(11,31,58,.15)}
+.au-card form{display:grid;gap:16px}
+.au-card label{font-size:.9375rem;font-weight:700;display:block;margin-bottom:6px}
+.au-card .field{position:relative}
+.au-card .field input{width:100%;min-height:48px;padding:10px 14px;border:1px solid var(--vs-line-2);border-radius:10px;background:var(--vs-paper);color:var(--vs-ink);font-size:1rem}
+.au-card .field input:focus{outline:none;border-color:var(--vs-blue);box-shadow:0 0 0 4px color-mix(in srgb,var(--vs-blue) 18%,transparent)}
+.au-card .field .toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);min-height:36px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--vs-blue);font-weight:800;cursor:pointer}
+.formMeta{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:.9375rem}
+.formMeta label{display:flex;align-items:center;gap:8px;margin:0;font-weight:600}
+.formMeta input[type=checkbox]{width:18px;height:18px;accent-color:var(--vs-blue)}
+.formMeta a,.au-links a{color:var(--vs-blue);font-weight:700}
+.msg{min-height:1.4em;font-size:.9375rem;color:var(--vs-bad)}.msg.ok{color:var(--vs-ok)}
+.au-card .primary{min-height:50px;border:0;border-radius:10px;background:var(--vs-blue);color:#fff;font-size:1rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
+html[data-theme="dark"] .au-card .primary{color:#08162A}
+.au-card .primary:hover{background:var(--vs-blue-h)}
+.au-card .primary:disabled{opacity:.6;cursor:wait}
+.au-links{margin-top:22px;color:var(--vs-ink-2)}
+.au-secure{margin-top:18px;padding-top:16px;border-top:1px solid var(--vs-line);font-size:.875rem;color:var(--vs-muted)}
+@media (max-width:900px){.au{grid-template-columns:1fr}.au-side{order:2;padding:36px 20px;min-height:0}.au-side h2{max-width:none}.au-form{padding:32px 16px}}
+.au+#vsFooter .vs-footer,.au~#vsFooter .vs-footer{margin-top:0}
+.forgot{display:inline-block;padding:8px 0}

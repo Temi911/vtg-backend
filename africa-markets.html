@@ -1,60 +1,133 @@
 <!doctype html>
 <html lang="en" data-theme="light">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="VTG Africa market coverage catalogue. Review country-level planning information, currencies, languages and reference ports.">
-<title>Africa Market Coverage | VTG</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Africa Markets by VTG: explore African import markets, plan a shipment corridor, estimate landed cost and see how to pay safely.">
+<title>Africa Markets | VTG</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{color-scheme:light;--bg:#f5f7fa;--surface:#fff;--ink:#17202a;--muted:#627080;--line:#dce3e9;--accent:#b91c1c;--soft:#fff1f1;--planned:#805500;--planned-bg:#fff6dc;--foundation:#166534;--foundation-bg:#eaf8ef}
-html[data-theme=dark]{color-scheme:dark;--bg:#0d1117;--surface:#151b23;--ink:#eef3f7;--muted:#b8c3ce;--line:#303b46;--accent:#ff7777;--soft:#301a1d;--planned:#f7d783;--planned-bg:#302713;--foundation:#91e5aa;--foundation-bg:#14281c}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif;line-height:1.55}.wrap{max-width:1180px;margin:auto;padding:28px 22px 56px}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:26px}.eyebrow{text-transform:uppercase;letter-spacing:.13em;font-size:11px;font-weight:800;color:var(--accent)}h1{font-size:clamp(30px,5vw,48px);letter-spacing:-.04em;line-height:1.12;margin:8px 0 14px}h2{font-size:20px;margin:0 0 8px}p{margin:0 0 12px}.muted{color:var(--muted)}button,select,input{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}button{font-weight:800;cursor:pointer}button:hover{border-color:var(--accent)}.hero{padding:clamp(22px,4vw,42px);border:1px solid var(--line);border-radius:24px;background:var(--surface);box-shadow:0 14px 38px #00000008}.notice{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--soft);margin-top:22px}.notice strong{display:block;margin-bottom:3px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:24px 0 14px}.toolbar input{flex:1;min-width:210px}.count{margin-left:auto;font-size:12px;font-weight:800;color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.market{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;min-width:0;display:flex;flex-direction:column;gap:14px}.market-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.market h2{font-size:21px}.badge{font-size:10px;text-transform:uppercase;letter-spacing:.04em;font-weight:800;padding:6px 9px;border-radius:999px;white-space:nowrap}.foundation{color:var(--foundation);background:var(--foundation-bg)}.planned{color:var(--planned);background:var(--planned-bg)}.meta{display:grid;grid-template-columns:1fr 1fr;gap:9px}.meta div{padding:10px;border-radius:10px;background:var(--bg);min-width:0}.meta small{display:block;color:var(--muted);font-size:11px;font-weight:700}.meta b{font-size:13px;overflow-wrap:anywhere}.ports{display:flex;gap:7px;flex-wrap:wrap}.port{font-size:11px;border:1px solid var(--line);border-radius:8px;padding:5px 8px}.footnote{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;margin-top:auto}.state{padding:24px;text-align:center;border:1px dashed var(--line);border-radius:14px;color:var(--muted);grid-column:1/-1}.bottom-note{margin-top:22px;font-size:12px;color:var(--muted)}@media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.wrap{padding:18px 14px 38px}.grid{grid-template-columns:1fr}.top{align-items:flex-start}.count{margin-left:0;width:100%}.market{padding:17px}}
-</style>
-<link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
-</head>
-<body><main class="wrap">
+<link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
+<link rel="stylesheet" href="/vtg-africa.css?v=20261102-1">
+<link rel="stylesheet" href="/vtg-type.css"></head>
+<body>
+<div id="vsHeader" data-active="markets"></div>
+<script src="/vtg-shell.js?v=20261030-1"></script>
+<main id="main" class="am-page">
 
-<section class="hero"><div class="eyebrow">Phase 6 · Africa scale</div><h1>One trade workspace.<br>Country-aware by design.</h1><p class="muted" style="max-width:760px">Explore VTG’s initial Africa market catalogue, including local currency, supported locale references, time zone and reference seaports. Coverage status is shown honestly so planning data is not mistaken for an operational service.</p>
-<div class="notice" role="note"><div aria-hidden="true">ⓘ</div><div><strong>Planning catalogue — not a live logistics feed</strong><span class="muted">Port entries are reference information only. This page does not confirm port operations, carrier schedules, customs requirements, regional representatives, exchange rates or route availability.</span></div></div></section>
-<div class="toolbar"><input id="search" type="search" placeholder="Search country, region, currency or port" aria-label="Search markets"><select id="status" aria-label="Filter by market status"><option value="">All statuses</option><option value="foundation">Foundation market</option><option value="planned">Planned markets</option></select><span class="count" id="count" aria-live="polite">Loading markets…</span></div>
-<section class="grid" id="markets" aria-live="polite"><div class="state">Loading the market catalogue…</div></section>
-<p class="bottom-note">Before a market is launched, VTG must verify local regulatory sources, freight and inland partners, support coverage, country-specific payment and landed-cost requirements, and any local representatives. This page does not constitute legal, customs or tax advice.</p>
-<footer style="margin:34px calc(50% - 50vw) 0;padding:28px max(22px,calc((100vw - 1136px)/2));background:var(--surface);border-top:1px solid var(--line)">
- <div style="max-width:1136px;margin:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px" class="footer-grid">
-  <div><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global" style="width:58px;height:44px;object-fit:contain"><p class="muted" style="font-size:12px;margin-top:8px">Connecting Africa, China and the world through intelligent trade.</p></div>
-  <div><strong>Explore</strong><p style="margin-top:10px;font-size:13px"><a href="/marketplace.html">Marketplace</a></p><p style="font-size:13px"><a href="/trade-atlas.html">Trade Atlas</a></p><p style="font-size:13px"><a href="/market-intelligence.html">Market Intelligence</a></p><p style="font-size:13px"><a href="/trade-feed.html">Trade Feed</a></p><p style="font-size:13px"><a href="/africa-markets.html">Africa Markets</a></p></div>
-  <div><strong>Trade</strong><p style="margin-top:10px;font-size:13px"><a href="/product-verification.html">Product Verification</a></p><p style="font-size:13px"><a href="/logistics-shipping.html">Logistics &amp; Shipping</a></p><p style="font-size:13px"><a href="/signin.html">Sign in</a></p></div>
-  <div><strong>Company</strong><p style="margin-top:10px;font-size:13px"><a href="/about-vintage.html">About VTG</a></p><p style="font-size:13px"><a href="/partnerships.html">Partnerships</a></p><p style="font-size:13px"><a href="/contact.html">Contact VTG</a></p></div>
- </div><div style="max-width:1136px;margin:22px auto 0;padding-top:14px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)">© 2026 Vintage Trade Global • Powered by Folayele Global Resources Limited <span style="float:right"><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/code-of-conduct.html">Code of Conduct</a></span></div>
-</footer>
-<style>@media(max-width:650px){.footer-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}</style>
+<section class="am-hero"><div class="am am-hero-grid">
+<div>
+<span class="am-kicker">Africa Markets</span>
+<h1>Trade into Africa with the full picture.</h1>
+<p class="am-lede">See where African demand is strongest, plan the import route and paperwork for your destination, estimate your landed cost, and choose a safe way to pay. One workspace for buyers and suppliers moving goods between China, Korea and Africa.</p>
+<div class="am-actions"><a class="am-btn primary" href="#nigeria">See the import path</a><a class="am-btn" href="#markets">Explore markets</a></div>
+</div>
+<figure class="am-hero-photo"><img src="https://images.pexels.com/photos/30179958/pexels-photo-30179958.jpeg?auto=compress&cs=tinysrgb&w=1400" alt="Vendors at a busy African market" loading="eager" onerror="this.closest('figure').remove()"><figcaption>Where African demand meets global supply</figcaption></figure>
+</div>
+<div class="am"><div class="am-facts" aria-label="Key trade facts, with sources">
+<div class="am-fact"><b>$225bn</b><span>China’s exports to Africa in 2025, a record</span><a href="https://intelpoint.co/?p=8233" target="_blank" rel="noopener">Source: Intelpoint</a></div>
+<div class="am-fact"><b>31.2%</b><span>of Nigeria’s Q4 2025 imports came from China (₦5.39tn of ₦17.25tn)</span><a href="https://nairametrics.com/2026/03/12/china-us-netherlands-dominate-nigerias-n17-25-trillion-import-market-in-q4-2025/" target="_blank" rel="noopener">Source: Nairametrics</a></div>
+<div class="am-fact"><b>54</b><span>AfCFTA signatory nations, about 1.4 billion people</span><a href="https://allbusiness.africa/insights/afcfta-implementation-2026" target="_blank" rel="noopener">Source: AllBusiness Africa, Apr 2026</a></div>
+<div class="am-fact"><b>28</b><span>countries on PAPSS, with 190+ banks and fintechs</span><a href="https://www.warpnews.org/africa/africas-own-payment-system-reaches-28-countries-transfers-in-seconds-instead-of-days-and-billions-in-saved-fees/" target="_blank" rel="noopener">Source: Warp News</a></div>
+</div></div>
+</section>
+
+<div class="am">
+
+<section class="am-sec" id="demand">
+<div class="am-head"><div><span class="am-kicker">What Africa is buying</span><h2>Chinese goods in demand in Nigeria</h2><p>Nigeria’s largest import line items from China in Q4 2025, by value.</p></div></div>
+<div class="am-bars" id="bars" role="list"></div>
+<p class="am-muted" style="font-size:.85rem;margin-top:16px">Values in naira billions, from reporting on National Bureau of Statistics Q4 2025 data. <a href="https://nairametrics.com/2026/03/12/china-us-netherlands-dominate-nigerias-n17-25-trillion-import-market-in-q4-2025/" target="_blank" rel="noopener">Nairametrics</a>. Nigeria is shown because it is VTG’s foundation market; other countries are added as their data is verified.</p>
+</section>
+
+<section class="am-sec" id="framework">
+<div class="am-head"><div><span class="am-kicker">The continental picture</span><h2>Two systems changing how Africa trades</h2><p>These are the structures buyers and suppliers keep hearing about. Here is what they are and what has, and has not, been delivered.</p></div></div>
+<div class="am-rails am-rails2">
+<article class="am-rail"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg></div><h3>AfCFTA, the African Continental Free Trade Area</h3><p>Signed in 2018 and in force since 1 January 2021, it covers 54 signatory nations and about 1.4 billion people, with its secretariat in Accra.</p><ul><li>The goods protocol aims to remove tariffs on 90% of goods over a phased period</li><li>Rules of origin cover most product categories; gaps remain in textiles, processed foods and some industrial products</li><li>The Guided Trade Initiative began in October 2022 with 8 countries; volumes are described as modest</li><li>The World Bank estimates intra-African trade could rise about 52% by 2035 if fully implemented</li></ul></article>
+<article class="am-rail"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6M5 10v8M9 10v8M15 10v8M19 10v8M3 21h18"/></svg></div><h3>PAPSS, the Pan-African Payment and Settlement System</h3><p>Built by Afreximbank with the African Union and the AfCFTA secretariat, so African buyers and sellers can settle in local currency instead of routing through the US dollar.</p><ul><li>Reports 28 countries and 190+ banks and fintechs</li><li>The BEAC (CEMAC) region is reported as not yet fully operational</li><li>A BCEAO pilot is scheduled, not started</li><li>The $5bn yearly fee saving is the source’s estimate</li></ul></article>
+</div>
+</section>
+
+<section class="am-sec" id="markets">
+<div class="am-head"><div><span class="am-kicker">Market explorer</span><h2>Countries in the VTG catalogue</h2><p>Currency, time zone, language references and reference seaports for each market. </p></div></div>
+<div class="am-note" role="note"><div aria-hidden="true">ⓘ</div><div><strong>Planning catalogue, not a live logistics feed</strong><p>Port entries are reference information only. This page does not confirm port operations, carrier schedules, customs requirements, regional representatives, exchange rates or route availability.</p></div></div>
+<div class="am-toolbar"><input id="search" type="search" placeholder="Search country, region, currency or port" aria-label="Search markets"><select id="status" aria-label="Filter markets"><option value="">All markets</option><option value="foundation">Foundation market</option><option value="planned">Planned markets</option></select><span class="am-count" id="count" aria-live="polite"></span></div>
+<div class="am-grid" id="markets-list" aria-live="polite"><div class="am-state">Loading the market catalogue…</div></div>
+</section>
+
+<section class="am-sec" id="nigeria">
+<div class="am-head"><div><span class="am-kicker">Foundation market</span><h2>The import path into Nigeria</h2><p>The official sequence importers follow, as published by Nigeria’s National Single Window. Some steps overlap and can run in parallel, and a licensed customs agent is required for clearance.</p></div></div>
+<ol class="am-steps am-steps2">
+<li><b>Register as an importer</b><span>Incorporate with the Corporate Affairs Commission, get a TIN from the Nigeria Revenue Service, and register on the National Single Window, B’odogwu and Tax Promax.</span></li>
+<li><b>Check the HS code</b><span>Confirm duty rates, levies such as CET and CISS, and which agencies apply to your product.</span></li>
+<li><b>Get licences and certificates</b><span>NAFDAC for food, drugs and chemicals, SON (SONCAP), NESREA for environmental permits, and others by product.</span></li>
+<li><b>Open Form M</b><span>Apply through an authorised dealer bank on the B’odogwu platform.</span></li>
+<li><b>Get the PAAR</b><span>The Pre-Arrival Assessment Report comes from the Nigeria Customs Service through B’odogwu.</span></li>
+<li><b>Clear the goods</b><span>Submit the declaration, pay duties, VAT and levies, then wait for inspection and a release order.</span></li>
+</ol>
+<div class="am-region" style="margin-top:8px">Core documents</div><div class="am-docs"><span class="am-doc">Proforma or commercial invoice</span><span class="am-doc">Form M</span><span class="am-doc">Bill of lading, airway bill or road waybill</span><span class="am-doc">Combined Certificate of Value and Origin</span><span class="am-doc">Packing list</span><span class="am-doc">Insurance certificate</span></div>
+<p class="am-muted" style="font-size:.85rem;margin-top:14px">Source: <a href="https://tip.nsw.gov.ng/trading-with-nigeria/import-procedure" target="_blank" rel="noopener">Nigeria National Single Window, import procedure</a>. Procedures vary by product. Step-by-step guidance for other countries will be added as each market’s sources are verified.</p>
+</section>
+
+<section class="am-sec" id="workspace">
+<div class="am-cta"><div><h2>Plan and cost your shipment in your workspace</h2><p>The landed-cost calculator, currency planner and compliance checklist are part of your VTG account, because they use your own quotes and records. Sign in to use them.</p></div><div class="am-actions"><a class="am-btn" href="/buyer-dashboard.html">Open buyer workspace</a><a class="am-btn ghost" href="/intelligence-centre.html">Intelligence Centre</a></div></div>
+</section>
+
+<section class="am-sec" id="tools">
+<div class="am-head"><div><span class="am-kicker">Official tools</span><h2>Where to confirm the rules</h2><p>VTG points you to the authorities. Always check the official source for your product and country.</p></div></div>
+<div class="am-tools">
+<a class="am-tool" href="https://tip.nsw.gov.ng/trading-with-nigeria/import-procedure" target="_blank" rel="noopener"><b>Nigeria National Single Window</b><span>Official import procedure, HS code lookup, permits and Form M guidance for Nigeria.</span></a>
+<a class="am-tool" href="https://au-afcfta.org" target="_blank" rel="noopener"><b>AfCFTA Secretariat</b><span>Continental free-trade agreement documents, news and the Guided Trade Initiative.</span></a>
+<a class="am-tool" href="https://www.wcoomd.org/en/media/newsroom/2024/december/update-of-the-afcfta-etariff-book-provides-essential-trade-information-for-african-businesses.aspx" target="_blank" rel="noopener"><b>AfCFTA e-Tariff Book</b><span>Preferential tariff schedules and rules-of-origin information for trade inside Africa, described by the World Customs Organization.</span></a>
+<a class="am-tool" href="https://www.trade.gov/market-intelligence/afcfta-data-portal" target="_blank" rel="noopener"><b>AfCFTA data portal</b><span>US International Trade Administration market intelligence on AfCFTA markets.</span></a>
+</div>
+</section>
+
+<section class="am-sec" id="sources">
+<h2 style="font-size:1.2rem">Sources and notes</h2>
+<ol class="am-sources">
+<li>Intelpoint, “Post-pandemic trade reset lifts China–Africa exports to a record $225bn in 2025”. <a href="https://intelpoint.co/?p=8233" target="_blank" rel="noopener">intelpoint.co</a></li>
+<li>Nairametrics, “China, US, Netherlands dominate Nigeria’s N17.25 trillion import market in Q4 2025”, 12 March 2026. <a href="https://nairametrics.com/2026/03/12/china-us-netherlands-dominate-nigerias-n17-25-trillion-import-market-in-q4-2025/" target="_blank" rel="noopener">nairametrics.com</a></li>
+<li>AllBusiness Africa, “AfCFTA Implementation 2026”, 12 April 2026. The article gives no figure for tariff liberalisation achieved to date. <a href="https://allbusiness.africa/insights/afcfta-implementation-2026" target="_blank" rel="noopener">allbusiness.africa</a></li>
+<li>Warp News, PAPSS reaches 28 countries. The $5bn annual fee saving is the source’s estimate. <a href="https://www.warpnews.org/africa/africas-own-payment-system-reaches-28-countries-transfers-in-seconds-instead-of-days-and-billions-in-saved-fees/" target="_blank" rel="noopener">warpnews.org</a></li>
+<li>Nigeria National Single Window, “Import procedure”. <a href="https://tip.nsw.gov.ng/trading-with-nigeria/import-procedure" target="_blank" rel="noopener">tip.nsw.gov.ng</a></li>
+</ol>
+<p class="am-muted" style="font-size:.85rem;margin-top:14px">Before a market is launched, VTG must verify local regulatory sources, freight and inland partners, support coverage, country-specific payment and landed-cost requirements, and any local representatives. This page does not constitute legal, customs or tax advice.</p>
+</section>
+
+</div>
 </main>
+<div id="vsFooter"></div>
 <script>
 (function(){
- const root=document.documentElement,themeButton=document.getElementById('theme-toggle');
- function autoTheme(){return new Date().getHours()>=6&&new Date().getHours()<18?'light':'dark'}
- let manual=localStorage.getItem('vtg_theme_override');
- root.dataset.theme=manual==='light'||manual==='dark'?manual:autoTheme();
- themeButton.textContent='Use '+(root.dataset.theme==='light'?'dark':'light')+' theme';
- themeButton.addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='light'?'dark':'light';manual=root.dataset.theme;localStorage.setItem('vtg_theme_override',manual);themeButton.textContent='Use '+(manual==='light'?'dark':'light')+' theme'});
- const list=document.getElementById('markets'),search=document.getElementById('search'),status=document.getElementById('status'),count=document.getElementById('count');
- let markets=[];
- const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ var $=function(id){return document.getElementById(id)};
+ var esc=function(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+ var markets=[];
+ var DEMAND=[{n:'New single-axle tractors',v:227.27},{n:'Communication machines',v:170.32},{n:'PVC (plastics)',v:105.13},{n:'Photovoltaic panels',v:100.83}];
+ var max=Math.max.apply(null,DEMAND.map(function(d){return d.v}));
+ $('bars').innerHTML=DEMAND.map(function(d){return '<div class="am-bar" role="listitem"><span>'+esc(d.n)+'</span><i><u style="width:'+(d.v/max*100).toFixed(1)+'%"></u></i><b>₦'+d.v.toFixed(2)+'bn</b></div>'}).join('');
+ var list=$('markets-list'),search=$('search'),status=$('status'),count=$('count');
  function render(){
-  const q=search.value.trim().toLowerCase(),s=status.value;
-  const filtered=markets.filter(m=>(!s||m.marketStatus===s)&&(!q||[m.country,m.countryCode,m.region,m.currency?.code,m.currency?.name,...(m.locales||[]),...(m.ports||[]).map(p=>p.name+' '+p.city)].join(' ').toLowerCase().includes(q)));
-  count.textContent=filtered.length+' of '+markets.length+' markets';
-  if(!filtered.length){list.innerHTML='<div class="state">No markets match this search.</div>';return}
-  list.innerHTML=filtered.map(m=>{
-   const isFoundation=m.marketStatus==='foundation';
-   const ports=(m.ports||[]).map(p=>'<span class="port">'+esc(p.name)+'</span>').join('');
-   return '<article class="market"><div class="market-head"><div><div class="eyebrow">'+esc(m.region)+'</div><h2>'+esc(m.country)+'</h2><div class="muted">'+esc(m.countryCode)+'</div></div><span class="badge '+(isFoundation?'foundation':'planned')+'">'+(isFoundation?'Foundation':'Planned')+'</span></div><div class="meta"><div><small>Currency reference</small><b>'+esc(m.currency?.code)+' · '+esc(m.currency?.name)+'</b></div><div><small>Time zone</small><b>'+esc(m.timeZone)+'</b></div><div><small>Locales</small><b>'+esc((m.locales||[]).join(', '))+'</b></div><div><small>Representatives</small><b>Not configured</b></div></div><div><div class="eyebrow" style="margin-bottom:8px">Reference ports</div><div class="ports">'+(ports||'<span class="muted">No reference ports listed</span>')+'</div></div><div class="footnote">Compliance: authority/professional verification required. '+(isFoundation?'Foundation configuration only; this does not assert full operational coverage.':'Planned market; not launched.')+'</div></article>';
-  }).join('');
+  var q=search.value.trim().toLowerCase(),s=status.value;
+  var f=markets.filter(function(m){
+   var hay=[m.country,m.countryCode,m.region,m.currency&&m.currency.code,m.currency&&m.currency.name].concat(m.locales||[]).concat((m.ports||[]).map(function(p){return p.name+' '+p.city})).join(' ').toLowerCase();
+   return (!s||m.marketStatus===s)&&(!q||hay.indexOf(q)>-1)});
+  count.textContent=f.length+' of '+markets.length+' markets';
+  if(!f.length){list.innerHTML='<div class="am-state">No markets match this search.</div>';return}
+  list.innerHTML=f.map(function(m){
+   var isF=m.marketStatus==='foundation';
+   var ports=(m.ports||[]).map(function(p){return '<span class="am-port">'+esc(p.name)+'</span>'}).join('');
+   return '<article class="am-card"><div class="am-card-top"><div><div class="am-region">'+esc(m.region)+'</div><h3>'+esc(m.country)+'</h3></div><span class="am-badge '+(isF?'foundation':'planned')+'">'+(isF?'Foundation market':'Planned')+'</span></div>'
+   +'<dl class="am-meta"><div><dt>Currency</dt><dd>'+esc(m.currency&&m.currency.code)+' · '+esc(m.currency&&m.currency.name)+'</dd></div><div><dt>Time zone</dt><dd>'+esc(m.timeZone)+'</dd></div><div><dt>Locales</dt><dd>'+esc((m.locales||[]).join(', '))+'</dd></div><div><dt>Country code</dt><dd>'+esc(m.countryCode)+'</dd></div></dl>'
+   +'<div><div class="am-region">Reference seaports</div><div class="am-ports">'+ports+'</div></div>'
+   +'<p class="am-rep">'+esc(m.compliance&&m.compliance.note||'')+'</p></article>'}).join('');
  }
  search.addEventListener('input',render);status.addEventListener('change',render);
- fetch('/api/africa/markets',{headers:{Accept:'application/json'},cache:'no-store'}).then(async r=>{const d=await r.json();if(!r.ok)throw new Error(d.error?.message||'Market catalogue unavailable');if(d.status!=='planning_data'||d.liveProviderData!==false||!Array.isArray(d.markets))throw new Error('The market catalogue returned an unexpected response.');markets=d.markets;render()}).catch(err=>{count.textContent='Catalogue unavailable';list.innerHTML='<div class="state">We could not load the market catalogue. '+esc(err.message)+'<br><br><button type="button" id="retry">Try again</button></div>';document.getElementById('retry').addEventListener('click',()=>location.reload())});
+ fetch('/api/africa/markets',{headers:{Accept:'application/json'},cache:'no-store'}).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.error&&d.error.message||'Market catalogue unavailable');if(d.status!=='planning_data'||d.liveProviderData!==false||!Array.isArray(d.markets))throw new Error('The market catalogue response was not recognised.');markets=d.markets;render()})}).catch(function(e){
+  list.innerHTML='<div class="am-state">The market catalogue could not be loaded. '+esc(e.message)+'</div>';count.textContent='';
+ });
 })();
 </script>
-<script src="/vtg-site-navigation.js?v=20261020-universal-header-1" defer></script>
-</body></html>
+</body>
+</html>
