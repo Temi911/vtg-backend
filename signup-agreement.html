@@ -26,7 +26,12 @@ function nextForUser(user){
   const role=user.requestedRole||user.role;
   const defaults={buyer:'/buyer-dashboard.html',supplier:'/verification.html',bank:'/verification.html'};
   const allowed=['/buyer-dashboard.html','/supplier-dashboard.html','/bank-trade-os.html','/verification.html'];
-  return allowed.includes(requestedNext)?requestedNext:(defaults[role]||'/signin.html');
+  try{
+    const candidate=new URL(requestedNext,location.origin);
+    if(candidate.origin===location.origin&&allowed.includes(candidate.pathname))
+      return candidate.pathname+candidate.search+candidate.hash;
+  }catch(_){}
+  return defaults[role]||'/signin.html';
 }
 async function load(){
   try{
