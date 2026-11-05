@@ -100,7 +100,7 @@ test('buyer dashboard labels provider readiness honestly and uses the authentica
   const script = fs.readFileSync(path.join(__dirname, '..', '..', 'vtg-buyer-market-intelligence-supabase.js'), 'utf8');
   assert.ok(html.includes('id="vtgIntelStatus"'));
   assert.ok(html.includes('does not discover the correct duty or tax rate'));
-  assert.ok(html.includes('Treat market inputs as unverified'));
+  assert.ok(script.includes('Treat market inputs as unverified'));
   assert.ok(html.includes('Evidence & integration status'));
   assert.ok(html.includes('Trade assumptions are not shipment facts'));
   assert.ok(html.includes('Check intelligence sources'));
