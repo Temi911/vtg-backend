@@ -1,9 +1,6 @@
-/* VTG public workspace agreement gate.
-   Runs before dashboard content is revealed; preview links remain available. */
+/* VTG public workspace agreement gate. Runs before protected dashboards are revealed. */
 (function(){
   'use strict';
-  var params=new URLSearchParams(location.search);
-  if(params.get('preview')==='1' && location.pathname!=='/buyer-dashboard.html') return;
   var path=location.pathname;
   var expected=path==='/buyer-dashboard.html'?'buyer':
     path==='/supplier-dashboard.html'?'supplier':
@@ -31,9 +28,7 @@
     function attach(){document.body.appendChild(panel);}
     if(document.body)attach();else document.addEventListener('DOMContentLoaded',attach,{once:true});
   }
-  var script=document.createElement('script');
-  script.src='/vtg-supabase-auth.js?v=20261105-agreement-2';
-  script.onload=async function(){
+  async function validateSession(){
     try{
       var auth=await window.VTG_AUTH_READY;
       var current=await auth.getCurrent();
@@ -48,7 +43,13 @@
       if(user.agreementRequired){location.replace('/signup-agreement.html?next='+encodeURIComponent(path+location.search+location.hash));return;}
       root.classList.remove('vtg-agreement-checking');
     }catch(error){fail(error&&error.message);}
-  };
-  script.onerror=function(){fail('The secure VTG sign-in service could not be loaded. Refresh the page or sign in again.');};
-  document.head.appendChild(script);
+  }
+  if(window.VTG_AUTH_READY){validateSession();}
+  else{
+    var script=document.createElement('script');
+    script.src='/vtg-supabase-auth.js?v=20261105-agreement-3';
+    script.onload=validateSession;
+    script.onerror=function(){fail('The secure VTG sign-in service could not be loaded. Refresh the page or sign in again.');};
+    document.head.appendChild(script);
+  }
 })();
