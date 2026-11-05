@@ -57,7 +57,7 @@ html[data-theme="light"] .vtg-header-brand .logo-light{display:none!important}
 <link rel="stylesheet" href="/vtg-dashboard-typography.css?v=20261021-1">
 <link rel="stylesheet" href="/vtg-dash.css?v=20261031-1">
 <link rel="stylesheet" href="/vtg-type.css"></head>
-<body id="vtg-dashboard-top">
+<body id="vtg-dashboard-top"><script>(function(){var token="";try{var auth=JSON.parse(localStorage.getItem("vtg-auth")||"null");token=localStorage.getItem("vtg_access_token")||(auth&&auth.accessToken)||""}catch(_){}if(!token){location.replace("/admin-signin.html");return}fetch("/api/auth/me",{headers:{Authorization:"Bearer "+token,Accept:"application/json"},cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("unauthorised");return r.json()}).then(function(d){var u=d.user||d;if(String(u.role||"").toLowerCase()!=="admin")throw new Error("wrong role")}).catch(function(){location.replace("/admin-signin.html")})})();</script>
 <div class="app">
 <aside class="sidebar">
 <div class="brand"><a href="/workforce-access.html" aria-label="VTG homepage"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><small>ADMINISTRATOR WORKSPACE</small></div>
