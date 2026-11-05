@@ -51,7 +51,7 @@
     const quantity=Number(values.quantity);
     if(!Number.isSafeInteger(quantity)||quantity<1){setStatus('Enter a whole-number quantity of at least one.');return;}
     if(quantity<Number(product.minimum_order_quantity||1)){setStatus('This supplier requires a minimum order quantity of '+Number(product.minimum_order_quantity||1).toLocaleString()+'.');return;}
-    const button=form.querySelector('button[type="submit]');if(button)button.disabled=true;
+    const button=form.querySelector('button[type="submit"]');if(button)button.disabled=true;
     setStatus('Submitting your request securely to Supabase…');
     try{
       const message=['Specifications: '+String(values.details||'Not provided'),'Sourcing country: '+String(values.origin||'Open to options'),'Destination market: '+String(values.destination||'Nigeria')].join('\n');
