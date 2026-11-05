@@ -61,13 +61,13 @@ document.addEventListener('submit',event=>{
   try{
    await connect();
    const fd=new FormData(form),name=String(fd.get('name')||'').trim(),price=Number(fd.get('unitPriceUsd'));
-   const moqText=String(fd.get('minOrderQty')||'').trim(),moq=moqText?Number((moqText.match(/^\\d+/)||[])[0]):1;
+   const moqText=String(fd.get('minOrderQty')||'').trim(),moq=moqText?Number((moqText.match(/^\d+/)||[])[0]):1;
    if(name.length<2)throw new Error('Enter a product name with at least two characters.');
    if(!Number.isFinite(price)||price<=0)throw new Error('Enter a valid unit price greater than zero.');
    if(!Number.isSafeInteger(moq)||moq<1)throw new Error('Minimum order quantity must begin with a whole number greater than zero.');
-   const leadText=String(fd.get('leadTime')||'').trim(),leadMatch=leadText.match(/^\\s*(\\d+)\\s*(?:days?)?\\s*$/i);
+   const leadText=String(fd.get('leadTime')||'').trim(),leadMatch=leadText.match(/^\s*(\d+)\s*(?:days?)?\s*$/i);
    const image=String(fd.get('imageUrl')||'').trim(),description=String(fd.get('description')||'').trim();
-   const details=[description,leadText&&!leadMatch?'Supplier-stated lead time: '+leadText:''].filter(Boolean).join('\\n\\n')||null;
+   const details=[description,leadText&&!leadMatch?'Supplier-stated lead time: '+leadText:''].filter(Boolean).join('\n\n')||null;
    const payload={supplier_id:user.id,name,category:String(fd.get('category')||'').trim()||null,description:details,unit_price:price,currency:'USD',minimum_order_quantity:moq,hs_code:String(fd.get('hsCode')||'').trim()||null,lead_time_days:leadMatch?Number(leadMatch[1]):null,origin_country:profile.country||null,image_urls:image?[image]:[],is_active:true};
    const result=await db.from('products').insert(payload).select('id').single();
    if(result.error)throw result.error;
