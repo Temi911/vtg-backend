@@ -644,23 +644,7 @@ $('vtgIntelRefresh')?.addEventListener('click',loadBuyerIntelStatus);
 let products=[],productsLoading=true,productsError=false;
 function cart(){return db.get('cart',[])}function saveCart(c){db.set('cart',c);stats();renderCart()}
 function productMoney(value,currency){return String(currency||'USD')+' '+Number(value||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
-async function loadBuyerProducts(){
- const oldCart=cart(),sampleIds=new Set(['1','2','3','4','5','6']),withoutSamples=oldCart.filter(item=>!sampleIds.has(String(item.id)));
- if(withoutSamples.length!==oldCart.length)saveCart(withoutSamples);
- productsLoading=true;productsError=false;renderProducts();
- try{
-  const auth=await window.VTG_AUTH_READY;
-  const result=await auth.client.from('vtg_marketplace_products')
-   .select('id,supplier_id,name,category,description,unit_price,currency,minimum_order_quantity,hs_code,lead_time_days,origin_country,image_urls,is_verified,created_at,supplier_name,supplier_country,supplier_logo_url,supplier_rating')
-   .order('created_at',{ascending:false}).limit(500);
-  if(result.error)throw result.error;
-  products=(result.data||[]).map(p=>({...p,id:String(p.id),cat:p.category||'General trade',desc:p.description||'',price:Number(p.unit_price),currency:p.currency||'USD',image_url:Array.isArray(p.image_urls)?p.image_urls[0]||'':'',supplier_name:p.supplier_name||'Verified VTG supplier',supplier_country:p.supplier_country||p.origin_country||'',minimum_order_quantity:Number(p.minimum_order_quantity||1)}));
-  productsError=false;
-  const liveIds=new Set(products.map(p=>p.id)),current=cart(),clean=current.filter(item=>liveIds.has(String(item.id)));
-  if(clean.length!==current.length)saveCart(clean);else renderCart();
- }catch(error){products=[];productsError=true;console.error('VTG marketplace catalogue:',error);}
- finally{productsLoading=false;renderProducts();}
-}
+async function loadBuyerProducts(){products=[];productsLoading=false;productsError=false;renderProducts();}
 function renderProducts(){
  if(!$('products'))return;
  const host=$('products'),s=$('searchProducts').value.toLowerCase(),cat=$('category').value;
@@ -949,7 +933,7 @@ setLang(lang);renderProducts();loadBuyerProducts();renderRfqs();renderCart();ren
 <script src="//vtg-buyer-lc-drafts-supabase.js?v=20261105-lc-drafts-1"></script>
 
 <script src="//vtg-buyer-request-supabase.js?v=20261105-request-1"></script>
-<script src="//vtg-buyer-cart-supabase.js?v=20261105-cart-sync-2"></script>
+<script src="/vtg-buyer-marketplace-supabase.js?v=20261105-marketplace-live-1"></script>
 <script src="//vtg-buyer-network-supabase.js?v=20261105-network-1"></script>
 <script src="/vtg-dashboard-chat.js?v=20261105-chat-1"></script>
 </body></html>
