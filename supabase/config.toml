@@ -1,0 +1,4 @@
+project_id = "lxrurbdzphqvkjprlfuv"
+
+[functions.workforce-invitations]
+verify_jwt = false
