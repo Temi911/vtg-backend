@@ -23,7 +23,7 @@
   }
   async function load(){
     const box=$('liveTradeFeedRows');if(!box)return;
-    if(preview()){empty('Preview mode: sign in to view or publish account-linked trade posts. <a href="/signin.html?role=buyer&next=%2Fbuyer-dashboard.html%23feed" style="color:var(--red);font-weight:800">Sign in ↗</a>');return;}
+    if(preview()){const box=$('liveTradeFeedRows');if(box)box.innerHTML='\u003cdiv class="empty"\u003ePreview mode: sign in to view or publish account-linked trade posts. \u003ca href="/signin.html?role=buyer&next=%2Fbuyer-dashboard.html%23feed" style="color:var(--red);font-weight:800"\u003eSign in ↗\u003c/a\u003e\u003c/div\u003e';return;}
     if(busy)return;busy=true;box.innerHTML='<div class="empty">Loading live trade posts…</div>';
     try{
       await session();
