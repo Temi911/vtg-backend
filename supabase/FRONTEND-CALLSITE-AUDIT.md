@@ -120,3 +120,22 @@ The currently deployed `vtg-trade-operations` function does **not** implement th
 - Add negative tests for a buyer attempting to read or mutate another buyer's quote/order, a supplier attempting to access another supplier's record, and a non-bank user attempting bank-only LC/payment milestones.
 
 **Priority blocker:** implement and test a versioned, contract-compatible quote and order lifecycle in Supabase (or an explicitly documented compatibility adapter) before considering those routes migrated.
+
+
+## Additional deployed `vtg-api` contract comparison (2026-11-05)
+
+The active `vtg-api` Edge Function was also inspected. It contains basic product discovery/creation, order creation/listing, shipment reads, LC request/listing and messaging routes. This increases the amount of functionality already present in Supabase, but it still does not establish drop-in parity with the legacy API.
+
+| Area | Supabase function currently exposes | Legacy frontend/Express expectation | Gap |
+|---|---|---|---|
+| Products | `GET /products`, `POST /products`; creation uses snake_case fields such as `unit_price`, `minimum_order_quantity`, `image_urls` | Product catalogue and supplier product CRUD use legacy product response/body fields | Verify payload adapters, supplier-owned list/update/delete, and compatibility with the current supplier UI. |
+| Orders | `GET /orders`, `POST /orders`; create expects one `product_id`, `supplier_id`, `quantity` | Legacy `POST /orders` accepts `supplierId` and `items[]`; order detail and `PATCH /:id/status` are part of the Express contract | Single-product request shape differs; detail/status endpoints are not shown in this function. |
+| Shipments | `GET /shipments`, `GET /shipments/order/:id`; order lookup currently returns an empty `events` array | Frontend also calls shipment event/status/live-tracking operations | Read-only partial parity; event history and status/tracking contracts remain to be mapped. |
+| Letters of credit | `GET /letters-of-credit`, `POST /letters-of-credit`; request expects `order_id` and `amount` | Legacy route is `/lc`, with `GET /lc/:id`, bank-only `PATCH /:id/issue`, supplier-only `PATCH /:id/docs-presented`, bank-only `PATCH /:id/verify-and-pay` | Path and response key differ; detail, issue, document presentation and verification/payment transitions are not shown in the function. |
+| Conversations/messages | Conversation and message read/create operations are present | Frontend uses `/messages` and `/messages/:id` legacy routes | Map conversation IDs, thread responses, unread counts, participant access and message mutation/read semantics before cutover. |
+
+### Important access-control note
+
+The `vtg-api` function uses the caller's bearer token and Supabase client for database requests. That means database row-level security is a central enforcement boundary for list/detail queries. The source-level review confirms some explicit ownership checks (for example, LC request checks that the caller is the order's buyer), but does not by itself prove that every SELECT/INSERT/UPDATE is constrained by the correct RLS policies. Validate those policies with role-specific integration tests, including attempts to read another organization's orders, shipments, LCs and conversations.
+
+**Updated conclusion:** Supabase already contains useful first-generation trade operations, but the current Edge Functions implement a newer/simplified data contract rather than the legacy Express API contract. The migration needs a deliberate compatibility layer or a coordinated frontend/data-model migration. Avoid pointing the production `/api/*` rewrite at these functions until the request and response contracts, RLS behavior, and all lifecycle transitions have been tested.
