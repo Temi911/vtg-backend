@@ -11,12 +11,12 @@ async function cart(){
  const quantities=raw.map(x=>({id:String(x.id||''),qty:Math.floor(Number(x.qty)||0)})).filter(x=>x.id&&x.qty>0);
  if(!quantities.length)return [];
  const ids=[...new Set(quantities.map(x=>x.id))];
- const {data:products,error:productError}=await client.from('products').select('id,name,unit_price,currency,is_active').in('id',ids);
+ const {data:products,error:productError}=await client.from('vtg_marketplace_products').select('id,name,unit_price,currency').in('id',ids);
  if(productError)throw productError;
  const byId=new Map((products||[]).map(p=>[p.id,p]));
  return quantities.map(item=>{
   const p=byId.get(item.id);
-  if(!p||p.is_active===false)throw new Error('A cart product is no longer active. Refresh your marketplace cart before estimating landed cost.');
+  if(!p)throw new Error('A cart product is no longer active or verified. Refresh your marketplace cart before estimating landed cost.');
   if(String(p.currency||'USD').toUpperCase()!=='USD')throw new Error('Your cart contains non-USD products. Separate currency totals before preparing a USD landed-cost estimate.');
   const price=Number(p.unit_price);
   if(!Number.isFinite(price)||price<0)throw new Error('A cart product has an invalid price. Refresh the marketplace cart.');
