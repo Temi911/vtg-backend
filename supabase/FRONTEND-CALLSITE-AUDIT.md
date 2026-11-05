@@ -83,3 +83,40 @@ A second pass inspected the trade-workspace scripts and admin/bank support scrip
 3. Add positive and negative integration tests for buyer, supplier, bank and admin roles, including cross-organization access attempts.
 4. Repeat the same contract mapping for LC/payment/reconciliation, then documents and shipment events/tracking.
 5. Keep the Vercel `/api/*` rewrite on Railway until each route used by the live frontend has a tested Supabase implementation or an explicitly documented alternative owner.
+
+
+## Verified quote/order contract mismatch (2026-11-05)
+
+The follow-up compared the live frontend request shape and Express controller contracts with the currently deployed `vtg-trade-operations` Edge Function source.
+
+### Legacy Express contract used by the frontend
+
+- `POST /api/quotes` is buyer-only and expects `supplierId`, `items[]` (optional `productId`, `description`, positive integer `quantity`, positive `unitPriceUsd`), plus optional `incoterm`, `validityUntil` and `notes`.
+- Quote creation verifies that the supplier is a verified supplier and that selected products are active and belong to that supplier.
+- `GET /api/quotes` returns the caller's own quotes, choosing buyer or supplier ownership by role.
+- `PATCH /api/quotes/:id/status` uses `sent → accepted/rejected/expired` transitions and enforces which party may perform each transition.
+- `POST /api/quotes/:id/convert-to-order` converts an accepted quote once, transactionally creates the order/items/conversation and marks the quote converted.
+- `POST /api/orders` expects `supplierId` and `items[]`; it validates supplier verification and product ownership, creates the order and conversation, and returns `{order}`.
+- Order status changes use a defined state machine and role-specific milestones.
+
+### Deployed Supabase function contract
+
+The currently deployed `vtg-trade-operations` function does **not** implement that same API contract:
+
+- Its `POST /quotes` expects `order_id` and `quantity`, and creates a quote against an already-existing `trade_orders` row. This is incompatible with the buyer Trade OS, which sends `supplierId` and `items[]` to create a quote before an order exists.
+- Its quote statuses are `requested`, `quoted` and `declined`, not the legacy `sent`, `accepted`, `rejected`, `expired` and `converted` lifecycle expected by the frontend.
+- Its `GET /quotes` response selects a different schema from the Express quote controller. It does not currently reproduce the legacy quote response shape and filtering contract in the function itself; row-level security still needs explicit validation.
+- The function has no quote-to-order conversion route.
+- The function has no order create/list/detail/status routes. The buyer and supplier dashboards call those routes.
+- Shipment event routes exist in the function, but their compatibility with the legacy shipment event/status/live-tracking endpoints is not established.
+
+**Conclusion:** `vtg-trade-operations` is a partial, separate trade-operations implementation, not a drop-in replacement for the Express quote/order API. Do not route the existing frontend's `/api/quotes` or `/api/orders` calls to it without an adapter or a deliberate frontend migration that preserves all business rules and data relationships.
+
+### Security and data-integrity checks required before any extension
+
+- Verify RLS policies for every table queried or mutated by the function, especially quote ownership and shipment-event visibility/write permissions. The function's client uses the caller's bearer token, so the effective protection depends on the deployed policies.
+- Add server-side role and participant checks for every dynamic quote/order/shipment identifier; never rely on UI visibility alone.
+- Preserve verified-supplier checks, product-to-supplier ownership, positive quantity/pricing validation, status transition rules, transactionality, idempotency and audit/notification behavior.
+- Add negative tests for a buyer attempting to read or mutate another buyer's quote/order, a supplier attempting to access another supplier's record, and a non-bank user attempting bank-only LC/payment milestones.
+
+**Priority blocker:** implement and test a versioned, contract-compatible quote and order lifecycle in Supabase (or an explicitly documented compatibility adapter) before considering those routes migrated.
