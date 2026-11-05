@@ -33,7 +33,7 @@
     },
     {
       "source": "/buyer-dashboard-preview.html",
-      "destination": "/buyer-dashboard.html?preview=1",
+      "destination": "/signin.html?role=buyer&next=%2Fbuyer-dashboard.html",
       "permanent": true
     }
   ]
