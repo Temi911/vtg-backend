@@ -658,42 +658,7 @@ function renderSuppliers(){
 $('supplierForm').addEventListener('submit',e=>{e.preventDefault();const x=Object.fromEntries(new FormData(e.currentTarget));x.createdAt=new Date().toISOString();const a=suppliers();a.unshift(x);db.set('suppliers',a);renderSuppliers();e.currentTarget.reset();say(t('saved'))});
 
 $('rfqForm').addEventListener('submit',async e=>{e.preventDefault();const form=e.currentTarget,d=Object.fromEntries(new FormData(form));if(!preview&&token){const button=form.querySelector('button[type=submit]');button.disabled=true;try{const subject=String(d.product||'').trim();const message=['Quantity: '+String(d.quantity||''),'Sourcing market: '+String(d.origin||''),'Destination: '+String(d.destination||''),'Specifications: '+String(d.details||'Not provided')].join('\n');const r=await fetch('/api/marketplace/enquiries',{method:'POST',headers:{Accept:'application/json','Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({subject,message}),cache:'no-store'});const data=await r.json().catch(()=>({}));if(!r.ok)throw new Error(data.error?.message||data.message||'Unable to submit sourcing request');form.reset();say('Sourcing request submitted to VTG. Reference: '+(data.enquiry?.reference||'created'));await loadLiveEnquiries()}catch(err){say(err.message||'Sourcing request could not be submitted')}finally{button.disabled=false}return}const a=rfqs();d.date=new Date().toISOString();a.unshift(d);db.set('rfqs',a);renderRfqs();stats();form.reset();say(t('rfqSaved')||t('saved'))});
-function feed(){return db.get('feed',[])}async function loadLiveTradeFeed(){
- const box=$('liveTradeFeedRows');if(!box)return;
- if(preview){box.innerHTML='<div class="empty">Preview mode: sign in to view or publish account-linked trade posts. <a href="/signin.html?role=buyer&next=%2Fbuyer-dashboard.html%23feed" style="color:var(--red);font-weight:800">Sign in ↗</a></div>';return}
- if(!token){box.innerHTML='<div class="empty">Your buyer session is not available. Sign in again to load the live trade feed.</div>';return}
- box.innerHTML='<div class="empty">Loading live trade posts…</div>';
- try{
-  const res=await fetch('/api/marketplace/feed?limit=30',{headers:{Accept:'application/json',Authorization:'Bearer '+token},cache:'no-store'});let d={};try{d=await res.json()}catch(_){}
-  if(!res.ok)throw new Error(d.message||'Trade feed returned '+res.status);
-  const posts=d.posts||[];
-  if(!posts.length){box.innerHTML='<div class="empty">No account-linked trade posts yet. Publish a useful update above to start the conversation.</div>';return}
-  box.innerHTML=posts.map(p=>'<article class="feedPost" data-live-post="'+esc(p.id)+'"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><strong>'+esc(p.storefront_name||p.full_name||'VTG trade member')+'</strong><span class="chip">'+esc(p.role||'member')+' · '+esc(p.created_at?new Date(p.created_at).toLocaleString():'Recently')+'</span></div><p>'+esc(p.body||'')+'</p>'+(p.external_url?'<p><a href="'+esc(p.external_url)+'" target="_blank" rel="noopener noreferrer" style="color:var(--red);font-weight:800">Open shared link ↗</a></p>':'')+'<div class="feedActions"><button type="button" data-live-like="'+esc(p.id)+'">♡ Like · '+Number(p.reaction_count||0)+'</button><button type="button" data-live-comments="'+esc(p.id)+'">Comments · '+Number(p.comment_count||0)+'</button></div><div id="liveComments-'+esc(p.id)+'" class="hidden" style="margin-top:10px"><div class="notice">Open comments to load the conversation.</div><form data-live-comment-form="'+esc(p.id)+'" class="chatForm"><input name="comment" maxlength="2000" placeholder="Write a comment…" required><button class="btn primary" type="submit">Send</button></form></div></article>').join('');
- }catch(e){box.innerHTML='<div class="empty">Could not load live trade posts. '+esc(e.message)+' <button class="btn" type="button" id="retryLiveTradeFeed">Try again</button></div>';const b=$('retryLiveTradeFeed');if(b)b.onclick=loadLiveTradeFeed}
-}
-$('refreshLiveTradeFeed')?.addEventListener('click',loadLiveTradeFeed);
-$('liveTradePostForm')?.addEventListener('submit',async e=>{
- e.preventDefault();if(preview||!token()){say('Sign in to publish a live trade update.');return}
- const field=$('liveTradePostText'),button=$('publishLiveTradePost'),body=field.value.trim();if(!body)return;
- button.disabled=true;
- try{const r=await fetch('/api/marketplace/feed/account',{method:'POST',headers:{Accept:'application/json','Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({body,postType:'update'})});let d={};try{d=await r.json()}catch(_){}
- if(!r.ok)throw new Error(d.message||d.error?.message||'Unable to publish update');
- field.value='';say('Trade update published.');await loadLiveTradeFeed()
- }catch(err){say(err.message||'Unable to publish update')}finally{button.disabled=false}
-});
-$('liveTradeFeedRows')?.addEventListener('click',async e=>{
- const b=e.target.closest('button');if(!b)return;const headers={Accept:'application/json',Authorization:'Bearer '+token};
- try{
-  if(b.dataset.liveLike){if(!token()){say('Sign in to like a trade post.');return}const id=b.dataset.liveLike,r=await fetch('/api/marketplace/feed/'+encodeURIComponent(id)+'/reactions',{method:'POST',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({reaction:'like'})});let d={};try{d=await r.json()}catch(_){}if(!r.ok)throw new Error(d.message||'Unable to react to this post');b.textContent=(d.liked?'♥':'♡')+' Like · '+Number(d.count||0);return}
-  if(b.dataset.liveComments){if(!token()){say('Sign in to read and comment on posts.');return}const id=b.dataset.liveComments,slot=$('liveComments-'+id);if(!slot)return;slot.classList.toggle('hidden');if(slot.dataset.loaded==='1')return;slot.dataset.loaded='1';const notice=slot.querySelector('.notice');notice.textContent='Loading comments…';const r=await fetch('/api/marketplace/feed/'+encodeURIComponent(id)+'/comments',{headers,cache:'no-store'});let d={};try{d=await r.json()}catch(_){}if(!r.ok)throw new Error(d.message||'Unable to load comments');const comments=d.comments||[];notice.innerHTML=comments.length?comments.map(x=>'<div style="padding:6px 0;border-bottom:1px solid var(--line)"><strong>'+esc(x.full_name||'VTG member')+'</strong><p>'+esc(x.body)+'</p></div>').join(''):'No comments yet. Start the conversation.';return}
- }catch(err){say(err.message||'Trade feed action failed')}
-});
-$('liveTradeFeedRows')?.addEventListener('submit',async e=>{
- const form=e.target.closest('form[data-live-comment-form]');if(!form)return;e.preventDefault();if(!token()){say('Sign in to comment.');return}
- const id=form.dataset.liveCommentForm,input=form.elements.comment,body=input.value.trim();if(!body)return;
- try{const r=await fetch('/api/marketplace/feed/'+encodeURIComponent(id)+'/comments',{method:'POST',headers:{Accept:'application/json','Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({body})});let d={};try{d=await r.json()}catch(_){}if(!r.ok)throw new Error(d.message||'Unable to add comment');input.value='';say('Comment added.');const slot=$('liveComments-'+id);if(slot){slot.dataset.loaded='0';const b=slot.querySelector('.notice');if(b)b.textContent='Comment added. Refresh comments to view the updated thread.'}
- }catch(err){say(err.message||'Unable to add comment')}
-});
+function feed(){return db.get('feed',[])}async function loadLiveTradeFeed(){return window.VTGBuyerTradeFeed?.load();}
 function renderFeed(){const a=feed();$('statFeed').textContent=a.length;$('feedRows').innerHTML='<article class="feedPost"><strong>VTG Trade Desk · Sample</strong><p>Welcome to the buyer workspace. Use this space to organise sourcing, trade planning and questions for your partners.</p><div class="feedActions"><button data-like-demo>♡ '+t('like')+'</button><button data-view="messages">Discuss in messages</button></div></article>'+a.map((x,i)=>'<article class="feedPost"><strong>'+esc($('profileName').textContent)+' · Local draft</strong><p>'+esc(x.text)+'</p><div class="feedActions"><button data-like="'+i+'">'+(x.liked?'♥ '+t('liked'):'♡ '+t('like'))+'</button><button data-del-post="'+i+'">'+t('remove')+'</button></div></article>').join('');$('feedRows').querySelector('[data-like-demo]')?.addEventListener('click',e=>{e.target.textContent='♥ '+t('liked');say(t('saved'))});$('feedRows').querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));$('feedRows').querySelectorAll('[data-like]').forEach(b=>b.addEventListener('click',()=>{const a=feed();a[+b.dataset.like].liked=!a[+b.dataset.like].liked;db.set('feed',a);renderFeed()}));$('feedRows').querySelectorAll('[data-del-post]').forEach(b=>b.addEventListener('click',()=>{const a=feed();a.splice(+b.dataset.delPost,1);db.set('feed',a);renderFeed();stats()}))}
 $('feedForm').addEventListener('submit',e=>{e.preventDefault();const a=feed();a.unshift({text:$('postText').value,liked:false,date:new Date().toISOString()});db.set('feed',a);$('postText').value='';renderFeed();stats();say(t('postSaved'))});
 let liveConversations=[],liveConversationId='';
@@ -765,4 +730,5 @@ setLang(lang);renderProducts();renderRfqs();renderCart();renderFeed();renderChat
 <script src="/vtg-buyer-orders-supabase.js?v=20261105-orders-live-1"></script>
 <script src="/vtg-buyer-inspections-supabase.js?v=20261105-inspections-live-1"></script>
 <script src="/vtg-buyer-documents-supabase.js?v=20261105-documents-live-1"></script>
+<script src="/vtg-buyer-trade-feed-supabase.js?v=20261105-feed-live-1"></script>
 </body></html>
