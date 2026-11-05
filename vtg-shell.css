@@ -133,3 +133,22 @@ html[data-theme="dark"] .vs-btn-primary{color:#08162A}
 .vs-banner figcaption{position:absolute;left:0;right:0;bottom:0;padding:34px 20px 14px;color:#fff;font-size:13px;font-weight:600;background:linear-gradient(transparent,rgba(5,20,50,.72))}
 .vs-sidephoto{margin:0 0 16px;border-radius:14px;overflow:hidden;aspect-ratio:16/9;background:var(--vs-tint,#e8eef9)}
 @media(max-width:700px){.vs-banner figure{aspect-ratio:16/10}}
+
+/* Visitor preference controls and light-mode ocean footer */
+.vs-footer{background:#17191B;color:#F3EFE6}
+html[data-theme="light"] .vs-footer{background:#e5f7fb;color:#173044;border-top-color:#087f9f}
+html[data-theme="light"] .vs-footer a{color:#36596a}
+html[data-theme="light"] .vs-footer a:hover,html[data-theme="light"] .vs-footer a.is-current,html[data-theme="light"] .vs-footer a[aria-current="page"]{color:#075d79}
+html[data-theme="light"] .vs-footer h4{color:#087f9f}
+html[data-theme="light"] .vs-footer-brand p{color:#526b78}
+html[data-theme="light"] .vs-footer-base{border-top-color:rgba(23,48,68,.16)}
+html[data-theme="light"] .vs-footer-base .vs-wrap{color:#526b78}
+html[data-theme="light"] .vs-footer-base nav a{color:#36596a}
+.vs-footer-controls{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;padding:12px 24px;border-top:1px solid rgba(243,239,230,.14);border-bottom:1px solid rgba(243,239,230,.14)}
+.vs-pref{display:flex;align-items:center;gap:7px;font:600 11px/1.3 Manrope,Arial,sans-serif}
+.vs-pref label{color:rgba(243,239,230,.78);white-space:nowrap}
+.vs-pref select{min-height:32px;max-width:160px;padding:5px 26px 5px 9px;border:1px solid rgba(243,239,230,.3);border-radius:6px;background:#20262c;color:#f3efe6;font:600 11px/1.2 Manrope,Arial,sans-serif}
+html[data-theme="light"] .vs-footer-controls{border-color:rgba(23,48,68,.16)}
+html[data-theme="light"] .vs-pref label{color:#36596a}
+html[data-theme="light"] .vs-pref select{background:#f8fdff;color:#173044;border-color:#9bbdca}
+@media(max-width:600px){.vs-footer-controls{justify-content:flex-start;gap:10px;padding:12px 16px}.vs-pref{flex:1 1 145px;justify-content:space-between}.vs-pref select{max-width:115px;min-width:0}}
