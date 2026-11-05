@@ -905,7 +905,7 @@ $('liveDocumentsRows')?.addEventListener('click',async e=>{
 function renderDocs(){const items=[t('doc1')||'Commercial invoice',t('doc2')||'Packing list',t('doc3')||'Bill of lading / air waybill',t('doc4')||'Certificate of origin where required',t('doc5')||'Product conformity certificates',t('doc6')||'Customs declaration and permits'];$('docTiles').innerHTML=items.map((x,i)=>'<article class="tile"><span class="ico">0'+(i+1)+'</span><strong>'+x+'</strong><small>Checklist only · confirm destination-specific requirements.</small></article>').join('')}
 function renderNotes(){$('notes').innerHTML=db.get('notes',[]).map(x=>'<div class="row"><div class="rowMain"><strong>'+esc(x.title)+'</strong><p>'+esc(x.text)+'</p></div></div>').join('')||'<div class="empty">'+t('noDrafts')+'</div>'}
 function calcFx(){const n=(+$('amount').value||0)*(+$('rate').value||0);$('fxResult').textContent=$('to').value+' '+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}['amount','rate','from','to'].forEach(id=>$(id).addEventListener('input',calcFx));$('saveFx').addEventListener('click',()=>{const a=db.get('notes',[]);a.unshift({title:'Currency planning',text:$('amount').value+' '+$('from').value+' × '+$('rate').value+' = '+$('fxResult').textContent});db.set('notes',a);renderNotes();say(t('saveFx'))});
-// Live AI submission is handled by vtg-buyer-ai-supabase.js.
+// Live AI submission is handled by the shared VTG dashboard chat.
 document.querySelectorAll('[data-map]').forEach(b=>b.addEventListener('click',()=>{const region=b.dataset.map;if(window.VTGBuyerAtlas?.setRegion)window.VTGBuyerAtlas.setRegion(region);else window.dispatchEvent(new CustomEvent('vtg:buyer-map-region',{detail:{region}}));say('Map view updated')}));
 function stats(){ $('statRfqs').textContent=rfqs().length;$('statCart').textContent=cart().reduce((n,x)=>n+x.qty,0);$('statFeed').textContent=feed().length;$('statVerify').textContent=db.get('verify',[]).length;$('cartCount').textContent=cart().reduce((n,x)=>n+x.qty,0);$('rfqCount').textContent=rfqs().length;const a=[];rfqs().slice(0,2).forEach(x=>a.push({title:'RFQ: '+x.product,desc:'Saved locally'}));feed().slice(0,2).forEach(x=>a.push({title:'Trade feed draft',desc:x.text.slice(0,90)}));$('activity').innerHTML=a.length?a.slice(0,5).map(x=>'<div><strong>'+esc(x.title)+'</strong><p>'+esc(x.desc)+'</p></div>').join(''):'<div><strong>'+t('ready')+'</strong><p>'+t('readyDesc')+'</p></div>'}
 $('savePrefs').addEventListener('click',()=>{setLang($('language2').value);const v=$('appearance').value;try{localStorage.setItem('vtg-theme-preference',v);if(v==='auto'){localStorage.setItem('vtg-theme-mode','auto')}else{localStorage.setItem('vtg-theme-mode','manual');localStorage.setItem('vtg-theme',v)}}catch(e){}if(window.vtgSetThemePreference)window.vtgSetThemePreference(v);else applyTheme(v==='auto'?resolveBuyerTheme():v);say(t('prefsSaved')||t('saved'))});
@@ -939,7 +939,7 @@ rows.querySelectorAll('[data-accept-quote]').forEach(b=>b.onclick=()=>{const a=r
 <script src="//vtg-buyer-inspections-supabase.js?v=20261105-inspections-live-2"></script>
 <script src="//vtg-buyer-documents-supabase.js?v=20261105-documents-live-2"></script>
 <script src="//vtg-buyer-trade-feed-supabase.js?v=20261105-feed-live-2"></script>
-<script src="//vtg-buyer-messages-supabase.js?v=20261105-messages-live-2"></script>
+<script src="//vtg-buyer-messages-supabase.js?v=20261105-messages-live-3"></script>
 <script src="//vtg-buyer-suppliers-supabase.js?v=20261105-suppliers-live-1"></script>
 <script src="//vtg-buyer-rfq-drafts-supabase.js?v=20261105-rfq-drafts-live-1"></script>
 <script src="//vtg-buyer-shared-trade-desk-supabase.js?v=20261105-trade-workflow-4"></script>
@@ -947,7 +947,7 @@ rows.querySelectorAll('[data-accept-quote]').forEach(b=>b.onclick=()=>{const a=r
 <script src="//vtg-buyer-live-tracking.js?v=20261105-live-tracking-2" defer></script>
 <script src="//vtg-buyer-finance-supabase.js?v=20261105-fx-notes-1"></script>
 <script src="//vtg-buyer-lc-drafts-supabase.js?v=20261105-lc-drafts-1"></script>
-<script src="//vtg-buyer-ai-supabase.js?v=20261105-ai-1"></script>
+
 <script src="//vtg-buyer-request-supabase.js?v=20261105-request-1"></script>
 <script src="//vtg-buyer-cart-supabase.js?v=20261105-cart-sync-2"></script>
 <script src="//vtg-buyer-network-supabase.js?v=20261105-network-1"></script>
