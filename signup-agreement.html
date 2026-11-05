@@ -16,7 +16,7 @@
 <div class="flow-top"></div>
 <div class="flow-bar"><div class="vs-wrap"><a href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><a class="back" href="/frontend-v3.html">Back to site</a></div></div>
 <main class="flow-main" id="main"><div class="vs-banner"><figure><img src="https://images.pexels.com/photos/7641842/pexels-photo-7641842.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="A person signing a contract" loading="lazy" onerror="this.closest('.vs-banner').remove()"><figcaption>Review and accept the agreement</figcaption></figure></div><div class="flow-card" id="app"><div class="loading">Loading your VTG agreement…</div></div></main>
-<script src="/vtg-supabase-auth.js?v=20261105-agreement-1"></script>
+<script src="/vtg-supabase-auth.js?v=20261105-agreement-2"></script>
 <script>
 const app=document.getElementById('app');
 const VERSION='2026-09-01';
@@ -41,8 +41,14 @@ async function load(){
     const user=current.user;
     if(user.accountEnvironment==='staff'){location.replace('/workforce-access.html');return;}
     if(!['buyer','supplier','bank'].includes(user.role)){location.replace('/signin.html');return;}
-    const status=user.agreementStatus||(await auth.client.rpc('vtg_get_agreement_status')).data;
-    if(!status||status.required===false){location.replace(nextForUser(user));return;}
+    let status=user.agreementStatus;
+    if(!status){
+      const checked=await auth.client.rpc('vtg_get_agreement_status');
+      if(checked.error)throw checked.error;
+      status=checked.data;
+    }
+    if(!status||typeof status.required!=='boolean')throw new Error('VTG could not verify your agreement status. Please try again.');
+    if(status.required===false){location.replace(nextForUser(user));return;}
     app.innerHTML=`
       <div class="brand">Vintage Trade Global</div>
       <div class="eyebrow">Required before workspace access</div>
