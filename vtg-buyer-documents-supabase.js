@@ -33,11 +33,6 @@
   async function loadOrders(){
     const select=$('documentOrderId'),host=$('liveDocumentsRows');
     if(!select||!host)return;
-    if(new URLSearchParams(location.search).get('preview')==='1'){
-      select.innerHTML='<option value="">Sign in to load account orders</option>';
-      showEmpty('Preview mode: uploaded order documents are private account records. Sign in as a buyer to view them.');
-      return;
-    }
     if(busy)return;
     busy=true;host.innerHTML='<div class="empty">Loading your orders from VTG…</div>';
     try{
