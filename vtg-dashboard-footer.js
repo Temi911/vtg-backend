@@ -11,7 +11,7 @@
   const path=(location.pathname.split('/').pop()||'frontend-v3.html').toLowerCase();
   const pages=[
     ['Home','/frontend-v3.html','frontend-v3.html'],
-    ['Buyer','/buyer-dashboard.html?preview=1','buyer-dashboard.html'],
+    ['Buyer','/signin.html?role=buyer','buyer-dashboard.html'],
     ['Supplier','/supplier-dashboard.html','supplier-dashboard.html'],
     ['Bank','/bank-trade-os.html?preview=1','bank-trade-os.html'],
     ['Admin','/admin-dashboard-preview.html','admin-dashboard-preview.html'],
