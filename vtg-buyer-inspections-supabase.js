@@ -3,7 +3,6 @@
  const $=id=>document.getElementById(id);
  const esc=v=>typeof window.esc==='function'?window.esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let busy=false;
- const preview=()=>false;
  function selectedChecks(form){const el=form.elements.checks;return el?.multiple?[...el.selectedOptions].map(o=>o.value):[el?.value].filter(Boolean)}
  async function clientForBuyer(){
   let auth;
@@ -18,7 +17,6 @@
  }
  async function load(){
   const host=$('liveInspectionRows');if(!host||busy)return;
-  if(preview()){host.innerHTML='<div class="empty">Preview mode: sign in as a buyer to view private inspection requests, fees, agent reports and evidence.</div>';return;}
   busy=true;host.innerHTML='<div class="empty">Loading account-linked inspection requests…</div>';
   try{
    const {client}=await clientForBuyer();
