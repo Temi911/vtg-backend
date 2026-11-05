@@ -75,7 +75,7 @@ function updateCartCost(){
   const items=Array.isArray(state.data?.items)?state.data.items:[];
   const ids=items.map(x=>String(x.id||'')).filter(Boolean);
   let goods=0,currencySet=new Set();
-  if(ids.length){const products=await auth.client.from('products').select('id,unit_price,currency,is_active').in('id',[...new Set(ids)]);if(products.error)throw products.error;const byId=new Map((products.data||[]).map(p=>[p.id,p]));items.forEach(item=>{const p=byId.get(String(item.id||''));if(!p||p.is_active===false)return;currencySet.add(String(p.currency||'USD').toUpperCase());goods+=Number(p.unit_price||0)*Math.max(0,Number(item.qty)||0);});}
+  if(ids.length){const products=await auth.client.from('vtg_marketplace_products').select('id,unit_price,currency').in('id',[...new Set(ids)]);if(products.error)throw products.error;const byId=new Map((products.data||[]).map(p=>[p.id,p]));items.forEach(item=>{const p=byId.get(String(item.id||''));if(!p)return;currencySet.add(String(p.currency||'USD').toUpperCase());goods+=Number(p.unit_price||0)*Math.max(0,Number(item.qty)||0);});}
   const money=value=>'$'+Number(value||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
   if($('goodsTotal'))$('goodsTotal').textContent=currencySet.size>1?'Multiple currencies':money(goods);
   const shipping=Math.max(0,Number($('shipping')?.value)||0),insurance=Math.max(0,Number($('insurance')?.value)||0),duty=Math.max(0,Number($('duty')?.value)||0),other=Math.max(0,Number($('other')?.value)||0);
