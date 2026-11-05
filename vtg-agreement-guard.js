@@ -32,7 +32,7 @@
     if(document.body)attach();else document.addEventListener('DOMContentLoaded',attach,{once:true});
   }
   var script=document.createElement('script');
-  script.src='/vtg-supabase-auth.js?v=20261105-agreement-1';
+  script.src='/vtg-supabase-auth.js?v=20261105-agreement-2';
   script.onload=async function(){
     try{
       var auth=await window.VTG_AUTH_READY;
@@ -44,6 +44,7 @@
       if(!['buyer','supplier','bank'].includes(effective)){signin();return;}
       if(expected&&expected!==effective&&path!=='/verification.html'){signin();return;}
       if(path==='/verification.html'&&expected&&expected!==effective){signin();return;}
+      if(typeof user.agreementRequired!=='boolean')throw new Error('VTG could not confirm your current agreement status.');
       if(user.agreementRequired){location.replace('/signup-agreement.html?next='+encodeURIComponent(path+location.search+location.hash));return;}
       root.classList.remove('vtg-agreement-checking');
     }catch(error){fail(error&&error.message);}
