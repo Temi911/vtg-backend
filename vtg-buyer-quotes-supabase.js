@@ -4,7 +4,7 @@
   function esc(value){return typeof window.esc==='function'?window.esc(value):String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
   async function load(){
     const host=document.getElementById('liveQuotesRows');if(!host)return;
-    const preview=new URLSearchParams(location.search).get('preview')==='1';
+    const preview=false;
     if(preview){host.innerHTML='<div class="empty">Preview mode: live quotations are private account records. Sign in as a buyer to load them.</div>';return;}
     host.innerHTML='<div class="empty">Loading your Supabase quotations…</div>';
     try{
