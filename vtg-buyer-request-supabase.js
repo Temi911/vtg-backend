@@ -63,7 +63,7 @@
       const ref=result.data?.order_reference||'created';
       form.reset();select.value='';
       setStatus('Request sent successfully. Reference: '+ref+'. The assigned supplier can now prepare a quotation.');
-      if(typeof window.loadLiveQuotes==='function')await window.loadLiveQuotes();
+      if(typeof window.loadLiveEnquiries==='function')await window.loadLiveEnquiries();if(typeof window.loadLiveQuotes==='function')await window.loadLiveQuotes();
       if(typeof window.say==='function')window.say('Your supplier quote request has been submitted.');
     }catch(error){setStatus(error.message||'The quote request could not be submitted.');}
     finally{if(button)button.disabled=false;}
