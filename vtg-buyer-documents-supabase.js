@@ -6,14 +6,23 @@
   const maxBytes=10*1024*1024;
   let client=null,orders=[],busy=false;
   async function getClient(){
-    const auth=await window.VTG_AUTH_READY;
-    const {data,error}=await auth.client.auth.getSession();
+    let auth=null;
+    try{
+      if(window.VTG_AUTH_READY)auth=await window.VTG_AUTH_READY;
+      else if(window.VTGAuth)auth=window.VTGAuth;
+    }catch(error){
+      if(!window.VTG_SUPABASE)throw new Error('The VTG sign-in service could not initialise: '+(error.message||'Please refresh the page.'));
+    }
+    const db=auth?.client||window.VTG_SUPABASE;
+    if(!db)throw new Error('VTG secure sign-in is unavailable. Refresh the page and try again.');
+    const {data,error}=await db.auth.getSession();
     if(error)throw error;
-    if(!data.session)throw new Error('Your secure session has expired. Please sign in again.');
-    const {data:profile,error:profileError}=await auth.client.from('profiles').select('role,is_active').eq('id',data.session.user.id).single();
+    if(!data.session)throw new Error('Sign in with your buyer account to load orders and documents.');
+    const {data:profile,error:profileError}=await db.from('profiles').select('role,is_active').eq('id',data.session.user.id).maybeSingle();
     if(profileError)throw profileError;
+    if(!profile)throw new Error('Your VTG account profile was not found. Sign out and sign in again.');
     if(profile.role!=='buyer'||!profile.is_active)throw new Error('An active buyer account is required.');
-    return {client:auth.client,user:data.session.user};
+    return {client:db,user:data.session.user};
   }
   function message(text){const n=$('documentUploadNotice');if(n)n.textContent=text;}
   function showEmpty(text,button){
@@ -35,6 +44,7 @@
       const auth=await getClient();client=auth.client;
       const {data,error}=await client.from('trade_orders')
         .select('id,reference,supplier_id,created_at')
+        .eq('buyer_id',auth.user.id)
         .order('created_at',{ascending:false}).limit(100);
       if(error)throw error;
       orders=data||[];
@@ -68,10 +78,10 @@
     const form=event.currentTarget,button=form.querySelector('button[type=submit]');
     const orderId=$('documentOrderId')?.value,file=form.elements.file?.files?.[0],type=form.elements.docType?.value;
     if(!orderId){message('Select an order linked to your account first.');return;}
-    if(!file){message('Choose a PDF, JPEG or PNG file.');return;}
+    if(!file){message('Choose a PDF, JPEG, PNG or WEBP file.');return;}
     if(file.size<1||file.size>maxBytes){message('The file must be no larger than 10 MB.');return;}
-    const allowed=['application/pdf','image/jpeg','image/png'];
-    if(!allowed.includes(file.type)){message('Only PDF, JPEG and PNG files are accepted by the secure document store.');return;}
+    const allowed=['application/pdf','image/jpeg','image/png','image/webp'];
+    if(!allowed.includes(file.type)){message('Only PDF, JPEG, PNG and WEBP files are accepted by the secure document store.');return;}
     if(!orders.some(o=>o.id===orderId)){message('That order is not in your account order list. Refresh and select it again.');return;}
     button.disabled=true;message('Uploading securely to your selected order…');
     let path=null;
