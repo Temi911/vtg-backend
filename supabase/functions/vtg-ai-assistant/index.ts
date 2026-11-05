@@ -73,41 +73,80 @@ Deno.serve(async (req: Request) => {
   if (!message) return response({ error: { code: "MESSAGE_REQUIRED", message: "Please enter your trade question." } }, 400);
   if (message.length > 6000) return response({ error: { code: "MESSAGE_TOO_LONG", message: "Please keep each question under 6,000 characters." } }, 413);
 
-  const apiKey = Deno.env.get("VTG_AI_API_KEY") || Deno.env.get("OPENAI_API_KEY");
-  if (!apiKey) return response({ error: { code: "AI_NOT_CONFIGURED", message: "VTG AI is connected to your buyer account, but its server-side AI provider key has not been configured yet." } }, 503);
-  const base = (Deno.env.get("VTG_AI_BASE_URL") || "https://api.openai.com/v1").replace(/\/+$/, "");
-  const model = Deno.env.get("VTG_AI_MODEL") || "gpt-4o-mini";
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30000);
-  let upstream: Response;
-  try {
-    upstream = await fetch(base + "/chat/completions", {
-      method: "POST",
-      signal: controller.signal,
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model, temperature: 0.3, max_tokens: 1100,
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: message },
-        ],
-      }),
-    });
-  } catch (error) {
-    const timedOut = error instanceof Error && error.name === "AbortError";
-    return response({ error: { code: timedOut ? "AI_TIMEOUT" : "AI_CONNECTION_ERROR", message: timedOut ? "VTG AI took too long to respond. Please try again." : "The VTG AI provider could not be reached. Please try again shortly." } }, timedOut ? 504 : 502);
-  } finally {
-    clearTimeout(timeout);
+  // Provider order: Gemini first, OpenAI second. All credentials remain server-side.
+  const providers = [
+    {
+      name: "gemini",
+      apiKey: Deno.env.get("VTG_AI_API_KEY"),
+      base: (Deno.env.get("VTG_AI_BASE_URL") || "https://generativelanguage.googleapis.com/v1beta/openai").replace(/\\/+$/, ""),
+      model: Deno.env.get("VTG_AI_MODEL") || "gemini-2.5-flash",
+    },
+    {
+      name: "openai",
+      apiKey: Deno.env.get("VTG_OPENAI_API_KEY") || Deno.env.get("OPENAI_API_KEY"),
+      base: (Deno.env.get("VTG_OPENAI_BASE_URL") || "https://api.openai.com/v1").replace(/\\/+$/, ""),
+      model: Deno.env.get("VTG_OPENAI_MODEL") || "gpt-4o-mini",
+    },
+  ].filter((provider) => Boolean(provider.apiKey));
+
+  if (providers.length === 0) {
+    return response({ error: { code: "AI_NOT_CONFIGURED", message: "VTG AI has no server-side AI provider configured. Please contact VTG support." } }, 503);
   }
 
-  const payload = await upstream.json().catch(() => ({}));
-  if (!upstream.ok) {
-    console.error("VTG AI provider error", upstream.status, payload?.error?.type || payload?.error?.code || "provider_error");
-    return response({ error: { code: "AI_PROVIDER_ERROR", message: "The assistant provider could not complete this request. Please try again shortly." } }, 502);
+  let lastFailure: "timeout" | "connection" | "provider" | "empty" = "provider";
+  for (const provider of providers) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 25000);
+    let upstream: Response;
+    try {
+      upstream = await fetch(provider.base + "/chat/completions", {
+        method: "POST",
+        signal: controller.signal,
+        headers: { Authorization: `Bearer ${provider.apiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: provider.model, temperature: 0.3, max_tokens: 1100,
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content: message },
+          ],
+        }),
+      });
+    } catch (error) {
+      lastFailure = error instanceof Error && error.name === "AbortError" ? "timeout" : "connection";
+      console.warn("VTG AI provider unavailable; trying next provider", provider.name, lastFailure);
+      continue;
+    } finally {
+      clearTimeout(timeout);
+    }
+
+    if (!upstream.ok) {
+      lastFailure = "provider";
+      console.warn("VTG AI provider returned an error; trying next provider", provider.name, upstream.status);
+      continue;
+    }
+
+    const payload = await upstream.json().catch(() => ({}));
+    const reply = payload?.choices?.[0]?.message?.content;
+    if (typeof reply !== "string" || !reply.trim()) {
+      lastFailure = "empty";
+      console.warn("VTG AI provider returned an empty response; trying next provider", provider.name);
+      continue;
+    }
+
+    return response({
+      reply: reply.trim(),
+      role: "buyer",
+      model: provider.model,
+      provider: provider.name,
+      mode: "live",
+    });
   }
-  const reply = payload?.choices?.[0]?.message?.content;
-  if (typeof reply !== "string" || !reply.trim()) {
-    return response({ error: { code: "AI_EMPTY_RESPONSE", message: "The assistant returned an empty response. Please try again." } }, 502);
-  }
-  return response({ reply: reply.trim(), role: "buyer", model, mode: "live" });
+
+  const messages = {
+    timeout: "The AI providers took too long to respond. Please try again shortly.",
+    connection: "The AI providers could not be reached. Please try again shortly.",
+    empty: "The AI providers returned an empty response. Please try again shortly.",
+    provider: "The AI providers could not complete this request. Please try again shortly.",
+  };
+  return response({ error: { code: "AI_PROVIDER_UNAVAILABLE", message: messages[lastFailure] } }, lastFailure === "timeout" ? 504 : 502);
 });
