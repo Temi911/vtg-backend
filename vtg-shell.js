@@ -74,7 +74,7 @@
     '<div><h4>Trade</h4><ul><li><a data-vs-link href="/sourcing-suppliers.html">Sourcing &amp; Suppliers</a></li><li><a data-vs-link href="/product-verification.html">Product Verification</a></li><li><a data-vs-link href="/logistics-shipping.html">Logistics &amp; Shipping</a></li><li><a data-vs-link href="/finance-payments.html">Finance &amp; Payments</a></li><li><a data-vs-link href="/signin.html">Trade Workspace</a></li></ul></div>' +
     '<div><h4>Business</h4><ul><li><a data-vs-link href="/trade-guide.html">Trade Guide</a></li><li><a data-vs-link href="/partnerships.html">Partnerships</a></li><li><a data-vs-link href="/agent.html">Become an Agent</a></li><li><a data-vs-link href="/workforce-access.html">Workforce &amp; Staff Access</a></li></ul></div>' +
     '<div><h4>Company</h4><ul><li><a data-vs-link href="/about-vintage.html">About VTG</a></li><li><a data-vs-link href="/contact.html">Contact VTG</a></li></ul></div>' +
-    '</div><div class="vs-footer-base"><div class="vs-wrap"><span>&copy; 2026 Vintage Trade Global &middot; Powered by Folayele Global Resources Limited</span><nav aria-label="Legal"><a data-vs-link href="/privacy.html">Privacy</a><a data-vs-link href="/terms.html">Terms</a><a data-vs-link href="/code-of-conduct.html">Code of Conduct</a></nav></div></div></footer>';
+    '</div><div class="vs-footer-controls" id="vsFooterControls" aria-label="Site preferences"></div><div class="vs-footer-base"><div class="vs-wrap"><span>&copy; 2026 Vintage Trade Global &middot; Powered by Folayele Global Resources Limited</span><nav aria-label="Legal"><a data-vs-link href="/privacy.html">Privacy</a><a data-vs-link href="/terms.html">Terms</a><a data-vs-link href="/code-of-conduct.html">Code of Conduct</a></nav></div></div></footer>';
 
   function renderFooter() {
     var host = document.getElementById('vsFooter');
@@ -90,7 +90,72 @@
         links[i].classList.add('is-current');
       }
     }
+    renderFooterPreferences(host);
     apply(root.getAttribute('data-theme') || 'light');
+  }
+
+  function localTimeTheme() {
+    var hour = new Date().getHours();
+    return hour >= 6 && hour < 18 ? 'light' : 'dark';
+  }
+  function setPreference(value) {
+    try { localStorage.setItem(KEY, value); } catch (e) {}
+    apply(value === 'auto' ? localTimeTheme() : value);
+  }
+  function renderFooterPreferences(host) {
+    var target = host.querySelector('#vsFooterControls');
+    if (!target || target.getAttribute('data-ready') === '1') return;
+    target.setAttribute('data-ready', '1');
+    target.innerHTML =
+      '<div class="vs-pref"><label for="vsAppearance">Appearance</label><select id="vsAppearance" aria-label="Appearance"><option value="auto">Automatic</option><option value="light">Light</option><option value="dark">Dark</option></select></div>' +
+      '<div class="vs-pref"><label for="vsLanguage">Language</label><select id="vsLanguage" aria-label="Language"><option value="en">English</option><option value="fr">Français</option><option value="zh-CN">中文</option><option value="ko">한국어</option><option value="es">Español</option><option value="ar">العربية</option></select></div>' +
+      '<div class="vs-pref"><label for="vsVisitorTheme">Theme</label><select id="vsVisitorTheme" aria-label="Theme"><option value="trade-classic">Trade Classic</option><option value="ocean-route">Ocean Route</option><option value="graphite-port">Graphite Port</option></select></div>';
+    var appearance = target.querySelector('#vsAppearance');
+    var language = target.querySelector('#vsLanguage');
+    var theme = target.querySelector('#vsVisitorTheme');
+    var pref = stored() || 'auto';
+    appearance.value = ['auto','light','dark'].indexOf(pref) >= 0 ? pref : 'auto';
+    appearance.addEventListener('change', function () { setPreference(appearance.value); });
+    var skin = 'trade-classic', lang = 'en';
+    try { skin = localStorage.getItem('vtg-visitor-theme-preset') || skin; lang = localStorage.getItem('vtg-language') || lang; } catch (e) {}
+    if (skin === 'ocean-route' || skin === 'graphite-port') theme.value = skin;
+    root.setAttribute('data-vtg-skin', theme.value);
+    theme.addEventListener('change', function () {
+      root.setAttribute('data-vtg-skin', theme.value);
+      try { localStorage.setItem('vtg-visitor-theme-preset', theme.value); } catch (e) {}
+      document.dispatchEvent(new CustomEvent('vtg:skinchange', { detail: { skin: theme.value, audience: 'visitor' } }));
+    });
+    var cookie = document.cookie.match(/(?:^|;\\s*)googtrans=([^;]+)/);
+    if (cookie) { try { var bits = decodeURIComponent(cookie[1]).split('/'); if (bits[2]) lang = bits[2]; } catch (e) {} }
+    language.value = lang === 'zh' ? 'zh-CN' : lang;
+    language.addEventListener('change', function () {
+      var selected = language.value;
+      try { localStorage.setItem('vtg-language', selected === 'zh-CN' ? 'zh' : selected); } catch (e) {}
+      if (selected === 'en') {
+        document.cookie = 'googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+        document.cookie = 'googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=' + location.hostname;
+      } else {
+        var value = '/en/' + selected;
+        document.cookie = 'googtrans=' + value + ';path=/;max-age=31536000;SameSite=Lax';
+        document.cookie = 'googtrans=' + value + ';path=/;domain=' + location.hostname + ';max-age=31536000;SameSite=Lax';
+      }
+      location.reload();
+    });
+    if (!document.getElementById('google_translate_element')) {
+      var hidden = document.createElement('div'); hidden.id = 'google_translate_element'; hidden.setAttribute('aria-hidden', 'true');
+      hidden.style.cssText = 'position:absolute!important;left:-9999px!important;top:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important';
+      document.body.appendChild(hidden);
+    }
+    if (!window.googleTranslateElementInit) {
+      window.googleTranslateElementInit = function () {
+        if (window.google && google.translate && document.getElementById('google_translate_element')) {
+          new google.translate.TranslateElement({ pageLanguage: 'en', includedLanguages: 'en,fr,zh-CN,ko,es,ar', autoDisplay: false }, 'google_translate_element');
+        }
+      };
+      var script = document.createElement('script');
+      script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+      script.async = true; document.head.appendChild(script);
+    }
   }
 
   apply(resolve(stored()));
