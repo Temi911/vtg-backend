@@ -66,8 +66,10 @@ async function log(provider: string, operation: string, shipmentId: string | nul
 }
 const str = (v: unknown) => typeof v === "string" || typeof v === "number" ? String(v) : "";
 const iso = (v: unknown) => {
-  const d = v ? new Date(String(v)) : new Date();
-  return Number.isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+  if (!v) throw new Error("Provider did not supply a timestamp.");
+  const d = new Date(String(v));
+  if (Number.isNaN(d.getTime())) throw new Error("Provider supplied an invalid timestamp.");
+  return d.toISOString();
 };
 function findArray(o: any): any[] {
   if (Array.isArray(o)) return o;
