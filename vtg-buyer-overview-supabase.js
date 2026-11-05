@@ -39,7 +39,8 @@ async function load(){
  ]);
  for(const result of [ordersResult,requestsResult,rfqResult,cartResult,suppliersResult,documentsResult])if(result.error)throw result.error;
  const orders=ordersResult.data||[];
- const requestRows=requestsResult.data||[];\n const requestCount=requestsResult.count||requestRows.length;
+ const requestRows=requestsResult.data||[];
+ const requestCount=requestsResult.count||requestRows.length;
  const total=requestCount+orders.length;
  const completed=orders.filter(o=>['completed','delivered','closed'].includes(String(o.status||'').toLowerCase())).length;
  const currencyTotals={};
@@ -54,7 +55,8 @@ async function load(){
  set('buyerMetricValue',tradeValue);set('buyerMetricValueNote',valueNote);
  set('buyerMetricCompleted',String(completed));set('buyerMetricCompletedNote','Of '+orders.length+' recorded orders');
  set('statRfqs',String(rfqResult.count||0));set('statCart',String(cartLines));
- set('statFeed',String(suppliersResult.count||0));set('statVerify',String(documentsResult.count||0));\n renderActivity(orders,requestRows);
+ set('statFeed',String(suppliersResult.count||0));set('statVerify',String(documentsResult.count||0));
+ renderActivity(orders,requestRows);
  if(total===0){set('buyerOverviewAnalyticsTitle','No recorded transactions yet');set('buyerOverviewAnalyticsText','Your buyer account is connected. Once you submit a sourcing request or confirm an order, verified activity will appear here automatically.');}
  else{set('buyerOverviewAnalyticsTitle','Your account activity is up to date');set('buyerOverviewAnalyticsText',total+' recorded transaction record(s): '+requestCount+' sourcing request(s) and '+orders.length+' order(s). Values are based only on records returned for your signed-in account.');}
 }
