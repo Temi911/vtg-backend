@@ -576,7 +576,7 @@
       '#vtgFooter .vtgFooterBottom>span{flex:1 1 230px}',
       '@media(max-width:800px){html[data-vtg-skin] #vtgThemePresetControl{margin:8px 0 0;flex-basis:100%}}',
       '/* Public visitor theme: one persistent preset controls the complete public shell and page palette. */',
-      'html[data-theme="light"][data-vtg-skin]{--vtg-public-page:#f7f9fb;--vtg-public-surface:#fff;--vtg-public-surface-2:#eef2f6;--vtg-public-ink:#17212b;--vtg-public-muted:#526273;--vtg-public-line:#dce4eb;--vtg-public-nav:#fff;--vtg-public-footer:#eef2f6}',
+      'html[data-theme="light"][data-vtg-skin]{--vtg-public-page:#f7f9fb;--vtg-public-surface:#fff;--vtg-public-surface-2:#eef2f6;--vtg-public-ink:#17212b;--vtg-public-muted:#526273;--vtg-public-line:#dce4eb;--vtg-public-nav:#fff;--vtg-public-footer:#e5f7fb}',
       'html[data-theme="dark"][data-vtg-skin]{--vtg-public-page:#0d1117;--vtg-public-surface:#11161d;--vtg-public-surface-2:#171d24;--vtg-public-ink:#eef3f6;--vtg-public-muted:#b9c5ce;--vtg-public-line:#2b3640;--vtg-public-nav:#0b1016;--vtg-public-footer:#080b0f}',
       'html[data-vtg-skin] body{color:var(--vtg-public-ink)!important;background-color:var(--vtg-public-page)!important;accent-color:var(--vtg-skin-accent)!important}',
       'html[data-vtg-skin] body :is(header,nav,.nav,.site-nav,.site-header,.siteHeader,.topbar,.top-bar,.page-header,.pageHeader,.toolbar,#vtgPageNavigation,.vtg-page-nav,.vtg-public-header){background:var(--vtg-public-nav)!important;background-color:var(--vtg-public-nav)!important;color:var(--vtg-public-ink)!important;border-color:var(--vtg-public-line)!important}',
