@@ -5,7 +5,7 @@ This guide makes the VTG frontend + backend + signup flow publicly accessible.
 ## 1. Architecture for launch
 
 - Frontend host: Vercel or the Railway-served frontend
-- Frontend entrypoint: `frontend-v3.html`
+- Frontend entrypoint: `marketplace.html` (root `/` routes to the marketplace)
 - Backend host: Railway/Render/Fly/VPS (runs Express API)
 - Database: managed PostgreSQL (Railway/Neon/Supabase/RDS)
 - SMTP provider: SendGrid/Mailgun/Resend/SES (for real verification emails)
@@ -66,7 +66,7 @@ API base:
 
 ## 5. Frontend -> backend wiring for online access
 
-The current frontend is `frontend-v3.html` and uses same-origin `/api` endpoints by default.
+The marketplace frontend is `marketplace.html` and uses same-origin `/api` endpoints by default.
 
 If the frontend is hosted on a separate domain, define before app scripts load:
 
@@ -86,9 +86,9 @@ If the frontend is hosted on a separate domain, define before app scripts load:
 ## 7. Go-live acceptance checklist
 
 - `GET /health` returns 200 from public backend URL
-- Frontend root serves `frontend-v3.html`
+- Frontend root serves `marketplace.html`
 - The site header uses the transparent VTG logo asset at /assets/vtg-logo-transparent.svg.
-- `visual-enhancer.js`, `map-enhancer.js`, `vtg-commerce.js` and related frontend assets load
+- `map-enhancer.js`, `vtg-commerce.js` and related active frontend assets load
 - Signup sends verification code by real email when SMTP is configured
 - `POST /api/auth/verify-email-code` accepts valid code
 - Buyer/Supplier/Bank signup succeeds after verification
