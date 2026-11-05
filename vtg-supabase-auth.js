@@ -19,7 +19,13 @@
     async function profile(session){
       const {data,error}=await client.from("profiles").select("id,email,full_name,phone,role,preferred_language,country,city,is_active").eq("id",session.user.id).maybeSingle();
       if(error)throw error;
-      return normalize(data,session.user);
+      const normalized=normalize(data,session.user);
+      const table=({supplier:'supplier_profiles',bank:'bank_profiles',agent:'agent_profiles'})[normalized.role];
+      if(table){
+        const business=await client.from(table).select('verification_status').eq('user_id',session.user.id).maybeSingle();
+        normalized.businessVerificationStatus=business.data?.verification_status||'pending';
+      }
+      return normalized;
     }
     function save(session,user){
       localStorage.setItem("vtg_access_token",session.access_token);
