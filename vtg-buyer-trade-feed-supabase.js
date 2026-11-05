@@ -3,7 +3,7 @@
   const $=id=>document.getElementById(id);
   const esc=value=>typeof window.esc==='function'?window.esc(value):String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let client=null,userId=null,busy=false,feedChannel=null;
-  const preview=()=>new URLSearchParams(location.search).get('preview')==='1';
+  const preview=()=>false;
   async function session(){
     let auth=null;
     try{
