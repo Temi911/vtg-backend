@@ -4,7 +4,7 @@ const $=id=>document.getElementById(id);
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const form=$('liveProductForm'),toggle=$('liveProductToggle'),rows=$('liveProductRows'),notice=$('liveCatalogueNotice');
 if(!form||!toggle||!rows||!notice)return;
-const preview=new URLSearchParams(location.search).get('preview')==='1';
+
 let db=null,user=null,profile=null,products=[];
 function say(message){notice.textContent=message;}
 function money(value,currency){return esc(currency||'USD')+' '+Number(value||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
@@ -43,7 +43,7 @@ async function load(){
    :'Connected to Supabase. You can publish product listings now; buyers will see them after VTG verifies your supplier account.');
  }catch(error){rows.innerHTML='<div class="empty">'+esc(error.message||'Could not load live products.')+' <button class="btn" type="button" id="retrySupabaseProducts">Try again</button></div>';say(error.message||'Supabase catalogue unavailable.');$('retrySupabaseProducts')?.addEventListener('click',load);}
 }
-function showForm(){if(preview){say('Preview mode: sign in without preview mode to publish live products.');return;}form.classList.toggle('hidden');if(!form.classList.contains('hidden'))$('liveProductName')?.focus();}
+function showForm(){form.classList.toggle('hidden');if(!form.classList.contains('hidden'))$('liveProductName')?.focus();}
 document.addEventListener('click',event=>{
  const t=event.target.closest('#liveProductToggle');if(t){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();showForm();return;}
  const deactivate=event.target.closest('[data-product-deactivate]'),activate=event.target.closest('[data-product-activate]');
@@ -59,7 +59,6 @@ document.addEventListener('submit',event=>{
  (async()=>{
   const button=$('liveProductSave');if(button){button.disabled=true;button.textContent='Saving…';}
   try{
-   if(preview)throw new Error('Preview mode cannot publish products.');
    await connect();
    const fd=new FormData(form),name=String(fd.get('name')||'').trim(),price=Number(fd.get('unitPriceUsd'));
    const moqText=String(fd.get('minOrderQty')||'').trim(),moq=moqText?Number((moqText.match(/^\\d+/)||[])[0]):1;
@@ -80,7 +79,6 @@ document.addEventListener('submit',event=>{
  })();
 },true);
 $('liveProductCancel')?.addEventListener('click',()=>{form.reset();form.classList.add('hidden');});
-if(preview){say('Preview mode: sign in without preview mode to manage the live VTG catalogue.');rows.innerHTML='<div class="empty">Live catalogue management requires an authenticated supplier account. <a href="/signin.html?role=supplier&next=%2Fsupplier-dashboard.html%23products">Sign in ↗</a></div>';}
-else if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
 window.loadSupplierLiveProducts=load;
 })();
