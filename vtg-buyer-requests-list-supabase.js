@@ -4,7 +4,7 @@
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   async function load(){
     const host=$('liveEnquiriesRows');if(!host)return;
-    if(new URLSearchParams(location.search).get('preview')==='1'){host.innerHTML='<div class="empty">Preview mode: live sourcing requests are available after buyer sign-in. Local drafts are not sent to VTG.</div>';return;}
+    if(false){host.innerHTML='<div class="empty">Preview mode: live sourcing requests are available after buyer sign-in. Local drafts are not sent to VTG.</div>';return;}
     host.innerHTML='<div class="empty">Loading your secure sourcing requests…</div>';
     try{
       const auth=await window.VTG_AUTH_READY;
