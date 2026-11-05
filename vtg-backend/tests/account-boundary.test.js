@@ -27,10 +27,28 @@ test('public sign-in presents only buyer, supplier and bank roles', () => {
   assert.doesNotMatch(signin, /data-role="agent"|data-role="admin"|workforce/i);
 });
 
-test('staff access pages are noindex and do not load the public shell', () => {
-  for (const file of ['../workforce-access.html', '../workforce-signin.html', '../admin-signin.html']) {
+test('staff entry pages are noindex and independent of public navigation', () => {
+  for (const file of ['../workforce-access.html', '../workforce-signin.html', '../admin-signin.html', '../agent.html']) {
     const page = read(file);
     assert.match(page, /name="robots" content="noindex/i);
-    assert.doesNotMatch(page, /vtg-shell\.js|id="vsHeader"|id="vsFooter"/i);
+    assert.doesNotMatch(page, /vtg-shell\.js|id="vsHeader"|id="vsFooter"|frontend-v3\.html/i);
   }
+});
+
+test('staff dashboards require authenticated role checks and disable public previews', () => {
+  const pages = ['../workforce-dashboard.html', '../admin-dashboard-preview.html', '../agent-dashboard.html', '../agent-network-dashboard.html'];
+  for (const file of pages) {
+    const page = read(file);
+    assert.match(page, /name="robots" content="noindex/i);
+    assert.match(page, /\/api\/auth\/me/);
+    assert.doesNotMatch(page, /vtg-dashboard-footer\.js|frontend-v3\.html/i);
+  }
+  assert.match(read('../workforce-dashboard.html'), /preview=false/);
+  assert.match(read('../agent-dashboard.html'), /preview=false/);
+});
+
+test('public agent application is replaced with a staff-only access notice', () => {
+  const agent = read('../agent.html');
+  assert.match(agent, /authorised VTG personnel/i);
+  assert.doesNotMatch(agent, /<form|Create account|Register as an agent/i);
 });
