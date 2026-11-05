@@ -1,0 +1,29 @@
+/* VTG shared chat experience — theme-aware across Buyer, Supplier and Bank workspaces */
+.vtg-chat-card{display:flex;flex-direction:column;min-height:520px;max-width:100%;overflow:hidden;border:1px solid var(--line);border-radius:16px;background:var(--surface,var(--panel));box-shadow:var(--shadow,0 12px 32px rgba(0,0,0,.06))}
+.vtg-chat-top{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line);background:var(--surface,var(--panel))}
+.vtg-chat-mark{width:40px;height:40px;display:grid;place-items:center;flex:none;border-radius:13px;background:color-mix(in srgb,var(--accent,var(--red,#8b3038)) 16%,var(--surface2,var(--panel2,#f2f3f5)));color:var(--accent,var(--red,#8b3038));font-size:13px;font-weight:900;letter-spacing:-.04em}
+.vtg-chat-heading{min-width:0;flex:1}.vtg-chat-heading strong{display:block;color:var(--ink);font-size:13px}.vtg-chat-heading small{display:block;margin-top:3px;color:var(--muted);font-size:11px}
+.vtg-chat-status{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:10px;font-weight:800}.vtg-chat-status:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green,#23875b)}
+.vtg-chat-stream{display:flex;flex:1;flex-direction:column;gap:14px;min-height:310px;max-height:520px;overflow:auto;padding:20px clamp(12px,3vw,24px);background:var(--bg,var(--panel2))}
+.vtg-chat-row{display:flex;align-items:flex-end;gap:8px;max-width:88%;align-self:flex-start}.vtg-chat-row.is-self{align-self:flex-end;flex-direction:row-reverse}
+.vtg-chat-avatar{width:27px;height:27px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--surface2,var(--panel2));border:1px solid var(--line);color:var(--muted);font-size:9px;font-weight:900}
+.vtg-chat-bubble{min-width:0;padding:11px 14px;border:1px solid var(--line);border-radius:16px 16px 16px 5px;background:var(--surface,var(--panel));color:var(--ink);font-size:12px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere;box-shadow:0 2px 8px rgba(0,0,0,.035)}
+.vtg-chat-row.is-self .vtg-chat-bubble{border-color:var(--accent,var(--red,#8b3038));border-radius:16px 16px 5px 16px;background:var(--accent,var(--red,#8b3038));color:#fff}
+.vtg-chat-row.is-ai .vtg-chat-bubble{border-color:color-mix(in srgb,var(--accent,var(--red,#8b3038)) 35%,var(--line));background:color-mix(in srgb,var(--surface,var(--panel)) 90%,var(--accent,var(--red,#8b3038)));color:var(--ink)}
+.vtg-chat-row[data-sender-role="buyer"]:not(.is-self):not(.is-ai) .vtg-chat-bubble{--sender-tone:#27849a;background:color-mix(in srgb,var(--surface,var(--panel)) 84%,var(--sender-tone));border-color:color-mix(in srgb,var(--sender-tone) 45%,var(--line))}
+.vtg-chat-row[data-sender-role="supplier"]:not(.is-self):not(.is-ai) .vtg-chat-bubble{--sender-tone:#b17a35;background:color-mix(in srgb,var(--surface,var(--panel)) 84%,var(--sender-tone));border-color:color-mix(in srgb,var(--sender-tone) 45%,var(--line))}
+.vtg-chat-row[data-sender-role="bank"]:not(.is-self):not(.is-ai) .vtg-chat-bubble{--sender-tone:#7564b7;background:color-mix(in srgb,var(--surface,var(--panel)) 84%,var(--sender-tone));border-color:color-mix(in srgb,var(--sender-tone) 45%,var(--line))}
+.vtg-chat-meta{display:flex;align-items:center;gap:8px;margin-top:5px;color:var(--muted);font-size:9px;line-height:1.4}.vtg-chat-row.is-self .vtg-chat-meta{justify-content:flex-end}.vtg-chat-row.is-self .vtg-chat-meta{color:rgba(255,255,255,.78)}.vtg-chat-label{font-weight:900;letter-spacing:.02em}
+.vtg-chat-compose{display:flex;align-items:flex-end;gap:9px;padding:12px;border-top:1px solid var(--line);background:var(--surface,var(--panel))}
+.vtg-chat-compose textarea{flex:1;min-width:0;min-height:44px;max-height:130px;resize:vertical;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg,var(--panel2));color:var(--ink);font:inherit;font-size:12px;line-height:1.5}
+.vtg-chat-compose textarea:focus{outline:2px solid color-mix(in srgb,var(--accent,var(--red,#8b3038)) 35%,transparent);border-color:var(--accent,var(--red,#8b3038))}
+.vtg-chat-send{min-height:44px;padding:0 18px;border:1px solid var(--accent,var(--red,#8b3038));border-radius:12px;background:var(--accent,var(--red,#8b3038));color:#fff;font-size:11px;font-weight:900;cursor:pointer}
+.vtg-chat-send:disabled{opacity:.55;cursor:wait}.vtg-chat-note{padding:0 14px 12px;color:var(--muted);font-size:10px;line-height:1.5;background:var(--surface,var(--panel))}
+.vtg-chat-typing{display:inline-flex;gap:4px;align-items:center}.vtg-chat-typing i{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.45;animation:vtgChatPulse 1s infinite ease-in-out}.vtg-chat-typing i:nth-child(2){animation-delay:.15s}.vtg-chat-typing i:nth-child(3){animation-delay:.3s}
+@keyframes vtgChatPulse{50%{opacity:1;transform:translateY(-3px)}}
+.chatLog .bubble.mine{background:var(--accent,var(--red,#8b3038));border-color:var(--accent,var(--red,#8b3038));color:#fff}.chatLog .bubble.mine small{color:rgba(255,255,255,.75)}
+.chatLog .bubble[data-sender-role="buyer"]:not(.mine){background:color-mix(in srgb,var(--surface,var(--panel)) 84%,#27849a);border-color:color-mix(in srgb,#27849a 45%,var(--line))}
+.chatLog .bubble[data-sender-role="supplier"]:not(.mine){background:color-mix(in srgb,var(--surface,var(--panel)) 84%,#b17a35);border-color:color-mix(in srgb,#b17a35 45%,var(--line))}
+.chatLog .bubble[data-sender-role="bank"]:not(.mine){background:color-mix(in srgb,var(--surface,var(--panel)) 84%,#7564b7);border-color:color-mix(in srgb,#7564b7 45%,var(--line))}
+@media(max-width:650px){.vtg-chat-card{min-height:470px}.vtg-chat-stream{min-height:270px;padding:14px 10px}.vtg-chat-row{max-width:96%}.vtg-chat-compose{gap:7px;padding:9px}.vtg-chat-send{padding:0 13px}}
+@media(prefers-reduced-motion:reduce){.vtg-chat-typing i{animation:none}}
