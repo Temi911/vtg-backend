@@ -445,6 +445,19 @@
       ['ocean-route','Ocean Route','Ocean blue and teal'],
       ['graphite-port','Graphite Port','Quiet graphite and steel']
     ];
+    // Workspace themes are managed by each authenticated dashboard, independently of visitor themes.
+    var workspacePresets = [
+      ['executive','Executive','Executive command palette'],
+      ['ocean-finance','Ocean Finance','Ocean finance palette'],
+      ['emerald-trade','Emerald Trade','Emerald trade palette'],
+      ['copper-ledger','Copper Ledger','Copper ledger palette'],
+      ['indigo-intel','Indigo Intelligence','Indigo intelligence palette'],
+      ['crimson-ops','Crimson Operations','Crimson operations palette'],
+      ['mono-pro','Monochrome Pro','Monochrome professional palette'],
+      ['sandstone','Sandstone','Sandstone palette'],
+      ['arctic-blue','Arctic Blue','Arctic blue palette'],
+      ['midnight-harbor','Midnight Harbor','Midnight harbor palette']
+    ];
 
     var root = document.documentElement;
     var style = document.createElement('style');
