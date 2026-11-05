@@ -9,7 +9,7 @@ function note(message){let el=form.querySelector('[data-shared-status]');if(!el)
 async function session(){const auth=await window.VTG_AUTH_READY;if(!auth?.client)throw new Error('Supabase session is not ready. Refresh and try again.');const {data,error}=await auth.client.auth.getSession();if(error)throw error;if(!data.session)throw new Error('Sign in to create a shared request.');const p=await auth.client.from('profiles').select('role,is_active').eq('id',data.session.user.id).single();if(p.error)throw p.error;if(p.data.role!=='buyer'||!p.data.is_active)throw new Error('An active buyer account is required.');client=auth.client;buyerId=data.session.user.id}
 function legacyRequests(){try{const v=JSON.parse(localStorage.getItem('vtg-shared-trades-v1')||'[]');return Array.isArray(v)?v:[]}catch(_){return[]}}
 function offerLegacyImport(){
- const legacy=legacyRequests();if(!legacy.length||$('importLegacySharedRequests'))return;
+ const legacy=legacyRequests();if(!legacy.length||$('importLegacySharedRequests')||localStorage.getItem('vtg-shared-trades-imported-'+buyerId)==='1')return;
  const button=document.createElement('button');button.id='importLegacySharedRequests';button.type='button';button.className='btn';button.style.marginTop='10px';button.textContent='Import '+legacy.length+' old browser request'+(legacy.length===1?'':'s');
  const status=form.querySelector('[data-shared-status]');(status||form).insertAdjacentElement('afterend',button);
  button.addEventListener('click',async()=>{
@@ -19,7 +19,7 @@ function offerLegacyImport(){
    const refs=valid.map(r=>r.reference);const existing=refs.length?await client.from('buyer_trade_requests').select('reference').in('reference',refs):{data:[],error:null};if(existing.error)throw existing.error;
    const present=new Set((existing.data||[]).map(x=>x.reference));const pending=valid.filter(r=>!present.has(r.reference));
    if(pending.length){const result=await client.from('buyer_trade_requests').insert(pending);if(result.error)throw result.error}
-   button.remove();await load();note('Imported '+pending.length+' legacy request'+(pending.length===1?'':'s')+'. Old preview quotations were not imported because they are not linked to verified supplier accounts.');
+   localStorage.setItem('vtg-shared-trades-imported-'+buyerId,'1');button.remove();await load();note('Imported '+pending.length+' legacy request'+(pending.length===1?'':'s')+'. Old preview quotations were not imported because they are not linked to verified supplier accounts.');
   }catch(err){note(err.message||'Could not import old browser requests.');button.disabled=false}
  });
 }
