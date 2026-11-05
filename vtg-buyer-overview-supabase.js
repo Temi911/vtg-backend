@@ -3,6 +3,13 @@
 const $=id=>document.getElementById(id);
 const money=(value,currency)=>new Intl.NumberFormat('en-US',{style:'currency',currency:currency||'USD',maximumFractionDigits:0}).format(value);
 function set(id,value){const el=$(id);if(el)el.textContent=value}
+function renderActivity(orders,requests){
+ const root=$('activity');if(!root)return;
+ const entries=[...(orders||[]).map(row=>({title:'Order · '+String(row.status||'Recorded').replace(/_/g,' '),detail:'Order record',date:row.created_at})),...(requests||[]).map(row=>({title:'Sourcing request · '+String(row.product||'Request'),detail:'Request status: '+String(row.status||'submitted').replace(/_/g,' '),date:row.created_at}))].sort((a,b)=>new Date(b.date||0)-new Date(a.date||0)).slice(0,5);
+ root.replaceChildren();
+ if(!entries.length){const item=document.createElement('div'),title=document.createElement('strong'),detail=document.createElement('p');title.textContent='No account activity yet';detail.textContent='Your real sourcing requests and orders will appear here when recorded.';item.append(title,detail);root.append(item);return;}
+ entries.forEach(entry=>{const item=document.createElement('div'),title=document.createElement('strong'),detail=document.createElement('p');title.textContent=entry.title;const date=entry.date?new Date(entry.date).toLocaleString():'Date not recorded';detail.textContent=entry.detail+' · '+date;item.append(title,detail);root.append(item);});
+}
 function showError(error){
  ['buyerMetricTransactions','buyerMetricValue','buyerMetricCompleted','statRfqs','statCart','statFeed','statVerify'].forEach(id=>set(id,'—'));
  set('buyerMetricTransactionsNote','Account data unavailable');
@@ -24,7 +31,7 @@ async function load(){
  if(profile?.role!=='buyer'||!profile?.is_active)throw new Error('An active buyer account is required to view this overview.');
  const [ordersResult,requestsResult,rfqResult,cartResult,suppliersResult,documentsResult]=await Promise.all([
   client.from('trade_orders').select('id,quantity,unit_price,currency,status,created_at').eq('buyer_id',user.id).order('created_at',{ascending:false}).limit(500),
-  client.from('buyer_trade_requests').select('id',{count:'exact',head:true}).eq('buyer_id',user.id),
+  client.from('buyer_trade_requests').select('id,product,status,created_at',{count:'exact'}).eq('buyer_id',user.id).order('created_at',{ascending:false}).limit(100),
   client.from('buyer_rfq_drafts').select('id',{count:'exact',head:true}).eq('buyer_id',user.id),
   client.from('buyer_cart_states').select('items').eq('buyer_id',user.id).maybeSingle(),
   client.from('buyer_saved_suppliers').select('id',{count:'exact',head:true}).eq('buyer_id',user.id),
@@ -32,7 +39,7 @@ async function load(){
  ]);
  for(const result of [ordersResult,requestsResult,rfqResult,cartResult,suppliersResult,documentsResult])if(result.error)throw result.error;
  const orders=ordersResult.data||[];
- const requestCount=requestsResult.count||0;
+ const requestRows=requestsResult.data||[];\n const requestCount=requestsResult.count||requestRows.length;
  const total=requestCount+orders.length;
  const completed=orders.filter(o=>['completed','delivered','closed'].includes(String(o.status||'').toLowerCase())).length;
  const currencyTotals={};
@@ -47,7 +54,7 @@ async function load(){
  set('buyerMetricValue',tradeValue);set('buyerMetricValueNote',valueNote);
  set('buyerMetricCompleted',String(completed));set('buyerMetricCompletedNote','Of '+orders.length+' recorded orders');
  set('statRfqs',String(rfqResult.count||0));set('statCart',String(cartLines));
- set('statFeed',String(suppliersResult.count||0));set('statVerify',String(documentsResult.count||0));
+ set('statFeed',String(suppliersResult.count||0));set('statVerify',String(documentsResult.count||0));\n renderActivity(orders,requestRows);
  if(total===0){set('buyerOverviewAnalyticsTitle','No recorded transactions yet');set('buyerOverviewAnalyticsText','Your buyer account is connected. Once you submit a sourcing request or confirm an order, verified activity will appear here automatically.');}
  else{set('buyerOverviewAnalyticsTitle','Your account activity is up to date');set('buyerOverviewAnalyticsText',total+' recorded transaction record(s): '+requestCount+' sourcing request(s) and '+orders.length+' order(s). Values are based only on records returned for your signed-in account.');}
 }
