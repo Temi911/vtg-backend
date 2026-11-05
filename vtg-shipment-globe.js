@@ -61,7 +61,7 @@ async function init(){
  }else sourceRecords=records(role);
  const routes=sourceRecords.map(r=>{const from=locate(r.origin),to=locate(r.destination);return from&&to&&from.name!==to.name?{...r,from,to}:null}).filter(Boolean);
  list.innerHTML=routes.length?routes.map((r,i)=>'<button type="button" class="saItem" data-route="'+i+'" aria-pressed="'+(i===0?'true':'false')+'"><b>'+esc(r.goods)+' · '+esc(r.ref)+'</b><small>'+esc(r.from.name)+' → '+esc(r.to.name)+'</small><small>Status: '+esc(r.status)+' · Select to focus both views</small>'+(r.carrier?'<small>Carrier: '+esc(r.carrier)+'</small>':'')+'</button>').join(''):'<div class="saEmpty"><strong>No specific route is available yet.</strong><br>Record a shipment with a recognised origin port/city, destination port/city and a movement status. Country-only entries and unrelated sample corridors are intentionally excluded.</div>';
- let map=null,mapRoutes=[],shipMarker=null,selected=-1,globe=null,liveVesselMarker=null,liveVesselPosition=null;
+ let map=null,mapRoutes=[],shipMarker=null,selected=-1,globe=null,liveVesselMarker=null,liveVesselPosition=null,globePoints=[];
  const shipIcon=()=>window.L.divIcon({className:'vtgShipMarker',html:'<div style="font-size:20px;filter:drop-shadow(0 1px 2px #0008);transform:rotate(0deg)">⛴</div>',iconSize:[24,24],iconAnchor:[12,12]});
  function applyLiveVesselPosition(p){
   const lat=Number(p?.latitude),lng=Number(p?.longitude);
@@ -76,7 +76,7 @@ async function init(){
   }
   if(globe&&typeof globe.pointsData==='function'){
    const vesselPoint={name:'AIS position · '+(p.provider||'provider'),lat,lng,color:'#b49a70',routeIndex:null};
-   globe.pointsData([...endpoints.values(),vesselPoint]);
+   globe.pointsData([...globePoints,vesselPoint]);
    globe.pointOfView({lat,lng,altitude:1.55},650);
   }
  }
@@ -96,7 +96,7 @@ async function init(){
   loadGlobe().then(()=>{
    const endpoints=new Map();
    routes.forEach((r,i)=>{[[r.from,0],[r.to,1]].forEach(([p,side])=>{if(!endpoints.has(p.name))endpoints.set(p.name,{name:p.name,lat:p.lat,lng:p.lng,color:side?'#64d9b0':'#f06a60',routeIndex:i})})});
-   const points=[...endpoints.values()];
+   const points=[...endpoints.values()];globePoints=points;
    const arcs=routes.map((r,i)=>({startLat:r.from.lat,startLng:r.from.lng,endLat:r.to.lat,endLng:r.to.lng,color:['#64d9b0','#f06a60'],routeIndex:i,label:r.goods+' · '+r.status}));
    globe=window.Globe()(node)
     .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
