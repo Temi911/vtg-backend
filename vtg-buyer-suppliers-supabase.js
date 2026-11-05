@@ -45,20 +45,20 @@
   }
   async function save(form){
     const button=form.querySelector('button[type="submit"]');
-    const values=Object.fromEntries(new FormData(form));
-    const payload={
-      buyer_id:userId,
-      company_name:String(values.company||'').trim(),
-      country:String(values.country||''),
-      contact_person:String(values.contact||'').trim()||null,
-      email:String(values.email||'').trim()||null,
-      products:String(values.products||'').trim()||null,
-      notes:String(values.notes||'').trim()||null
-    };
-    if(!payload.company_name){notice('Enter the supplier or factory name.',true);return;}
     if(button)button.disabled=true;
     try{
       await session();
+      const values=Object.fromEntries(new FormData(form));
+      const payload={
+        buyer_id:userId,
+        company_name:String(values.company||'').trim(),
+        country:String(values.country||''),
+        contact_person:String(values.contact||'').trim()||null,
+        email:String(values.email||'').trim()||null,
+        products:String(values.products||'').trim()||null,
+        notes:String(values.notes||'').trim()||null
+      };
+      if(!payload.company_name){notice('Enter the supplier or factory name.',true);return;}
       const {error}=await client.from('buyer_saved_suppliers').insert(payload);
       if(error)throw error;
       form.reset();
