@@ -11,15 +11,19 @@
     if(n){n.textContent=message;n.style.color=isError?'var(--danger, #b42318)':'';}
   }
   async function session(){
-    const auth=await window.VTG_AUTH_READY;
-    if(!auth?.client)throw new Error('Secure sign-in is not ready. Refresh and try again.');
-    const {data,error}=await auth.client.auth.getSession();
+    let auth=null;
+    if(window.VTG_AUTH_READY) auth=await window.VTG_AUTH_READY;
+    if(!auth&&window.VTGAuth) auth=window.VTGAuth;
+    const supabase=auth?.client||window.VTG_SUPABASE;
+    if(!supabase?.auth)throw new Error('Secure sign-in is not ready. Refresh and try again.');
+    const {data,error}=await supabase.auth.getSession();
     if(error)throw error;
-    if(!data.session)throw new Error('Sign in to save supplier contacts to your VTG account.');
-    const {data:profile,error:pe}=await auth.client.from('profiles').select('role,is_active').eq('id',data.session.user.id).single();
-    if(pe)throw pe;
-    if(profile.role!=='buyer'||!profile.is_active)throw new Error('An active buyer account is required to save suppliers.');
-    client=auth.client;userId=data.session.user.id;
+    if(!data?.session)throw new Error('Sign in to save supplier contacts to your VTG account.');
+    const id=data.session.user.id;
+    const {data:profile,error:profileError}=await supabase.from('profiles').select('role,is_active').eq('id',id).single();
+    if(profileError)throw profileError;
+    if(profile?.role!=='buyer'||profile?.is_active!==true)throw new Error('An active buyer account is required to save suppliers.');
+    client=supabase;userId=id;
   }
   function render(){
     const count=$('supplierCount'),rows=$('supplierRows');
@@ -29,13 +33,13 @@
   }
   async function load(){
     const rows=$('supplierRows');
-    if(preview){if(rows)rows.innerHTML='<div class="empty">Preview mode: supplier contacts are saved in this browser only. Sign in to save them to your VTG account.</div>';return;}
+    if(preview){if(rows)rows.innerHTML='<div class="empty">Preview mode: supplier contacts are saved in this browser only. Sign in to save them to your VTG account across devices.</div>';return;}
     if(rows)rows.innerHTML='<div class="empty">Loading your saved suppliers…</div>';
     try{
       await session();
       const {data,error}=await client.from('buyer_saved_suppliers').select('id,company_name,country,contact_person,email,products,notes,created_at').eq('buyer_id',userId).order('created_at',{ascending:false});
       if(error)throw error;
-      items=data||[];
+      items=Array.isArray(data)?data:[];
       const n=document.querySelector('[data-i18n="supplierLocalNotice"]');
       if(n){n.textContent='Saved to your VTG buyer account across devices. Contact details and documents have not been independently verified by VTG.';n.style.color='';}
       render();
@@ -59,6 +63,8 @@
         notes:String(values.notes||'').trim()||null
       };
       if(!payload.company_name){notice('Enter the supplier or factory name.',true);return;}
+      if(!['China','South Korea','Other'].includes(payload.country)){notice('Choose a supplier country.',true);return;}
+      if(payload.company_name.length>140||payload.contact_person?.length>100||payload.email?.length>180||payload.products?.length>180||payload.notes?.length>1000){notice('One or more fields exceed the allowed length. Shorten the entry and try again.',true);return;}
       const {error}=await client.from('buyer_saved_suppliers').insert(payload);
       if(error)throw error;
       form.reset();
