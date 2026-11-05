@@ -29,7 +29,7 @@ test('VTG AI Edge Function validates JWT, active buyer role and input limits',()
 });
 
 test('VTG AI does not claim authority or invent trade evidence',()=>{
- assert.match(edge,/Never invent prices, suppliers, company verification/);
+ assert.match(edge,/Do not invent prices, suppliers, company verification/);
  assert.match(edge,/bank, licensed professional or relevant official authority/);
  assert.match(edge,/VTG AI only provides guidance/);
  assert.doesNotMatch(client,/service_role|secret_key|OPENAI_API_KEY|VTG_AI_API_KEY/);
