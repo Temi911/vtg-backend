@@ -55,7 +55,18 @@
       await session();
       const {data:rows,error}=await client.from('messages').select('id,conversation_id,sender_id,body,created_at').eq('conversation_id',conversationId).order('created_at',{ascending:true}).limit(300);
       if(error)throw error;
-      box.innerHTML=rows?.length?rows.map(m=>'<div class="bubble '+(m.sender_id===userId?'mine':'')+'">'+esc(m.body)+'<small>'+esc(m.created_at?new Date(m.created_at).toLocaleString():'')+(m.sender_id===userId?' · You':'')+'</small></div>').join(''):'<div class="empty">No messages in this conversation yet.</div>';
+      const senderIds=[...new Set((rows||[]).map(m=>m.sender_id).filter(Boolean))];
+      let senderProfiles={};
+      if(senderIds.length){
+        const {data:profiles,error:profileError}=await client.from('profiles').select('id,role,full_name').in('id',senderIds);
+        if(!profileError)senderProfiles=Object.fromEntries((profiles||[]).map(p=>[p.id,p]));
+      }
+      const roleNames={buyer:'Buyer',supplier:'Supplier',bank:'Bank',agent:'Trade agent'};
+      box.innerHTML=rows?.length?rows.map(m=>{
+        const mine=m.sender_id===userId,profile=senderProfiles[m.sender_id]||{},senderRole=String(profile.role||'other').toLowerCase();
+        const senderLabel=mine?'You':(roleNames[senderRole]||'Trade partner');
+        return '<div class="bubble '+(mine?'mine':'')+'" data-sender-role="'+esc(senderRole)+'">'+esc(m.body)+'<small>'+esc(senderLabel)+' · '+esc(m.created_at?new Date(m.created_at).toLocaleString():'')+'</small></div>';
+      }).join(''):'<div class="empty">No messages in this conversation yet.</div>';
       const conv=conversations.find(c=>c.id===conversationId);
       $('threadTitle').textContent=conv?.order_reference||'Live trade conversation';
       box.scrollTop=box.scrollHeight;
