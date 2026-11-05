@@ -74,7 +74,7 @@ html[data-theme="light"] .vtg-header-brand .logo-light{display:none!important}
 </div></main></div><div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
 (function(){
- const $=id=>document.getElementById(id), root=document.documentElement, params=new URLSearchParams(location.search), preview=params.get('preview')==='1', requested=(params.get('workspace')||'staff').toLowerCase();
+ const $=id=>document.getElementById(id), root=document.documentElement, params=new URLSearchParams(location.search), preview=false, requested=(params.get('workspace')||'staff').toLowerCase();
  const roles={staff:'Staff & Operations',manager:'Management',logistics:'Logistics & Clearing',compliance:'Verification & Compliance',support:'Customer Support',finance:'Finance & Commissions',inspector:'Inspection & Quality',marketing:'Marketing & Catalogue',agent:'Trade Agent'};
  const roleName=roles[requested]||roles.staff;
  const token=(()=>{try{return localStorage.getItem('vtg_access_token')||JSON.parse(localStorage.getItem('vtg-auth')||'{}').accessToken||''}catch(e){return ''}})();
@@ -88,7 +88,7 @@ window.addEventListener('storage',e=>{if(e.key==='vtg-theme-preference'||e.key==
  $('today').textContent=new Intl.DateTimeFormat(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date());
  $('userRole').textContent=roleName;$('crumbCurrent').textContent=roleName;$('pageTitle').textContent=roleName;
  $('avatar').textContent=roleName.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase();
- if(!preview&&!token){location.replace('/workforce-signin.html?workspace='+encodeURIComponent(requested));return}
+ if(!token){location.replace('/workforce-signin.html?workspace='+encodeURIComponent(requested));return}
  if(preview){$('bannerTitle').textContent='Preview mode · interface review only';$('bannerText').textContent='You are viewing the workforce dashboard without a signed-in session. Counts and task records are intentionally blank. Connect the task, approval and audit APIs before using this workspace for official work.'}
  else{
    try{
