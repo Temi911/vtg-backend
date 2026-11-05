@@ -56,7 +56,7 @@
     try{
       const message=['Specifications: '+String(values.details||'Not provided'),'Sourcing country: '+String(values.origin||'Open to options'),'Destination market: '+String(values.destination||'Nigeria')].join('\n');
       const result=await client.rpc('vtg_create_trade_quote_request',{
-        p_product_id:product.id,p_quantity:quantity,p_origin_country:String(values.origin||'').trim(),
+        p_product_id:product.id,p_quantity:quantity,p_origin_country:null,
         p_destination:String(values.destination||'Tin Can Island, Lagos'),p_buyer_message:message
       });
       if(result.error)throw result.error;
