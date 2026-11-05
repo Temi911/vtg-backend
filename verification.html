@@ -12,8 +12,8 @@
 <header class="top"><div class="brand"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></div><button class="btn secondary" id="signOut">Sign out</button></header>
 <section class="card"><h1>Business Verification</h1><div id="intro" class="sub">Upload clear, valid documents that prove your organisation is legitimate. VTG will review them before verification is completed.</div><div id="notice" class="notice">Documents should be current, readable and belong to the registered organisation. Do not upload passwords, payment card details or unrelated personal documents.</div><div id="msg" class="msg"></div></section>
 <section id="statusCard" class="card"><div id="verificationState" class="verificationState"><div><strong id="verificationStateTitle">Verification status</strong><span id="verificationStateText">Checking your submitted documents…</span></div><div class="row"><span id="verificationStateBadge" class="status">PENDING</span><button id="workspaceBtn" class="btn hidden" type="button">Enter workspace</button></div></div></section>
-<section id="logoCard" class="card"><h2>Organisation logo <span class="status">REQUIRED</span></h2><div class="sub">A clear official logo is compulsory for supplier and bank accounts. This logo will identify your company or institution across VTG.</div><div class="row" style="margin-top:12px"><input id="logoFile" class="file" type="file" accept=".jpg,.jpeg,.png,.webp,.gif"><button id="logoBtn" class="btn" type="button">Upload logo</button></div><div id="logoMsg" class="small" style="margin-top:8px"></div></section>
-<section id="uploadCard" class="card"><h2>Required verification documents</h2><div class="sub">You can upload PDF, JPEG, PNG or WEBP files up to 10 MB each.</div><div id="docs" class="grid" style="margin-top:15px"></div></section>
+<section id="logoCard" class="card"><h2>Organisation logo <span class="status">REQUIRED</span></h2><div class="sub">A clear official logo is compulsory for supplier and bank accounts. This logo will identify your company or institution across VTG.</div><div class="row" style="margin-top:12px"><input id="logoFile" class="file" type="file" accept=".jpg,.jpeg,.png,.webp"><button id="logoBtn" class="btn" type="button">Upload logo</button></div><div id="logoMsg" class="small" style="margin-top:8px"></div></section>
+<section id="uploadCard" class="card"><h2>Required verification documents</h2><div class="sub">You can upload PDF, JPEG, PNG or WEBP files up to 50 MB each.</div><div id="docs" class="grid" style="margin-top:15px"></div></section>
 <section id="myDocs" class="card"><h2>Submitted documents</h2><div class="sub">Review status will appear here after submission.</div><div id="list" style="margin-top:12px"></div></section>
 <section id="admin" class="card hidden">
   <h2>Verification Review Centre</h2>
@@ -23,55 +23,145 @@
   <div id="adminList"></div>
 </section>
 </main>
+<script src="/vtg-supabase-auth.js?v=20261105-auth-1"></script>
 <script>
-const token=localStorage.getItem('vtg_access_token');const $=s=>document.querySelector(s);const api=async(path,opts={})=>{opts.headers={...(opts.headers||{}),Authorization:'Bearer '+token};return fetch('/api'+path,opts)};
+const $=s=>document.querySelector(s);
+let auth=null,currentUser=null,role='',verificationStatus='pending',applicationPending=false,canUpload=false,logoUploaded=false;
 const supplierDocs=[['company_registration','Company registration certificate'],['business_license','Business / trade licence'],['tax_certificate','Tax registration certificate'],['export_license','Export licence (if applicable)'],['company_address_proof','Company address proof']];
 const agentDocs=[['government_id','Government-issued identification'],['proof_of_address','Proof of address'],['business_registration','Business registration (if applicable)'],['professional_certificate','Relevant professional certificate'],['reference_document','Trade/work reference document']];
 const bankDocs=[['bank_license','Bank / financial institution licence'],['regulatory_certificate','Regulatory certificate / authorisation'],['company_registration','Institution registration certificate'],['swift_bic_certificate','SWIFT / BIC evidence'],['institution_address_proof','Institution address proof'],['officer_authorization','Authorisation showing the submitting officer is authorised']];
-let role=''; let verificationStatus='pending'; let logoUploaded=false;
-async function init(){if(!token){location.href='/signin.html';return}const r=await api('/auth/me');if(!r.ok){location.href='/signin.html';return}const d=await r.json();if(d.agreementRequired){location.href='/signup-agreement.html';return}role=d.user?.role||d.role||''; verificationStatus=d.user?.businessVerificationStatus||'pending';if(!['supplier','bank','agent','admin'].includes(role)){location.href=role==='buyer'?'/buyer-dashboard.html':'/';return}if(document.getElementById('signOut'))document.getElementById('signOut').onclick=()=>{localStorage.removeItem('vtg_access_token');localStorage.removeItem('vtg-auth');location.href='/signin.html'}if(role==='admin'){ $('#uploadCard').classList.add('hidden');$('#logoCard').classList.add('hidden');$('#myDocs').classList.add('hidden');$('#statusCard').classList.add('hidden');$('#notice').textContent='Review verification documents submitted by suppliers, banks and agents. Verify only when the documents are sufficient and appear legitimate. Rejections require a clear correction note.';$('#admin').classList.remove('hidden');$('#refreshAdmin').onclick=loadAdmin;loadAdmin();return}renderDocs();loadMine();updateVerificationState();}
-function updateVerificationState(){
- const box=$('#verificationState'),title=$('#verificationStateTitle'),text=$('#verificationStateText'),badge=$('#verificationStateBadge');
- if(role==='supplier'||role==='bank'){
-   const label=role==='supplier'?'supplier business':'bank/institutional';
-   badge.textContent=String(verificationStatus||'pending').replace('_',' ').toUpperCase();
-   box.className='verificationState '+(verificationStatus==='verified'?'verified':verificationStatus==='needs_correction'?'correction':'');
-   if(verificationStatus==='verified'){title.textContent='Verification complete';text.textContent='Your '+label+' profile has been verified. You can now enter your VTG workspace.';$('#uploadCard').classList.add('hidden');$('#logoCard').classList.add('hidden');$('#myDocs').classList.remove('hidden');const wb=$('#workspaceBtn');wb.classList.remove('hidden');wb.onclick=()=>location.href=role==='supplier'?'/supplier-dashboard.html':role==='bank'?'/bank-trade-os.html':role==='agent'?'/agent-dashboard.html':'/admin-dashboard-preview.html';}
-   else if(verificationStatus==='needs_correction'){title.textContent='Corrections required';text.textContent='One or more required documents need attention. Upload corrected documents and resubmit.';}
-   else if(verificationStatus==='under_review'){title.textContent='Documents under review';text.textContent='VTG has received your documents. Please wait for the verification review to be completed.';}
-   else {title.textContent='Verification required';text.textContent='Upload the required documents below. Your workspace will remain restricted until verification is complete.';}
+async function api(path,opts={}){
+ const {data,error}=await auth.client.auth.getSession();
+ if(error)throw error;
+ if(!data.session)throw new Error('Your session has expired. Please sign in again.');
+ const headers={apikey:auth.publishableKey,Authorization:'Bearer '+data.session.access_token,...(opts.headers||{})};
+ let body=opts.body;
+ if(body&&typeof body!=='string'&&!(body instanceof FormData)){headers['Content-Type']='application/json';body=JSON.stringify(body);}
+ return fetch(auth.projectUrl+'/functions/v1/vtg-verification'+path,{...opts,headers,body});
+}
+async function init(){
+ try{
+  auth=await window.VTG_AUTH_READY;
+  const current=await auth.getCurrent();
+  if(!current){location.href='/signin.html';return;}
+  currentUser=current.user;
+  role=currentUser.role==='buyer'&&['supplier','bank','agent'].includes(currentUser.requestedRole)?currentUser.requestedRole:currentUser.role;
+  if(!['supplier','bank','agent','admin'].includes(role)){location.href=role==='buyer'?'/buyer-dashboard.html':'/';return;}
+  if($('#signOut'))$('#signOut').onclick=async()=>{await auth.signOut();location.href='/signin.html';};
+  if(role==='admin'){
+   $('#uploadCard').classList.add('hidden');$('#logoCard').classList.add('hidden');$('#myDocs').classList.add('hidden');$('#statusCard').classList.add('hidden');
+   $('#notice').textContent='Review verification documents submitted by suppliers, banks and agents. Verify only when the documents are sufficient and appear legitimate. Rejections require a clear correction note.';
+   $('#admin').classList.remove('hidden');$('#refreshAdmin').onclick=loadAdmin;await loadAdmin();return;
+  }
+  if(role==='agent')$('#logoCard').classList.add('hidden');
+  renderDocs();
+  await loadMine();
+  if(applicationPending){
+   $('#uploadCard').classList.add('hidden');$('#logoCard').classList.add('hidden');
+   $('#verificationStateTitle').textContent='Business application awaiting approval';
+   $('#verificationStateText').textContent='Your email is confirmed. VTG administrators must approve your trade '+role+' application before document upload and workspace access become available.';
+   $('#verificationStateBadge').textContent='APPLICATION PENDING';
+   $('#verificationState').className='verificationState';
+  }else if(!canUpload){
+   $('#uploadCard').classList.add('hidden');$('#logoCard').classList.add('hidden');
+  }
+  updateVerificationState();
+ }catch(e){
+  const msg=$('#msg');if(msg)msg.textContent=e.message||'Could not load your verification workspace.';
  }
 }
-function renderDocs(){const arr=role==='supplier'?supplierDocs:role==='agent'?agentDocs:bankDocs;$('#docs').innerHTML=arr.map(([type,label])=>'<div class="doc"><h3>'+label+'</h3><p>Upload a clear copy of this document. '+(type==='export_license'?'If this does not apply to your business, you may skip it.':'Required for verification.')+'</p><input class="file" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" data-type="'+type+'"><button class="btn" style="margin-top:10px" onclick="uploadDoc(\''+type+'\')">Upload document</button><div id="msg-'+type+'" class="small" style="margin-top:8px"></div></div>').join('')}
-async function uploadDoc(type){const input=document.querySelector('input[data-type="'+type+'"]');const file=input.files[0];if(!file){$('#msg-'+type).textContent='Choose a file first.';return}const fd=new FormData();fd.append('docType',type);fd.append('file',file);$('#msg-'+type).textContent='Uploading…';try{const r=await api('/verification/documents',{method:'POST',body:fd});const d=await r.json();if(!r.ok)throw new Error(d.message||'Upload failed');$('#msg-'+type).textContent='Uploaded and awaiting review.';input.value='';loadMine()}catch(e){$('#msg-'+type).textContent=e.message}}
-async function uploadLogo(){const file=$('#logoFile').files[0];if(!file){$('#logoMsg').textContent='Choose a logo file first.';return}const fd=new FormData();fd.append('image',file);fd.append('altText',role==='supplier'?'Company logo':'Bank logo');$('#logoMsg').textContent='Uploading…';try{const r=await api('/profile/me/logo',{method:'POST',body:fd});const d=await r.json();if(!r.ok)throw new Error(d.message||'Logo upload failed');logoUploaded=true;$('#logoMsg').textContent='Logo uploaded successfully.';loadMine()}catch(e){$('#logoMsg').textContent=e.message}}
+function updateVerificationState(){
+ const box=$('#verificationState'),title=$('#verificationStateTitle'),copy=$('#verificationStateText'),badge=$('#verificationStateBadge');
+ const status=verificationStatus==='rejected'?'needs_correction':verificationStatus;
+ if(applicationPending)return;
+ const label=role==='supplier'?'supplier business':role==='bank'?'bank/institutional':'trade-agent';
+ badge.textContent=String(status||'pending').replace('_',' ').toUpperCase();
+ box.className='verificationState '+(status==='verified'?'verified':status==='needs_correction'?'correction':'');
+ if(status==='verified'){
+  title.textContent='Verification complete';copy.textContent='Your '+label+' profile has been verified. You can now enter your VTG workspace.';
+  $('#uploadCard').classList.add('hidden');$('#logoCard').classList.add('hidden');$('#myDocs').classList.remove('hidden');
+  const wb=$('#workspaceBtn');wb.classList.remove('hidden');wb.onclick=()=>location.href=role==='supplier'?'/supplier-dashboard.html':role==='bank'?'/bank-trade-os.html':role==='agent'?'/agent-dashboard.html':'/admin-dashboard-preview.html';
+ }else if(status==='needs_correction'){
+  title.textContent='Corrections required';copy.textContent='One or more required documents need attention. Review the administrator notes, upload corrected documents and resubmit.';
+ }else if(status==='under_review'){
+  title.textContent='Documents under review';copy.textContent='VTG has received your documents. Please wait for the verification review to be completed.';
+ }else{
+  title.textContent='Verification required';copy.textContent='Upload the required documents below. Your workspace will remain restricted until verification is complete.';
+ }
+}
+function renderDocs(){
+ const arr=role==='supplier'?supplierDocs:role==='agent'?agentDocs:bankDocs;
+ $('#docs').innerHTML=arr.map(([type,label])=>'<div class="doc"><h3>'+label+'</h3><p>Upload a clear copy of this document. '+(type==='export_license'||type==='business_registration'?'If this does not apply to your business, you may skip it.':'Required for verification.')+'</p><input class="file" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" data-type="'+type+'"><button class="btn" style="margin-top:10px" onclick="uploadDoc(\''+type+'\')">Upload document</button><div id="msg-'+type+'" class="small" style="margin-top:8px"></div></div>').join('');
+}
+async function uploadDoc(type){
+ if(!canUpload){$('#msg-'+type).textContent='Document upload becomes available after administrator approval.';return;}
+ const input=document.querySelector('input[data-type="'+type+'"]'),file=input?.files?.[0];
+ if(!file){$('#msg-'+type).textContent='Choose a file first.';return;}
+ $('#msg-'+type).textContent='Preparing secure upload…';
+ try{
+  const signedResponse=await api('/upload-url',{method:'POST',body:{docType:type,fileName:file.name,mimeType:file.type,fileSize:file.size}});
+  const signed=await signedResponse.json();if(!signedResponse.ok)throw new Error(signed.error||'Could not prepare upload');
+  const uploaded=await auth.client.storage.from('vtg-verification-documents').uploadToSignedUrl(signed.path,signed.token,file,{contentType:file.type});
+  if(uploaded.error)throw uploaded.error;
+  const saved=await api('/documents',{method:'POST',body:{path:signed.path,docType:type,fileName:file.name,mimeType:file.type,fileSizeBytes:file.size}});
+  const result=await saved.json();if(!saved.ok)throw new Error(result.error||'Could not register document');
+  $('#msg-'+type).textContent='Uploaded and awaiting review.';input.value='';await loadMine();
+ }catch(e){$('#msg-'+type).textContent=e.message||'Upload failed.';}
+}
+async function uploadLogo(){
+ if(!canUpload){$('#logoMsg').textContent='Logo upload becomes available after administrator approval.';return;}
+ const file=$('#logoFile').files[0];
+ if(!file){$('#logoMsg').textContent='Choose a logo file first.';return;}
+ $('#logoMsg').textContent='Preparing secure logo upload…';
+ try{
+  const signedResponse=await api('/logo-upload-url',{method:'POST',body:{fileName:file.name,mimeType:file.type,fileSize:file.size}});
+  const signed=await signedResponse.json();if(!signedResponse.ok)throw new Error(signed.error||'Could not prepare logo upload');
+  const uploaded=await auth.client.storage.from('vtg-company-logos').uploadToSignedUrl(signed.path,signed.token,file,{contentType:file.type});
+  if(uploaded.error)throw uploaded.error;
+  const saved=await api('/logo',{method:'POST',body:{path:signed.path}});
+  const result=await saved.json();if(!saved.ok)throw new Error(result.error||'Could not save company logo');
+  logoUploaded=true;$('#logoMsg').textContent='Organisation logo uploaded successfully.';$('#logoFile').value='';await loadMine();
+ }catch(e){$('#logoMsg').textContent=e.message||'Logo upload failed.';}
+}
 $('#logoBtn').onclick=uploadLogo;
-async function loadMine(){const r=await api('/verification/documents');if(!r.ok)return;const d=await r.json();if(d.verificationStatus){verificationStatus=d.verificationStatus;logoUploaded=Boolean(d.logoUploaded);updateVerificationState()}const docs=d.documents||[];$('#list').innerHTML=docs.length?docs.map(x=>'<div class="doc" style="margin-bottom:8px"><div class="row"><strong>'+esc(x.file_name)+'</strong><span class="status '+esc(x.status)+'">'+esc(x.status)+'</span></div><div class="small">'+esc(String(x.doc_type||'').replace(/_/g,' '))+' • Uploaded '+esc(new Date(x.uploaded_at).toLocaleString())+(x.reviewed_at?' • Reviewed '+esc(new Date(x.reviewed_at).toLocaleString()):'')+(x.reviewer_name?' • Reviewer '+esc(x.reviewer_name):'')+(x.expires_at?' • Expires '+esc(new Date(x.expires_at).toLocaleDateString()):'')+(x.review_notes?' • '+esc(x.review_notes):'')+'</div></div>').join(''):'<div class="small">No documents submitted yet.</div>'}
+async function loadMine(){
+ const r=await api('/documents');const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not load submitted documents');
+ if(d.verificationStatus)verificationStatus=d.verificationStatus;
+ applicationPending=Boolean(d.applicationPending);canUpload=Boolean(d.canUpload);logoUploaded=Boolean(d.logoUploaded);
+ if(d.logoUrl)$('#logoMsg').textContent='Organisation logo is on file.';
+ const docs=d.documents||[];
+ $('#list').innerHTML=docs.length?docs.map(x=>'<div class="doc" style="margin-bottom:8px"><div class="row"><strong>'+esc(x.file_name)+'</strong><span class="status '+esc(x.status)+'">'+esc(x.status)+'</span></div><div class="small">'+esc(String(x.doc_type||'').replace(/_/g,' '))+' • Uploaded '+esc(new Date(x.uploaded_at).toLocaleString())+(x.reviewed_at?' • Reviewed '+esc(new Date(x.reviewed_at).toLocaleString()):'')+(x.expires_at?' • Expires '+esc(new Date(x.expires_at).toLocaleDateString()):'')+(x.review_notes?' • '+esc(x.review_notes):'')+'</div></div>').join(''):'<div class="small">No documents submitted yet.</div>';
+ updateVerificationState();
+}
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 async function loadAdmin(){
- const r=await api('/verification/review-queue');
- if(!r.ok){$('#adminList').textContent='Could not load review queue.';return}
- const d=await r.json(), applicants=d.applicants||[], docs=d.documents||[];
- const supplierCount=applicants.filter(x=>x.role==='supplier').length;
- const bankCount=applicants.filter(x=>x.role==='bank').length;
- $('#adminSummary').innerHTML='<div class="adminStat"><span class="small">Applicants awaiting document review</span><b>'+applicants.length+'</b></div><div class="adminStat"><span class="small">Suppliers</span><b>'+supplierCount+'</b></div><div class="adminStat"><span class="small">Banks</span><b>'+bankCount+'</b></div>';
+ const r=await api('/review-queue');const d=await r.json();if(!r.ok){$('#adminList').textContent=d.error||'Could not load review queue.';return;}
+ const docs=d.documents||[],grouped=new Map();
+ for(const x of docs){
+  const p=Array.isArray(x.profiles)?x.profiles[0]:x.profiles||{};
+  if(!grouped.has(x.user_id))grouped.set(x.user_id,{role:x.account_role,email:p.email||'',fullName:p.full_name||'',organisationName:p.full_name||'',verificationStatus:'pending',documents:[]});
+  grouped.get(x.user_id).documents.push({id:x.id,fileName:x.file_name,docType:x.doc_type,fileSizeBytes:x.file_size_bytes,uploadedAt:x.uploaded_at});
+ }
+ const applicants=[...grouped.values()];
+ const supplierCount=applicants.filter(x=>x.role==='supplier').length,bankCount=applicants.filter(x=>x.role==='bank').length,agentCount=applicants.filter(x=>x.role==='agent').length;
+ $('#adminSummary').innerHTML='<div class="adminStat"><span class="small">Applicants with pending documents</span><b>'+applicants.length+'</b></div><div class="adminStat"><span class="small">Suppliers</span><b>'+supplierCount+'</b></div><div class="adminStat"><span class="small">Banks</span><b>'+bankCount+'</b></div><div class="adminStat"><span class="small">Agents</span><b>'+agentCount+'</b></div>';
  $('#adminLastUpdated').textContent='Queue refreshed '+new Date().toLocaleString()+' • '+docs.length+' pending document(s)';
- $('#adminList').innerHTML=applicants.length?applicants.map(a=>{
-   const logo=a.logoUrl?'<img class="logoPreview" src="'+esc(a.logoUrl)+'" alt="Organisation logo">':'<div class="logoPreview"></div>';
-   const name=esc(a.organisationName||a.fullName||'Organisation');
-   return '<article class="adminApplicant"><div class="adminHead"><div class="identity">'+logo+'<div><strong>'+name+'</strong><div class="small">'+esc(a.role)+' • '+esc(a.email)+' • '+esc(a.verificationStatus||'pending')+'</div></div></div><span class="status">'+a.documents.length+' pending</span></div><div class="adminDocs">'+a.documents.map(x=>'<div class="adminDoc"><div><strong>'+esc(x.fileName)+'</strong><div class="small">'+esc(x.docType)+' • '+new Date(x.uploadedAt).toLocaleString()+' • '+Math.round((x.fileSizeBytes||0)/1024)+' KB</div></div><div class="review"><button class="btn secondary" onclick="viewDoc(\\''+esc(x.id)+'\\')">View</button><input id="note-'+esc(x.id)+'" placeholder="Review note"><button class="btn" onclick="reviewDoc(\\''+esc(x.id)+'\\',\\'verified\\')">Verify</button><button class="btn secondary" onclick="reviewDoc(\\''+esc(x.id)+'\\',\\'rejected\\')">Reject</button></div></div>').join('')+'</div></article>';
- }).join(''):'<div class="notice">No documents are currently waiting for review.</div>';
+ $('#adminList').innerHTML=applicants.length?applicants.map(a=>'<article class="adminApplicant"><div class="adminHead"><div class="identity"><div class="logoPreview"></div><div><strong>'+esc(a.organisationName||a.fullName||'Organisation')+'</strong><div class="small">'+esc(a.role)+' • '+esc(a.email)+' • awaiting document review</div></div></div><span class="status">'+a.documents.length+' pending</span></div><div class="adminDocs">'+a.documents.map(x=>'<div class="adminDoc"><div><strong>'+esc(x.fileName)+'</strong><div class="small">'+esc(x.docType)+' • '+new Date(x.uploadedAt).toLocaleString()+' • '+Math.round((x.fileSizeBytes||0)/1024)+' KB</div></div><div class="review"><button class="btn secondary" onclick="viewDoc(\''+esc(x.id)+'\')">View</button><input id="note-'+esc(x.id)+'" placeholder="Review note"><button class="btn" onclick="reviewDoc(\''+esc(x.id)+'\',\'verified\')">Verify</button><button class="btn secondary" onclick="reviewDoc(\''+esc(x.id)+'\',\'rejected\')">Reject</button></div></div>').join('')+'</div></article>').join(''):'<div class="notice">No documents are currently waiting for review.</div>';
 }
-async function viewDoc(id){const r=await api('/verification/documents/'+encodeURIComponent(id)+'/download');if(!r.ok){alert('Unable to open document.');return}const blob=await r.blob();const url=URL.createObjectURL(blob);window.open(url,'_blank');setTimeout(()=>URL.revokeObjectURL(url),60000)}
+async function viewDoc(id){
+ const r=await api('/documents/'+encodeURIComponent(id)+'/download');const d=await r.json();
+ if(!r.ok||!d.url){alert(d.error||'Unable to open document.');return;}
+ window.open(d.url,'_blank','noopener');
+}
 async function reviewDoc(id,status){
  const notes=$('#note-'+id)?.value.trim()||'';
- if(status==='rejected'&&!notes){alert('Add a review note explaining what needs correction before rejecting this document.');return}
- const r=await api('/verification/documents/'+encodeURIComponent(id)+'/review',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status,notes})});
+ if(status==='rejected'&&!notes){alert('Add a review note explaining what needs correction before rejecting this document.');return;}
+ const r=await api('/documents/'+encodeURIComponent(id)+'/review',{method:'PATCH',body:{status,notes}});
  const d=await r.json().catch(()=>({}));
- if(!r.ok){alert(d.message||'Review failed');return}
+ if(!r.ok){alert(d.error||'Review failed');return;}
  await loadAdmin();
- if(d.verificationStatus==='verified') alert('All required verification items are approved. The organisation is now verified.');
- else if(d.verificationStatus==='needs_correction') alert('Correction required. The applicant will see the review note.');
+ if(d.verificationStatus==='verified')alert('All required verification items are approved. The organisation is now verified.');
+ else if(d.verificationStatus==='rejected')alert('Correction required. The applicant will see the review note.');
 }
 init();
 </script>
