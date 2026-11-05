@@ -646,7 +646,7 @@ function calcCost(){const subtotal=cart().reduce((n,x)=>n+x.qty*x.price,0),ship=
 function rfqs(){return db.get('rfqs',[])}function renderRfqs(){const a=rfqs();$('rfqCount').textContent=a.length;$('rfqTotal').textContent=a.length;$('statRfqs').textContent=a.length;$('rfqRows').innerHTML=a.length?a.map((x,i)=>'<div class="row"><div class="rowMain"><strong>'+esc(x.product)+'</strong><p>'+esc(x.quantity)+' units · '+esc(x.origin)+' → '+esc(x.destination)+'<br>Local draft · '+new Date(x.date).toLocaleDateString()+'</p><button class="btn" data-del-rfq="'+i+'">'+t('remove')+'</button></div></div>').join(''):'<div class="empty">'+t('noDrafts')+'</div>';$('rfqRows').querySelectorAll('[data-del-rfq]').forEach(b=>b.addEventListener('click',()=>{const a=rfqs();a.splice(+b.dataset.delRfq,1);db.set('rfqs',a);renderRfqs();stats();say(t('saved'))}))}
 
 async function loadLiveEnquiries(){if(typeof window.loadLiveEnquiries==='function')return window.loadLiveEnquiries();const host=$('liveEnquiriesRows');if(host)host.innerHTML='<div class="empty">Loading secure buyer requests…</div>';}
-$('refreshLiveEnquiries')?.addEventListener('click',loadLiveEnquiries);
+
 function suppliers(){return db.get('suppliers',[])}
 function renderSuppliers(){
  const a=suppliers(),count=$('supplierCount'),rows=$('supplierRows');
