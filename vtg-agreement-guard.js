@@ -28,7 +28,8 @@
     panel.style.cssText='position:fixed;z-index:2147483647;inset:0;display:grid;place-items:center;padding:24px;background:#17191b;color:#f3efe6;font:14px/1.7 Manrope,Arial,sans-serif;text-align:center';
     panel.innerHTML='<div style="max-width:440px"><strong>VTG access check unavailable</strong><p></p><a href="/signin.html" style="color:#d8bd8b">Return to sign in</a></div>';
     panel.querySelector('p').textContent=message||'Please sign in again to continue.';
-    document.body.appendChild(panel);
+    function attach(){document.body.appendChild(panel);}
+    if(document.body)attach();else document.addEventListener('DOMContentLoaded',attach,{once:true});
   }
   var script=document.createElement('script');
   script.src='/vtg-supabase-auth.js?v=20261105-agreement-1';
