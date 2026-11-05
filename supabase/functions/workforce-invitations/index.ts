@@ -199,7 +199,24 @@ Deno.serve(async (req: Request) => {
       .eq("email", email).maybeSingle();
     if (existingProfile.error) return reply({ error: "Could not check existing account status" }, 500);
     if (existingProfile.data) {
-      return reply({ error: "This email already has a VTG account. Public trade accounts cannot be converted into staff accounts." }, 409);
+      if (existingProfile.data.account_environment !== "staff" || existingProfile.data.id === caller.id ||
+          profile.role === "admin") {
+        return reply({ error: "Public trade accounts cannot be converted into staff accounts, and administrator identities cannot be assigned operational roles." }, 409);
+      }
+      const assigned = await admin.from("vtg_workforce_members").upsert({
+        user_id: existingProfile.data.id,
+        workspace_role: workspaceRole,
+        status: "active",
+        invited_by: caller.id,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: "user_id,workspace_role" })
+        .select("id,user_id,workspace_role,status").single();
+      if (assigned.error) return reply({ error: "Could not assign the workspace to this staff identity" }, 500);
+      const activated = await admin.from("profiles")
+        .update({ is_active: true, updated_at: new Date().toISOString() })
+        .eq("id", existingProfile.data.id);
+      if (activated.error) return reply({ error: "Workspace assigned but account activation could not be synchronized" }, 500);
+      return reply({ member: assigned.data, assignment_added: true, email_sent: false }, 201);
     }
     const pending = await admin.from("vtg_workforce_invitations").select("id")
       .eq("email", email).eq("status", "pending").maybeSingle();
