@@ -98,8 +98,10 @@ test('buyer dashboard labels provider readiness honestly and checks the authenti
   const path = require('node:path');
   const html = fs.readFileSync(path.join(__dirname, '..', '..', 'buyer-dashboard.html'), 'utf8');
   assert.ok(html.includes('id="vtgIntelStatus"'));
-  assert.ok(html.includes('/api/market-intelligence/tools/contract'));
-  assert.ok(html.includes("Authorization:'Bearer '+accessToken"));
+  assert.ok(html.includes("client.functions.invoke('vtg-market-intelligence'"));
+  assert.ok(html.includes("client.auth.getSession()"));
+  assert.ok(html.includes("invokeMarketIntel('status')"));
+  assert.ok(html.includes("invokeMarketIntel('news')"));
   assert.ok(html.includes('Preview mode: provider status has not been verified'));
   assert.ok(html.includes('does not discover the correct duty or tax rate'));
   assert.ok(html.includes('Treat all market inputs as unverified'));
