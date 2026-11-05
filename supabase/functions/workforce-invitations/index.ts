@@ -123,7 +123,7 @@ Deno.serve(async (req: Request) => {
       return reply({ error: "A valid staff role and status are required" }, 400);
     }
     const target = await admin.from("profiles")
-      .select("id,account_environment").eq("id", userId).maybeSingle();
+      .select("id,account_environment,role").eq("id", userId).maybeSingle();
     if (target.error || target.data?.account_environment !== "staff") {
       return reply({ error: "Staff account not found" }, 404);
     }
@@ -200,7 +200,7 @@ Deno.serve(async (req: Request) => {
     if (existingProfile.error) return reply({ error: "Could not check existing account status" }, 500);
     if (existingProfile.data) {
       if (existingProfile.data.account_environment !== "staff" || existingProfile.data.id === caller.id ||
-          profile.role === "admin") {
+          existingProfile.data.role === "admin") {
         return reply({ error: "Public trade accounts cannot be converted into staff accounts, and administrator identities cannot be assigned operational roles." }, 409);
       }
       const assigned = await admin.from("vtg_workforce_members").upsert({
