@@ -14,20 +14,27 @@
       });
       window.VTG_SUPABASE = client;
 
-      const normalize = (row, user) => ({
-        id: row?.id || user?.id,
-        email: row?.email || user?.email || '',
-        fullName: row?.full_name || user?.user_metadata?.full_name || '',
-        phone: row?.phone || '',
-        role: row?.role || 'buyer',
-        accountEnvironment: row?.account_environment || 'trade',
-        preferredLanguage: row?.preferred_language || 'en',
-        country: row?.country || '',
-        city: row?.city || '',
-        requestedRole: user?.user_metadata?.requested_role || null,
-        isActive: row?.is_active !== false,
-        workforceMemberships: []
-      });
+      const normalize = (row, user) => {
+        const databaseRole = row?.role || 'buyer';
+        const requestedRole = user?.user_metadata?.requested_role || null;
+        const pendingBusinessVerification = databaseRole === 'buyer' && ['supplier','bank'].includes(requestedRole);
+        return {
+          id: row?.id || user?.id,
+          email: row?.email || user?.email || '',
+          fullName: row?.full_name || user?.user_metadata?.full_name || '',
+          phone: row?.phone || '',
+          role: pendingBusinessVerification ? requestedRole : databaseRole,
+          databaseRole,
+          accountEnvironment: row?.account_environment || 'trade',
+          preferredLanguage: row?.preferred_language || 'en',
+          country: row?.country || '',
+          city: row?.city || '',
+          requestedRole,
+          pendingBusinessVerification,
+          isActive: row?.is_active !== false,
+          workforceMemberships: []
+        };
+      };
 
       async function profile(session) {
         const { data, error } = await client.from('profiles')
@@ -51,6 +58,7 @@
           if (business.error) throw business.error;
           result.businessVerificationStatus = business.data?.verification_status || 'pending';
         }
+        if (result.pendingBusinessVerification) result.businessVerificationStatus = 'pending';
         return result;
       }
 
