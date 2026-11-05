@@ -16,19 +16,19 @@ test('public API exposes only the three public trade signup routes', () => {
 });
 
 test('public signup page presents only buyer, supplier and bank accounts', () => {
-  const signup = read('../../signup.html');
+  const signup = read('../signup.html');
   for (const role of ['buyer', 'supplier', 'bank']) assert.match(signup, new RegExp(role + '-signup\\.html'));
   assert.doesNotMatch(signup, /agent|workforce|administrator/i);
 });
 
 test('public sign-in presents only buyer, supplier and bank roles', () => {
-  const signin = read('../../signin.html');
+  const signin = read('../signin.html');
   for (const role of ['buyer', 'supplier', 'bank']) assert.match(signin, new RegExp('data-role="' + role + '"'));
   assert.doesNotMatch(signin, /data-role="agent"|data-role="admin"|workforce/i);
 });
 
 test('staff access pages are noindex and do not load the public shell', () => {
-  for (const file of ['../../workforce-access.html', '../../workforce-signin.html', '../../admin-signin.html']) {
+  for (const file of ['../workforce-access.html', '../workforce-signin.html', '../admin-signin.html']) {
     const page = read(file);
     assert.match(page, /name="robots" content="noindex/i);
     assert.doesNotMatch(page, /vtg-shell\.js|id="vsHeader"|id="vsFooter"/i);
