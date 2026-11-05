@@ -19,6 +19,14 @@ const hashToken = async (token: string) => {
 };
 const newToken = () => Array.from(crypto.getRandomValues(new Uint8Array(32)))
   .map((b) => b.toString(16).padStart(2, "0")).join("");
+const audit = async (admin: ReturnType<typeof createClient>, actorId: string, eventType: string,
+  entityType: string, entityId: string, details: Record<string, unknown>) => {
+  const result = await admin.from("audit_events").insert({
+    actor_id: actorId, event_type: eventType, entity_type: entityType,
+    entity_id: entityId, details,
+  });
+  if (result.error) console.error("Workforce audit write failed:", result.error.message);
+};
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
@@ -70,6 +78,8 @@ Deno.serve(async (req: Request) => {
       p_token_hash: await hashToken(body.token),
     });
     if (accepted.error) return reply({ error: accepted.error.message }, 400);
+    await audit(admin, caller.id, "workforce_invitation_accepted", "workforce_invitation",
+      body.invitation_id, { workspace_role: accepted.data?.workspace_role });
     return reply({ success: true, invitation: accepted.data });
   }
 
@@ -143,6 +153,8 @@ Deno.serve(async (req: Request) => {
       .update({ is_active: isActive, updated_at: new Date().toISOString() })
       .eq("id", userId);
     if (profileUpdate.error) return reply({ error: "Access changed but profile status could not be synchronized" }, 500);
+    await audit(admin, caller.id, "workforce_access_" + status, "workforce_member", changed.data.id,
+      { user_id: userId, workspace_role: workspaceRole, account_active: isActive });
     return reply({ member: changed.data, account_active: isActive });
   }
 
@@ -153,6 +165,8 @@ Deno.serve(async (req: Request) => {
       .select("id,status").maybeSingle();
     if (result.error) return reply({ error: "Could not revoke invitation" }, 500);
     if (!result.data) return reply({ error: "Pending invitation not found" }, 404);
+    await audit(admin, caller.id, "workforce_invitation_revoked", "workforce_invitation",
+      result.data.id, { status: result.data.status });
     return reply({ invitation: result.data });
   }
 
@@ -185,6 +199,8 @@ Deno.serve(async (req: Request) => {
         .eq("id", existing.data.id);
       return reply({ error: "Supabase could not resend this invitation. Check the Invite user email template and SMTP settings." }, 502);
     }
+    await audit(admin, caller.id, "workforce_invitation_resent", "workforce_invitation",
+      existing.data.id, { email: existing.data.email, workspace_role: existing.data.workspace_role });
     return reply({ invitation: { id: existing.data.id, status: "pending" }, email_sent: true });
   }
 
@@ -216,6 +232,8 @@ Deno.serve(async (req: Request) => {
         .update({ is_active: true, updated_at: new Date().toISOString() })
         .eq("id", existingProfile.data.id);
       if (activated.error) return reply({ error: "Workspace assigned but account activation could not be synchronized" }, 500);
+      await audit(admin, caller.id, "workforce_role_assigned", "workforce_member", assigned.data.id,
+        { user_id: existingProfile.data.id, workspace_role: workspaceRole });
       return reply({ member: assigned.data, assignment_added: true, email_sent: false }, 201);
     }
     const pending = await admin.from("vtg_workforce_invitations").select("id")
@@ -241,6 +259,8 @@ Deno.serve(async (req: Request) => {
         workforce_role: workspaceRole,
       },
     });
+    await audit(admin, caller.id, "workforce_invitation_created", "workforce_invitation",
+      created.data.id, { email, workspace_role: workspaceRole });
     return reply({
       invitation: created.data,
       email_sent: !invited.error,
