@@ -9,7 +9,7 @@
     path==='/supplier-dashboard.html'?'supplier':
     path==='/bank-trade-os.html'?'bank':
     path==='/verification.html'?(params.get('role')||''):'';
-  if(!expected) return;
+  if(!['/buyer-dashboard.html','/supplier-dashboard.html','/bank-trade-os.html','/verification.html'].includes(path)) return;
 
   var root=document.documentElement;
   root.classList.add('vtg-agreement-checking');
