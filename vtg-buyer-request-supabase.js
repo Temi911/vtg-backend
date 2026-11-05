@@ -5,7 +5,7 @@
   const $=id=>document.getElementById(id);
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let client=null,products=[];
-  const preview=new URLSearchParams(location.search).get('preview')==='1';
+  const preview=false;
   const field=form.querySelector('[name="product"]')?.closest('.field');
   if(!field)return;
   const picker=document.createElement('label');
