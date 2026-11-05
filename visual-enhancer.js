@@ -236,7 +236,7 @@
       #landing .hero:before{display:none}
       #landing .heroIn{display:block;max-width:1320px;min-height:680px;padding:150px 30px 105px}
       #landing .heroIn>div:first-child{max-width:760px}
-      #landing .hero .visual,#landing .hero .newsPreview,#landing .hero .heroStats{display:none!important}
+      #landing .hero .visual,#landing .hero .tradeNetworkVisual,#landing .hero .newsPreview,#landing .hero .heroStats,#landing .hero .heroCore,#landing .hero .heroMapWrap{display:none!important}
       #landing .hero h1{font-size:clamp(48px,7vw,92px);max-width:820px;letter-spacing:-.055em;margin:17px 0 18px}
       #landing .hero p{font-size:15px;max-width:610px;line-height:1.8;color:#e7eef2}
       #landing .heroActions{margin-top:30px}
