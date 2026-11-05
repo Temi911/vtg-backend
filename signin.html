@@ -24,7 +24,7 @@
 <button type="button" data-role="supplier">Supplier</button>
 <button type="button" data-role="bank">Bank</button>
 </div>
-<form id="form">
+<form id="form" class="vtg-form">
 <div><label for="email">Email address</label><div class="field"><input id="email" name="email" type="email" autocomplete="email" placeholder="you@company.com" required></div></div>
 <div><label for="password">Password</label><div class="field"><input id="password" name="password" type="password" minlength="8" autocomplete="current-password" placeholder="Your password" required><button class="toggle" id="toggle" type="button" aria-label="Show password">Show</button></div></div>
 <div class="formMeta"><label class="remember" for="remember"><input id="remember" type="checkbox" name="remember"> Remember me</label><a class="forgot" id="accountHelpLink" href="/account-help.html?role=buyer">Need sign-in help?</a></div>
@@ -44,16 +44,50 @@
 </aside>
 </main>
 <div id="vsFooter"></div>
+<script src="/vtg-supabase-auth.js?v=20261105-otp-1"></script>
 <script>
-const API=window.VTG_API_BASE||'';
-let role=['buyer','supplier','bank'].includes(new URLSearchParams(location.search).get('role'))?new URLSearchParams(location.search).get('role'):'buyer';const nextPath=new URLSearchParams(location.search).get('next');const allowedNextByRole={buyer:['/buyer-dashboard.html','/intelligence-centre.html'],supplier:['/supplier-dashboard.html','/intelligence-centre.html'],bank:['/bank-trade-os.html','/intelligence-centre.html']};const safeNext=(allowedNextByRole[role]||[]).includes(nextPath)?nextPath:'';
+let role=['buyer','supplier','bank'].includes(new URLSearchParams(location.search).get('role'))?new URLSearchParams(location.search).get('role'):'buyer';
+const nextPath=new URLSearchParams(location.search).get('next');
+const allowedNextByRole={buyer:['/buyer-dashboard.html','/intelligence-centre.html'],supplier:['/supplier-dashboard.html','/intelligence-centre.html'],bank:['/bank-trade-os.html','/intelligence-centre.html']};
+const safeNext=(allowedNextByRole[role]||[]).includes(nextPath)?nextPath:'';
 const signup=document.getElementById('signup'),msg=document.getElementById('msg'),accountHelpLink=document.getElementById('accountHelpLink');
 signup.href=({buyer:'/buyer-signup.html',supplier:'/supplier-signup.html',bank:'/bank-signup.html'})[role]||'/signup.html';
-function syncRole(){document.querySelectorAll('[data-role]').forEach(x=>x.classList.toggle('active',x.dataset.role===role));accountHelpLink.href='/account-help.html?role='+encodeURIComponent(role);}
-document.querySelectorAll('[data-role]').forEach(b=>b.onclick=()=>{role=b.dataset.role;syncRole();signup.href=({buyer:'/buyer-signup.html',supplier:'/supplier-signup.html',bank:'/bank-signup.html'})[role]||'/signup.html';signup.textContent='Create account';msg.textContent='';});
+function syncRole(){
+ document.querySelectorAll('[data-role]').forEach(x=>x.classList.toggle('active',x.dataset.role===role));
+ if(accountHelpLink)accountHelpLink.href='/account-help.html?role='+encodeURIComponent(role);
+}
+document.querySelectorAll('[data-role]').forEach(b=>b.onclick=()=>{
+ role=b.dataset.role;syncRole();
+ signup.href=({buyer:'/buyer-signup.html',supplier:'/supplier-signup.html',bank:'/bank-signup.html'})[role]||'/signup.html';
+ signup.textContent='Create account';msg.textContent='';
+});
 syncRole();
-document.getElementById('toggle').onclick=()=>{const p=document.getElementById('password'),b=document.getElementById('toggle');p.type=p.type==='password'?'text':'password';b.textContent=p.type==='password'?'Show':'Hide'};
-document.getElementById('form').onsubmit=async e=>{e.preventDefault();msg.className='msg';msg.textContent='';const d=Object.fromEntries(new FormData(e.currentTarget));try{const r=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:d.email,password:d.password})});const out=await r.json();if(!r.ok)throw Error(out.message||'Sign in failed');if(out.user?.role&&String(out.user.role).toLowerCase()!==role){const names={buyer:'Buyer',supplier:'Supplier',bank:'Bank'};throw Error('This account is registered as a '+(names[out.user.role]||out.user.role)+'. Please select '+(names[out.user.role]||out.user.role)+' above.')}if(out.accessToken){localStorage.setItem('vtg_access_token',out.accessToken);localStorage.setItem('vtg-auth',JSON.stringify({user:out.user,accessToken:out.accessToken,refreshToken:out.refreshToken||null}));localStorage.setItem('vtg-language',out.user?.preferredLanguage||'en');localStorage.setItem('vtg-country',out.user?.country||'')}msg.className='msg ok';msg.textContent='Signed in successfully. Opening your VTG workspace…';setTimeout(()=>{if(out.agreementRequired){location.href='/signup-agreement.html';return}if(safeNext&&String(out.user?.role||'').toLowerCase()===role){location.href=safeNext;return}if(String(out.user?.role||'').toLowerCase()==='supplier'){location.href='/supplier-dashboard.html';return}if(String(out.user?.role||'').toLowerCase()==='bank'){location.href='/bank-trade-os.html';return}location.href=String(out.user?.role||'').toLowerCase()==='buyer'?'/buyer-dashboard.html':'/'},450)}catch(err){msg.textContent=err.message||'Sign in failed'}};
+document.getElementById('toggle').onclick=()=>{
+ const p=document.getElementById('password'),b=document.getElementById('toggle');
+ p.type=p.type==='password'?'text':'password';b.textContent=p.type==='password'?'Show':'Hide';
+};
+document.getElementById('form').onsubmit=async e=>{
+ e.preventDefault();msg.className='msg';msg.textContent='Signing in securely…';
+ const submit=e.currentTarget.querySelector('button[type="submit"]');if(submit)submit.disabled=true;
+ const d=Object.fromEntries(new FormData(e.currentTarget));
+ try{
+  const auth=await window.VTG_AUTH_READY;
+  const result=await auth.signIn(d.email,d.password);
+  const user=result.user;
+  const pending=user.role==='buyer'&&!!user.requestedRole;
+  const effectiveRole=pending?user.requestedRole:user.role;
+  if(effectiveRole!==role){
+   const names={buyer:'Buyer',supplier:'Supplier',bank:'Bank'};
+   throw new Error('This account is registered as a '+(names[effectiveRole]||effectiveRole)+'. Please select '+(names[effectiveRole]||effectiveRole)+' above.');
+  }
+  msg.className='msg ok';msg.textContent='Signed in successfully. Opening your VTG workspace…';
+  setTimeout(()=>{
+   if(pending){location.href='/verification.html?role='+encodeURIComponent(user.requestedRole);return;}
+   if(safeNext){location.href=safeNext;return;}
+   location.href=({buyer:'/buyer-dashboard.html',supplier:'/supplier-dashboard.html',bank:'/bank-trade-os.html'})[user.role]||'/';
+  },450);
+ }catch(err){msg.className='msg';msg.textContent=err.message||'Sign in failed';if(submit)submit.disabled=false;}
+};
 </script>
 </body>
 </html>
