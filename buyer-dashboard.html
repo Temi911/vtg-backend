@@ -662,37 +662,21 @@ function feed(){return db.get('feed',[])}async function loadLiveTradeFeed(){retu
 function renderFeed(){const a=feed();$('statFeed').textContent=a.length;$('feedRows').innerHTML='<article class="feedPost"><strong>VTG Trade Desk · Sample</strong><p>Welcome to the buyer workspace. Use this space to organise sourcing, trade planning and questions for your partners.</p><div class="feedActions"><button data-like-demo>♡ '+t('like')+'</button><button data-view="messages">Discuss in messages</button></div></article>'+a.map((x,i)=>'<article class="feedPost"><strong>'+esc($('profileName').textContent)+' · Local draft</strong><p>'+esc(x.text)+'</p><div class="feedActions"><button data-like="'+i+'">'+(x.liked?'♥ '+t('liked'):'♡ '+t('like'))+'</button><button data-del-post="'+i+'">'+t('remove')+'</button></div></article>').join('');$('feedRows').querySelector('[data-like-demo]')?.addEventListener('click',e=>{e.target.textContent='♥ '+t('liked');say(t('saved'))});$('feedRows').querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));$('feedRows').querySelectorAll('[data-like]').forEach(b=>b.addEventListener('click',()=>{const a=feed();a[+b.dataset.like].liked=!a[+b.dataset.like].liked;db.set('feed',a);renderFeed()}));$('feedRows').querySelectorAll('[data-del-post]').forEach(b=>b.addEventListener('click',()=>{const a=feed();a.splice(+b.dataset.delPost,1);db.set('feed',a);renderFeed();stats()}))}
 $('feedForm').addEventListener('submit',e=>{e.preventDefault();const a=feed();a.unshift({text:$('postText').value,liked:false,date:new Date().toISOString()});db.set('feed',a);$('postText').value='';renderFeed();stats();say(t('postSaved'))});
 let liveConversations=[],liveConversationId='';
-async function loadLiveConversations(){
- const host=$('liveConversationRows');if(!host)return;
- if(preview||!token){host.innerHTML='<div class="empty">Live conversations require a signed-in buyer account.</div>';return}
- host.innerHTML='<div class="empty">Loading conversations…</div>';
- try{
-  const r=await fetch('/api/messages',{headers:{Accept:'application/json',Authorization:'Bearer '+token},cache:'no-store'});const d=await r.json().catch(()=>({}));
-  if(!r.ok)throw new Error(d.error?.message||d.message||'Unable to load conversations');
-  liveConversations=Array.isArray(d.conversations)?d.conversations:[];
-  host.innerHTML=liveConversations.length?liveConversations.map(c=>'<div class="row"><div class="rowMain"><button type="button" data-live-conversation="'+esc(c.id)+'" class="'+(liveConversationId===c.id?'active':'')+'"><strong>'+esc(c.order_reference||'Trade conversation')+'</strong><small>'+esc(c.last_message||'No messages yet')+'</small>'+(Number(c.unread_count||0)?'<small>'+Number(c.unread_count)+' unread</small>':'')+'</button></div></div>').join(''):'<div class="empty">No live conversations yet. A conversation is created when an order or supported partner workflow connects both accounts.</div>';
- }catch(e){host.innerHTML='<div class="empty">Live conversations could not be loaded. '+esc(e.message)+' <button type="button" class="btn" id="retryLiveConversations">Try again</button></div>';const b=$('retryLiveConversations');if(b)b.onclick=loadLiveConversations}
-}
-async function loadLiveMessages(){
- if(!liveConversationId||preview||!token)return;
- const box=$('chatLog');box.innerHTML='<div class="empty">Loading account messages…</div>';
- try{
-  const r=await fetch('/api/messages/'+encodeURIComponent(liveConversationId)+'/messages',{headers:{Accept:'application/json',Authorization:'Bearer '+token},cache:'no-store'});const d=await r.json().catch(()=>({}));
-  if(!r.ok)throw new Error(d.error?.message||d.message||'Unable to load messages');
-  const rows=Array.isArray(d.messages)?d.messages:[];
-  box.innerHTML=rows.length?rows.map(m=>{const mine=String(m.sender_id)===String(auth?.user?.id||auth?.user?.userId||'');return '<div class="bubble '+(mine?'mine':'')+'">'+esc(m.body||'')+'<small>'+(m.created_at?new Date(m.created_at).toLocaleString():'')+(mine?' · You':'')+'</small></div>'}).join(''):'<div class="empty">No messages in this conversation yet.</div>';
-  $('threadTitle').textContent=(liveConversations.find(c=>String(c.id)===String(liveConversationId))||{}).order_reference||'Live trade conversation';box.scrollTop=box.scrollHeight;
- }catch(e){box.innerHTML='<div class="empty">Could not load messages. '+esc(e.message)+'</div>'}
-}
-$('liveConversationRows')?.addEventListener('click',async e=>{
- const b=e.target.closest('[data-live-conversation]');if(!b)return;
- liveConversationId=b.dataset.liveConversation;
- document.querySelectorAll('[data-live-conversation]').forEach(x=>x.classList.toggle('active',x===b));
- document.querySelectorAll('[data-thread]').forEach(x=>x.classList.remove('active'));
- await loadLiveMessages();
-});
+async function loadLiveConversations(){return window.VTGBuyerMessages?.loadConversations();}
+async function loadLiveMessages(){return window.VTGBuyerMessages?.loadMessages(liveConversationId);}
 function msgs(){return db.get('msgs',{trade:[{text:'Welcome to the VTG messaging preview. You can test the interface here.',mine:false}],supplier:[],logistics:[]})}function renderChat(){const a=msgs()[thread]||[];$('chatLog').innerHTML=a.length?a.map(x=>'<div class="bubble '+(x.mine?'mine':'')+'">'+esc(x.text)+'<small>'+(x.mine?'Local draft':'Demo')+'</small></div>').join(''):'<div class="empty">'+t('noMessages')+'</div>';$('threadTitle').textContent=thread==='trade'?'VTG Trade Desk':thread==='supplier'?'Supplier conversation':'Logistics partner';document.querySelectorAll('[data-thread]').forEach(b=>b.classList.toggle('active',b.dataset.thread===thread));$('chatLog').scrollTop=$('chatLog').scrollHeight}
-document.querySelectorAll('[data-thread]').forEach(b=>b.addEventListener('click',()=>{liveConversationId='';document.querySelectorAll('[data-live-conversation]').forEach(x=>x.classList.remove('active'));thread=b.dataset.thread;renderChat()}));$('chatForm').addEventListener('submit',async e=>{e.preventDefault();const body=$('messageText').value.trim();if(!body)return;if(liveConversationId&&!preview&&token){const button=e.currentTarget.querySelector('button[type=submit]');button.disabled=true;try{const r=await fetch('/api/messages/'+encodeURIComponent(liveConversationId)+'/messages',{method:'POST',headers:{Accept:'application/json','Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({body}),cache:'no-store'});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error?.message||d.message||'Message was not delivered');$('messageText').value='';await Promise.all([loadLiveMessages(),loadLiveConversations()]);say('Message sent to this account conversation.')}catch(err){say(err.message||'Message could not be sent')}finally{button.disabled=false}return}const a=msgs();a[thread]=a[thread]||[];a[thread].push({text:body,mine:true});db.set('msgs',a);$('messageText').value='';renderChat();say(t('messageSaved'))});
+document.querySelectorAll('[data-thread]').forEach(b=>b.addEventListener('click',()=>{liveConversationId='';document.querySelectorAll('[data-live-conversation]').forEach(x=>x.classList.remove('active'));thread=b.dataset.thread;renderChat()}));$('chatForm').addEventListener('submit',async e=>{
+ e.preventDefault();const body=$('messageText').value.trim();if(!body)return;
+ const button=e.currentTarget.querySelector('button[type=submit]');button.disabled=true;
+ try{
+  if(liveConversationId&&!preview&&token){
+   await window.VTGBuyerMessages.sendMessage(liveConversationId,body);
+   $('messageText').value='';say('Message sent to this account conversation.');return;
+  }
+  const a=msgs();a[thread]=a[thread]||[];a[thread].push({text:body,mine:true});db.set('msgs',a);$('messageText').value='';renderChat();say(t('messageSaved'));
+ }catch(err){say(err.message||'Message could not be sent');}
+ finally{button.disabled=false;}
+});
 $('buyerMeeting')?.addEventListener('click',()=>toast('Meeting request is a local preview only; no invitation was sent.'));
 function call(type){$('callTitle').textContent=type==='video'?'Video call':'Voice call';$('callModal').classList.remove('hidden')}['voice','video'].forEach(id=>$(id).addEventListener('click',()=>call(id)));$('closeCall').addEventListener('click',()=>$('callModal').classList.add('hidden'));$('okCall').addEventListener('click',()=>$('callModal').classList.add('hidden'));
 function verify(){const a=db.get('verify',[]);$('statVerify').textContent=a.length;$('verifyRows').innerHTML=a.length?a.map(x=>'<div class="row"><div class="rowMain"><strong>'+esc(x.product)+'</strong><p>'+esc(x.checks)+' · '+esc(x.supplier||'Supplier not set')+'</p></div></div>').join(''):'<div class="empty">'+t('noDrafts')+'</div>'}
@@ -731,4 +715,5 @@ setLang(lang);renderProducts();renderRfqs();renderCart();renderFeed();renderChat
 <script src="/vtg-buyer-inspections-supabase.js?v=20261105-inspections-live-1"></script>
 <script src="/vtg-buyer-documents-supabase.js?v=20261105-documents-live-1"></script>
 <script src="/vtg-buyer-trade-feed-supabase.js?v=20261105-feed-live-1"></script>
+<script src="/vtg-buyer-messages-supabase.js?v=20261105-messages-live-1"></script>
 </body></html>
