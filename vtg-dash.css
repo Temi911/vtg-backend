@@ -57,3 +57,32 @@ html[data-theme="light"] body .sidebar .profile strong,html[data-theme="light"] 
 .vs-banner--slim figure{aspect-ratio:auto;height:clamp(96px,12vw,150px)}
 .vs-banner img{width:100%;height:100%;object-fit:cover;display:block}
 .vs-banner figcaption{position:absolute;left:0;right:0;bottom:0;padding:26px 18px 10px;color:#fff;font-size:13px;font-weight:700;background:linear-gradient(transparent,rgba(5,20,50,.72))}
+
+
+/* Unified workspace form controls — consistent across buyer, supplier, bank, admin and staff tools */
+body :is(form,.form,.formCard,.form-card,.modal,.drawer) :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=submit]),select,textarea),
+body :is(.field,.form-group,.formGroup,.formField,.inputGroup) :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=submit]),select,textarea){
+ width:100%;min-width:0;min-height:44px;padding:10px 13px;border:1px solid var(--line,#D5E0EE);
+ border-radius:10px;background:var(--panel,#fff);color:var(--ink,#0B1F3A);
+ font:500 13px/1.45 Manrope,system-ui,sans-serif;box-shadow:0 1px 2px rgba(10,30,70,.035);
+ transition:border-color .15s ease,box-shadow .15s ease
+}
+body :is(form,.form,.formCard,.form-card,.modal,.drawer) textarea{min-height:104px;resize:vertical;line-height:1.55}
+body :is(form,.form,.formCard,.form-card,.modal,.drawer) :is(input,select,textarea):focus,
+body :is(.field,.form-group,.formGroup,.formField,.inputGroup) :is(input,select,textarea):focus{
+ outline:none;border-color:var(--accent,#1558D6);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent,#1558D6) 16%,transparent)
+}
+body :is(form,.form,.formCard,.form-card,.modal,.drawer) label,
+body :is(.field,.form-group,.formGroup,.formField,.inputGroup)>label{
+ display:block;margin:0 0 6px;color:var(--ink,#0B1F3A);font-size:12px;font-weight:750;letter-spacing:.005em
+}
+body :is(form,.form,.formCard,.form-card) :is(input[type=checkbox],input[type=radio]){width:17px;height:17px;min-height:17px;accent-color:var(--accent,#1558D6)}
+body :is(form,.form,.formCard,.form-card) fieldset{min-width:0;margin:0;padding:15px;border:1px solid var(--line,#D5E0EE);border-radius:12px;background:var(--panel2,#EEF4FC)}
+body :is(form,.form,.formCard,.form-card) legend{padding:0 7px;color:var(--ink,#0B1F3A);font-size:12px;font-weight:800}
+body :is(form,.form,.formCard,.form-card) :is(button[type=submit],.btn.primary,button.primary){
+ min-height:44px;padding:0 18px;border-radius:10px;font:800 12px Manrope,system-ui,sans-serif
+}
+body :is(form,.form,.formCard,.form-card) :is(.hint,.help-text,.form-hint,.field-help){color:var(--muted,#52667E);font-size:11px;line-height:1.5}
+body :is(form,.form,.formCard,.form-card) :is(.error,.field-error,[aria-invalid=true]){color:#B3261E}
+html[data-theme="dark"] body :is(form,.form,.formCard,.form-card) :is(.error,.field-error,[aria-invalid=true]){color:#FF8F86}
+body :is(form,.form,.formCard,.form-card) :is(input,select,textarea)[aria-invalid=true]{border-color:#B3261E;box-shadow:0 0 0 3px rgba(179,38,30,.12)}
