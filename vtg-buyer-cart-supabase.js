@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 const CART_KEY='vtg-buyer-cart-cart';
-let client=null,buyerId=null,hydrated=false,syncChain=Promise.resolve();
+let client=null,buyerId=null,hydrated=false,syncChain=Promise.resolve(),cartChannel=null;
 const $=id=>document.getElementById(id);
 function readLocal(){try{const v=JSON.parse(localStorage.getItem(CART_KEY)||'[]');return Array.isArray(v)?v:[]}catch(_){return[]}}
 function writeLocal(items){try{localStorage.setItem(CART_KEY,JSON.stringify(items))}catch(_){}}
@@ -46,6 +46,17 @@ async function init(){
   }
   hydrated=true;
   window.dispatchEvent(new CustomEvent('vtg:buyer-cart-hydrated'));
+  cartChannel=client.channel('buyer-cart-'+buyerId)
+   .on('postgres_changes',{event:'*',schema:'public',table:'buyer_cart_states',filter:'buyer_id=eq.'+buyerId},payload=>{
+    if(payload.eventType==='DELETE')return;
+    writeLocal(clean(payload.new?.items||[]));
+    window.dispatchEvent(new CustomEvent('vtg:buyer-cart-hydrated'));
+    status('Cart synced live across your signed-in devices.');
+   })
+   .subscribe(state=>{
+    if(state==='SUBSCRIBED')status('Cart synced live across your signed-in devices.');
+    else if(state==='CHANNEL_ERROR'||state==='TIMED_OUT')status('Cart is saved to your VTG account. Live updates are temporarily unavailable.');
+   });
   if(!row&&local.length)await persist(local);
   else status('Cart synced securely to your VTG account.');
  }catch(error){status('Cloud cart could not load: '+(error.message||'Your local cart is still available.'))}
