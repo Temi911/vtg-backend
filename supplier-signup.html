@@ -174,7 +174,7 @@ $('#signupForm').addEventListener('submit',async e=>{
   submitButton.disabled=false;sendButton.disabled=false;setMessage(error.message||'The code could not be verified. Check it and try again.',false);
  }
 });
-sendButton.addEventListener('click',async()=>{if(!validateAll())return;await resendCode();});
+sendButton.addEventListener('click',async()=>{if(!signupStarted&&!validateAll())return;await resendCode();});
 const pass=$('[name=password]'),toggle=$('#passwordToggle');
 if(pass&&toggle)toggle.addEventListener('click',()=>{pass.type=pass.type==='password'?'text':'password';toggle.textContent=pass.type==='password'?'Show':'Hide';});
 codeInput.disabled=true;submitButton.disabled=true;showStep(0);
