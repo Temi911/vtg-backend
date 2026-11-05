@@ -20,7 +20,7 @@
 <div class="formTop"><span class="roleTag">Buyer / Importer</span><span class="secureTag"><span class="secureDot"></span> Secure registration</span></div>
 <p class="intro">A few details to set up your buyer profile. You can review everything before creating your account.</p>
 <div class="stepMeta"><span><strong id="stepName"></strong></span><span id="stepCount">Step 1 of 3</span></div><div class="track" role="progressbar" aria-label="Registration progress" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1" id="progressTrack"><span id="progressBar"></span></div>
-<form id="signupForm" novalidate><div class="fieldsRoot">
+<form id="signupForm" class="vtg-form" novalidate><div class="fieldsRoot">
 <section class="step" data-step="0"><div class="fields">
 <div class="field"><label for="fullName">Full name *</label><input id="fullName" name="fullName" autocomplete="name" required></div>
 <div class="field"><label for="email">Email address *</label><input id="email" name="email" type="email" autocomplete="email" required></div>
@@ -35,7 +35,7 @@
 </div></section>
 <section class="step" data-step="2" hidden><div class="fields">
 <div class="field full"><label for="password">Create password *</label><div class="passwordRow"><input id="password" name="password" type="password" autocomplete="new-password" minlength="8" pattern="(?=.*[A-Z])(?=.*\d).{8,}" title="Use at least 8 characters, one uppercase letter and one number." required><button type="button" class="miniButton" id="passwordToggle">Show</button></div><span class="hint">At least 8 characters, including one uppercase letter and one number.</span></div>
-<div class="field full"><label for="verificationCode">Email verification code *</label><div class="verifyRow"><input id="verificationCode" name="verificationCode" inputmode="numeric" autocomplete="one-time-code" minlength="6" maxlength="6" pattern="[0-9]{6}" placeholder="6-digit code" required><button class="miniButton" type="button" id="sendCode">Send code</button></div><span class="hint">Send a code to your email, then enter it here.</span></div>
+<div class="field full"><label for="verificationCode">Email verification code *</label><div class="verifyRow"><input id="verificationCode" name="verificationCode" inputmode="numeric" autocomplete="one-time-code" minlength="6" maxlength="6" pattern="[0-9]{6}" placeholder="Enter 6-digit code" disabled><button class="miniButton" type="button" id="sendCode">Send code</button></div><span class="hint">Send a code to your email, then enter it here.</span></div>
 </div></section></div><div id="msg" class="message" role="status" aria-live="polite"></div>
 <div class="actions"><button class="actionButton" type="button" id="backStep" disabled>Previous step</button><button class="actionButton primary" type="button" id="nextStep">Continue</button><button class="actionButton primary" type="submit" id="submitForm" hidden>Create account</button></div>
 </form>
@@ -46,30 +46,125 @@
 </main>
 <div id="vsFooter"></div>
 <script>
-const API=window.VTG_API_BASE||'';
 const AFRICA=[["🇩🇿","Algeria","+213"],["🇦🇴","Angola","+244"],["🇧🇯","Benin","+229"],["🇧🇼","Botswana","+267"],["🇧🇫","Burkina Faso","+226"],["🇧🇮","Burundi","+257"],["🇨🇻","Cabo Verde","+238"],["🇨🇲","Cameroon","+237"],["🇨🇫","Central African Republic","+236"],["🇹🇩","Chad","+235"],["🇰🇲","Comoros","+269"],["🇨🇩","DR Congo","+243"],["🇨🇬","Republic of the Congo","+242"],["🇨🇮","Côte d’Ivoire","+225"],["🇩🇯","Djibouti","+253"],["🇪🇬","Egypt","+20"],["🇬🇶","Equatorial Guinea","+240"],["🇪🇷","Eritrea","+291"],["🇸🇿","Eswatini","+268"],["🇪🇹","Ethiopia","+251"],["🇬🇦","Gabon","+241"],["🇬🇲","Gambia","+220"],["🇬🇭","Ghana","+233"],["🇬🇳","Guinea","+224"],["🇬🇼","Guinea-Bissau","+245"],["🇰🇪","Kenya","+254"],["🇱🇸","Lesotho","+266"],["🇱🇷","Liberia","+231"],["🇱🇾","Libya","+218"],["🇲🇬","Madagascar","+261"],["🇲🇼","Malawi","+265"],["🇲🇱","Mali","+223"],["🇲🇷","Mauritania","+222"],["🇲🇺","Mauritius","+230"],["🇲🇦","Morocco","+212"],["🇲🇿","Mozambique","+258"],["🇳🇦","Namibia","+264"],["🇳🇪","Niger","+227"],["🇳🇬","Nigeria","+234"],["🇷🇼","Rwanda","+250"],["🇸🇹","São Tomé and Príncipe","+239"],["🇸🇳","Senegal","+221"],["🇸🇨","Seychelles","+248"],["🇸🇱","Sierra Leone","+232"],["🇸🇴","Somalia","+252"],["🇿🇦","South Africa","+27"],["🇸🇸","South Sudan","+211"],["🇸🇩","Sudan","+249"],["🇹🇿","Tanzania","+255"],["🇹🇬","Togo","+228"],["🇹🇳","Tunisia","+216"],["🇺🇬","Uganda","+256"],["🇿🇲","Zambia","+260"],["🇿🇼","Zimbabwe","+263"]];
 const CHINA_KOREA=[["🇨🇳","China","+86"],["🇰🇷","South Korea","+82"]];
 const BANK_COUNTRIES=[...AFRICA,...CHINA_KOREA];
 const COUNTRY_SET=AFRICA;
+
 const $=s=>document.querySelector(s);
 function fillSelect(id,list,selected,withCode){const el=document.getElementById(id);if(!el)return;el.innerHTML=list.map(x=>'<option value="'+x[1]+'" data-code="'+x[2]+'" '+(x[1]===selected?'selected':'')+'>'+(withCode?x[2]+' — '+x[1]:x[1])+'</option>').join('');}
 fillSelect('country',COUNTRY_SET,'Nigeria',false);
 fillSelect('phoneCountry',COUNTRY_SET,'Nigeria',true);
+
 const STEPS=[{"title":"Personal details","fields":["fullName","email","phoneCountry","phone","country","city"]},{"title":"Buyer profile","fields":["buyerType","preferredLanguage","marketingSubscribed"]},{"title":"Secure your account","fields":["password","verificationCode"]}];
 const sections=Array.from(document.querySelectorAll('[data-step]'));
-let current=0;
-function showStep(index){current=Math.max(0,Math.min(index,sections.length-1));sections.forEach((section,i)=>section.hidden=i!==current);$('#stepName').textContent=STEPS[current].title;$('#stepCount').textContent='Step '+(current+1)+' of '+sections.length;$('#progressBar').style.width=((current+1)/sections.length*100)+'%';$('#progressTrack').setAttribute('aria-valuenow',String(current+1));$('#backStep').disabled=current===0;$('#nextStep').hidden=current===sections.length-1;$('#submitForm').hidden=current!==sections.length-1;window.scrollTo({top:0,behavior:'smooth'});}
-function validateStep(index){const els=Array.from(sections[index].querySelectorAll('input,select,textarea')).filter(el=>!el.disabled);for(const el of els){if(!el.checkValidity()){showStep(index);el.reportValidity();el.focus({preventScroll:true});return false;}}return true;}
+let current=0,signupStarted=false,resendTimer=null;
+const codeInput=$('#verificationCode'),sendButton=$('#sendCode'),submitButton=$('#submitForm'),message=$('#msg');
+function showStep(index){
+ current=Math.max(0,Math.min(index,sections.length-1));
+ sections.forEach((section,i)=>section.hidden=i!==current);
+ $('#stepName').textContent=STEPS[current].title;
+ $('#stepCount').textContent='Step '+(current+1)+' of '+sections.length;
+ $('#progressBar').style.width=((current+1)/sections.length*100)+'%';
+ $('#progressTrack').setAttribute('aria-valuenow',String(current+1));
+ $('#backStep').disabled=current===0;
+ $('#nextStep').hidden=current===sections.length-1;
+ submitButton.hidden=current!==sections.length-1;
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+function validateAll(){
+ for(let i=0;i<sections.length;i++){
+  const invalid=Array.from(sections[i].querySelectorAll('input,select,textarea')).find(el=>!el.disabled&&!el.checkValidity());
+  if(invalid){showStep(i);invalid.reportValidity();invalid.focus({preventScroll:true});return false;}
+ }
+ return true;
+}
+function formData(){return Object.fromEntries(new FormData($('#signupForm')).entries());}
+function metadata(d){
+ const phoneCode=$('#phoneCountry')?.selectedOptions[0]?.dataset?.code||'';
+ return {
+  full_name:d.fullName,phone:(phoneCode+' '+(d.phone||'')).trim(),preferred_language:d.preferredLanguage||'en',
+  country:d.country,city:d.city,buyer_type:d.buyerType||'business',company_name:d.companyName||'',
+  registration_no:d.registrationNo||'',state:d.state||'',marketing_subscribed:d.marketingSubscribed==='true'
+ };
+}
+function setMessage(text,ok){
+ message.className='message'+(ok?' ok':'');
+ message.textContent=text;
+}
+function startResendCountdown(){
+ if(resendTimer)clearInterval(resendTimer);
+ let seconds=45;sendButton.disabled=true;sendButton.textContent='Resend in '+seconds+'s';
+ resendTimer=setInterval(()=>{seconds--;if(seconds<=0){clearInterval(resendTimer);resendTimer=null;sendButton.disabled=false;sendButton.textContent='Resend code';}else sendButton.textContent='Resend in '+seconds+'s';},1000);
+}
+async function beginSignup(){
+ if(!validateAll())return;
+ const d=formData(),email=(d.email||'').trim().toLowerCase();
+ if(!email){showStep(STEPS.findIndex(s=>s.fields.includes('email')));$('[name=email]').focus();throw new Error('Enter your email address first.');}
+ setMessage('Creating your secure account and sending your verification code…',false);
+ sendButton.disabled=true;submitButton.disabled=true;
+ try{
+  const auth=await window.VTG_AUTH_READY;
+  const {data,error}=await auth.signUp(email,d.password,metadata(d));
+  if(error)throw error;
+  if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0){
+   throw new Error('An account may already exist with this email. Please sign in or use account help.');
+  }
+  if(data.session){
+   const current=await auth.getCurrent();
+   setMessage('Your email is confirmed. Opening your VTG account…',true);
+   location.href='/buyer-dashboard.html';
+   return;
+  }
+  signupStarted=true;
+  codeInput.disabled=false;codeInput.required=true;codeInput.focus();
+  sendButton.textContent='Resend code';
+  submitButton.textContent='Verify code & create account';
+  submitButton.disabled=false;
+  setMessage('A 6-digit verification code has been sent to '+email+'. Enter it below to finish registration.',true);
+  startResendCountdown();
+ }catch(error){
+  sendButton.disabled=false;submitButton.disabled=false;
+  setMessage(error.message||'We could not send your verification code. Please try again.',false);
+ }
+}
+async function resendCode(){
+ if(!signupStarted){await beginSignup();return;}
+ const email=$('[name=email]').value.trim().toLowerCase();
+ sendButton.disabled=true;
+ try{
+  const auth=await window.VTG_AUTH_READY;
+  const {error}=await auth.resendSignupCode(email);
+  if(error)throw error;
+  setMessage('A fresh verification code has been sent to '+email+'.',true);
+  startResendCountdown();
+ }catch(error){sendButton.disabled=false;sendButton.textContent='Resend code';setMessage(error.message||'Could not resend the code.',false);}
+}
 $('#backStep').addEventListener('click',()=>showStep(current-1));
-$('#nextStep').addEventListener('click',()=>{if(validateStep(current))showStep(current+1)});
-$('#signupForm').addEventListener('submit',async e=>{e.preventDefault();for(let i=0;i<sections.length;i++){const invalid=Array.from(sections[i].querySelectorAll('input,select,textarea')).find(el=>!el.disabled&&!el.checkValidity());if(invalid){showStep(i);invalid.reportValidity();invalid.focus({preventScroll:true});return;}}
-const d=Object.fromEntries(new FormData(e.currentTarget));const m=$('#msg');m.className='message';m.textContent='Creating your account…';$('#submitForm').disabled=true;
-try{const phoneCode=$('#phoneCountry').selectedOptions[0]?.dataset?.code||'';const payload={email:d.email,password:d.password,fullName:d.fullName,phone:phoneCode+' '+d.phone,phoneCountry:d.phoneCountry,verificationCode:d.verificationCode,preferredLanguage:d.preferredLanguage||'en',marketingSubscribed:d.marketingSubscribed==='true',country:d.country,city:d.city,buyerType:d.buyerType,companyName:d.companyName||undefined};const r=await fetch(API+'/api/auth/signup/buyer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const out=await r.json();if(!r.ok)throw Error(out.message||'Account creation failed');if(out.accessToken){localStorage.setItem('vtg_access_token',out.accessToken);localStorage.setItem('vtg-auth',JSON.stringify({user:out.user,accessToken:out.accessToken,refreshToken:out.refreshToken||null}));}m.className='message ok';m.textContent='Account created successfully. Opening your VTG workspace…';setTimeout(()=>location.href=out.agreementRequired?'/signup-agreement.html':'/trade-os.html',500);
-}catch(err){m.className='message';m.textContent=err.message||'Account creation failed. Please try again.';$('#submitForm').disabled=false;}
+$('#nextStep').addEventListener('click',()=>{if(validateAll())showStep(current+1);});
+$('#signupForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ if(!signupStarted){await beginSignup();return;}
+ const email=$('[name=email]').value.trim().toLowerCase(),code=codeInput.value.trim();
+ if(!/^\d{6}$/.test(code)){codeInput.setCustomValidity('Enter the 6-digit code from your email.');codeInput.reportValidity();codeInput.focus();return;}
+ codeInput.setCustomValidity('');
+ submitButton.disabled=true;sendButton.disabled=true;
+ setMessage('Verifying your email and creating your VTG session…',false);
+ try{
+  const auth=await window.VTG_AUTH_READY;
+  const result=await auth.verifySignupCode(email,code);
+  const pendingRole=result.user.requestedRole;
+  setMessage('Email verified. Your VTG account has been created successfully.',true);
+  setTimeout(()=>location.href=pendingRole&&pendingRole!=='buyer'?'/verification.html?role='+encodeURIComponent(pendingRole):'/buyer-dashboard.html',900);
+ }catch(error){
+  submitButton.disabled=false;sendButton.disabled=false;setMessage(error.message||'The code could not be verified. Check it and try again.',false);
+ }
 });
-const pass=$('[name=password]');const toggle=$('#passwordToggle');if(pass&&toggle)toggle.addEventListener('click',()=>{pass.type=pass.type==='password'?'text':'password';toggle.textContent=pass.type==='password'?'Show':'Hide'});
-const send=$('#sendCode');if(send)send.addEventListener('click',async()=>{const email=$('[name=email]').value.trim(),m=$('#msg');if(!email){m.textContent='Enter your email address first.';showStep(STEPS.findIndex(s=>s.fields.includes('email')));$('[name=email]').focus();return;}send.disabled=true;const original='Send code';try{const r=await fetch(API+'/api/auth/send-verification-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,preferredLanguage:$('[name=preferredLanguage]')?.value||'en'})});const out=await r.json();if(!r.ok)throw Error(out.message||'Could not send the verification code');m.className='message ok';m.textContent='Verification code sent. Check your email inbox.';let seconds=45;send.textContent='Resend in '+seconds+'s';const timer=setInterval(()=>{seconds--;if(seconds<=0){clearInterval(timer);send.disabled=false;send.textContent=original;}else send.textContent='Resend in '+seconds+'s';},1000);}catch(err){m.className='message';m.textContent=err.message;send.disabled=false;send.textContent=original;}});
-showStep(0);
+sendButton.addEventListener('click',async()=>{if(!validateAll())return;await resendCode();});
+const pass=$('[name=password]'),toggle=$('#passwordToggle');
+if(pass&&toggle)toggle.addEventListener('click',()=>{pass.type=pass.type==='password'?'text':'password';toggle.textContent=pass.type==='password'?'Show':'Hide';});
+codeInput.disabled=true;submitButton.disabled=true;showStep(0);
+
 </script>
 </body>
 </html>
