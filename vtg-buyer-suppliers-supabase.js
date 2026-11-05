@@ -3,7 +3,7 @@
   const $=id=>document.getElementById(id);
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let client=null,userId=null,items=[];
-  const preview=new URLSearchParams(location.search).get('preview')==='1';
+  const preview=false;
   function notice(message,isError=false){
     const host=$('supplierRows');
     if(host)host.innerHTML='<div class="empty">'+esc(message)+'</div>';
