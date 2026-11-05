@@ -69,16 +69,28 @@
   }
 
   var FOOTER = '<footer class="vs-footer"><div class="vs-wrap vs-footer-in">' +
-    '<div class="vs-footer-brand"><a href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img data-vs-logo src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><p>Connecting Africa, China and the world through intelligent trade.</p></div>' +
-    '<div><h4>Explore</h4><ul><li><a href="/marketplace.html">Marketplace</a></li><li><a href="/trade-atlas.html">Trade Atlas</a></li><li><a href="/market-intelligence.html">Market Intelligence</a></li><li><a href="/vtg-ai.html">VTG AI</a></li><li><a href="/trade-feed.html">Trade Feed</a></li><li><a href="/africa-markets.html">Africa Markets</a></li></ul></div>' +
-    '<div><h4>Trade</h4><ul><li><a href="/sourcing-suppliers.html">Sourcing &amp; Suppliers</a></li><li><a href="/product-verification.html">Product Verification</a></li><li><a href="/logistics-shipping.html">Logistics &amp; Shipping</a></li><li><a href="/finance-payments.html">Finance &amp; Payments</a></li></ul></div>' +
-    '<div><h4>Business</h4><ul><li><a href="/trade-guide.html">Trade Guide</a></li><li><a href="/partnerships.html">Partnerships</a></li><li><a href="/agent.html">Become an Agent</a></li><li><a href="/workforce-access.html">Workforce &amp; Staff Access</a></li></ul></div>' +
-    '<div><h4>Company</h4><ul><li><a href="/about-vintage.html">About VTG</a></li><li><a href="/contact.html">Contact</a></li><li><a href="/privacy.html">Privacy</a></li><li><a href="/terms.html">Terms</a></li><li><a href="/code-of-conduct.html">Code of Conduct</a></li></ul></div>' +
-    '</div><div class="vs-footer-base"><div class="vs-wrap"><span>&copy; 2026 Vintage Trade Global &middot; Powered by Folayele Global Resources Limited</span></div></div></footer>';
+    '<div class="vs-footer-brand"><a href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img data-vs-logo src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><p>THE PRIVATE TRADE HOUSE<br>Connecting Africa, China and the world through intelligent trade.</p></div>' +
+    '<div><h4>Explore</h4><ul><li><a data-vs-link href="/marketplace.html">Marketplace</a></li><li><a data-vs-link href="/trade-atlas.html">Trade Atlas</a></li><li><a data-vs-link href="/market-intelligence.html">Market Intelligence</a></li><li><a data-vs-link href="/vtg-ai.html">VTG AI</a></li><li><a data-vs-link href="/trade-feed.html">Trade Feed</a></li><li><a data-vs-link href="/africa-markets.html">Africa Markets</a></li></ul></div>' +
+    '<div><h4>Trade</h4><ul><li><a data-vs-link href="/sourcing-suppliers.html">Sourcing &amp; Suppliers</a></li><li><a data-vs-link href="/product-verification.html">Product Verification</a></li><li><a data-vs-link href="/logistics-shipping.html">Logistics &amp; Shipping</a></li><li><a data-vs-link href="/finance-payments.html">Finance &amp; Payments</a></li><li><a data-vs-link href="/signin.html">Trade Workspace</a></li></ul></div>' +
+    '<div><h4>Business</h4><ul><li><a data-vs-link href="/trade-guide.html">Trade Guide</a></li><li><a data-vs-link href="/partnerships.html">Partnerships</a></li><li><a data-vs-link href="/agent.html">Become an Agent</a></li><li><a data-vs-link href="/workforce-access.html">Workforce &amp; Staff Access</a></li></ul></div>' +
+    '<div><h4>Company</h4><ul><li><a data-vs-link href="/about-vintage.html">About VTG</a></li><li><a data-vs-link href="/contact.html">Contact VTG</a></li></ul></div>' +
+    '</div><div class="vs-footer-base"><div class="vs-wrap"><span>&copy; 2026 Vintage Trade Global &middot; Powered by Folayele Global Resources Limited</span><nav aria-label="Legal"><a data-vs-link href="/privacy.html">Privacy</a><a data-vs-link href="/terms.html">Terms</a><a data-vs-link href="/code-of-conduct.html">Code of Conduct</a></nav></div></div></footer>';
 
   function renderFooter() {
     var host = document.getElementById('vsFooter');
-    if (host) { host.innerHTML = FOOTER; apply(root.getAttribute('data-theme') || 'light'); }
+    if (!host) return;
+    host.innerHTML = FOOTER;
+    var current = location.pathname || '/';
+    if (current.length > 1 && current.charAt(current.length - 1) === '/') current = current.slice(0, -1);
+    var links = host.querySelectorAll('a[data-vs-link]');
+    for (var i = 0; i < links.length; i++) {
+      var href = links[i].getAttribute('href');
+      if (href && href === current) {
+        links[i].setAttribute('aria-current', 'page');
+        links[i].classList.add('is-current');
+      }
+    }
+    apply(root.getAttribute('data-theme') || 'light');
   }
 
   apply(resolve(stored()));
