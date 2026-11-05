@@ -56,7 +56,7 @@
         projectUrl: URL,
         publishableKey: KEY,
         signUp(email, password, metadata) {
-          return client.auth.signUp({ email: email.trim().toLowerCase(), password, options: { data: metadata } });
+          return client.auth.signUp({ email: email.trim().toLowerCase(), password, options: { data: metadata, emailRedirectTo: location.origin + '/auth-callback.html' } });
         },
         resendSignupCode(email) {
           return client.auth.resend({ type: 'signup', email: email.trim().toLowerCase() });
