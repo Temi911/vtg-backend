@@ -43,7 +43,7 @@
       const profile=item.profile||{},status=item.status;
       let actions='';
       if(status==='active')actions='<button class="btn" type="button" data-member-action="suspend" data-user="'+esc(item.user_id)+'" data-role="'+esc(item.workspace_role)+'">Suspend</button>';
-      else if(status==='suspended')actions='<button class="btn" type="button" data-member-action="activate" data-user="'+esc(item.user_id)+'" data-role="'+esc(item.workspace_role)+'">Reactivate</button>';
+      else if(status==='suspended'||status==='removed')actions='<button class="btn" type="button" data-member-action="activate" data-user="'+esc(item.user_id)+'" data-role="'+esc(item.workspace_role)+'">Reactivate</button>';
       if(status!=='removed')actions+=' <button class="btn" type="button" data-member-action="remove" data-user="'+esc(item.user_id)+'" data-role="'+esc(item.workspace_role)+'">Remove</button>';
       return '<tr><td>'+esc(profile.full_name||'—')+'</td><td>'+esc(profile.email||'—')+'</td><td>'+esc(roles[item.workspace_role]||item.workspace_role)+'</td><td>'+esc(status)+'</td><td>'+esc(profile.is_active===false?'Inactive':'Active')+'</td><td>'+actions+'</td></tr>';
     }).join('');
@@ -79,7 +79,8 @@
         workspace_role:values.get('workspace_role')
       });
       form.reset();
-      if(result.email_sent)message('Invitation email sent. The invitee can accept it and set their password.','success');
+      if(result.assignment_added)message('Workspace assigned to the existing VTG staff identity.','success');
+      else if(result.email_sent)message('Invitation email sent. The invitee can accept it and set their password.','success');
       else message(result.email_note||'Invitation saved, but the email was not sent. Check SMTP and resend.','error');
       await load();
     }catch(error){message(error.message,'error');}
