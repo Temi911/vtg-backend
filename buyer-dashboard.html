@@ -579,32 +579,7 @@ function revealActiveGroup(v){const active=document.querySelector('.sidebar [dat
 function go(v){if(!$('page-'+v))v='overview';view=v;revealActiveGroup(v);document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+v));document.querySelectorAll('[data-view]').forEach(a=>a.classList.toggle('active',a.dataset.view===v));document.querySelectorAll('.sidebar [data-view]').forEach(a=>{if(a.dataset.view===v)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});$('crumb').textContent=t(v==='overview'?'overview':v);history.replaceState(null,'','#'+v);$('sidebar').classList.remove('open');window.scrollTo(0,0);if(v==='cart')renderCart();if(v==='marketplace')loadBuyerProducts();if(v==='messages')renderChat();if(v==='feed'){renderFeed();loadLiveTradeFeed()}if(v==='rfqs'){loadLiveEnquiries();loadLiveQuotes()}if(v==='messages')loadLiveConversations();if(v==='documents')loadLiveDocuments();if(v==='network')loadTradeNetwork();if(v==='verification')loadLiveInspections();if(v==='intelligence')loadBuyerIntelStatus();if(v==='intelligence')loadIntelNews()}
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();go(b.dataset.view)}));
  if(location.hash==='#page-assistant'||location.hash==='#assistant')go('assistant');
-async function loadTradeNetwork(){
- const box=$('networkRows'),status=$('networkStatus');if(!box||!status)return;
- if(params.get('preview')==='1'){status.textContent='Preview mode. Sign in to access the live verified directory.';box.innerHTML='<div class="empty">Preview mode: verified partner records and connection requests require an authenticated account. <a href="/signin.html?role=buyer&next=%2Fbuyer-dashboard.html%23network" style="color:var(--red);font-weight:800">Sign in ↗</a></div>';return}
- if(!token){status.textContent='Buyer session unavailable.';box.innerHTML='<div class="empty">Please sign in again to view verified partners.</div>';return}
- box.innerHTML='<div class="empty">Loading verified partners…</div>';status.textContent='Connecting to VTG verified directory…';
- try{
-  const role=$('networkRole')?.value||'',url='/api/network/directory'+(role?'?role='+encodeURIComponent(role):'');
-  const r=await fetch(url,{headers:{Accept:'application/json',Authorization:'Bearer '+token},cache:'no-store'});let d={};try{d=await r.json()}catch(_){}
-  if(!r.ok)throw new Error(d.error?.message||d.message||'Unable to load network directory');
-  const rows=d.partners||[];status.textContent=rows.length+' verified partner'+(rows.length===1?'':'s')+' available';
-  if(!rows.length){box.innerHTML='<div class="empty">No verified partners match this filter yet.</div>';return}
-  box.innerHTML=rows.map(p=>'<article class="panel" style="padding:16px"><div class="eyebrow">'+esc(p.role||'Partner')+'</div><h2 style="margin:8px 0">'+esc(p.name||'Verified partner')+'</h2><span class="chip">Verified</span>'+(p.location?'<p class="desc">'+esc(p.location)+'</p>':'')+(p.regions?'<p class="desc">Regions: '+esc(Array.isArray(p.regions)?p.regions.join(', '):p.regions)+'</p>':'')+'<div class="formActions"><button class="btn primary" type="button" data-network-connect="'+esc(p.id)+'" data-network-role="'+esc(p.role)+'">Request connection</button></div></article>').join('');
- }catch(e){status.textContent='Directory unavailable';box.innerHTML='<div class="empty">Could not load the verified directory. '+esc(e.message)+' <button class="btn" type="button" id="retryNetwork">Try again</button></div>';const retry=$('retryNetwork');if(retry)retry.onclick=loadTradeNetwork}
-}
-$('refreshNetwork')?.addEventListener('click',loadTradeNetwork);
-$('networkRole')?.addEventListener('change',loadTradeNetwork);
-$('networkRows')?.addEventListener('click',async e=>{
- const b=e.target.closest('[data-network-connect]');if(!b)return;
- if(!token()){say('Sign in to request a trade-network connection.');return}
- const note=prompt('Add a short note for this connection request (optional):')||'VTG Trade Network connection request';
- b.disabled=true;
- try{const r=await fetch('/api/network/relationships',{method:'POST',headers:{Accept:'application/json','Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({partnerId:b.dataset.networkConnect,partnerType:b.dataset.networkRole,note}),cache:'no-store'});let d={};try{d=await r.json()}catch(_){}
- if(!r.ok)throw new Error(d.error?.message||d.message||'Connection request failed');
- say('Connection request submitted.');b.textContent='Request submitted';b.disabled=true
- }catch(e){say(e.message||'Could not submit connection request');b.disabled=false}
-});
+async function loadTradeNetwork(){return window.VTGBuyerNetwork?.load();}
 async function loadIntelNews(){
  const box=$('intelNewsRows');if(!box)return;box.innerHTML='<div class="empty">Loading recent trade news…</div>';
  try{let r=await fetch('/api/market-intelligence/news?limit=12',{headers:{Accept:'application/json'},cache:'no-store'});let d={};try{d=await r.json()}catch(_){}if(!r.ok&&token){r=await fetch('/api/integrations/news',{headers:{Accept:'application/json',Authorization:'Bearer '+token},cache:'no-store'});d={};try{d=await r.json()}catch(_){}}if(!r.ok)throw new Error(d.message||d.error?.message||'News service returned '+r.status);
@@ -720,4 +695,5 @@ setLang(lang);renderProducts();renderRfqs();renderCart();renderFeed();renderChat
 <script src="/vtg-buyer-shared-trade-desk-supabase.js?v=20261105-trade-workflow-4"></script>
 <script src="/vtg-buyer-cart-supabase.js?v=20261105-cart-sync-2"></script>
 <script src="/vtg-buyer-landed-cost-supabase.js?v=20261105-landed-cost-2"></script>
+<script src="/vtg-buyer-network-supabase.js?v=20261105-network-1"></script>
 </body></html>
