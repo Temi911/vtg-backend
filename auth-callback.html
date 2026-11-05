@@ -25,10 +25,10 @@
   if(!current)throw new Error('This confirmation link is missing, expired or was opened in a different browser. Return to sign in or request a fresh email.');
   history.replaceState({},document.title,location.pathname);
   const user=current.user,pending=user.role==='buyer'&&!!user.requestedRole;
+  const dest=pending?'/verification.html?role='+encodeURIComponent(user.requestedRole):({buyer:'/buyer-dashboard.html',supplier:'/supplier-dashboard.html',bank:'/bank-trade-os.html',agent:'/agent-dashboard.html',admin:'/admin-dashboard-preview.html'})[user.role]||'/';
   title.textContent='Email confirmed';copy.textContent='Your VTG account is confirmed. Opening the next step…';
   setTimeout(()=>{
-   if(pending){location.replace('/verification.html?role='+encodeURIComponent(user.requestedRole));return;}
-   const dest=({buyer:'/buyer-dashboard.html',supplier:'/supplier-dashboard.html',bank:'/bank-trade-os.html',agent:'/agent-dashboard.html',admin:'/admin-dashboard-preview.html'})[user.role]||'/';
+   if(user.agreementRequired){location.replace('/signup-agreement.html?next='+encodeURIComponent(dest));return;}
    location.replace(dest);
   },900);
  }catch(error){title.textContent='We could not complete confirmation';copy.className='copy error';copy.textContent=error.message||'Please try signing in again.';link.hidden=false;}
