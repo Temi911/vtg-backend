@@ -57,7 +57,18 @@
         const views={africa:{center:[4,18],zoom:3},china:{center:[31,105],zoom:4},korea:{center:[36.2,127.8],zoom:6},world:{center:[17,38],zoom:2}};
         const v=views[region]||views.world;map.setView(v.center,v.zoom,{animate:true});
       }
-      window.VTGBuyerAtlas={map,groups,data:D,setRegion};
+      let vesselMarker=null;
+      function showVesselPosition(position){
+        const lat=Number(position?.latitude),lon=Number(position?.longitude);
+        if(!Number.isFinite(lat)||lat < -90||lat > 90||!Number.isFinite(lon)||lon < -180||lon > 180)return;
+        if(vesselMarker)map.removeLayer(vesselMarker);
+        vesselMarker=L.circleMarker([lat,lon],{radius:9,color:'#fff',weight:2,fillColor:'#702A30',fillOpacity:1}).addTo(map);
+        const stamp=position.position_time?new Date(position.position_time).toLocaleString():'timestamp unavailable';
+        vesselMarker.bindPopup('<strong>Last provider-reported vessel position</strong><br>'+esc(position.provider||'AIS')+'<br>'+esc(stamp)+'<br><small>This position is not proof that a specific container is aboard.</small>');
+        map.flyTo([lat,lon],Math.max(map.getZoom(),4),{animate:true,duration:0.8});
+      }
+      window.VTGBuyerAtlas={map,groups,data:D,setRegion,showVesselPosition};
+      if(pendingVessel)showVesselPosition(pendingVessel);
       node.dataset.vtgMapInit='ready';
       if(pendingRegion)setRegion(pendingRegion);
       const refresh=()=>map.invalidateSize({pan:false});
@@ -70,6 +81,8 @@
       node.innerHTML='<div style="min-height:320px;display:grid;place-items:center;padding:24px;text-align:center;background:#eef4f6;color:#233746"><div><strong>Interactive map could not load on this connection.</strong><p>Check your internet connection and reopen the Atlas. This map uses public OpenStreetMap/CARTO services and does not require a paid API key.</p><a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">Open OpenStreetMap</a></div></div>';
     });
   }
+  let pendingVessel=null;
+  window.addEventListener('vtg:buyer-vessel-position',event=>{const p=event.detail;if(window.VTGBuyerAtlas?.showVesselPosition)window.VTGBuyerAtlas.showVesselPosition(p);else pendingVessel=p;});
   window.addEventListener('vtg:buyer-map-region',event=>{const region=event.detail?.region;if(window.VTGBuyerAtlas?.setRegion)window.VTGBuyerAtlas.setRegion(region);else pendingRegion=region;});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
