@@ -54,7 +54,7 @@ agent:{title:'Trade agent account support',desc:'Help with agent login, email co
 admin:{title:'VTG administrator support',desc:'A restricted recovery path for authorized VTG administrators.',note:'Admin recovery is handled separately by the authorized system owner. Public recovery cannot grant administrator permissions.'}
 };
 const modes={
-forgot:{title:'Reset your password',desc:'Enter your registered email. If it matches an active account, VTG will email a secure reset link that expires in 30 minutes.',fields:'email',button:'Send reset link'},
+forgot:{title:'Reset your password',desc:'Enter your registered email. If it matches an active account, VTG will email a secure password-reset link.',fields:'email',button:'Send reset link'},
 code:{title:'Request a verification code',desc:'Enter the email address used for your VTG account. If email delivery is available, a new code will be sent.',fields:'email',button:'Send verification code'},
 trouble:{title:'Tell us what is going wrong',desc:'Choose the issue that best describes your access problem. We will direct you to the next step.',fields:'trouble',button:'Show next step'},
 contact:{title:'Contact VTG Account Support',desc:'Prepare a support request. Do not include passwords, verification codes, or bank account credentials.',fields:'support',button:'Prepare support request'},
@@ -131,8 +131,7 @@ setMessage(d.message||'Your support request was sent to VTG.','ok');
 }catch(err){setMessage(err.message||'Something went wrong. Please try again or contact VTG Support.','error');}
 finally{if(mode!=='reset'||!$('#message').classList.contains('ok')){btn.disabled=false;btn.textContent=modes[mode]?.button||'Continue';}}
 });
-const token=params.get('token');
-if(params.get('mode')==='reset'&&token){role=params.get('role')||'buyer';renderRole();openMode('reset');}
+if(params.get('mode')==='reset'){role=params.get('role')||'buyer';renderRole();openMode('reset');}
 else if(params.get('mode')&&modes[params.get('mode')]){renderRole();openMode(params.get('mode'));}
 else renderRole();
 })();
