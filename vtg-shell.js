@@ -3,6 +3,13 @@
    and <div id="vsFooter"></div> at the end. Presentation only: no business logic lives here. */
 (function () {
   'use strict';
+  if (!document.querySelector('link[data-vtg-forms]')) {
+    var formsCss = document.createElement('link');
+    formsCss.rel = 'stylesheet';
+    formsCss.href = '/vtg-forms.css?v=20261105-1';
+    formsCss.setAttribute('data-vtg-forms', '1');
+    document.head.appendChild(formsCss);
+  }
   var KEY = 'vtg-theme-preference';
   var root = document.documentElement;
 
