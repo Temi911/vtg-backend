@@ -732,57 +732,7 @@ $('buyerMeeting')?.addEventListener('click',()=>toast('Meeting request is a loca
 function call(type){$('callTitle').textContent=type==='video'?'Video call':'Voice call';$('callModal').classList.remove('hidden')}['voice','video'].forEach(id=>$(id).addEventListener('click',()=>call(id)));$('closeCall').addEventListener('click',()=>$('callModal').classList.add('hidden'));$('okCall').addEventListener('click',()=>$('callModal').classList.add('hidden'));
 function verify(){const a=db.get('verify',[]);$('statVerify').textContent=a.length;$('verifyRows').innerHTML=a.length?a.map(x=>'<div class="row"><div class="rowMain"><strong>'+esc(x.product)+'</strong><p>'+esc(x.checks)+' · '+esc(x.supplier||'Supplier not set')+'</p></div></div>').join(''):'<div class="empty">'+t('noDrafts')+'</div>'}
 $('verifyForm').addEventListener('submit',e=>{e.preventDefault();const a=db.get('verify',[]);a.unshift(Object.fromEntries(new FormData(e.currentTarget)));db.set('verify',a);verify();e.currentTarget.reset();say(t('saved'))});
-async function loadLiveInspections(){
- const box=$('liveInspectionRows');if(!box)return;
- if(preview){box.innerHTML='<div class="empty">Preview mode: sign in as a buyer to view account-linked inspection requests and take shipment decisions. <a href="/signin.html?role=buyer&next=%2Fbuyer-dashboard.html%23verification" style="color:var(--red);font-weight:800">Sign in ↗</a></div>';return}
- if(!token){box.innerHTML='<div class="empty">Your buyer session is not available. Please sign in again to load live inspections.</div>';return}
- box.innerHTML='<div class="empty">Loading live inspection requests…</div>';
- try{
-  const response=await fetch('/api/inspections/requests/mine',{headers:{Accept:'application/json',Authorization:'Bearer '+token},cache:'no-store'});
-  let data={};try{data=await response.json()}catch(e){}
-  if(!response.ok)throw new Error(data.message||'Inspection service returned '+response.status);
-  const requests=Array.isArray(data.requests)?data.requests:[];
-  if(!requests.length){box.innerHTML='<div class="empty">No live inspection requests are linked to this account yet. Use Request inspection from a trade order when goods are ready.</div>';return}
-  box.innerHTML=requests.map(x=>{
-   const id=esc(x.id),paid=x.payment_status==='paid',awaiting=x.status==='awaiting_buyer';
-   const status=esc(String(x.status||'pending').replaceAll('_',' ')),fee=Number(x.buyer_fee_usd||0).toFixed(2);
-   return '<article class="row" style="display:block;padding:16px 0"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><strong>'+esc(x.reference||'Inspection request')+'</strong><p>'+esc(x.product_name||'Product not specified')+' · '+esc(x.quantity||'—')+' · '+esc([x.city,x.country].filter(Boolean).join(', '))+'</p><p>Agent: '+esc(x.agent_name||'Awaiting assignment')+'</p></div><span class="chip">'+status+'</span></div><p style="margin-top:8px">Inspection fee: $'+fee+' · <span class="chip">'+(paid?'Payment confirmed':'Payment: '+esc(x.payment_status||'unpaid'))+'</span></p>'+(x.inspection_summary?'<div class="notice">Agent report: '+esc(x.inspection_summary)+'</div>':'<p>Agent report has not been submitted yet.</p>')+'<div class="formActions" style="justify-content:flex-start"><button class="btn" type="button" data-live-evidence="'+id+'">View evidence</button>'+(paid?'':'<button class="btn primary" type="button" data-live-pay="'+id+'">Pay inspection fee</button>')+(awaiting?'<button class="btn primary" type="button" data-live-decision="approved" data-live-id="'+id+'">Approve for shipment</button><button class="btn" type="button" data-live-decision="needs_clarification" data-live-id="'+id+'">Request clarification</button><button class="btn" type="button" data-live-decision="rejected" data-live-id="'+id+'">Reject inspection</button>':'')+'</div><div class="notice" id="liveEvidence-'+id+'">Evidence details appear here when requested.</div></article>';
-  }).join('');
- }catch(e){box.innerHTML='<div class="empty">Could not load live inspections. '+esc(e.message)+' <button class="btn" type="button" id="retryLiveInspections">Try again</button></div>';const retry=$('retryLiveInspections');if(retry)retry.onclick=loadLiveInspections}
-}
-$('refreshLiveInspections')?.addEventListener('click',loadLiveInspections);
-$('liveInspectionRows')?.addEventListener('click',async e=>{
- const b=e.target.closest('button');if(!b)return;
- const headers={Accept:'application/json',Authorization:'Bearer '+token};
- try{
-  if(b.dataset.livePay){
-   b.disabled=true;const r=await fetch('/api/inspections/requests/'+encodeURIComponent(b.dataset.livePay)+'/payment/initialize',{method:'POST',headers,cache:'no-store'});let d={};try{d=await r.json()}catch(_){}
-   if(!r.ok)throw new Error(d.message||d.error?.message||'Unable to initialize inspection payment');
-   if(d.paid){say('Inspection payment is confirmed.');return loadLiveInspections()}
-   if(!d.authorizationUrl)throw new Error('Payment checkout is unavailable. Contact VTG support.');
-   location.href=d.authorizationUrl;return;
-  }
-  if(b.dataset.liveEvidence){
-   const id=b.dataset.liveEvidence,slot=$('liveEvidence-'+id);if(slot)slot.textContent='Loading evidence…';
-   const r=await fetch('/api/inspections/requests/'+encodeURIComponent(id)+'/evidence',{headers,cache:'no-store'});let d={};try{d=await r.json()}catch(_){}
-   if(!r.ok)throw new Error(d.message||'Unable to load evidence');
-   const list=d.evidence||[];
-   if(slot)slot.innerHTML='<div>Evidence ('+list.length+')</div>'+(list.length?list.map(v=>'<div style="padding:7px 0;border-bottom:1px solid var(--line)">'+esc(v.evidence_type||'Evidence')+' · '+esc(v.file_name||'File')+' · '+esc(v.created_at?new Date(v.created_at).toLocaleString():'')+' <button class="btn" type="button" data-live-download="'+esc(v.id)+'">Download</button></div>').join(''):'<div>No evidence uploaded yet.</div>');
-   return;
-  }
-  if(b.dataset.liveDownload){
-   const r=await fetch('/api/inspections/evidence/'+encodeURIComponent(b.dataset.liveDownload)+'/download',{headers,cache:'no-store'});if(!r.ok)throw new Error('Unable to download evidence');
-   const blob=await r.blob(),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='VTG-inspection-evidence';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);return;
-  }
-  if(b.dataset.liveDecision){
-   const decision=b.dataset.liveDecision;let notes='';
-   if(decision!=='approved'){notes=prompt(decision==='rejected'?'Why are you rejecting this inspection?':'What clarification do you need?')||'';if(!notes.trim())return}
-   b.disabled=true;const r=await fetch('/api/inspections/requests/'+encodeURIComponent(b.dataset.liveId)+'/decision',{method:'PATCH',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({decision,notes}),cache:'no-store'});let d={};try{d=await r.json()}catch(_){}
-   if(!r.ok)throw new Error(d.message||'Could not update inspection decision');
-   say('Inspection decision updated.');return loadLiveInspections();
-  }
- }catch(err){say(err.message||'The inspection action could not be completed.')}finally{if(b.isConnected)b.disabled=false}
-});
+async function loadLiveInspections(){if(window.VTGBuyerInspections?.load)return window.VTGBuyerInspections.load();}
 let liveLCRecords=[];function renderLC(){const a=db.get('lc',[]);const live=liveLCRecords.map(x=>'<div class="row"><div class="rowMain"><strong>'+esc(x.reference||'VTG LC')+' · USD '+money(x.amount_usd||0)+'</strong><p>Order '+esc(x.order_reference||'linked order')+' · '+esc(x.issuing_bank_name||'Bank pending')+'</p><small>Created '+(x.created_at?new Date(x.created_at).toLocaleDateString():'recently')+'</small></div><span class="chip">'+esc(String(x.status||'requested').replaceAll('_',' ').toUpperCase())+'</span></div>').join('');const drafts=a.map(x=>'<div class="row"><div class="rowMain"><strong>'+esc(x.beneficiary)+' · '+esc(x.currency)+' '+esc(x.amount)+'</strong><p>'+esc(x.country)+' · '+esc(x.type)+' · Local draft only</p><small>'+esc(x.reference||'No purchase reference added')+'</small></div><span class="chip">DRAFT</span></div>').join('');$('lcCount').textContent=liveLCRecords.length+a.length;$('lcRows').innerHTML=(live+drafts)||'<div class="empty">No LC requests yet. Create an order first, then submit an LC request against that order.</div>'}
 async function loadLiveLCs(){if(preview||!token)return;try{const r=await fetch('/api/lc',{headers:{Accept:'application/json',Authorization:'Bearer '+token},cache:'no-store'});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.message||'Unable to load LC requests');liveLCRecords=Array.isArray(d.lettersOfCredit)?d.lettersOfCredit:[];renderLC()}catch(e){say(e.message||'Unable to load LC requests')}}
 async function loadLiveOrders(){const host=$('liveOrdersRows');if(host)host.innerHTML='<div class="empty">Connecting to account-linked orders…</div>';if(window.VTGBuyerOrders?.load)return window.VTGBuyerOrders.load();}async function populateLCOrders(){const select=$('lcOrderId');if(!select)return;if(preview){select.innerHTML='<option value="preview">Preview mode — no live order selected</option>';return}if(!token){select.innerHTML='<option value="">Sign in to load eligible purchase orders</option>';return}select.innerHTML='<option value="">Loading your orders…</option>';try{const r=await fetch('/api/orders',{headers:{Accept:'application/json',Authorization:'Bearer '+token},cache:'no-store'});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.message||'Unable to load orders');const orders=Array.isArray(d.orders)?d.orders:[];const eligible=orders.filter(o=>!['cancelled','delivered'].includes(o.status));select.innerHTML='<option value="">Select an order</option>'+eligible.map(o=>'<option value="'+esc(o.id)+'">'+esc(o.reference)+' · '+esc(o.supplier_name||'Supplier')+' · USD '+Number(o.total_amount_usd||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+'</option>').join('');if(!eligible.length)select.innerHTML='<option value="">No eligible orders found — create an order first</option>'}catch(e){select.innerHTML='<option value="">Unable to load orders — refresh and try again</option>';say(e.message||'Unable to load orders')}}
@@ -847,4 +797,5 @@ setLang(lang);renderProducts();renderRfqs();renderCart();renderFeed();renderChat
 <script src="/vtg-buyer-request-supabase.js?v=20261105-request-1"></script>
 <script src="/vtg-buyer-requests-list-supabase.js?v=20261105-requests-live-1"></script>
 <script src="/vtg-buyer-orders-supabase.js?v=20261105-orders-live-1"></script>
+<script src="/vtg-buyer-inspections-supabase.js?v=20261105-inspections-live-1"></script>
 </body></html>
