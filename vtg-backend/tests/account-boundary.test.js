@@ -28,7 +28,7 @@ test('public sign-in presents only buyer, supplier and bank roles', () => {
 });
 
 test('public auth refuses private staff identities', () => {
-  const auth = read('../../vtg-supabase-auth.js');
+  const auth = read('../vtg-supabase-auth.js');
   assert.match(auth, /accountEnvironment === 'staff'/);
   assert.match(auth, /signInWorkforce/);
   assert.match(auth, /signInAdmin/);
