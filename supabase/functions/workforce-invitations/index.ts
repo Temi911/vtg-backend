@@ -6,7 +6,7 @@ const allowedRoles = new Set([
   "support", "finance", "inspector", "marketing",
 ]);
 const cors = {
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": Deno.env.get("APP_SITE_URL") ?? "https://vtg-backended.vercel.app",
   "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
   "Access-Control-Allow-Methods": "GET, POST, PATCH, OPTIONS",
   "Content-Type": "application/json; charset=utf-8",
