@@ -25,7 +25,7 @@
       const p=await client.from('profiles').select('role,is_active').eq('id',result.data.session.user.id).single();
       if(p.error)throw p.error;
       if(p.data.role!=='buyer'||!p.data.is_active)throw new Error('An active buyer account is required.');
-      const response=await client.from('vtg_marketplace_products').select('id,supplier_id,name,category,currency,unit_price,minimum_order_quantity,origin_country,supplier_name').order('name').limit(500);
+      const response=await client.from('products').select('id,supplier_id,name,category,currency,unit_price,minimum_order_quantity,origin_country,supplier:profiles!products_supplier_id_fkey(full_name)').eq('is_active',true).order('name').limit(500);
       if(response.error)throw response.error;
       products=response.data||[];
       if(!products.length){
@@ -33,11 +33,11 @@
         setStatus('The live catalogue currently has no active products. A supplier must publish an active product before a buyer can route a quote request.');
         return;
       }
-      select.innerHTML='<option value="">Choose a supplier product…</option>'+products.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.name)+' — '+esc(p.supplier_name||'Verified VTG supplier')+' · MOQ '+Number(p.minimum_order_quantity||1).toLocaleString()+'</option>').join('');
+      select.innerHTML='<option value="">Choose a supplier product…</option>'+products.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.name)+' — '+esc(p.supplier?.full_name||'VTG supplier')+' · MOQ '+Number(p.minimum_order_quantity||1).toLocaleString()+'</option>').join('');
       setStatus('Choose a live product. Your request will be linked to its supplier and appear in both account workspaces.');
       select.addEventListener('change',()=>{
         const p=products.find(x=>x.id===select.value);
-        if(p){form.querySelector('[name="product"]').value=p.name;setStatus('Selected '+p.name+' · '+(p.supplier_name||'verified supplier')+' · MOQ '+Number(p.minimum_order_quantity||1).toLocaleString());}
+        if(p){form.querySelector('[name="product"]').value=p.name;setStatus('Selected '+p.name+' · '+(p.supplier?.full_name||'supplier')+' · MOQ '+Number(p.minimum_order_quantity||1).toLocaleString());}
       });
     }catch(error){select.innerHTML='<option value="">Live catalogue unavailable</option>';setStatus(error.message||'Could not load supplier products.');}
   }
