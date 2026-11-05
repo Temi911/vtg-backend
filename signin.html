@@ -67,7 +67,7 @@ document.getElementById('toggle').onclick=()=>{
  p.type=p.type==='password'?'text':'password';b.textContent=p.type==='password'?'Show':'Hide';
 };
 document.getElementById('form').onsubmit=async e=>{
- e.preventDefault();msg.className='msg';msg.textContent='Signing in securely…';
+ e.preventDefault();msg.className='msg processing';msg.textContent='Signing in securely…';
  const submit=e.currentTarget.querySelector('button[type="submit"]');if(submit)submit.disabled=true;
  const d=Object.fromEntries(new FormData(e.currentTarget));
  try{
