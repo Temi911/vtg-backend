@@ -24,8 +24,9 @@ html[data-theme="light"] .vtg-header-brand .logo-light{display:none!important}
 </style><link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
 <link rel="stylesheet" href="/vtg-dashboard-typography.css?v=20261021-1">
 <link rel="stylesheet" href="/vtg-dash.css?v=20261031-1">
-<link rel="stylesheet" href="/vtg-type.css"><style>html.vtg-auth-pending body{visibility:hidden}</style><script>document.documentElement.classList.add("vtg-auth-pending")</script></head>
-<body id="vtg-dashboard-top"><script>(function(){var token="";try{var auth=JSON.parse(localStorage.getItem("vtg-auth")||"null");token=localStorage.getItem("vtg_access_token")||(auth&&auth.accessToken)||""}catch(_){}if(!token){location.replace("/workforce-signin.html?workspace=staff");return}fetch("/api/auth/me",{headers:{Authorization:"Bearer "+token,Accept:"application/json"},cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("unauthorised");return r.json()}).then(function(d){var u=d.user||d;if(!['staff','manager','logistics','compliance','support','finance','inspector','marketing','agent'].includes(String(u.role||'').toLowerCase()))throw new Error("wrong role");document.documentElement.classList.remove("vtg-auth-pending")}).catch(function(){location.replace("/workforce-signin.html?workspace=staff")})})();</script>
+<link rel="stylesheet" href="/vtg-type.css"><style>html.vtg-auth-pending body{visibility:hidden}</style><script>document.documentElement.classList.add("vtg-auth-pending")</script><script src="/vtg-supabase-auth.js?v=20261105-staff-auth-1"></script>
+</head>
+<body id="vtg-dashboard-top"><script>(async function(){const requested=(new URLSearchParams(location.search).get("workspace")||"staff").toLowerCase();try{const auth=await window.VTG_AUTH_READY;const current=await auth.getCurrent();if(!current||current.user.accountEnvironment!=="staff"||!current.user.isActive)throw new Error("Staff access required");if(current.user.role!=="admin"&&!(current.user.workforceMemberships||[]).some(m=>m.status==="active"&&m.workspace_role===requested))throw new Error("Workspace not assigned");document.documentElement.classList.remove("vtg-auth-pending")}catch(_){location.replace("/workforce-signin.html?workspace="+encodeURIComponent(requested))}})();</script>
 <div class="layout">
 <aside class="sidebar">
   <div class="brand"><a href="/workforce-access.html"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><small>Operations workspace</small></div>
@@ -94,12 +95,9 @@ window.addEventListener('storage',e=>{if(e.key==='vtg-theme-preference'||e.key==
    try{
     const raw=JSON.parse(localStorage.getItem('vtg-auth')||'{}'),user=raw.user||{};
     $('userName').textContent=user.fullName||user.name||user.email||'VTG team member';
-    $('userRole').textContent=(user.role||requested).toString().replace(/[-_]/g,' ');
+    $('userRole').textContent=(user.workspaceRole||user.role||requested).toString().replace(/[-_]/g,' ');
    }catch(e){}
-   // Confirm the session with the API where supported; do not treat a local token as authorization.
-   fetch((window.VTG_API_BASE||'')+'/api/auth/me',{headers:{Authorization:'Bearer '+token,Accept:'application/json'},cache:'no-store'})
-    .then(async r=>{if(r.status===401||r.status===403){try{localStorage.removeItem('vtg_access_token');localStorage.removeItem('vtg-auth')}catch(e){}location.replace('/workforce-signin.html?workspace='+encodeURIComponent(requested));return}if(!r.ok){$('bannerTitle').textContent='Session check could not be completed';$('bannerText').textContent='The identity service did not confirm this session. Live records remain unavailable until authentication and API connectivity are verified.';return}const d=await r.json();const user=d.user||d;const role=String(user.role||'').toLowerCase();if(role!==requested){$('bannerTitle').textContent='Workspace role check required';$('bannerText').textContent='Your authenticated account role does not match this workspace. Use the correct workspace entry or contact the VTG administrator.';return} $('userName').textContent=user.fullName||user.name||user.email||'VTG team member';})
-    .catch(()=>{$('bannerTitle').textContent='Unable to verify the current session';$('bannerText').textContent='The authentication API could not be reached. Operational records are hidden until the session can be verified.'});
+   
  }
  const views={
  overview:['Staff & Operations','Work execution','A single place to review assigned work, coordinate handoffs and keep trade operations traceable across the VTG network.','My task queue','Assigned work and current status'],
