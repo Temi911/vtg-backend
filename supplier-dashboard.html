@@ -420,78 +420,7 @@ initPrefs();fillProfile();fillStore();initialTasks();renderAll();if(location.has
 </script>
 <script>(function(){const KEY='vtg-shared-trades-v1';const $=id=>document.getElementById(id);const read=()=>{try{const a=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(a)?a:[]}catch(e){return[]}};const write=a=>{try{localStorage.setItem(KEY,JSON.stringify(a));return true}catch(e){return false}};const escT=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function render(){const host=$('sharedSupplierRows');if(!host)return;const all=read();$('sharedSupplierRequests').textContent=all.length;$('sharedSupplierQuotes').textContent=all.reduce((n,r)=>n+(r.quotes||[]).length,0);$('sharedSupplierAccepted').textContent=all.filter(r=>r.status==='Accepted').length;host.innerHTML=all.length?all.slice().reverse().map(r=>'<article class="record-card"><div class="record-top"><div><strong>'+escT(r.product)+'</strong><p class="small muted">Ref '+escT(r.id)+' · '+escT(r.quantity)+' units · '+escT(r.origin)+' → '+escT(r.destination)+'</p></div><span class="pill">'+escT(r.status||'Open for quotes')+'</span></div><p>'+escT(r.details||'No extra specifications')+'</p><p class="small muted">Buyer: '+escT(r.buyer||'Buyer workspace')+' · Created '+escT(new Date(r.createdAt).toLocaleDateString())+'</p><div class="record-list">'+(r.quotes||[]).map(q=>'<div class="notice"><strong>'+escT(q.supplier)+'</strong><p>'+escT(q.currency)+' '+escT(q.price)+' per unit · '+escT(q.leadTime)+' · '+escT(q.incoterms)+'</p><small>'+escT(q.notes||'')+'</small></div>').join('')+'</div>'+(r.status==='Accepted'?'<div class="notice">Buyer marked a quote accepted in the preview. Independently confirm final terms before any commitment.</div>':'<form class="sharedQuoteForm" data-rfq="'+escT(r.id)+'"><div class="field-grid"><label>Supplier / company<input name="supplier" required maxlength="120" placeholder="Registered company name"></label><label>Currency<select name="currency"><option>USD</option><option>CNY</option><option>KRW</option><option>NGN</option></select></label><label>Unit price<input name="price" type="number" min="0" step="0.01" required></label><label>Lead time<input name="leadTime" required maxlength="100" placeholder="e.g. 25 days"></label><label>Incoterms<input name="incoterms" required maxlength="40" placeholder="e.g. FOB Ningbo"></label><label>Quote validity<input name="validity" maxlength="100" placeholder="e.g. 14 days"></label><label class="full">Notes / exclusions<textarea name="notes" maxlength="800" placeholder="Packaging, tooling, payment milestones, exclusions…"></textarea></label></div><button class="btn primary" type="submit" style="margin-top:10px">Submit quotation in preview</button></form>')+'</article>').join(''):'<div class="empty">No shared buyer requests yet. Create one in the Buyer Dashboard using this same browser and site origin, then press Refresh.</div>';host.querySelectorAll('.sharedQuoteForm').forEach(f=>f.onsubmit=e=>{e.preventDefault();const a=read(),r=a.find(x=>x.id===f.dataset.rfq);if(!r)return;const d=new FormData(f);r.quotes=r.quotes||[];r.quotes.push({id:'Q-'+Date.now().toString(36).toUpperCase(),supplier:String(d.get('supplier')||'').trim(),currency:d.get('currency'),price:Number(d.get('price')),leadTime:String(d.get('leadTime')||'').trim(),incoterms:String(d.get('incoterms')||'').trim(),validity:String(d.get('validity')||'').trim(),notes:String(d.get('notes')||'').trim(),createdAt:new Date().toISOString()});r.status='Quotation received in preview';r.timeline=r.timeline||[];r.timeline.push({at:new Date().toISOString(),event:'Supplier quotation added in preview'});if(!write(a)){alert('Could not save: browser storage is unavailable or full.');return}render();alert('Quotation saved in this browser preview. The buyer can view it in the Shared Trade Desk on this same browser and site origin.')})}const refresh=$('sharedSupplierRefresh');if(refresh)refresh.onclick=render;window.addEventListener('storage',e=>{if(e.key===KEY)render()});document.querySelectorAll('[data-page="trade-desk"]').forEach(b=>b.addEventListener('click',()=>setTimeout(render,0)));const oldGo=window.go;if(typeof oldGo==='function')window.go=function(p){const out=oldGo(p);if(p==='trade-desk')render();return out};render()})();</script><script src="/vtg-shipment-globe.js?v=20261018-atlas-globe-2" defer></script><script src="/vtg-dashboard-footer.js?v=20261020-universal-header-1" defer></script>
 
-<script id="vtg-supplier-live-catalogue">
-(function(){
-  const $=id=>document.getElementById(id);
-  const params=new URLSearchParams(location.search);
-  const token=()=>localStorage.getItem('vtg_access_token')||(()=>{try{return JSON.parse(localStorage.getItem('vtg-auth')||'{}').accessToken||''}catch(_){return ''}})();
-  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const notice=$('liveCatalogueNotice'),rows=$('liveProductRows'),form=$('liveProductForm'),toggle=$('liveProductToggle');
-  if(!notice||!rows||!form||!toggle)return;
-  const api=async(path,options={})=>{
-    const t=token();
-    const r=await fetch('/api'+path,{...options,headers:{Accept:'application/json',...(options.body?{'Content-Type':'application/json'}:{}),...(t?{Authorization:'Bearer '+t}:{}),...(options.headers||{})},cache:'no-store'});
-    if(r.status===204)return {};
-    const d=await r.json().catch(()=>({}));
-    if(!r.ok)throw new Error(d.error?.message||d.message||'VTG catalogue request failed ('+r.status+').');
-    return d;
-  };
-  function signInMessage(message){
-    notice.innerHTML=esc(message)+' <a class="text-link" href="/signin.html?role=supplier&next=%2Fsupplier-dashboard.html">Sign in to continue ↗</a>';
-  }
-  function render(products){
-    if(!products.length){rows.innerHTML='<div class="empty">No live products yet. Add your first product to begin building your VTG catalogue.</div>';return}
-    rows.innerHTML=products.map(p=>'<article class="record"><div style="display:flex;gap:12px;min-width:0;flex:1">'+(p.image_url?'<img src="'+esc(p.image_url)+'" alt="" loading="lazy" style="width:68px;height:68px;object-fit:cover;border-radius:9px;border:1px solid var(--line)" onerror="this.style.display=\'none\'">':'')+'<div style="min-width:0"><strong>'+esc(p.name)+'</strong><small>'+esc(p.category||'Uncategorised')+' · USD '+Number(p.unit_price_usd||p.unitPriceUsd||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+' per unit</small><small>MOQ: '+esc(p.min_order_qty||p.minOrderQty||'Not set')+' · Lead time: '+esc(p.lead_time||p.leadTime||'Not set')+'</small><small>HS code: '+esc(p.hs_code||p.hsCode||'Not supplied')+' · '+(p.is_active===false?'Inactive':'Active in catalogue')+'</small>'+(p.description?'<small>'+esc(p.description)+'</small>':'')+'</div></div><div style="display:flex;gap:6px;align-items:flex-start;flex-wrap:wrap"><span class="pill '+(p.is_active===false?'pending':'ready')+'">'+(p.is_active===false?'Inactive':'Live record')+'</span>'+(p.is_active===false?'':'<button class="btn danger" type="button" data-live-deactivate="'+esc(p.id)+'">Deactivate</button>')+'</div></article>').join('');
-    rows.querySelectorAll('[data-live-deactivate]').forEach(b=>b.onclick=async()=>{if(!confirm('Deactivate this product in the VTG catalogue? It will no longer be listed publicly.'))return;b.disabled=true;try{await api('/products/'+encodeURIComponent(b.dataset.liveDeactivate),{method:'DELETE'});await load()}catch(e){notice.textContent=e.message;b.disabled=false}});
-  }
-  async function load(){
-    if(params.get('preview')==='1'){signInMessage('Preview mode: live catalogue changes are disabled.');rows.innerHTML='<div class="empty">Sign in to load or manage products stored on VTG servers. Your local drafts remain available above.</div>';toggle.disabled=true;return}
-    if(!token()){signInMessage('Your supplier session is not available.');rows.innerHTML='<div class="empty">Sign in to load your live catalogue.</div>';toggle.disabled=false;return}
-    notice.textContent='Loading your products from the VTG backend…';rows.innerHTML='<div class="empty">Connecting to your live catalogue…</div>';
-    try{const d=await api('/products/mine');render(Array.isArray(d.products)?d.products:[]);notice.textContent='Connected to VTG backend. These records belong to your supplier account and are separate from local drafts.'}
-    catch(e){notice.textContent=e.message;rows.innerHTML='<div class="empty">Could not load live products. Check the API connection and try again.</div>'}
-  }
-  toggle.onclick=()=>{if(params.get('preview')==='1')return;if(!token()){signInMessage('Sign in with a supplier account to publish a live product.');return}form.classList.toggle('hidden');if(!form.classList.contains('hidden'))$('liveProductName').focus()};
-  $('liveProductCancel').onclick=()=>{form.reset();form.classList.add('hidden')};
-  form.onsubmit=async e=>{
-    e.preventDefault();
-    if(params.get('preview')==='1'||!token()){signInMessage('A supplier sign-in is required to save live products.');return}
-    const b=$('liveProductSave');b.disabled=true;b.textContent='Saving…';
-    const fd=new FormData(form),payload={name:String(fd.get('name')||'').trim(),category:String(fd.get('category')||'').trim()||undefined,unitPriceUsd:Number(fd.get('unitPriceUsd')),minOrderQty:String(fd.get('minOrderQty')||'').trim()||undefined,hsCode:String(fd.get('hsCode')||'').trim()||undefined,leadTime:String(fd.get('leadTime')||'').trim()||undefined,imageUrl:String(fd.get('imageUrl')||'').trim()||undefined,description:String(fd.get('description')||'').trim()||undefined};
-    try{await api('/products',{method:'POST',body:JSON.stringify(payload)});form.reset();form.classList.add('hidden');notice.textContent='Product saved to the VTG backend. Refreshing catalogue…';await load()}
-    catch(err){notice.textContent=err.message}
-    finally{b.disabled=false;b.textContent='Save to VTG catalogue'}
-  };
-  // Live orders use the same authenticated backend records as the buyer workspace.
-  const orderNotice=$('liveOrdersNotice'),orderRows=$('liveOrdersRows'),orderRefresh=$('liveOrdersRefresh');
-  async function loadLiveOrders(){
-    if(!orderNotice||!orderRows)return;
-    if(params.get('preview')==='1'){orderNotice.innerHTML='Preview mode: live order records require a supplier sign-in. <a class="text-link" href="/signin.html?role=supplier&next=%2Fsupplier-dashboard.html">Sign in ↗</a>';orderRows.innerHTML='<div class="empty">Live buyer orders are unavailable in preview mode.</div>';return}
-    if(!token()){orderNotice.innerHTML='Supplier session unavailable. <a class="text-link" href="/signin.html?role=supplier&next=%2Fsupplier-dashboard.html">Sign in ↗</a>';orderRows.innerHTML='<div class="empty">Sign in to load your live orders.</div>';return}
-    orderNotice.textContent='Loading orders from VTG…';orderRows.innerHTML='<div class="empty">Connecting to the order service…</div>';
-    try{
-      const d=await api('/orders');const orders=Array.isArray(d.orders)?d.orders:[];
-      if(!orders.length){orderRows.innerHTML='<div class="empty">No live orders have been placed with this supplier account yet.</div>';orderNotice.textContent='Connected to VTG backend. Orders are shared across buyer and supplier accounts.';return}
-      const next={pending:['confirmed'],confirmed:['shipped'],lc_issued:['shipped'],shipped:['in_transit'],in_transit:[],arrived:[],customs:[],delivered:[],cancelled:[],disputed:[]};
-      orderRows.innerHTML=orders.map(o=>{
-        const options=next[o.status]||[];
-        const action=options.length?'<div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:10px"><label class="muted" for="live-order-next-'+esc(o.id)+'">Advance milestone</label><select class="control-select" id="live-order-next-'+esc(o.id)+'" data-order-next="'+esc(o.id)+'">'+options.map(s=>'<option value="'+s+'">'+s.replaceAll('_',' ')+'</option>').join('')+'</select><button class="btn primary" type="button" data-order-update="'+esc(o.id)+'">Update order</button></div>':'';
-        return '<article class="record"><div style="min-width:0;flex:1"><strong>'+esc(o.reference||o.id)+'</strong><small>Buyer: '+esc(o.buyer_name||'VTG buyer')+' · '+esc(new Date(o.created_at||Date.now()).toLocaleDateString())+'</small><small>Order total: USD '+Number(o.total_amount_usd||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+' · Incoterm: '+esc(o.incoterm||'Not specified')+'</small>'+(o.notes?'<small>Notes: '+esc(o.notes)+'</small>':'')+action+'</div><span class="pill '+(['delivered','confirmed'].includes(o.status)?'ready':'pending')+'">'+esc(String(o.status||'pending').replaceAll('_',' '))+'</span></article>';
-      }).join('');
-      orderNotice.textContent='Connected to VTG backend. These are shared order records; status changes are permission-checked and audited by the server.';
-      orderRows.querySelectorAll('[data-order-update]').forEach(b=>b.onclick=async()=>{
-        const id=b.dataset.orderUpdate,select=orderRows.querySelector('[data-order-next="'+CSS.escape(id)+'"]');if(!select)return;
-        b.disabled=true;b.textContent='Updating…';
-        try{await api('/orders/'+encodeURIComponent(id)+'/status',{method:'PATCH',body:JSON.stringify({status:select.value})});orderNotice.textContent='Order milestone updated. Refreshing shared order status…';await loadLiveOrders()}
-        catch(err){orderNotice.textContent=err.message;b.disabled=false;b.textContent='Update order'}
-      });
-    }catch(err){orderNotice.textContent=err.message;orderRows.innerHTML='<div class="empty">Could not load live orders. Check the API connection and try again.</div>'}
-  }
-  if(orderRefresh)orderRefresh.onclick=loadLiveOrders;
-  loadLiveOrders();
-  load();
-})();
-</script>
+<script id="vtg-supplier-live-catalogue">/* Supabase-backed catalogue is implemented in vtg-supplier-products-supabase.js. The legacy /api/products handler has been retired from this page. */</script>
 <script id="vtg-supplier-live-quotes">
 (function(){
  const $=id=>document.getElementById(id), params=new URLSearchParams(location.search);
