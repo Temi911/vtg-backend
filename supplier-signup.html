@@ -132,6 +132,8 @@ async function beginSignup(){
    return;
   }
   signupStarted=true;
+  sections.forEach(section=>section.querySelectorAll('input,select,textarea').forEach(el=>{if(el!==codeInput)el.disabled=true;}));
+  $('#backStep').disabled=true;$('#nextStep').disabled=true;
   codeInput.disabled=false;codeInput.required=true;codeInput.focus();
   sendButton.textContent='Resend code';
   submitButton.textContent='Verify code & create account';
