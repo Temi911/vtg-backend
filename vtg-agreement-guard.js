@@ -3,7 +3,7 @@
 (function(){
   'use strict';
   var params=new URLSearchParams(location.search);
-  if(params.get('preview')==='1') return;
+  if(params.get('preview')==='1' && location.pathname!=='/buyer-dashboard.html') return;
   var path=location.pathname;
   var expected=path==='/buyer-dashboard.html'?'buyer':
     path==='/supplier-dashboard.html'?'supplier':
