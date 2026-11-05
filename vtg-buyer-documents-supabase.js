@@ -117,10 +117,10 @@
     finally{button.disabled=false;}
   }
   document.addEventListener('DOMContentLoaded',()=>{
-    $('documentOrderId')?.addEventListener('change',loadForOrder);
-    $('refreshLiveDocuments')?.addEventListener('click',loadOrders);
-    $('liveDocumentForm')?.addEventListener('submit',upload);
-    $('liveDocumentsRows')?.addEventListener('click',download);
+    $('documentOrderId')?.addEventListener('change',e=>{e.stopImmediatePropagation();loadForOrder()},true);
+    $('refreshLiveDocuments')?.addEventListener('click',e=>{e.stopImmediatePropagation();loadOrders()},true);
+    $('liveDocumentForm')?.addEventListener('submit',e=>{e.stopImmediatePropagation();upload(e)},true);
+    $('liveDocumentsRows')?.addEventListener('click',e=>{if(e.target.closest('[data-supabase-document]')){e.stopImmediatePropagation();download(e)}},true);
     loadOrders();
   },{once:true});
   window.VTGBuyerDocuments={loadOrders,loadForOrder};
