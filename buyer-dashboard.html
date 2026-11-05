@@ -545,7 +545,7 @@ html[data-theme="dark"] .sidebar .count{background:#34404b;color:#f5f7f9}
 <script src="/vtg-supabase-auth.js?v=20261105-auth-1"></script>
 <script>
 (function(){
-const $=id=>document.getElementById(id),params=new URLSearchParams(location.search),preview=params.get('preview')==='1';let auth=null;try{auth=JSON.parse(localStorage.getItem('vtg-auth')||'null')}catch(e){}const token=localStorage.getItem('vtg_access_token')||auth?.accessToken;if(!preview&&(!token||(auth?.user?.role&&auth.user.role!=='buyer'))){location.replace('/signin.html?role=buyer&next=%2Fbuyer-dashboard.html');return}
+const $=id=>document.getElementById(id),params=new URLSearchParams(location.search),preview=false;let auth=null;try{auth=JSON.parse(localStorage.getItem('vtg-auth')||'null')}catch(e){}const token=localStorage.getItem('vtg_access_token')||auth?.accessToken;if(!preview&&(!token||(auth?.user?.role&&auth.user.role!=='buyer'))){location.replace('/signin.html?role=buyer&next=%2Fbuyer-dashboard.html');return}
 const db={get(k,d){try{return JSON.parse(localStorage.getItem('vtg-buyer-'+k)||JSON.stringify(d))}catch(e){return d}},set(k,v){localStorage.setItem('vtg-buyer-'+k,JSON.stringify(v))}},esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),money=n=>'$'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 let lang=localStorage.getItem('vtg-language')||'en',view='overview',thread='trade';
 const dict={
