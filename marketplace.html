@@ -10,7 +10,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
 <link rel="stylesheet" href="/vtg-marketplace.css?v=20261030-1">
-<link rel="stylesheet" href="/vtg-type.css"></head>
+<link rel="stylesheet" href="/vtg-type.css"><link rel="stylesheet" href="/vtg-forms.css?v=20261105-1">
+</head>
 <body>
 <div id="vsHeader" data-active="marketplace"></div>
 <script src="/vtg-shell.js?v=20261030-1"></script>
@@ -49,7 +50,7 @@
 <div class="vs-modal" id="quoteModal" role="dialog" aria-modal="true" aria-labelledby="quoteTitle"><div class="vs-modal-box"><div class="head"><div><span class="vs-eyebrow">Buyer trade request</span><h2 id="quoteTitle">Request a quotation</h2></div><button class="vs-close" id="closeModal" type="button" aria-label="Close">&times;</button></div>
 <div class="vs-note" id="authNotice">Your request uses the supplier&rsquo;s current catalogue price as the initial unit price. The supplier can accept or reject it from their Supplier Dashboard.</div>
 <div class="vs-note" style="margin-top:10px">Trade flow: <b>Request sent</b> &rarr; supplier response &rarr; continue the eligible transaction in your VTG dashboard. A quote request is not a confirmed order.</div>
-<form class="form" id="quoteForm"><label>Quantity<input id="quoteQty" type="number" min="1" step="1" value="1" required></label><label>Incoterm<select id="quoteIncoterm"><option>FOB</option><option>CIF</option><option>CFR</option><option>EXW</option><option>DAP</option><option>DDP</option></select></label><label>Destination country / port (optional)<input id="quoteDestination" maxlength="180" placeholder="e.g. Nigeria — Tin Can Island, Lagos"></label><label>Validity date<input id="quoteValidity" type="date"></label><label>Trade notes<textarea id="quoteNotes" maxlength="4000" placeholder="Destination, specifications, packaging, delivery requirements and any other commercial details."></textarea></label><div id="formmsg" class="formmsg" role="status"></div><div id="quoteNext" class="vs-note" style="display:none"></div><button class="vs-btn vs-btn-primary vs-btn-block" type="submit">Send quote request</button></form></div></div>
+<form class="form vtg-form" id="quoteForm"><label>Quantity<input id="quoteQty" type="number" min="1" step="1" value="1" required></label><label>Incoterm<select id="quoteIncoterm"><option>FOB</option><option>CIF</option><option>CFR</option><option>EXW</option><option>DAP</option><option>DDP</option></select></label><label>Destination country / port (optional)<input id="quoteDestination" maxlength="180" placeholder="e.g. Nigeria — Tin Can Island, Lagos"></label><label>Validity date<input id="quoteValidity" type="date"></label><label>Trade notes<textarea id="quoteNotes" maxlength="4000" placeholder="Destination, specifications, packaging, delivery requirements and any other commercial details."></textarea></label><div id="formmsg" class="formmsg" role="status"></div><div id="quoteNext" class="vs-note" style="display:none"></div><button class="vs-btn vs-btn-primary vs-btn-block" type="submit">Send quote request</button></form></div></div>
 <div id="vsFooter"></div>
 <script>
 const API='/api';let catalogue=[],selected=null;
