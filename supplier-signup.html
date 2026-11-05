@@ -44,7 +44,7 @@
 </div></section>
 <section class="step" data-step="3" hidden><div class="fields">
 <div class="field full"><label for="password">Create password *</label><div class="passwordRow"><input id="password" name="password" type="password" autocomplete="new-password" minlength="8" pattern="(?=.*[A-Z])(?=.*\d).{8,}" title="Use at least 8 characters, one uppercase letter and one number." required><button type="button" class="miniButton" id="passwordToggle">Show</button></div><span class="hint">At least 8 characters, including one uppercase letter and one number.</span></div>
-<div class="field full"><label for="verificationCode">Email verification code *</label><div class="verifyRow"><input id="verificationCode" name="verificationCode" inputmode="numeric" autocomplete="one-time-code" minlength="6" maxlength="6" pattern="[0-9]{6}" placeholder="Enter 6-digit code" disabled><button class="miniButton" type="button" id="sendCode">Send code</button></div></div>
+<div class="field full"><label for="verificationCode">Email verification code *</label><div class="verifyRow"><input id="verificationCode" name="verificationCode" inputmode="numeric" autocomplete="one-time-code" minlength="6" maxlength="10" pattern="[0-9]{6,10}" placeholder="Enter your email code" disabled><button class="miniButton" type="button" id="sendCode">Send code</button></div></div>
 <div class="field full"><div class="notice"><strong>Stay informed (optional)</strong><label class="checkline"><input type="checkbox" name="marketingSubscribed" value="true"><span>Send me VTG trade updates.</span></label></div></div>
 </div></section></div><div id="msg" class="message" role="status" aria-live="polite"></div>
 <div class="actions"><button class="actionButton" type="button" id="backStep" disabled>Previous step</button><button class="actionButton primary" type="button" id="nextStep">Continue</button><button class="actionButton primary" type="submit" id="submitForm" hidden>Create account</button></div>
@@ -138,7 +138,7 @@ async function beginSignup(){
   sendButton.textContent='Resend code';
   submitButton.textContent='Verify code & create account';
   submitButton.disabled=false;
-  setMessage('A 6-digit verification code has been sent to '+email+'. Enter it below to finish registration.',true);
+  setMessage('A verification code has been sent to '+email+'. Enter it below to finish registration.',true);
   startResendCountdown();
  }catch(error){
   sendButton.disabled=false;submitButton.disabled=false;
@@ -163,7 +163,7 @@ $('#signupForm').addEventListener('submit',async e=>{
  e.preventDefault();
  if(!signupStarted){await beginSignup();return;}
  const email=$('[name=email]').value.trim().toLowerCase(),code=codeInput.value.trim();
- if(!/^\d{6}$/.test(code)){codeInput.setCustomValidity('Enter the 6-digit code from your email.');codeInput.reportValidity();codeInput.focus();return;}
+ if(!/^\d{6,10}$/.test(code)){codeInput.setCustomValidity('Enter the 6–10 digit code from your email.');codeInput.reportValidity();codeInput.focus();return;}
  codeInput.setCustomValidity('');
  submitButton.disabled=true;sendButton.disabled=true;
  setMessage('Verifying your email and creating your VTG session…',false);
