@@ -26,7 +26,7 @@
 <script src="/vtg-supabase-auth.js?v=20261105-auth-1"></script>
 <script>
 const $=s=>document.querySelector(s);
-let auth=null,currentUser=null,role='',verificationStatus='pending',applicationPending=false,canUpload=false,logoUploaded=false;
+let auth=null,currentUser=null,role='',verificationStatus='pending',applicationPending=false,applicationStatus='',canUpload=false,logoUploaded=false;
 const supplierDocs=[['company_registration','Company registration certificate'],['business_license','Business / trade licence'],['tax_certificate','Tax registration certificate'],['export_license','Export licence (if applicable)'],['company_address_proof','Company address proof']];
 const agentDocs=[['government_id','Government-issued identification'],['proof_of_address','Proof of address'],['business_registration','Business registration (if applicable)'],['professional_certificate','Relevant professional certificate'],['reference_document','Trade/work reference document']];
 const bankDocs=[['bank_license','Bank / financial institution licence'],['regulatory_certificate','Regulatory certificate / authorisation'],['company_registration','Institution registration certificate'],['swift_bic_certificate','SWIFT / BIC evidence'],['institution_address_proof','Institution address proof'],['officer_authorization','Authorisation showing the submitting officer is authorised']];
@@ -56,12 +56,18 @@ async function init(){
   if(role==='agent')$('#logoCard').classList.add('hidden');
   renderDocs();
   await loadMine();
+  applicationStatus=applicationStatus||'';
   if(applicationPending){
    $('#uploadCard').classList.add('hidden');$('#logoCard').classList.add('hidden');
    $('#verificationStateTitle').textContent='Business application awaiting approval';
    $('#verificationStateText').textContent='Your email is confirmed. VTG administrators must approve your trade '+role+' application before document upload and workspace access become available.';
    $('#verificationStateBadge').textContent='APPLICATION PENDING';
    $('#verificationState').className='verificationState';
+  }else if(applicationStatus==='rejected'){
+   $('#uploadCard').classList.add('hidden');$('#logoCard').classList.add('hidden');
+   $('#verificationStateTitle').textContent='Business application not approved';
+   $('#verificationStateText').textContent='VTG did not approve this business account application. Contact VTG support if you need clarification or wish to submit a corrected application.';
+   $('#verificationStateBadge').textContent='APPLICATION REJECTED';
   }else if(!canUpload){
    $('#uploadCard').classList.add('hidden');$('#logoCard').classList.add('hidden');
   }
@@ -73,7 +79,7 @@ async function init(){
 function updateVerificationState(){
  const box=$('#verificationState'),title=$('#verificationStateTitle'),copy=$('#verificationStateText'),badge=$('#verificationStateBadge');
  const status=verificationStatus==='rejected'?'needs_correction':verificationStatus;
- if(applicationPending)return;
+ if(applicationPending||applicationStatus==='rejected')return;
  const label=role==='supplier'?'supplier business':role==='bank'?'bank/institutional':'trade-agent';
  badge.textContent=String(status||'pending').replace('_',' ').toUpperCase();
  box.className='verificationState '+(status==='verified'?'verified':status==='needs_correction'?'correction':'');
@@ -127,7 +133,7 @@ $('#logoBtn').onclick=uploadLogo;
 async function loadMine(){
  const r=await api('/documents');const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not load submitted documents');
  if(d.verificationStatus)verificationStatus=d.verificationStatus;
- applicationPending=Boolean(d.applicationPending);canUpload=Boolean(d.canUpload);logoUploaded=Boolean(d.logoUploaded);
+ applicationPending=Boolean(d.applicationPending);applicationStatus=d.applicationStatus||'';canUpload=Boolean(d.canUpload);logoUploaded=Boolean(d.logoUploaded);
  if(d.logoUrl)$('#logoMsg').textContent='Organisation logo is on file.';
  const docs=d.documents||[];
  $('#list').innerHTML=docs.length?docs.map(x=>'<div class="doc" style="margin-bottom:8px"><div class="row"><strong>'+esc(x.file_name)+'</strong><span class="status '+esc(x.status)+'">'+esc(x.status)+'</span></div><div class="small">'+esc(String(x.doc_type||'').replace(/_/g,' '))+' • Uploaded '+esc(new Date(x.uploaded_at).toLocaleString())+(x.reviewed_at?' • Reviewed '+esc(new Date(x.reviewed_at).toLocaleString()):'')+(x.expires_at?' • Expires '+esc(new Date(x.expires_at).toLocaleDateString()):'')+(x.review_notes?' • '+esc(x.review_notes):'')+'</div></div>').join(''):'<div class="small">No documents submitted yet.</div>';
