@@ -82,9 +82,10 @@ document.getElementById('form').onsubmit=async e=>{
   }
   msg.className='msg ok';msg.textContent='Signed in successfully. Opening your VTG workspace…';
   setTimeout(()=>{
-   if(pending){location.href='/verification.html?role='+encodeURIComponent(user.requestedRole);return;}
-   if(safeNext){location.href=safeNext;return;}
-   location.href=({buyer:'/buyer-dashboard.html',supplier:'/supplier-dashboard.html',bank:'/bank-trade-os.html'})[user.role]||'/';
+   const destination=pending?'/verification.html?role='+encodeURIComponent(user.requestedRole):(safeNext||({buyer:'/buyer-dashboard.html',supplier:'/supplier-dashboard.html',bank:'/bank-trade-os.html'})[effectiveRole]||'/');
+   if(user.agreementRequired){location.href='/signup-agreement.html?next='+encodeURIComponent(destination);return;}
+   if(pending){location.href=destination;return;}
+   location.href=destination;
   },450);
  }catch(err){msg.className='msg';msg.textContent=err.message||'Sign in failed';if(submit)submit.disabled=false;}
 };
