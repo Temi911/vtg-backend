@@ -55,6 +55,26 @@
   const workspace=({ 'supplier-dashboard.html':'Supplier workspace','buyer-dashboard.html':'Buyer workspace','bank-trade-os.html':'Finance workspace','agent-dashboard.html':'Agent workspace','agent-network-dashboard.html':'Agent Network','workforce-dashboard.html':'Staff & Operations','admin-dashboard-preview.html':'Admin workspace','vtg-ai-dashboard.html':'VTG AI workspace'})[path]||'VTG workspace';
   footer.innerHTML='<div class="vf-main"><span class="vf-brand">VTG /</span><span class="vf-crumb">'+workspace+' / <strong>Command centre</strong></span><nav class="vf-links" aria-label="VTG workspaces"></nav><div class="vf-controls"><select id="vf-theme-mode" aria-label="Appearance mode" title="Automatic by local time, light or dark"><option value="auto">Theme: Auto</option><option value="light">Theme: Light</option><option value="dark">Theme: Dark</option></select><label for="vf-skin" style="font-weight:800;white-space:nowrap">Workspace theme</label><select id="vf-skin" aria-label="Workspace theme" title="Workspace colour theme">'+skins.map(s=>'<option value="'+s[0]+'">'+s[1]+'</option>').join('')+'</select><select id="vf-language" aria-label="Language preference" title="Language preference">'+supportedLangs.map(l=>'<option value="'+l+'">'+langNames[l]+'</option>').join('')+'</select><button id="vf-notifications" type="button" title="Notifications" aria-label="Notifications">♧</button><button id="vf-theme-toggle" type="button" title="Switch light or dark mode" aria-label="Switch light or dark mode">◐</button><a href="/frontend-v3.html" aria-label="Home" style="white-space:nowrap;padding:7px 8px;border:1px solid var(--line,#dfe4e9);border-radius:7px;font-weight:800">Home</a></div></div><div class="vf-status" id="vf-status" role="status" aria-live="polite"></div>';
   document.body.insertBefore(footer,document.body.firstChild);
+  // The shared workspace header replaces legacy .topbar markup. Staff & Workforce
+  // still uses its sidebar for in-page views, so expose that navigation on mobile.
+  if(path==='workforce-dashboard.html'){
+    const menu=document.createElement('button');
+    menu.id='vf-workspace-menu';menu.type='button';menu.textContent='Workspace menu';
+    menu.setAttribute('aria-label','Open workforce navigation');menu.setAttribute('aria-expanded','false');
+    menu.style.cssText='display:none;border:1px solid var(--line,#dfe4e9);border-radius:8px;background:var(--surface,#fff);color:var(--ink,#20252d);padding:7px 9px;font-weight:800;white-space:nowrap';
+    footer.querySelector('.vf-controls').prepend(menu);
+    const navStyle=document.createElement('style');
+    navStyle.textContent='@media(max-width:680px){#vf-workspace-menu{display:inline-flex!important;align-items:center;justify-content:center}}';
+    document.head.appendChild(navStyle);
+    menu.addEventListener('click',()=>{
+      const sidebar=document.querySelector('.sidebar'),overlay=document.getElementById('sidebarOverlay');
+      if(!sidebar)return;
+      const open=!sidebar.classList.contains('mobileOpen');
+      sidebar.classList.toggle('mobileOpen',open);
+      if(overlay)overlay.hidden=!open;
+      menu.setAttribute('aria-expanded',String(open));
+    });
+  }
   document.querySelectorAll('header.topbar,header.top,div.topbar,div.top').forEach(el=>{if(el!==footer){el.setAttribute('aria-hidden','true');el.style.display='none'}});
   document.querySelectorAll('body footer').forEach(el=>el.remove());
   const status=document.getElementById('vf-status');
