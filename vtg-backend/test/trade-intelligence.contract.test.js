@@ -93,19 +93,20 @@ test('intelligence centre submits landed-cost estimates and labels VAT as user s
   assert.ok(html.includes('No official tariff or live freight integration is confirmed.'));
 });
 
-test('buyer dashboard labels provider readiness honestly and checks the authenticated contract endpoint', () => {
+test('buyer dashboard labels provider readiness honestly and uses the authenticated intelligence function', () => {
   const fs = require('node:fs');
   const path = require('node:path');
   const html = fs.readFileSync(path.join(__dirname, '..', '..', 'buyer-dashboard.html'), 'utf8');
+  const script = fs.readFileSync(path.join(__dirname, '..', '..', 'vtg-buyer-market-intelligence-supabase.js'), 'utf8');
   assert.ok(html.includes('id="vtgIntelStatus"'));
-  assert.ok(html.includes('/api/market-intelligence/tools/contract'));
-  assert.ok(html.includes("Authorization:'Bearer '+accessToken"));
-  assert.ok(html.includes('Preview mode: provider status has not been verified'));
   assert.ok(html.includes('does not discover the correct duty or tax rate'));
-  assert.ok(html.includes('Treat all market inputs as unverified'));
-  assert.ok(html.includes('Trade intelligence evidence status'));
+  assert.ok(html.includes('Treat market inputs as unverified'));
+  assert.ok(html.includes('Evidence & integration status'));
   assert.ok(html.includes('Trade assumptions are not shipment facts'));
   assert.ok(html.includes('Check intelligence sources'));
+  assert.match(script, /client\.functions\.invoke\('vtg-market-intelligence'/);
+  assert.match(script, /client\.auth\.getSession\(\)/);
+  assert.match(script, /Market-intelligence service unavailable/);
 });
 
 
