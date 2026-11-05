@@ -63,7 +63,8 @@ test('staff invitations are admin-gated and acceptance is bound to a one-time to
   assert.match(edge, /p_token_hash/);
   assert.match(edge, /parts\[0\] === "accept"/);
   assert.match(edge, /\["active", "suspended", "removed"\]/);
-  assert.match(edge, /\["active", "suspended", "removed"\]/);
+  assert.match(edge, /audit_events/);
+  assert.match(edge, /workforce_access_/);
 });
 
 test('Agent cannot be requested or approved through public trade role applications', () => {
