@@ -792,7 +792,14 @@ async function loadLiveMessages(){
   const r=await fetch('/api/messages/'+encodeURIComponent(liveConversationId)+'/messages',{headers:{Accept:'application/json',Authorization:'Bearer '+token},cache:'no-store'});const d=await r.json().catch(()=>({}));
   if(!r.ok)throw new Error(d.error?.message||d.message||'Unable to load messages');
   const rows=Array.isArray(d.messages)?d.messages:[];
-  box.innerHTML=rows.length?rows.map(m=>{const mine=String(m.sender_id)===String(auth?.user?.id||auth?.user?.userId||'');return '<div class="bubble '+(mine?'mine':'')+'">'+esc(m.body||'')+'<small>'+(m.created_at?new Date(m.created_at).toLocaleString():'')+(mine?' · You':'')+'</small></div>'}).join(''):'<div class="empty">No messages in this conversation yet.</div>';
+  let senderRoleMap={};
+  try{
+   const authClient=await window.VTG_AUTH_READY;
+   const client=authClient?.client||window.VTG_SUPABASE;
+   if(client?.rpc){const roleResult=await client.rpc('vtg_conversation_sender_roles',{p_conversation_id:liveConversationId});if(!roleResult.error)senderRoleMap=Object.fromEntries((roleResult.data||[]).map(x=>[x.user_id,String(x.role||'other').toLowerCase()]));}
+  }catch(_){}
+  const roleLabels={buyer:'Buyer',supplier:'Supplier',bank:'Bank',agent:'Trade agent'};
+  box.innerHTML=rows.length?rows.map(m=>{const mine=String(m.sender_id)===String(auth?.user?.id||auth?.user?.userId||''),senderRole=senderRoleMap[m.sender_id]||'other';return '<div class="bubble '+(mine?'mine':'')+'" data-sender-role="'+esc(senderRole)+'">'+esc(m.body||'')+'<small>'+(mine?'You':(roleLabels[senderRole]||'Trade partner'))+' · '+(m.created_at?new Date(m.created_at).toLocaleString():'')+'</small></div>'}).join(''):'<div class="empty">No messages in this conversation yet.</div>';
   $('threadTitle').textContent=(liveConversations.find(c=>String(c.id)===String(liveConversationId))||{}).order_reference||'Live trade conversation';box.scrollTop=box.scrollHeight;
  }catch(e){box.innerHTML='<div class="empty">Could not load messages. '+esc(e.message)+'</div>'}
 }
