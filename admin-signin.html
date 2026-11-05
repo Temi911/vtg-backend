@@ -11,7 +11,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
 <link rel="stylesheet" href="/vtg-auth.css?v=20261030-1">
-<link rel="stylesheet" href="/vtg-type.css"></head>
+<link rel="stylesheet" href="/vtg-type.css"><link rel="stylesheet" href="/vtg-forms.css?v=20261105-1">
+</head>
 <body>
 <div id="vsHeader" data-active=""></div>
 <script src="/vtg-shell.js?v=20261030-1"></script>
@@ -20,7 +21,7 @@
 <span class="vs-eyebrow">Restricted access</span>
 <h1 id="t">Administrator sign-in</h1>
 <p class="sub">Use your registered administrator credentials to continue. Buyer, supplier and finance accounts cannot use this entry.</p>
-<form id="adminForm">
+<form id="adminForm" class="vtg-form">
 <div><label for="email">Administrator email</label><div class="field"><input id="email" name="email" type="email" autocomplete="username" placeholder="Registered administrator email" required></div></div>
 <div><label for="password">Password</label><div class="field"><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Administrator password" required></div></div>
 <div class="message msg" id="message" role="status" aria-live="polite"></div>
