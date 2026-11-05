@@ -526,9 +526,9 @@ html[data-theme="dark"] .sidebar .count{background:#34404b;color:#f5f7f9}
 <div class="layout2"><section><h3>Registered cargo references</h3><div id="buyerTrackingReferences" class="record-list"><div class="empty">No references loaded.</div></div></section><section><h3>Linked vessels</h3><div id="buyerTrackingVessels" class="record-list"><div class="empty">No vessels loaded.</div></div></section></div>
 <div class="layout2" style="margin-top:16px"><section><h3>Cargo journey events</h3><div id="buyerTrackingEvents" class="record-list"><div class="empty">No provider events received.</div></div></section><section><h3>Latest vessel positions</h3><div id="buyerTrackingPositions" class="record-list"><div class="empty">No AIS positions received.</div></div></section></div>
 <p class="small muted" style="margin-top:14px">Sandbox records are test-only. Live status is shown only for authenticated provider responses with timestamps. Old positions are labelled as last reported; no route or GPS position is invented.</p></div></section></section></section>
-<section class="page" id="page-intelligence"><div class="pageIntro"><div><h1 data-i18n="intelligence">Market intelligence</h1><p class="desc" data-i18n="intelIntro">Planning prompts in one place. These are not live news or market-price feeds.</p></div></div><section class="panel" id="liveIntelNewsPanel" style="margin-bottom:16px"><div class="panelHead"><div><h2>Live trade news</h2><p>Recent sourcing, shipping and market updates from VTG intelligence sources. Verify dates and claims with the original publisher.</p></div><button class="btn" type="button" id="refreshIntelNews">Refresh news</button></div><div class="rows" id="intelNewsRows"><div class="empty">Open Market intelligence to load recent trade news.</div></div></section>
+<section class="page" id="page-intelligence"><div class="pageIntro"><div><h1 data-i18n="intelligence">Market intelligence</h1><p class="desc" data-i18n="intelIntro">Planning prompts and source-linked trade news. FX, tariff and freight values are not live market feeds.</p></div></div><section class="panel" id="liveIntelNewsPanel" style="margin-bottom:16px"><div class="panelHead"><div><h2>Live trade news</h2><p>Recent sourcing, shipping and market updates from VTG intelligence sources. Verify dates and claims with the original publisher.</p></div><button class="btn" type="button" id="refreshIntelNews">Refresh news</button></div><div class="rows" id="intelNewsRows"><div class="empty">Open Market intelligence to load recent trade news.</div></div></section>
 <div class="tiles"><button class="tile" data-view="finance"><span class="ico">FX</span><strong data-i18n="currency">Currency planning</strong><small data-i18n="currencyDesc">Enter a rate from a source you trust.</small></button><button class="tile" data-view="atlas"><span class="ico">SEA</span><strong data-i18n="shippingPorts">Shipping & ports</strong><small data-i18n="shippingDesc">Review loading and destination port assumptions.</small></button><button class="tile" data-view="documents"><span class="ico">RISK</span><strong data-i18n="compliance">Compliance & risk</strong><small data-i18n="complianceDesc">Confirm HS code, permits and import rules.</small></button></div>
-<section class="vtg-intel-evidence" aria-labelledby="vtgIntelEvidenceTitle"><div class="vtg-intel-evidence-head"><div><span class="vtg-card-kicker">Evidence & integration status</span><h2 id="vtgIntelEvidenceTitle">What VTG can verify right now</h2><p>Integration status comes from the authenticated VTG API. A connected endpoint does not mean a data provider is connected.</p></div><button class="btn" type="button" id="vtgIntelRefresh">Refresh status</button></div><p id="vtgIntelStatus" role="status" class="vtg-intel-status">Checking API connection…</p><div class="vtg-intel-evidence-grid"><article><span class="vtg-intel-mark">FX</span><h3>Currency</h3><p id="vtgIntelFx">Checking whether rates are verified by the API.</p><small>Use a current bank/provider quote for decisions.</small></article><article><span class="vtg-intel-mark">HS</span><h3>Tariffs & country rules</h3><p id="vtgIntelTariff">Checking tariff provider connection.</p><small>Confirm HS classification and official destination rules.</small></article><article><span class="vtg-intel-mark">SEA</span><h3>Freight & ports</h3><p id="vtgIntelFreight">Checking freight provider connection.</p><small>Use a current written carrier or forwarder quotation.</small></article><article><span class="vtg-intel-mark">CALC</span><h3>Landed-cost estimate</h3><p>Indicative calculation only. It uses the assumptions you supply; it does not discover the correct duty or tax rate.</p><small>Check the destination customs authority and tax authority before committing.</small></article></div><p class="vtg-intel-footnote">The evidence status is informational, not a guarantee of accuracy or completeness. If the API cannot be reached, VTG will show the connection as unverified rather than imply live data.</p></section></section>
+<section class="vtg-intel-evidence" aria-labelledby="vtgIntelEvidenceTitle"><div class="vtg-intel-evidence-head"><div><span class="vtg-card-kicker">Evidence & integration status</span><h2 id="vtgIntelEvidenceTitle">What VTG can verify right now</h2><p>Integration status comes from the authenticated VTG API. A connected endpoint does not mean a data provider is connected.</p></div><button class="btn" type="button" id="vtgIntelRefresh">Refresh status</button></div><p id="vtgIntelStatus" role="status" class="vtg-intel-status">Checking API connection…</p><div class="vtg-intel-evidence-grid"><article><span class="vtg-intel-mark">FX</span><h3>Currency</h3><p id="vtgIntelFx">Checking whether rates are verified by the API.</p><small>Use a current bank/provider quote for decisions.</small></article><article><span class="vtg-intel-mark">HS</span><h3>Tariffs & country rules</h3><p id="vtgIntelTariff">Checking tariff provider connection.</p><small>Confirm HS classification and official destination rules.</small></article><article><span class="vtg-intel-mark">SEA</span><h3>Freight & ports</h3><p id="vtgIntelFreight">Checking freight provider connection.</p><small>Use a current written carrier or forwarder quotation.</small></article><article><span class="vtg-intel-mark">CALC</span><h3>Landed-cost estimate</h3><p id="vtgIntelCalc">Indicative calculation only. It uses the assumptions you supply; it does not discover the correct duty or tax rate.</p><small>Check the destination customs authority and tax authority before committing.</small></article></div><p class="vtg-intel-footnote">The evidence status is informational, not a guarantee of accuracy or completeness. If the API cannot be reached, VTG will show the connection as unverified rather than imply live data.</p></section></section>
 <section class="page" id="page-finance"><div class="pageIntro"><div><h1 data-i18n="finance">Finance & calculators</h1><p class="desc" data-i18n="financeIntro">Estimate conversions using a rate you enter. This is not a live FX quote or bank offer.</p></div></div><div class="vtg-finance-grid">
   <article class="vtg-finance-card"><div class="vtg-lux-heading"><span class="vtg-lux-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></svg></span><div><span class="vtg-card-kicker">Trade finance</span><h3 style="margin:4px 0 0">Forex planning</h3></div></div><p>Compare currencies used in your trade, including USD, CNY, KRW and NGN. Enter a rate from your bank or trusted provider to estimate landed cost.</p><p class="vtg-disclaimer">Manual estimates only — not live market quotes or financial advice.</p><button class="btn primary" data-view="finance">Open FX calculator ↗</button></article>
   <article class="vtg-finance-card"><div class="vtg-lux-heading"><span class="vtg-lux-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 19 6v5c0 4.5-3 7.5-7 10-4-2.5-7-5.5-7-10V6z"/><path d="m8.5 12 2.3 2.3 4.8-5"/></svg></span><div><span class="vtg-card-kicker">Digital payments</span><h3 style="margin:4px 0 0">Crypto payment readiness</h3></div></div><p>Record whether a supplier accepts digital-asset payment and what compliance checks are needed before any decision. No wallet, exchange rate, transfer or crypto payment is connected in this version.</p><p class="vtg-disclaimer">Confirm local law, bank policy, supplier identity, fees and volatility risks before any payment.</p><button class="btn ghost" data-view="documents">Review payment & compliance documents ↗</button></article>
@@ -588,35 +588,65 @@ function go(v){if(!$('page-'+v))v='overview';view=v;revealActiveGroup(v);documen
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();go(b.dataset.view)}));
  if(location.hash==='#page-assistant'||location.hash==='#assistant')go('assistant');
 async function loadTradeNetwork(){return window.VTGBuyerNetwork?.load();}
+async function getMarketIntelClient(){
+ if(window.VTG_AUTH_READY){const ready=await window.VTG_AUTH_READY;return ready?.client||window.VTGAuth?.client||window.VTG_SUPABASE||null}
+ if(document.readyState==='loading')await new Promise(resolve=>document.addEventListener('DOMContentLoaded',resolve,{once:true}));
+ return window.VTGAuth?.client||window.VTG_SUPABASE||null;
+}
+async function invokeMarketIntel(action){
+ const client=await getMarketIntelClient();
+ if(!client?.auth||!client?.functions)throw new Error('Secure VTG account service is unavailable. Refresh the page and sign in again.');
+ const {data:sessionData,error:sessionError}=await client.auth.getSession();
+ if(sessionError)throw sessionError;
+ if(!sessionData?.session)throw new Error('Sign in to access buyer market intelligence.');
+ const {data,error}=await client.functions.invoke('vtg-market-intelligence',{body:{action}});
+ if(error)throw new Error(error.message||'Market intelligence service could not be reached.');
+ if(data?.error)throw new Error(data.error);
+ return data||{};
+}
+function renderIntelNews(items,meta){
+ const box=$('intelNewsRows');if(!box)return;
+ if(!items.length){box.innerHTML='<div class="empty">No source-linked trade headlines passed VTG’s relevance and publisher checks in the latest discovery window.</div>';return}
+ box.innerHTML=items.map(n=>{
+  let href='';try{const u=new URL(String(n.url||''));if(['https:','http:'].includes(u.protocol))href=u.href}catch(_){}
+  const discovered=n.discoveredAt?new Date(n.discoveredAt).toLocaleString():'Discovery time unavailable';
+  return '<article class="row" style="display:block;padding:14px 0"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><strong>'+esc(n.title||'Trade update')+'</strong><span class="chip">'+esc(n.source||n.domain||'Publisher not identified')+'</span></div><p>'+esc(n.summary||'Open the original source to verify its claims and trade relevance.')+'</p><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><small class="muted">Indexed by GDELT: '+esc(discovered)+' · not a confirmed publication timestamp</small>'+(href?'<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer" style="color:var(--red);font-weight:800">Read original ↗</a>':'<span class="muted">Original link unavailable</span>')+'</div></article>';
+ }).join('');
+ const note=document.createElement('p');note.className='small muted';note.textContent='Discovery source: '+(meta?.provider||'external news index')+'. VTG has not independently verified the claims. Confirm the article date and details with the publisher.';box.appendChild(note);
+}
 async function loadIntelNews(){
- const box=$('intelNewsRows');if(!box)return;box.innerHTML='<div class="empty">Loading recent trade news…</div>';
- try{let r=await fetch('/api/market-intelligence/news?limit=12',{headers:{Accept:'application/json'},cache:'no-store'});let d={};try{d=await r.json()}catch(_){}if(!r.ok&&token){r=await fetch('/api/integrations/news',{headers:{Accept:'application/json',Authorization:'Bearer '+token},cache:'no-store'});d={};try{d=await r.json()}catch(_){}}if(!r.ok)throw new Error(d.message||d.error?.message||'News service returned '+r.status);
- const items=d.items||[];if(!items.length){box.innerHTML='<div class="empty">No recent news items are available right now.</div>';return}
- box.innerHTML=items.map(n=>'<article class="row" style="display:block;padding:14px 0"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><strong>'+esc(n.title||'Trade update')+'</strong><span class="chip">'+esc(n.source||n.domain||'Publisher')+'</span></div><p>'+esc(n.summary||'Open the original source to review the full report and context.')+'</p><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><small class="muted">'+esc(n.published||n.discovered_at?new Date(n.published||n.discovered_at).toLocaleString():'Publication time unavailable')+'</small>'+(n.url?'<a href="'+esc(n.url)+'" target="_blank" rel="noopener noreferrer" style="color:var(--red);font-weight:800">Read source ↗</a>':'')+'</div></article>').join('');
- }catch(e){box.innerHTML='<div class="empty">Trade news is temporarily unavailable. '+esc(e.message)+' <button class="btn" type="button" id="retryIntelNews">Try again</button></div>';const b=$('retryIntelNews');if(b)b.onclick=loadIntelNews}
+ const box=$('intelNewsRows');if(!box)return;
+ box.innerHTML='<div class="empty">Checking authenticated VTG news sources…</div>';
+ const button=$('refreshIntelNews');if(button)button.disabled=true;
+ try{
+  if(preview){box.innerHTML='<div class="empty">Preview mode: sign in to load source-linked trade news. No sample headlines are displayed.</div>';return}
+  const data=await invokeMarketIntel('news');
+  if(data.ok!==true)throw new Error(data.error||'Trade news discovery is unavailable.');
+  renderIntelNews(Array.isArray(data.items)?data.items:[],data);
+ }catch(e){box.innerHTML='<div class="empty">Trade news is temporarily unavailable. '+esc(e.message||'Please try again.')+' <button class="btn" type="button" id="retryIntelNews">Try again</button></div>';$('retryIntelNews')?.addEventListener('click',loadIntelNews)}
+ finally{if(button)button.disabled=false}
 }
 $('refreshIntelNews')?.addEventListener('click',loadIntelNews);
 async function loadBuyerIntelStatus(){
- const status=$('vtgIntelStatus'),fx=$('vtgIntelFx'),tariff=$('vtgIntelTariff'),freight=$('vtgIntelFreight');
+ const status=$('vtgIntelStatus'),fx=$('vtgIntelFx'),tariff=$('vtgIntelTariff'),freight=$('vtgIntelFreight'),calc=$('vtgIntelCalc');
  if(!status||!fx||!tariff||!freight)return;
- status.textContent='Checking authenticated API and provider declarations…';
- if(params.get('preview')==='1'){status.textContent='Preview mode: provider status has not been verified in this session.';fx.textContent='Not verified in preview mode.';tariff.textContent='Not verified in preview mode.';freight.textContent='Not verified in preview mode.';return}
- const accessToken=localStorage.getItem('vtg_access_token')||(()=>{try{return JSON.parse(localStorage.getItem('vtg-auth')||'null')?.accessToken||''}catch(e){return ''}})();
- if(!accessToken){status.textContent='Signed-in session unavailable. Provider status is unverified.';fx.textContent='Unverified — sign in to check API status.';tariff.textContent='Unverified — sign in to check API status.';freight.textContent='Unverified — sign in to check API status.';return}
+ status.textContent='Checking authenticated VTG service and provider connections…';
+ const button=$('vtgIntelRefresh');if(button)button.disabled=true;
+ if(preview){status.textContent='Preview mode: provider status has not been verified.';fx.textContent='Not verified in preview mode.';tariff.textContent='Not verified in preview mode.';freight.textContent='Not verified in preview mode.';if(calc)calc.textContent='Preview only — calculation assumptions are not externally verified.';if(button)button.disabled=false;return}
  try{
-  const response=await fetch('/api/market-intelligence/tools/contract',{headers:{Accept:'application/json',Authorization:'Bearer '+accessToken},cache:'no-store'});
-  if(!response.ok)throw new Error('API returned '+response.status);
-  const data=await response.json(),providers=data.providers||{};
-  fx.textContent=String(providers.fx||'Provider status not declared by API.');
-  tariff.textContent=String(providers.tariff||'Provider status not declared by API.');
-  freight.textContent=String(providers.freight||'Provider status not declared by API.');
-  status.textContent='API contract reached · checked '+new Date().toLocaleString()+' · this confirms endpoint access, not live provider data.';
+  const data=await invokeMarketIntel('status'),p=data.providers||{};
+  fx.textContent=p.fx?.message||'Unverified — no FX provider connection has been declared.';
+  tariff.textContent=p.tariffs?.message||'Unverified — no tariff provider connection has been declared.';
+  freight.textContent=p.freight?.message||'Unverified — no freight provider connection has been declared.';
+  if(calc)calc.textContent=p.landedCost?.message||'Indicative calculation only; user-supplied assumptions are not verified.';
+  status.textContent='VTG Supabase API connected · checked '+new Date(data.api?.checkedAt||Date.now()).toLocaleString()+' · third-party FX, tariff and freight feeds remain disconnected.';
  }catch(error){
-  status.textContent='API/provider status unavailable. Treat all market inputs as unverified.';
-  fx.textContent='Unverified — API check failed.';
-  tariff.textContent='Unverified — API check failed.';
-  freight.textContent='Unverified — API check failed.';
- }
+  status.textContent='VTG API status unavailable. Treat all market inputs as unverified.';
+  fx.textContent='Unverified — authenticated API check failed.';
+  tariff.textContent='Unverified — authenticated API check failed.';
+  freight.textContent='Unverified — authenticated API check failed.';
+  if(calc)calc.textContent='Indicative calculation only. API status could not be verified.';
+ }finally{if(button)button.disabled=false}
 }
 $('vtgIntelRefresh')?.addEventListener('click',loadBuyerIntelStatus);
 let products=[],productsLoading=false,productsError=false;
