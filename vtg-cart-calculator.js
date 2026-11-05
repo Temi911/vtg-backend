@@ -40,7 +40,7 @@
   function ensureUI() {
     if ($('#cartBtn')) return;
     const market = $('#market');
-    const isLandingPage = location.pathname === '/' || location.pathname.endsWith('/frontend-v3.html');
+    const isLandingPage = location.pathname.endsWith('/frontend-v3.html');
     const target = isLandingPage ? null : market?.querySelector('.sectionHead');
     if (target) {
       const tools = document.createElement('div');
