@@ -74,17 +74,15 @@ document.getElementById('form').onsubmit=async e=>{
   const auth=await window.VTG_AUTH_READY;
   const result=await auth.signIn(d.email,d.password);
   const user=result.user;
-  const pending=user.role==='buyer'&&!!user.requestedRole;
-  const effectiveRole=pending?user.requestedRole:user.role;
+  const effectiveRole=user.role;
   if(effectiveRole!==role){
    const names={buyer:'Buyer',supplier:'Supplier',bank:'Bank'};
    throw new Error('This account is registered as a '+(names[effectiveRole]||effectiveRole)+'. Please select '+(names[effectiveRole]||effectiveRole)+' above.');
   }
   msg.className='msg ok';msg.textContent='Signed in successfully. Opening your VTG workspace…';
   setTimeout(()=>{
-   const destination=pending?'/verification.html?role='+encodeURIComponent(user.requestedRole):(safeNext||({buyer:'/buyer-dashboard.html',supplier:'/supplier-dashboard.html',bank:'/bank-trade-os.html'})[effectiveRole]||'/');
+   const destination=safeNext||({buyer:'/buyer-dashboard.html',supplier:'/supplier-dashboard.html',bank:'/bank-trade-os.html'})[effectiveRole]||'/';
    if(user.agreementRequired){location.href='/signup-agreement.html?next='+encodeURIComponent(destination);return;}
-   if(pending){location.href=destination;return;}
    location.href=destination;
   },450);
  }catch(err){msg.className='msg';msg.textContent=err.message||'Sign in failed';if(submit)submit.disabled=false;}
