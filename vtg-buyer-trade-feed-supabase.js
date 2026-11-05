@@ -2,17 +2,24 @@
   'use strict';
   const $=id=>document.getElementById(id);
   const esc=value=>typeof window.esc==='function'?window.esc(value):String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  let client=null,userId=null,busy=false;
+  let client=null,userId=null,busy=false,feedChannel=null;
   const preview=()=>new URLSearchParams(location.search).get('preview')==='1';
   async function session(){
-    const auth=await window.VTG_AUTH_READY;
-    const {data,error}=await auth.client.auth.getSession();
-    if(error)throw error;
-    if(!data.session)throw new Error('Your secure session has expired. Please sign in again.');
-    const {data:profile,error:profileError}=await auth.client.from('profiles').select('role,is_active').eq('id',data.session.user.id).single();
-    if(profileError)throw profileError;
-    if(profile.role!=='buyer'||!profile.is_active)throw new Error('An active buyer account is required to access the trade feed.');
-    client=auth.client;userId=data.session.user.id;
+    let auth=null;
+    try{
+      if(window.VTG_AUTH_READY)auth=await window.VTG_AUTH_READY;
+      else if(window.VTGAuth)auth=window.VTGAuth;
+    }catch(error){throw new Error('The VTG sign-in service did not initialise: '+(error?.message||'unknown initialisation error'));}
+    const supabase=auth?.client||window.VTG_SUPABASE;
+    if(!supabase?.auth)throw new Error('The VTG account service is unavailable. Refresh the page and sign in again.');
+    const {data,error}=await supabase.auth.getSession();
+    if(error)throw new Error('Could not verify your VTG session: '+error.message);
+    if(!data.session)throw new Error('No active VTG session was found. Please sign in again.');
+    const {data:profile,error:profileError}=await supabase.from('profiles').select('role,is_active').eq('id',data.session.user.id).maybeSingle();
+    if(profileError)throw new Error('Your account profile could not be checked: '+profileError.message);
+    if(!profile)throw new Error('Your VTG account profile is not set up yet. Contact VTG support before publishing.');
+    if(profile.role!=='buyer'||profile.is_active!==true)throw new Error('An active buyer account is required to access the buyer trade feed.');
+    client=supabase;userId=data.session.user.id;
     return data.session;
   }
   function status(message){const n=$('liveTradeFeedNotice');if(n)n.textContent=message;}
@@ -28,15 +35,15 @@
     try{
       await session();
       const {data:posts,error}=await client.from('vtg_trade_posts').select('id,author_id,body,post_type,created_at').order('created_at',{ascending:false}).limit(30);
-      if(error)throw error;
+      if(error)throw new Error('Trade posts query failed: '+error.message);
       if(!posts?.length){empty('No account-linked trade posts yet. Publish a useful update above to start the conversation.');return;}
       const ids=posts.map(p=>p.id);
       const [reactionResult,commentResult]=await Promise.all([
         client.from('vtg_trade_post_reactions').select('post_id,user_id').in('post_id',ids),
         client.from('vtg_trade_post_comments').select('id,post_id,author_id,body,created_at').in('post_id',ids).order('created_at',{ascending:true})
       ]);
-      if(reactionResult.error)throw reactionResult.error;
-      if(commentResult.error)throw commentResult.error;
+      if(reactionResult.error)throw new Error('Trade reactions could not be loaded: '+reactionResult.error.message);
+      if(commentResult.error)throw new Error('Trade comments could not be loaded: '+commentResult.error.message);
       const reactions=reactionResult.data||[],comments=commentResult.data||[];
       const counts=(rows,key)=>rows.reduce((m,row)=>(m[row[key]]=(m[row[key]]||0)+1,m),{});
       const likes=counts(reactions,'post_id'),commentCounts=counts(comments,'post_id');
@@ -57,7 +64,7 @@
     try{
       await session();
       const {error}=await client.from('vtg_trade_posts').insert({author_id:userId,body,post_type:'update'});
-      if(error)throw error;
+      if(error)throw new Error('The trade update was not published: '+error.message);
       field.value='';status('Trade update published to your signed-in account network.');await load();
     }catch(error){status('Unable to publish update: '+(error.message||'Supabase request failed'));}
     finally{button.disabled=false;}
@@ -85,7 +92,7 @@
     try{
       await session();
       const {error}=await client.from('vtg_trade_post_comments').insert({post_id:form.dataset.sbCommentForm,author_id:userId,body});
-      if(error)throw error;
+      if(error)throw new Error('Your comment could not be saved: '+error.message);
       status('Comment added.');await load();
       const slot=$('sbComments-'+form.dataset.sbCommentForm);if(slot)slot.classList.remove('hidden');
     }catch(error){status('Unable to add comment: '+(error.message||'Please try again'));}
@@ -96,7 +103,14 @@
     $('liveTradePostForm')?.addEventListener('submit',publish);
     $('liveTradeFeedRows')?.addEventListener('click',click);
     $('liveTradeFeedRows')?.addEventListener('submit',comment);
-    load();
+    load().then(()=>{
+      if(!client||feedChannel)return;
+      feedChannel=client.channel('vtg-buyer-trade-feed')
+        .on('postgres_changes',{event:'*',schema:'public',table:'vtg_trade_posts'},()=>load())
+        .on('postgres_changes',{event:'*',schema:'public',table:'vtg_trade_post_reactions'},()=>load())
+        .on('postgres_changes',{event:'*',schema:'public',table:'vtg_trade_post_comments'},()=>load())
+        .subscribe();
+    });
   },{once:true});
   window.VTGBuyerTradeFeed={load};
 })();
