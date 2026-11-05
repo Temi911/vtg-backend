@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#17191b">
+<title>Accept VTG staff invitation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="/vtg-supabase-auth.js?v=20261105-staff-auth-1"></script>
+<style>
+:root{color-scheme:light;--bg:#f3efe6;--panel:#fff;--ink:#17191b;--muted:#66717a;--line:#e5ded3;--red:#702a30;--brass:#b49a70}
+html[data-theme=dark]{color-scheme:dark;--bg:#111416;--panel:#1a2023;--ink:#f3efe6;--muted:#b9c0c3;--line:#30383b;--red:#c77a7e}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:var(--bg);color:var(--ink);font:14px/1.7 Manrope,Arial,sans-serif}.card{width:min(540px,100%);padding:clamp(28px,6vw,52px);background:var(--panel);border:1px solid var(--line);border-radius:20px}.eyebrow{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--brass)}h1{font-size:clamp(28px,5vw,42px);line-height:1.12;letter-spacing:-.04em;margin:15px 0}p{color:var(--muted)}#status{min-height:48px;margin-top:22px;padding:14px;border:1px solid var(--line);border-radius:10px}.link{display:inline-flex;margin-top:18px;padding:12px 17px;border-radius:9px;background:var(--red);color:#fff;text-decoration:none;font-weight:800}#returnLink[hidden]{display:none}
+</style>
+</head>
+<body>
+<main class="card">
+<div class="eyebrow">VTG · Private workforce</div>
+<h1 id="title">Confirming your staff invitation</h1>
+<p>We are validating the invitation sent to your email address and connecting it to the assigned internal workspace.</p>
+<div id="status" role="status" aria-live="polite">Please wait while we verify your invitation…</div>
+<a class="link" id="returnLink" href="/workforce-access.html" hidden>Return to Workforce Access</a>
+</main>
+<script>
+(async()=>{
+ const title=document.getElementById('title'),status=document.getElementById('status'),link=document.getElementById('returnLink');
+ const params=new URLSearchParams(location.search);
+ const invitation=params.get('invitation'),token=params.get('token');
+ try{
+  if(!invitation||!token)throw new Error('This invitation link is incomplete. Ask your VTG administrator to resend it.');
+  const auth=await window.VTG_AUTH_READY;
+  const current=await auth.getCurrent();
+  if(!current)throw new Error('The invitation could not establish a verified session. Open the invitation in the same browser or request a new email.');
+  if(current.user.accountEnvironment!=='staff')throw new Error('This invitation is not connected to a private staff identity.');
+  const response=await fetch(auth.projectUrl+'/functions/v1/workforce-invitations/accept',{
+   method:'POST',
+   headers:{'Authorization':'Bearer '+current.session.access_token,'apikey':auth.publishableKey,'Content-Type':'application/json'},
+   body:JSON.stringify({invitation_id:invitation,token})
+  });
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(result.error||'The invitation could not be accepted. It may have expired or been revoked.');
+  const role=result.invitation?.workspace_role;
+  if(!role)throw new Error('The invitation was accepted but no workspace was assigned. Contact your VTG administrator.');
+  history.replaceState({},document.title,location.pathname);
+  title.textContent='Staff invitation accepted';
+  status.textContent='Your VTG staff identity is ready. Opening your assigned workspace…';
+  setTimeout(()=>location.replace('/workforce-dashboard.html?workspace='+encodeURIComponent(role)),700);
+ }catch(error){
+  title.textContent='We could not complete this invitation';
+  status.textContent=error.message||'Please ask your VTG administrator for help.';
+  link.hidden=false;
+ }
+})();
+</script>
+</body>
+</html>
