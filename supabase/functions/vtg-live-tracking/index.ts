@@ -17,8 +17,8 @@ const admin = createClient(supabaseUrl, serviceKey, { auth: { persistSession: fa
 type CargoProvider = "vizion" | "tracking_one";
 type AISProvider = "vesselfinder" | "marinetraffic";
 const cargoEnv = (p: CargoProvider) => p === "vizion"
-  ? { base: "VIZION_API_BASE_URL", path: "VIZION_CREATE_TRACKING_PATH", key: "VIZION_API_KEY", header: "VIZION_AUTH_HEADER", prefix: "VIZION_AUTH_PREFIX" }
-  : { base: "TRACKING_ONE_API_BASE_URL", path: "TRACKING_ONE_CREATE_TRACKING_PATH", key: "TRACKING_ONE_API_KEY", header: "TRACKING_ONE_AUTH_HEADER", prefix: "TRACKING_ONE_AUTH_PREFIX" };
+  ? { base: "VIZION_API_BASE_URL", path: "VIZION_CREATE_TRACKING_PATH", pollPath: "VIZION_GET_TRACKING_PATH", key: "VIZION_API_KEY", header: "VIZION_AUTH_HEADER", prefix: "VIZION_AUTH_PREFIX" }
+  : { base: "TRACKING_ONE_API_BASE_URL", path: "TRACKING_ONE_CREATE_TRACKING_PATH", pollPath: "TRACKING_ONE_GET_TRACKING_PATH", key: "TRACKING_ONE_API_KEY", header: "TRACKING_ONE_AUTH_HEADER", prefix: "TRACKING_ONE_AUTH_PREFIX" };
 const aisEnv = (p: AISProvider) => p === "vesselfinder"
   ? { base: "VESSELFINDER_API_BASE_URL", path: "VESSELFINDER_POSITION_PATH", key: "VESSELFINDER_API_KEY", header: "VESSELFINDER_AUTH_HEADER", prefix: "VESSELFINDER_AUTH_PREFIX" }
   : { base: "MARINETRAFFIC_API_BASE_URL", path: "MARINETRAFFIC_POSITION_PATH", key: "MARINETRAFFIC_API_KEY", header: "MARINETRAFFIC_AUTH_HEADER", prefix: "MARINETRAFFIC_AUTH_PREFIX" };
@@ -176,12 +176,29 @@ async function main(req: Request) {
       if(!configured(cfg)) return json({ok:true,reference_id:ref.id,provider_status:"pending_provider",providerConfigured:false,mode:"live",message:"Reference saved. Provider API access is not configured yet; no live request was sent."});
       try {
         const url=new URL(env(cfg.path),env(cfg.base));
-        const data=await providerRequest(url,cfg,"POST",{reference:value,reference_type:type,carrier_code:row.carrier_code,callback_url:supabaseUrl+"/functions/v1/vtg-live-tracking?action=webhook"});
+        const data=await providerRequest(url,cfg,"POST",{reference:value,reference_type:type,carrier_code:row.carrier_code});
         const providerRef=str(data.tracking_id??data.id??data.reference_id??data.data?.id)||null;
         await admin.from("shipment_tracking_references").update({provider_reference:providerRef,provider_status:"registered"}).eq("id",ref.id);
         await log(provider,"register",shipment.id,"ok",200,"Provider accepted tracking registration.");
         return json({ok:true,reference_id:ref.id,provider_status:"registered",providerConfigured:true,mode:"live",message:"Provider accepted the tracking request. Awaiting verified carrier events."});
       } catch(e) { await admin.from("shipment_tracking_references").update({provider_status:"error"}).eq("id",ref.id); await log(provider,"register",shipment.id,"error",502,String(e)); return json({error:"Provider registration failed. Check provider endpoint and credentials.",reference_id:ref.id},502); }
+    }
+    if (action === "refresh-reference") {
+      const referenceId=str(body.reference_id);
+      const {data:ref,error}=await admin.from("shipment_tracking_references").select("*").eq("id",referenceId).eq("buyer_id",user.id).maybeSingle();
+      if(error||!ref)return json({error:"Cargo tracking reference not found for this buyer."},404);
+      if(ref.source_mode==="sandbox")return json({error:"Sandbox references do not request live carrier data."},409);
+      const cfg=cargoEnv(ref.cargo_provider as CargoProvider),pollPath=cfg.pollPath?env(cfg.pollPath):"";
+      if(!env(cfg.base)||!env(cfg.key)||!pollPath)return json({error:"Cargo provider polling endpoint is not configured. No live request was sent."},424);
+      try{
+        const url=new URL(pollPath,env(cfg.base));
+        if(ref.provider_reference)url.searchParams.set("tracking_id",ref.provider_reference);
+        else {url.searchParams.set("reference",ref.reference_value);url.searchParams.set("reference_type",ref.reference_type);}
+        const payload=await providerRequest(url,cfg,"GET");
+        const accepted=await storeCargoEvents(ref.cargo_provider as CargoProvider,payload,ref);
+        await log(ref.cargo_provider,"refresh",ref.shipment_id,"ok",200,"Provider milestones retrieved and normalised.");
+        return json({ok:true,accepted,source_mode:"live",message:"Provider response processed. Only timestamped provider events are stored."});
+      }catch(e){await log(ref.cargo_provider,"refresh",ref.shipment_id,"error",502,String(e));return json({error:"Cargo provider request failed or returned an unsupported response."},502);}
     }
     if (action === "link-vessel") {
       const shipmentId=str(body.shipment_id),provider=body.provider as AISProvider,imo=str(body.imo).trim(),mmsi=str(body.mmsi).trim();
