@@ -4,14 +4,18 @@
   const esc=value=>typeof window.esc==='function'?window.esc(value):String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let client=null,userId=null,conversations=[];
   async function session(){
-    const auth=await window.VTG_AUTH_READY;
-    const {data,error}=await auth.client.auth.getSession();
+    let auth=null;
+    if(window.VTG_AUTH_READY)auth=await window.VTG_AUTH_READY;
+    else if(window.VTGAuth)auth=window.VTGAuth;
+    const supabase=auth?.client||window.VTG_SUPABASE;
+    if(!supabase?.auth)throw new Error('VTG account service is unavailable. Refresh and sign in again.');
+    const {data,error}=await supabase.auth.getSession();
     if(error)throw error;
     if(!data.session)throw new Error('Sign in to load account conversations.');
-    const {data:profile,error:pe}=await auth.client.from('profiles').select('role,is_active').eq('id',data.session.user.id).single();
+    const {data:profile,error:pe}=await supabase.from('profiles').select('role,is_active').eq('id',data.session.user.id).single();
     if(pe)throw pe;
     if(profile.role!=='buyer'||!profile.is_active)throw new Error('An active buyer account is required for this workspace.');
-    client=auth.client;userId=data.session.user.id;
+    client=supabase;userId=data.session.user.id;
     return data.session;
   }
   function showError(host,message,retry){
