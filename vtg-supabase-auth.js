@@ -29,6 +29,8 @@
     }
     window.VTGAuth={
       client,
+      projectUrl:URL,
+      publishableKey:KEY,
       async signUp(email,password,metadata){
         return client.auth.signUp({email,password,options:{data:metadata,emailRedirectTo:location.origin+"/auth-callback.html"}});
       },
