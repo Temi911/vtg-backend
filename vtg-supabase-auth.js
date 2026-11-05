@@ -14,7 +14,7 @@
       fullName:row?.full_name||user?.user_metadata?.full_name||"",
       phone:row?.phone||"",role:row?.role||"buyer",
       preferredLanguage:row?.preferred_language||"en",
-      country:row?.country||"",city:row?.city||"",isActive:row?.is_active!==false
+      country:row?.country||"",city:row?.city||"",requestedRole:user?.user_metadata?.requested_role||null,isActive:row?.is_active!==false
     });
     async function profile(session){
       const {data,error}=await client.from("profiles").select("id,email,full_name,phone,role,preferred_language,country,city,is_active").eq("id",session.user.id).maybeSingle();
