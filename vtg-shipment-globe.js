@@ -61,8 +61,26 @@ async function init(){
  }else sourceRecords=records(role);
  const routes=sourceRecords.map(r=>{const from=locate(r.origin),to=locate(r.destination);return from&&to&&from.name!==to.name?{...r,from,to}:null}).filter(Boolean);
  list.innerHTML=routes.length?routes.map((r,i)=>'<button type="button" class="saItem" data-route="'+i+'" aria-pressed="'+(i===0?'true':'false')+'"><b>'+esc(r.goods)+' · '+esc(r.ref)+'</b><small>'+esc(r.from.name)+' → '+esc(r.to.name)+'</small><small>Status: '+esc(r.status)+' · Select to focus both views</small>'+(r.carrier?'<small>Carrier: '+esc(r.carrier)+'</small>':'')+'</button>').join(''):'<div class="saEmpty"><strong>No specific route is available yet.</strong><br>Record a shipment with a recognised origin port/city, destination port/city and a movement status. Country-only entries and unrelated sample corridors are intentionally excluded.</div>';
- let map=null,mapRoutes=[],shipMarker=null,selected=-1,globe=null;
+ let map=null,mapRoutes=[],shipMarker=null,selected=-1,globe=null,liveVesselMarker=null,liveVesselPosition=null;
  const shipIcon=()=>window.L.divIcon({className:'vtgShipMarker',html:'<div style="font-size:20px;filter:drop-shadow(0 1px 2px #0008);transform:rotate(0deg)">⛴</div>',iconSize:[24,24],iconAnchor:[12,12]});
+ function applyLiveVesselPosition(p){
+  const lat=Number(p?.latitude),lng=Number(p?.longitude);
+  if(!Number.isFinite(lat)||lat < -90||lat > 90||!Number.isFinite(lng)||lng < -180||lng > 180)return;
+  liveVesselPosition=p;
+  if(map&&window.L){
+   if(liveVesselMarker)map.removeLayer(liveVesselMarker);
+   liveVesselMarker=window.L.circleMarker([lat,lng],{radius:9,color:'#fff',weight:2,fillColor:'#b49a70',fillOpacity:1}).addTo(map);
+   const stamp=p.position_time?new Date(p.position_time).toLocaleString():'timestamp unavailable';
+   liveVesselMarker.bindPopup('<strong>Provider-reported AIS position</strong><br>'+esc(p.provider||'AIS')+'<br>'+esc(stamp)+'<br><small>This position does not prove a specific container is aboard.</small>');
+   if(selected<0)map.setView([lat,lng],Math.max(map.getZoom(),4));
+  }
+  if(globe&&typeof globe.pointsData==='function'){
+   const vesselPoint={name:'AIS position · '+(p.provider||'provider'),lat,lng,color:'#b49a70',routeIndex:null};
+   globe.pointsData([...endpoints.values(),vesselPoint]);
+   globe.pointOfView({lat,lng,altitude:1.55},650);
+  }
+ }
+ window.addEventListener('vtg:buyer-vessel-position',event=>applyLiveVesselPosition(event.detail||{}));
  function focus(i){if(i<0||i>=routes.length)return;selected=i;list.querySelectorAll('[data-route]').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.route===i)));if(globe){const r=routes[i];globe.pointOfView({lat:(r.from.lat+r.to.lat)/2,lng:(r.from.lng+r.to.lng)/2,altitude:1.75},650)}if(map&&mapRoutes[i]){map.fitBounds(mapRoutes[i].getBounds().pad(.35),{maxZoom:6});mapRoutes.forEach((l,j)=>l.setStyle({weight:j===i?5:2.5,opacity:j===i?1:.35,color:j===i?'#d3423e':'#607d8b'}));const r=routes[i],line=mapRoutes[i];if(shipMarker)map.removeLayer(shipMarker);shipMarker=window.L.marker([r.from.lat,r.from.lng],{icon:shipIcon(),interactive:false}).addTo(map);let t=0;const start=performance.now();const animate=now=>{if(selected!==i||!shipMarker||!map)return;const p=Math.min(1,((now-start)%7000)/7000);const lat=r.from.lat+(r.to.lat-r.from.lat)*p,lng=r.from.lng+(r.to.lng-r.from.lng)*p;shipMarker.setLatLng([lat,lng]);if(selected===i)requestAnimationFrame(animate)};requestAnimationFrame(animate)}}
  list.querySelectorAll('[data-route]').forEach(b=>b.addEventListener('click',()=>focus(+b.dataset.route)));
  const initShipmentGlobe=()=>{
@@ -96,6 +114,7 @@ async function init(){
    document.addEventListener('vtg:themechange',applyGlobeTheme);
    new MutationObserver(applyGlobeTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
    const controls=globe.controls();if(controls){controls.autoRotate=true;controls.autoRotateSpeed=.25;controls.enableDamping=true}
+   if(liveVesselPosition)applyLiveVesselPosition(liveVesselPosition);
    window.addEventListener('resize',()=>{if(globe)globe.width(node.clientWidth||600).height(node.clientHeight||340)},{passive:true});
   }).catch(()=>{node.innerHTML='<div style="height:100%;display:grid;place-items:center;padding:22px;color:#b5c4d2;text-align:center;font-size:12px">The 3D globe library could not load on this connection. The matching geographic map below remains available.</div>'});
  };
@@ -107,7 +126,7 @@ async function init(){
   let tiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map),failed=0,loaded=false;
   tiles.on('tileload',()=>{loaded=true});tiles.on('tileerror',()=>{if(!loaded&&++failed===4){map.removeLayer(tiles);const alt=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:20,attribution:'&copy; OpenStreetMap contributors &copy; CARTO'}).addTo(map);alt.on('tileerror',()=>{node.insertAdjacentHTML('beforeend','<div style="padding:12px;font-size:12px">Map tiles unavailable on this connection. <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">Open OpenStreetMap</a>.</div>')})}});
   routes.forEach((r,i)=>{const line=L.polyline([[r.from.lat,r.from.lng],[r.to.lat,r.to.lng]],{color:i===0?'#d3423e':'#607d8b',weight:i===0?5:2.5,opacity:i===0?1:.5,dashArray:'7 7'}).addTo(map);line.bindTooltip(esc(r.goods)+' · '+esc(r.status));line.on('click',()=>focus(i));mapRoutes.push(line);L.circleMarker([r.from.lat,r.from.lng],{radius:3.5,color:'#fff',weight:1.2,fillColor:'#e46b42',fillOpacity:1}).bindTooltip('Origin: '+esc(r.from.name)).addTo(map);L.circleMarker([r.to.lat,r.to.lng],{radius:3.5,color:'#fff',weight:1.2,fillColor:'#078c91',fillOpacity:1}).bindTooltip('Destination: '+esc(r.to.name)).addTo(map)});
-  if(routes.length)focus(0);else map.setView([17,38],2);setTimeout(()=>map.invalidateSize(),180);window.addEventListener('resize',()=>map&&map.invalidateSize(),{passive:true});document.querySelectorAll('[data-view="atlas"],[data-page="logistics"],[data-view="shipments"]').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>{if(map)map.invalidateSize();if(globe){const n=panel.querySelector('#vtgShipmentGlobe');globe.width(n.clientWidth||600).height(n.clientHeight||340)}},220)));
+  if(routes.length)focus(0);else map.setView([17,38],2);if(liveVesselPosition)applyLiveVesselPosition(liveVesselPosition);setTimeout(()=>map.invalidateSize(),180);window.addEventListener('resize',()=>map&&map.invalidateSize(),{passive:true});document.querySelectorAll('[data-view="atlas"],[data-page="logistics"],[data-view="shipments"]').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>{if(map)map.invalidateSize();if(globe){const n=panel.querySelector('#vtgShipmentGlobe');globe.width(n.clientWidth||600).height(n.clientHeight||340)}},220)));
  }).catch(()=>{panel.querySelector('#vtgShipmentMap').innerHTML='<div style="padding:22px;color:#243746;font-size:12px">Interactive map library could not load on this connection. Shipment routes remain listed above.</div>'});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,150),{once:true});else setTimeout(init,150);
