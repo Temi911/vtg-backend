@@ -33,7 +33,7 @@ async function getClient(){
 form.addEventListener('submit',async event=>{
  event.preventDefault();if(busy)return;
  const message=input.value.trim();if(!message)return;
- if(false){addBubble({text:'Preview mode is for layout review. Sign in to an active '+(roleNames[role]||'VTG')+' account to send a live question.',kind:'ai'});return;}
+ 
  busy=true;send.disabled=true;input.disabled=true;
  addBubble({text:message,kind:'self',label:'You',role:role});
  input.value='';const pending=typing();
