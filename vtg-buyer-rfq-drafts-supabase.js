@@ -2,14 +2,13 @@
  'use strict';
  const $=id=>document.getElementById(id);
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const preview=false;
  let client=null,buyerId=null,drafts=[];
  function setNotice(message,error=false){const n=$('rfqForm')?.querySelector('.notice');if(n){n.textContent=message;n.style.color=error?'var(--danger, #b42318)':'';}}
  async function session(){
   const auth=await window.VTG_AUTH_READY;
   if(!auth?.client)throw new Error('Secure sign-in is not ready. Refresh and try again.');
   const {data,error}=await auth.client.auth.getSession();if(error)throw error;
-  if(!data.session)throw new Error('Sign in to save RFQ drafts to your VTG account. Preview mode drafts stay in this browser.');
+  if(!data.session)throw new Error('Sign in to save RFQ drafts to your VTG account.');
   const {data:p,error:pe}=await auth.client.from('profiles').select('role,is_active').eq('id',data.session.user.id).single();
   if(pe)throw pe;if(p.role!=='buyer'||!p.is_active)throw new Error('An active buyer account is required to save RFQ drafts.');
   client=auth.client;buyerId=data.session.user.id;
@@ -21,7 +20,6 @@
   rows.innerHTML=drafts.length?drafts.map(d=>'<div class="row"><div class="rowMain"><strong>'+esc(d.product)+'</strong><p>'+esc(d.quantity)+' units · '+esc(d.sourcing_country)+' → '+esc(d.destination)+'<br>Account draft · '+new Date(d.created_at).toLocaleDateString()+'</p>'+(d.specifications?'<p>'+esc(d.specifications)+'</p>':'')+'<p><span class="chip">Private draft · not sent to suppliers</span></p><button class="btn" type="button" data-account-rfq-id="'+esc(d.id)+'">Remove</button></div></div>').join(''):'<div class="empty">No saved RFQ drafts yet. Save a sourcing brief to keep it in your VTG account.</div>';
  }
  async function load(){
-  if(preview){setNotice('Saved in this browser only in preview mode. Not sent to suppliers.');return;}
   try{
    await session();
    const {data,error}=await client.from('buyer_rfq_drafts').select('id,product,sourcing_country,quantity,destination,specifications,created_at,updated_at').eq('buyer_id',buyerId).order('created_at',{ascending:false});
@@ -47,7 +45,6 @@
   finally{if(button)button.disabled=false;}
  }
  $('rfqForm')?.addEventListener('submit',e=>{
-  if(preview)return;
   e.preventDefault();e.stopImmediatePropagation();save(e.currentTarget);
  },true);
  $('rfqRows')?.addEventListener('click',e=>{const b=e.target.closest('[data-account-rfq-id]');if(b)remove(b.getAttribute('data-account-rfq-id'),b);});
