@@ -10,7 +10,8 @@
   function systemDark() { return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches); }
   function resolve(pref) {
     if (pref === 'dark' || pref === 'light') return pref;
-    return systemDark() ? 'dark' : 'light';
+    var hour = new Date().getHours();
+    return hour >= 6 && hour < 18 ? 'light' : 'dark';
   }
   function apply(theme) {
     root.setAttribute('data-theme', theme);
