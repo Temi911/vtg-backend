@@ -3,7 +3,8 @@
 const $=id=>document.getElementById(id);
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=(value,currency)=>String(currency||'USD')+' '+Number(value||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-const state={client:null,buyerId:null,products:[],cart:[],channel:null,loading:true,error:null,saving:false};
+const state={client:null,buyerId:null,products:[],cart:[],channel:null,loading:true,error:null};
+let saveChain=Promise.resolve();
 const status=message=>{const node=$('cartCloudStatus');if(node)node.textContent=message;};
 function setCounts(){const count=state.cart.reduce((n,item)=>n+item.qty,0);if($('cartCount'))$('cartCount').textContent=count;if($('statCart'))$('statCart').textContent=count;}
 function cartSubtotalByCurrency(){
@@ -46,14 +47,15 @@ function normaliseCart(items){
  return Array.from(map,([id,qty])=>({id,qty}));
 }
 async function persistCart(){
- if(!state.client||!state.buyerId||state.saving)return;
- state.saving=true;status('Saving your cart to your VTG account…');
- try{
-  const {error}=await state.client.from('buyer_cart_states').upsert({buyer_id:state.buyerId,items:state.cart,updated_at:new Date().toISOString()},{onConflict:'buyer_id'});
+ if(!state.client||!state.buyerId)return;
+ const snapshot=state.cart.map(item=>({id:item.id,qty:item.qty}));
+ saveChain=saveChain.then(async()=>{
+  const {error}=await state.client.from('buyer_cart_states').upsert({buyer_id:state.buyerId,items:snapshot,updated_at:new Date().toISOString()},{onConflict:'buyer_id'});
   if(error)throw error;
-  status('Cart saved securely to your VTG account.');
- }catch(error){status('Cart could not be saved to Supabase: '+(error.message||'Please try again.'));}
- finally{state.saving=false;}
+ });
+ status('Saving your cart to your VTG account…');
+ try{await saveChain;status('Cart saved securely to your VTG account.');}
+ catch(error){status('Cart could not be saved to Supabase: '+(error.message||'Please try again.'));}
 }
 async function refresh(){
  state.loading=true;state.error=null;renderProducts();
