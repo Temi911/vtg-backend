@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="VTG administrator trust and compliance review workspace.">
+<title>Admin OS | Trust &amp; Compliance — VTG</title>
+<style>
+:root{--bg:#f6f8fa;--card:#fff;--ink:#17202a;--muted:#687684;--line:#dfe5ea;--accent:#a5232b;--soft:#fff0ef;--good:#e8f6ee;--warn:#fff5dc;--bad:#fff0f0}
+html[data-theme="dark"]{--bg:#0d1117;--card:#151b23;--ink:#eef3f6;--muted:#b9c5ce;--line:#2b3640;--accent:#ff8580;--soft:#321d20;--good:#13291f;--warn:#302717;--bad:#321b1b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px Manrope,Arial,sans-serif}.shell{max-width:1320px;margin:auto;padding:24px}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:24px}.brand{display:flex;align-items:center;gap:12px}.brand img{width:54px;height:44px;object-fit:contain}.brand small,.muted{color:var(--muted)}button,input,select,textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:9px;padding:10px}button{font-weight:700;cursor:pointer}.primary{background:var(--accent);color:#fff;border-color:var(--accent)}.grid{display:grid;grid-template-columns:minmax(280px,.85fr) minmax(0,1.4fr);gap:18px}.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;min-width:0}.panel h2{font-size:17px;margin:0 0 8px}.field{display:grid;gap:6px;margin:13px 0;font-size:12px;font-weight:700}.field input,.field select,.field textarea{width:100%}.field textarea{min-height:100px;resize:vertical}.filters{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.filters select{min-width:150px}.trust-risk-message{padding:11px 13px;border-radius:9px;margin:12px 0;background:var(--good);color:var(--ink)}.trust-risk-message[data-kind="error"]{background:var(--bad)}.trust-risk-item{border:1px solid var(--line);border-radius:12px;padding:15px;margin:12px 0}.trust-risk-top{display:flex;justify-content:space-between;gap:12px}.trust-risk-severity{padding:5px 9px;border-radius:99px;background:var(--warn);font-size:11px;font-weight:800}.trust-risk-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.trust-risk-resolution{margin-top:12px;padding:12px;background:var(--good);border-radius:9px}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:10px;font-weight:800;color:var(--accent)}.empty{padding:22px;color:var(--muted);text-align:center;border:1px dashed var(--line);border-radius:10px}@media(max-width:800px){.grid{grid-template-columns:1fr}.shell{padding:15px}.top{align-items:flex-start}}
+</style>
+</head>
+<body><main class="shell">
+<header class="top"><div class="brand"><a href="/admin-dashboard-preview.html" aria-label="VTG admin home"><img src="/assets/vtg-logo.svg" alt="VTG"></a><div><div class="eyebrow">VTG / Administrator workspace</div><strong>Trust &amp; Compliance</strong><small style="display:block">Internal review records and decision provenance</small></div></div><div><button id="theme-toggle" type="button" aria-label="Toggle theme">Toggle theme</button> <a href="/admin-dashboard-preview.html">Admin home</a></div></header>
+<h1>Trust &amp; Compliance Review</h1>
+<p class="muted">Record evidence-based internal risk reviews, assign a source and rationale, and preserve the administrator decision trail. A flag is an internal review record, not a legal determination.</p>
+<div id="trust-risk-message" class="trust-risk-message" role="status" aria-live="polite" hidden></div>
+<div class="grid">
+<section class="panel"><h2>Raise a trust-risk flag</h2><p class="muted">Use objective, documented facts. Do not enter unnecessary personal or sensitive information.</p>
+<form id="trust-risk-form">
+<label class="field" for="trust-risk-subject">Account<select id="trust-risk-subject" required><option value="">Loading accounts…</option></select></label>
+<label class="field" for="trust-risk-category">Category<input id="trust-risk-category" maxlength="120" required placeholder="e.g. Document inconsistency"></label>
+<label class="field" for="trust-risk-severity">Severity<select id="trust-risk-severity"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option></select></label>
+<label class="field" for="trust-risk-source">Source type<select id="trust-risk-source"><option value="internal_review">Internal review</option><option value="verification_document">Verification document</option><option value="transaction">Trade transaction</option><option value="external_authority">External authority</option><option value="other">Other</option></select></label>
+<label class="field" for="trust-risk-source-reference">Source reference<input id="trust-risk-source-reference" maxlength="240" placeholder="Document or case reference (optional)"></label>
+<label class="field" for="trust-risk-rationale">Evidence-based rationale<textarea id="trust-risk-rationale" minlength="10" maxlength="3000" required placeholder="Describe the specific evidence and why it requires review."></textarea></label>
+<button class="primary" type="submit">Record review flag</button>
+</form></section>
+<section class="panel"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><div><h2>Open and historical flags</h2><p class="muted">Review, resolve or dismiss flags with an auditable note.</p></div><button id="trust-risk-refresh" type="button">Refresh</button></div>
+<div class="filters"><label>State<select id="trust-risk-status"><option value="">All states</option><option value="open">Open</option><option value="reviewing">Reviewing</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option></select></label><label>Severity<select id="trust-risk-severity-filter"><option value="">All severities</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option></select></label></div>
+<div id="trust-risk-list" aria-live="polite"><div class="empty">Loading trust-risk records…</div></div>
+</section></div>
+</main>
+<script>
+(function(){const root=document.documentElement,key='vtg-theme';let theme='light';try{theme=localStorage.getItem(key)||'light'}catch(e){}root.dataset.theme=theme;document.getElementById('theme-toggle').addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';try{localStorage.setItem(key,root.dataset.theme)}catch(e){}})})();
+</script>
+<script src="/admin-trust-risk.js?v=20261105" defer></script>
+</body></html>
