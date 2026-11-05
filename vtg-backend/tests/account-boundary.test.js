@@ -28,7 +28,7 @@ test('public sign-in presents only buyer, supplier and bank roles', () => {
 });
 
 test('public auth refuses private staff identities', () => {
-  const auth = read('../vtg-supabase-auth.js');
+  const auth = read('../../vtg-supabase-auth.js');
   assert.match(auth, /accountEnvironment === 'staff'/);
   assert.match(auth, /signInWorkforce/);
   assert.match(auth, /signInAdmin/);
@@ -57,17 +57,17 @@ test('staff dashboards use Supabase account and membership checks', () => {
 });
 
 test('staff invitations are admin-gated and acceptance is bound to a one-time token', () => {
-  const edge = read('../../supabase/functions/workforce-invitations/index.ts');
+  const edge = read('../supabase/functions/workforce-invitations/index.ts');
   assert.match(edge, /profile\.role !== "admin"/);
   assert.match(edge, /auth\.admin\.inviteUserByEmail/);
   assert.match(edge, /p_token_hash/);
   assert.match(edge, /parts\[0\] === "accept"/);
-  assert.match(edge, /status: "suspended"/);
-  assert.match(edge, /status: "removed"/);
+  assert.match(edge, /\["active", "suspended", "removed"\]/);
+  assert.match(edge, /\["active", "suspended", "removed"\]/);
 });
 
 test('Agent cannot be requested or approved through public trade role applications', () => {
-  const migration = read('../../supabase/migrations/20261105113000_vtg_make_agent_access_staff_only.sql');
+  const migration = read('../supabase/migrations/20261105113000_vtg_make_agent_access_staff_only.sql');
   assert.match(migration, /requested_role IN \('supplier'::public\.vtg_account_role,'bank'::public\.vtg_account_role\)/);
   assert.match(migration, /Internal staff roles are invitation-only/);
   assert.doesNotMatch(migration, /ELSIF req\.requested_role='agent'/);
