@@ -63,6 +63,19 @@
         localStorage.setItem('vtg-country', user.country || '');
       }
 
+      async function addAgreementStatus(user) {
+        if (user.accountEnvironment !== 'trade' || !['buyer','supplier','bank'].includes(user.role)) {
+          user.agreementRequired = false;
+          user.agreementStatus = { required: false };
+          return user;
+        }
+        const { data, error } = await client.rpc('vtg_get_agreement_status');
+        if (error) throw error;
+        user.agreementStatus = data || { required: false };
+        user.agreementRequired = !!user.agreementStatus.required;
+        return user;
+      }
+
       async function signInRaw(email, password) {
         const { data, error } = await client.auth.signInWithPassword({
           email: email.trim().toLowerCase(), password
@@ -101,6 +114,7 @@
             await client.auth.signOut({ scope: 'local' });
             throw new Error('This is a private staff account. Use Workforce Access instead.');
           }
+          await addAgreementStatus(user);
           save(data.session, user);
           return { session: data.session, user };
         },
@@ -110,6 +124,7 @@
             await client.auth.signOut({ scope: 'local' });
             throw new Error('This is a private staff account. Use Workforce Access instead.');
           }
+          await addAgreementStatus(result.user);
           save(result.session, result.user);
           return result;
         },
@@ -145,6 +160,7 @@
           if (error) throw error;
           if (!data.session) return null;
           const user = await profile(data.session);
+          await addAgreementStatus(user);
           save(data.session, user);
           return { session: data.session, user };
         },
