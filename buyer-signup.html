@@ -79,6 +79,7 @@ function validateAll(){
  }
  return true;
 }
+function validateStep(index){const invalid=Array.from(sections[index].querySelectorAll('input,select,textarea')).find(el=>!el.disabled&&!el.checkValidity());if(invalid){invalid.reportValidity();invalid.focus({preventScroll:true});return false;}return true;}
 function formData(){return Object.fromEntries(new FormData($('#signupForm')).entries());}
 function metadata(d){
  const phoneCode=$('#phoneCountry')?.selectedOptions[0]?.dataset?.code||'';
@@ -141,7 +142,7 @@ async function resendCode(){
  }catch(error){sendButton.disabled=false;sendButton.textContent='Resend code';setMessage(error.message||'Could not resend the code.',false);}
 }
 $('#backStep').addEventListener('click',()=>showStep(current-1));
-$('#nextStep').addEventListener('click',()=>{if(validateAll())showStep(current+1);});
+$('#nextStep').addEventListener('click',()=>{if(validateStep(current))showStep(current+1);});
 $('#signupForm').addEventListener('submit',async e=>{
  e.preventDefault();
  if(!signupStarted){await beginSignup();return;}
