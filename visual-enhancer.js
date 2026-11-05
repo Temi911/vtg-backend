@@ -578,7 +578,7 @@
   }
 
   function apply(){
-    try{loadLiveMarket();replaceMarketplaceIntro();upgradeMarketIntelligence();installVTGCarousel();buildMinimalLanding();setInterval(loadLiveMarket,300000);if(window.lucide?.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.9}});}catch(e){console.warn('VTG visual enhancer failed',e);}
+    for(const [name,task] of [['market-feed',loadLiveMarket],['market-intro',replaceMarketplaceIntro],['market-intelligence',upgradeMarketIntelligence],['category-carousel',installVTGCarousel],['minimal-landing',buildMinimalLanding]]){try{task();}catch(e){console.warn('VTG enhancer task failed:',name,e);}}try{setInterval(loadLiveMarket,300000);}catch(e){}if(window.lucide?.createIcons)window.lucide.createIcons({attrs:{'stroke-width':1.9}});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
 })();
