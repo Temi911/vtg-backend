@@ -4,7 +4,7 @@
  const KEY='vtg-buyer-verification-drafts-v1';
  const esc=v=>typeof window.esc==='function'?window.esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let busy=false;
- const preview=()=>new URLSearchParams(location.search).get('preview')==='1';
+ const preview=()=>false;
  function readDrafts(){try{const v=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(v)?v:[]}catch(_){return[]}}
  function writeDrafts(rows){localStorage.setItem(KEY,JSON.stringify(rows));}
  function selectedChecks(form){const el=form.elements.checks;return el?.multiple?[...el.selectedOptions].map(o=>o.value):[el?.value].filter(Boolean)}
