@@ -144,7 +144,7 @@ async function loadAdmin(){
  const r=await api('/review-queue');const d=await r.json();if(!r.ok){$('#adminList').textContent=d.error||'Could not load review queue.';return;}
  const docs=d.documents||[],grouped=new Map();
  for(const x of docs){
-  const p=Array.isArray(x.profiles)?x.profiles[0]:x.profiles||{};
+  const p=Array.isArray(x.applicant)?x.applicant[0]:x.applicant||{};
   if(!grouped.has(x.user_id))grouped.set(x.user_id,{role:x.account_role,email:p.email||'',fullName:p.full_name||'',organisationName:p.full_name||'',verificationStatus:'pending',documents:[]});
   grouped.get(x.user_id).documents.push({id:x.id,fileName:x.file_name,docType:x.doc_type,fileSizeBytes:x.file_size_bytes,uploadedAt:x.uploaded_at});
  }
