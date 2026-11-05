@@ -5,7 +5,6 @@ const { requireAuth } = require('../middleware/auth');
 router.post('/signup/buyer', ctrl.registerBuyer);
 router.post('/signup/supplier', ctrl.registerSupplier);
 router.post('/signup/bank', ctrl.registerBank);
-router.post('/signup/agent', ctrl.registerAgent);
 router.post('/send-verification-code', ctrl.sendVerificationCode);
 router.post('/forgot-password', require('../controllers/account-recovery.controller').forgotPassword);
 router.post('/account-support', require('../controllers/account-support.controller').submitAccountSupport);
