@@ -90,8 +90,8 @@ function metadata(d){
   registration_no:d.registrationNo||'',state:d.state||'',marketing_subscribed:d.marketingSubscribed==='true'
  };
 }
-function setMessage(text,ok){
- message.className='message'+(ok?' ok':'');
+function setMessage(text,ok,processing){
+ message.className='message'+(ok?' ok':processing?' processing':'');
  message.textContent=text;
 }
 function startResendCountdown(){
@@ -103,7 +103,7 @@ async function beginSignup(){
  if(!validateAll())return;
  const d=formData(),email=(d.email||'').trim().toLowerCase();
  if(!email){showStep(STEPS.findIndex(s=>s.fields.includes('email')));$('[name=email]').focus();throw new Error('Enter your email address first.');}
- setMessage('Creating your secure account and sending your verification code…',false);
+ setMessage('Creating your secure account and sending your verification code…',false,true);
  sendButton.disabled=true;submitButton.disabled=true;
  try{
   const auth=await window.VTG_AUTH_READY;
@@ -153,7 +153,7 @@ $('#signupForm').addEventListener('submit',async e=>{
  if(!/^\d{6,10}$/.test(code)){codeInput.setCustomValidity('Enter the 6–10 digit code from your email.');codeInput.reportValidity();codeInput.focus();return;}
  codeInput.setCustomValidity('');
  submitButton.disabled=true;sendButton.disabled=true;
- setMessage('Verifying your email and creating your VTG session…',false);
+ setMessage('Verifying your email and creating your VTG session…',false,true);
  try{
   const auth=await window.VTG_AUTH_READY;
   const result=await auth.verifySignupCode(email,code);
