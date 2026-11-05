@@ -14,9 +14,10 @@
       if(profile.role!=='buyer'||!profile.is_active)throw new Error('An active buyer account is required.');
       const {data:quotes,error}=await supabase.from('trade_quotes').select('id,order_id,supplier_id,product_id,quantity,unit_price,currency,incoterm,delivery_days,status,buyer_message,supplier_message,valid_until,created_at,supplier:profiles!trade_quotes_supplier_id_fkey(full_name),product:products!trade_quotes_product_id_fkey(name)').eq('buyer_id',session.user.id).order('created_at',{ascending:false}).limit(100);
       if(error)throw error;
-      window.liveQuotes=quotes||[];
-      if(!quotes?.length){host.innerHTML='<div class="empty">No quotations are linked to this account yet. Supplier responses will appear here.</div>';return;}
-      host.innerHTML=quotes.map(q=>{
+      window.liveQuotes=(quotes||[]).filter(q=>String(q.status||'').toLowerCase()!=='requested');
+      const visibleQuotes=window.liveQuotes;
+      if(!visibleQuotes.length){host.innerHTML='<div class="empty">No quotations are linked to this account yet. Supplier responses will appear here.</div>';return;}
+      host.innerHTML=visibleQuotes.map(q=>{
         const status=String(q.status||'requested').toLowerCase(),currency=esc(q.currency||'USD'),qty=Number(q.quantity||0),price=Number(q.unit_price||0);
         const total=(qty*price).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
         const canDecide=status==='quoted'&&(!q.valid_until||Date.parse(q.valid_until)>Date.now());
