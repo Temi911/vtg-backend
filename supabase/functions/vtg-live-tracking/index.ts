@@ -103,12 +103,15 @@ async function storeCargoEvents(provider: CargoProvider, payload: any, forcedRef
   for (const e of events) {
     const n = normalizeEvent(e);
     const dedupe = provider + ":" + (n.provider_event_id || await crypto.subtle.digest("SHA-256", new TextEncoder().encode(JSON.stringify(n))).then(b => Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")));
-    const { error } = await admin.from("shipment_tracking_events").upsert({
+    const { data: saved, error } = await admin.from("shipment_tracking_events").upsert({
       tracking_reference_id: ref.id, shipment_id: ref.shipment_id, trade_order_id: ref.trade_order_id, buyer_id: ref.buyer_id,
       provider, provider_event_id: n.provider_event_id, idempotency_key: dedupe, ...n, source_mode: ref.source_mode, raw_payload: e,
-    }, { onConflict: "idempotency_key", ignoreDuplicates: true });
-    if (!error) inserted++;
-    if (!error) await admin.from("shipment_events").insert({ shipment_id: ref.shipment_id, event_type: n.event_code || n.event_label, description: n.description || n.event_label, location: n.location, event_time: n.event_time });
+    }, { onConflict: "idempotency_key", ignoreDuplicates: true }).select("id");
+    if (error) throw error;
+    if (saved?.length) {
+      inserted++;
+      await admin.from("shipment_events").insert({ shipment_id: ref.shipment_id, event_type: n.event_code || n.event_label, description: n.description || n.event_label, location: n.location, event_time: n.event_time });
+    }
   }
   await admin.from("shipment_tracking_references").update({ provider_status: "active", last_synced_at: new Date().toISOString() }).eq("id", ref.id);
   return inserted;
