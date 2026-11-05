@@ -413,27 +413,6 @@ const registerSupplier = asyncHandler(async (req, res) => {
   res.status(201).json({ user: publicUser(result, profile), ...tokens, agreementRequired: true });
 });
 
-const registerAgent = asyncHandler(async (req,res) => {
-  const data=agentSignupSchema.parse(req.body);
-  if (!(await consumeEmailVerificationCode(data.email, data.verificationCode))) {
-    throw new AppError('Email verification is required before creating an agent account', 401, 'EMAIL_NOT_VERIFIED');
-  }
-  const passwordHash=await hashPassword(data.password);
-  const result=await withTransaction(async(client)=>{
-    const existing=await client.query('SELECT id FROM users WHERE email=$1',[data.email]);
-    if(existing.rows[0]) throw new AppError('An account with this email already exists',409,'EMAIL_TAKEN');
-    const userRes=await client.query(`INSERT INTO users(email,phone,password_hash,role,full_name,preferred_language,is_verified) VALUES($1,$2,$3,'agent',$4,$5,TRUE,$6,$7,$8) RETURNING *`,[data.email,data.phone||null,passwordHash,data.fullName,data.preferredLanguage,createVtgUserId(data.country,'agent'),Boolean(data.marketingSubscribed),createUnsubscribeToken()]);
-    const user=userRes.rows[0];
-    await client.query(`INSERT INTO agent_profiles(user_id,country,city,regions_served,experience_years,categories,languages,bio,payout_method) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)`,[user.id,data.country,data.city,data.regionsServed,data.experienceYears,data.categories,data.languages,data.bio||null,data.payoutMethod||null]);
-    return user;
-  });
-  await audit.log(result.id,'Agent Application Submitted',`${data.city}, ${data.country}`,req.ip);
-  await dispatchWelcomeEmail(result, data.preferredLanguage, data.country, 'agent', Boolean(data.marketingSubscribed), result.marketing_unsubscribe_token);
-  const tokens=issueTokens(result);
-  const profile=await fetchProfile(result.id,result.role);
-  res.status(201).json({user:publicUser(result,profile),...tokens,agreementRequired:true});
-});
-
 const registerBank = asyncHandler(async (req, res) => {
   const data = bankSignupSchema.parse(req.body);
   if (!(await consumeEmailVerificationCode(data.email, data.verificationCode))) {
@@ -555,7 +534,6 @@ module.exports = {
   registerBuyer,
   registerSupplier,
   registerBank,
-  registerAgent,
   sendVerificationCode,
   verifyEmailCode,
   login,
