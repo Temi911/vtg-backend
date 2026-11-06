@@ -191,3 +191,6 @@ $$;
 
 revoke all on function public.vtg_confirm_inspection_payment(uuid, text, numeric, timestamptz) from public, anon, authenticated;
 grant execute on function public.vtg_confirm_inspection_payment(uuid, text, numeric, timestamptz) to service_role;
+
+-- Trade files must never be exposed through a public bucket URL.
+UPDATE storage.buckets SET public = false WHERE id = 'vtg-trade-documents';
