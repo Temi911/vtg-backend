@@ -160,4 +160,3 @@ create table public.vtg_inspection_payments (
 );
 create table storage.buckets (id text primary key, name text, public boolean not null default false);
 create table storage.objects (id uuid primary key default gen_random_uuid(), bucket_id text not null, name text not null);
-alter table public.vtg_bank_lc_review_events enable row level security;
