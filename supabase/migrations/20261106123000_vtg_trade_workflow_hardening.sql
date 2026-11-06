@@ -194,3 +194,110 @@ grant execute on function public.vtg_confirm_inspection_payment(uuid, text, nume
 
 -- Trade files must never be exposed through a public bucket URL.
 UPDATE storage.buckets SET public = false WHERE id = 'vtg-trade-documents';
+
+
+-- Bank workspace access is limited to trade records explicitly assigned through an LC.
+do $$
+begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='trade_orders' and policyname='assigned lc banks read linked orders') then
+    create policy "assigned lc banks read linked orders" on public.trade_orders
+      for select to authenticated
+      using (exists (select 1 from public.letters_of_credit lc where lc.order_id=trade_orders.id and lc.bank_id=(select auth.uid())));
+  end if;
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='shipments' and policyname='assigned lc banks read linked shipments') then
+    create policy "assigned lc banks read linked shipments" on public.shipments
+      for select to authenticated
+      using (exists (select 1 from public.letters_of_credit lc where lc.order_id=shipments.order_id and lc.bank_id=(select auth.uid())));
+  end if;
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='shipment_events' and policyname='assigned lc banks read linked shipment events') then
+    create policy "assigned lc banks read linked shipment events" on public.shipment_events
+      for select to authenticated
+      using (exists (
+        select 1 from public.shipments s
+        join public.letters_of_credit lc on lc.order_id=s.order_id
+        where s.id=shipment_events.shipment_id and lc.bank_id=(select auth.uid())
+      ));
+  end if;
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='vtg_payment_intents' and policyname='assigned lc banks read linked payment intents') then
+    create policy "assigned lc banks read linked payment intents" on public.vtg_payment_intents
+      for select to authenticated
+      using (exists (select 1 from public.letters_of_credit lc where lc.order_id=vtg_payment_intents.order_id and lc.bank_id=(select auth.uid())));
+  end if;
+end;
+$$;
+
+-- An assigned but unverified bank must not be able to update an LC.
+drop policy if exists "bank or admin updates lc" on public.letters_of_credit;
+create policy "verified assigned bank or admin updates lc"
+  on public.letters_of_credit
+  for update to authenticated
+  using (
+    private.vtg_is_admin()
+    or (
+      bank_id=(select auth.uid())
+      and exists (
+        select 1 from public.profiles p
+        join public.bank_profiles bp on bp.user_id=p.id
+        where p.id=(select auth.uid())
+          and p.role='bank'::public.vtg_account_role
+          and p.account_environment='trade'
+          and p.is_active=true
+          and bp.verification_status='verified'::public.vtg_document_status
+      )
+    )
+  )
+  with check (
+    private.vtg_is_admin()
+    or (
+      bank_id=(select auth.uid())
+      and exists (
+        select 1 from public.profiles p
+        join public.bank_profiles bp on bp.user_id=p.id
+        where p.id=(select auth.uid())
+          and p.role='bank'::public.vtg_account_role
+          and p.account_environment='trade'
+          and p.is_active=true
+          and bp.verification_status='verified'::public.vtg_document_status
+      )
+    )
+  );
+
+create table if not exists public.vtg_bank_lc_review_events (
+  id uuid primary key default gen_random_uuid(),
+  lc_id uuid not null references public.letters_of_credit(id) on delete cascade,
+  bank_id uuid not null references auth.users(id) on delete cascade,
+  actor_id uuid not null references auth.users(id) on delete restrict,
+  status text not null check (status in ('under_review','documents_requested','declined')),
+  note text,
+  created_at timestamptz not null default now()
+);
+alter table public.vtg_bank_lc_review_events enable row level security;
+revoke all on public.vtg_bank_lc_review_events from anon;
+grant select, insert on public.vtg_bank_lc_review_events to authenticated;
+do $$
+begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='vtg_bank_lc_review_events' and policyname='assigned bank reads its lc review events') then
+    create policy "assigned bank reads its lc review events" on public.vtg_bank_lc_review_events
+      for select to authenticated
+      using (bank_id=(select auth.uid()) and exists (
+        select 1 from public.letters_of_credit lc where lc.id=lc_id and lc.bank_id=(select auth.uid())
+      ));
+  end if;
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='vtg_bank_lc_review_events' and policyname='verified bank records assigned lc review events') then
+    create policy "verified bank records assigned lc review events" on public.vtg_bank_lc_review_events
+      for insert to authenticated
+      with check (
+        bank_id=(select auth.uid()) and actor_id=(select auth.uid())
+        and exists (
+          select 1 from public.letters_of_credit lc
+          join public.bank_profiles bp on bp.user_id=lc.bank_id
+          join public.profiles p on p.id=lc.bank_id
+          where lc.id=lc_id and lc.bank_id=(select auth.uid())
+            and bp.verification_status='verified'::public.vtg_document_status
+            and p.role='bank'::public.vtg_account_role
+            and p.account_environment='trade' and p.is_active=true
+        )
+      );
+  end if;
+end;
+$$;
