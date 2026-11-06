@@ -32,17 +32,15 @@ test('inspection payments use signed Paystack webhooks and atomic service-only l
   assert.match(fn, /Number\(result\.amount\) !== Math\.round/);
 });
 
-test('inspection payment legacy URLs are routed to Supabase and callback preserves inspection identity', () => {
+test('payment API routes remain on the Railway fallback until Supabase payment parity is released', () => {
   const config = JSON.parse(root('vercel.json'));
-  const init = config.rewrites.find(x => x.source === '/api/inspections/requests/:inspectionId/payment/initialize');
-  const verify = config.rewrites.find(x => x.source === '/api/inspections/payment/verify');
-  const webhook = config.rewrites.find(x => x.source === '/api/webhooks/paystack');
-  assert.match(init.destination, /vtg-inspection-payments\?action=initialize&inspectionId=:inspectionId/);
-  assert.match(verify.destination, /vtg-inspection-payments\?action=verify/);
-  assert.match(webhook.destination, /vtg-inspection-payments\/webhook/);
+  const paymentRoutes = ['/api/inspections/requests/:inspectionId/payment/initialize', '/api/inspections/payment/verify', '/api/webhooks/paystack', '/api/payments/intents'];
+  for (const route of paymentRoutes) assert.equal(config.rewrites.some(x => x.source === route), false);
+  const fallback = config.rewrites.find(x => x.source === '/api/:path*');
+  assert.match(fallback.destination, /railway\\.app\\/api\\/:path\\*$/);
   const callback = root('inspection-payment-callback.html');
   assert.match(callback, /inspectionId/);
-  assert.match(callback, /\/api\/inspections\/payment\/verify/);
+  assert.match(callback, /\\/api\\/inspections\\/payment\\/verify/);
 });
 
 test('trade documents remain private and signed downloads are scoped to authorised trade participants', () => {
