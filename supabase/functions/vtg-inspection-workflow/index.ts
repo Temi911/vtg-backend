@@ -24,16 +24,16 @@ Deno.serve(async(req)=>{
  if(action==="agent/me"&&req.method==="PATCH")return out({error:"Staff identity and workspace details are managed by VTG administrators."},403);
  if(action==="agent/stats"&&req.method==="GET"){
   if(!isAgent&&!isAdmin)return out({error:"Active inspector workspace membership required"},403);
-  const q=await db.from("vtg_inspection_requests").select("status,agent_payout_usd").eq("inspector_id",user.id);
+  const q=await db.from("vtg_inspection_requests").select("status,agent_payout_usd,buyer_decision").eq("inspector_id",user.id);
   if(q.error)return out({error:"Could not load inspection statistics"},500);
   const rows=q.data??[];
-  return out({stats:{assigned:rows.filter(x=>["accepted","scheduled","in_progress"].includes(x.status)).length,submitted:rows.filter(x=>x.status==="completed").length,completed:rows.filter(x=>x.status==="completed").length,pending_usd:rows.filter(x=>["accepted","scheduled","in_progress","completed"].includes(x.status)).reduce((sum,x)=>sum+Number(x.agent_payout_usd??0),0)}});
+  return out({stats:{assigned:rows.filter(x=>["accepted","scheduled","in_progress"].includes(x.status)).length,submitted:rows.filter(x=>x.status==="completed"&&!x.buyer_decision).length,completed:rows.filter(x=>x.status==="completed"&&x.buyer_decision==="approved").length,pending_usd:rows.filter(x=>["accepted","scheduled","in_progress","completed"].includes(x.status)).reduce((sum,x)=>sum+Number(x.agent_payout_usd??0),0)}});
  }
  if(action==="requests/agent"&&req.method==="GET"){
   if(!isAgent&&!isAdmin)return out({error:"Active inspector workspace membership required"},403);
-  const q=await db.from("vtg_inspection_requests").select("id,reference,product_name,quantity,city,country,scope,status,agent_payout_usd,requested_by,order_id,inspector_id,created_at").eq("inspector_id",user.id).order("created_at",{ascending:false});
+  const q=await db.from("vtg_inspection_requests").select("id,reference,product_name,quantity,city,country,scope,status,buyer_decision,agent_payout_usd,requested_by,order_id,inspector_id,created_at").eq("inspector_id",user.id).order("created_at",{ascending:false});
   if(q.error)return out({error:"Could not load assigned inspections"},500);
-  return out({requests:(q.data??[]).map(x=>({...x,requested_checks:x.scope,status:x.status==="accepted"||x.status==="scheduled"?"assigned":x.status==="completed"?"awaiting_buyer":x.status}))});
+  return out({requests:(q.data??[]).map(x=>({...x,requested_checks:x.scope,status:x.status==="accepted"||x.status==="scheduled"?"assigned":x.status==="completed"?(x.buyer_decision==="approved"?"completed":x.buyer_decision==="rejected"?"rejected":"awaiting_buyer"):x.status}))});
  }
  const own=()=>db.from("vtg_inspection_requests").select("*").eq("id",parts[1]).maybeSingle();
  if(action==="admin/pricing"&&(req.method==="POST"||req.method==="PATCH")){
