@@ -13,6 +13,22 @@
   ],
   "rewrites": [
     {
+      "source": "/api/payments/intents",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-finance-inspections/payments/intents"
+    },
+    {
+      "source": "/api/inspections/payment/verify",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-payments?action=verify"
+    },
+    {
+      "source": "/api/inspections/requests/:inspectionId/payment/initialize",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-payments?action=initialize&inspectionId=:inspectionId"
+    },
+    {
+      "source": "/api/webhooks/paystack",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-payments/webhook"
+    },
+    {
       "source": "/api/admin/account-support",
       "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-account-support/admin"
     },
