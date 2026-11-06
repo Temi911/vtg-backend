@@ -30,6 +30,77 @@ create trigger vtg_guard_supplier_verification_fields
 before insert or update on public.supplier_profiles
 for each row execute function public.vtg_guard_supplier_verification_fields();
 
+create or replace function public.vtg_guard_bank_verification_fields()
+returns trigger
+language plpgsql
+security invoker
+set search_path = public, private, pg_temp
+as $
+begin
+  if auth.uid() is not null and not private.vtg_is_admin() then
+    if tg_op = 'INSERT' then
+      new.verification_status := 'pending';
+      new.verified_at := null;
+      new.company_id := null;
+    else
+      new.verification_status := old.verification_status;
+      new.verified_at := old.verified_at;
+      new.company_id := old.company_id;
+    end if;
+  end if;
+  return new;
+end;
+$;
+
+drop trigger if exists vtg_guard_bank_verification_fields on public.bank_profiles;
+create trigger vtg_guard_bank_verification_fields
+before insert or update on public.bank_profiles
+for each row execute function public.vtg_guard_bank_verification_fields();
+
+-- A bank can read only trade documents attached to an LC explicitly assigned to that bank.
+do $
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename = 'trade_documents'
+      and policyname = 'assigned lc banks read trade documents'
+  ) then
+    create policy "assigned lc banks read trade documents"
+      on public.trade_documents
+      for select to authenticated
+      using (
+        exists (
+          select 1 from public.letters_of_credit lc
+          where lc.order_id = trade_documents.order_id
+            and lc.bank_id = (select auth.uid())
+        )
+      );
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'storage'
+      and tablename = 'objects'
+      and policyname = 'assigned lc banks read private trade document objects'
+  ) then
+    create policy "assigned lc banks read private trade document objects"
+      on storage.objects
+      for select to authenticated
+      using (
+        bucket_id = 'vtg-trade-documents'
+        and exists (
+          select 1
+          from public.trade_documents d
+          join public.letters_of_credit lc on lc.order_id = d.order_id
+          where d.storage_path = objects.name
+            and lc.bank_id = (select auth.uid())
+        )
+      );
+  end if;
+end;
+$;
+
 do $$
 begin
   if not exists (
