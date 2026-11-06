@@ -224,9 +224,9 @@ grant usage on schema auth, storage to authenticated;
 grant execute on function auth.uid() to authenticated;
 grant select on public.profiles to authenticated;
 create or replace function storage.foldername(name text)
-returns text[] language sql immutable as $
-  select array[split_part(name,'/',1)]
-$;
+returns text[] language sql immutable
+as 'SELECT ARRAY[split_part(name, ''/'', 1)]';
+grant execute on function storage.foldername(text) to authenticated;
 alter table storage.objects enable row level security;
 grant insert on storage.objects to authenticated;
 create policy "Verification owner upload objects"
