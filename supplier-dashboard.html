@@ -432,7 +432,7 @@ async function bootSupplierWorkspace(){
   $('verificationBadge').textContent=String(sp?.verification_status||'pending').replaceAll('_',' ');
   $('verificationBadge').className='pill '+(sp?.verification_status==='verified'?'ready':'pending');
   initPrefs();fillProfile();fillStore();renderAll();
-  if(location.hash==='#network')go('network');
+  if(location.hash==='#network')go('network');else if(location.hash==='#page-profile')go('profile');
   $('workspaceConnectionStatus')?.remove();
  }catch(error){
   const banner=document.createElement('div');banner.className='notice';banner.setAttribute('role','alert');banner.textContent='VTG could not load your supplier workspace from Supabase: '+(error.message||'Connection error')+'. Refresh the page or contact VTG support.';
