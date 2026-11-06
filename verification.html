@@ -180,6 +180,9 @@ async function init(){
   if(currentUser.agreementRequired){location.replace('/signup-agreement.html?next='+encodeURIComponent(location.pathname+location.search));return;}
   verificationStatus=currentUser.businessVerificationStatus||'pending';
   if(!['supplier','bank','agent','admin'].includes(role)){location.replace(role==='buyer'?'/buyer-dashboard.html':'/');return;}
+  if(role==='supplier'){location.replace('/supplier-dashboard.html#page-profile');return;}
+  if(role==='bank'){location.replace('/bank-trade-os.html');return;}
+  if(role==='buyer'){location.replace('/buyer-dashboard.html');return;}
   $('#signOut').onclick=async()=>{try{await auth.signOut();}finally{location.replace('/signin.html?role='+encodeURIComponent(role));}};
   if(currentUser.pendingBusinessVerification&&['supplier','bank'].includes(role)){
    const application=await client.from('role_requests').select('id,status,reviewer_notes,created_at').eq('user_id',currentUser.id).eq('requested_role',role).order('created_at',{ascending:false}).limit(1).maybeSingle();
