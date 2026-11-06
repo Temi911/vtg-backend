@@ -185,3 +185,52 @@ create table public.vtg_inspection_payments (
 );
 create table storage.buckets (id text primary key, name text, public boolean not null default false);
 create table storage.objects (id uuid primary key default gen_random_uuid(), bucket_id text not null, name text not null);
+
+-- Business verification upload-policy fixture used by the account-approval gate test.
+create table public.vtg_verification_documents (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.profiles(id),
+  account_role text not null,
+  doc_type text not null,
+  file_name text not null,
+  storage_path text not null unique,
+  mime_type text not null,
+  file_size_bytes bigint not null,
+  status text not null default 'pending',
+  review_notes text,
+  reviewer_id uuid references public.profiles(id),
+  reviewed_at timestamptz,
+  uploaded_at timestamptz not null default now()
+);
+alter table public.vtg_verification_documents enable row level security;
+grant insert on public.vtg_verification_documents to authenticated;
+create policy "Active trade users submit own verification documents"
+  on public.vtg_verification_documents for insert to authenticated
+  with check (
+    user_id=(select auth.uid())
+    and account_role in ('supplier','bank','agent')
+    and exists (
+      select 1 from public.profiles p
+      where p.id=(select auth.uid())
+        and p.is_active=true and p.account_environment='trade'
+    )
+  );
+
+insert into storage.buckets(id,name,public)
+values ('vtg-verification-documents','vtg-verification-documents',false),
+       ('vtg-company-logos','vtg-company-logos',true)
+on conflict(id) do nothing;
+alter table storage.objects enable row level security;
+grant insert on storage.objects to authenticated;
+create policy "Verification owner upload objects"
+  on storage.objects for insert to authenticated
+  with check (
+    bucket_id='vtg-verification-documents'
+    and (storage.foldername(name))[1]=(select auth.uid())::text
+  );
+create policy "Applicants upload own company logos"
+  on storage.objects for insert to authenticated
+  with check (
+    bucket_id='vtg-company-logos'
+    and (storage.foldername(name))[1]=(select auth.uid())::text
+  );
