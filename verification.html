@@ -63,9 +63,10 @@ function showCenterNotice(title,body,buttonLabel='I understand',onConfirm=null){
 function maybeShowSubmissionNotice(docs){
  if(!['supplier','bank'].includes(role))return;
  const required=role==='supplier'?['company_registration','business_license','tax_certificate','company_address_proof']:['bank_license','regulatory_certificate','company_registration','swift_bic_certificate','institution_address_proof','officer_authorization'];
- const present=new Set((docs||[]).map(x=>x.doc_type));
- if(!required.every(x=>present.has(x))||!present.has('company_logo'))return;
- const ids=(docs||[]).filter(x=>required.includes(x.doc_type)||x.doc_type==='company_logo').map(x=>x.id).sort().join(':');
+ const latest=new Map();
+ for(const item of docs||[])if(!latest.has(item.doc_type))latest.set(item.doc_type,item);
+ if(!required.every(x=>latest.has(x)&&latest.get(x).status!=='rejected')||!latest.has('company_logo')||latest.get('company_logo').status==='rejected')return;
+ const ids=[...required,'company_logo'].map(x=>latest.get(x).id).sort().join(':');
  const key='vtg-verification-received:'+currentUser.id+':'+role+':'+ids;
  if(localStorage.getItem(key))return;
  localStorage.setItem(key,'shown');
