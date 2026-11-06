@@ -46,9 +46,10 @@ Deno.serve(async (req: Request) => {
       if (application.data?.status === "pending") {
         role = application.data.requested_role;
         eventType = "business_application_received";
-        subject = "VTG has received your business application";
-        heading = "Application received";
-        message = "Your " + role + " account application for " + (application.data.organization_name || "your organisation") + " has been received. It is awaiting VTG review. We will email you when a decision is made.";
+        const roleLabel = role === "supplier" ? "Supplier" : "Bank / financial institution";
+        subject = "VTG " + roleLabel + " Account Application Received — Awaiting Review";
+        heading = "Your application has been received";
+        message = "Dear " + (profile.data.full_name || "Applicant") + ",\n\nThank you for choosing VTG — The Private Trade House. We have successfully received the " + roleLabel.toLowerCase() + " account application for " + (application.data.organization_name || "your organisation") + ".\n\nAPPLICATION STATUS: PENDING ADMINISTRATIVE REVIEW\n\nOur team will review the organisation information and supporting details submitted with your application. This review helps us assess the account request and determine whether further information is required.\n\nWHAT HAPPENS NEXT\n1. The VTG team reviews the application and submitted information.\n2. If clarification or corrected information is needed, we will contact you using this email address.\n3. We will send a separate email when a decision has been made. If approved, the relevant account features will be enabled for your workspace.\n\nWHAT YOU NEED TO DO NOW\nNo further action is required unless the VTG team contacts you. Please monitor your inbox and check your spam or junk folder for future VTG messages. Keep your registered contact details accessible, and please do not submit another application while this one is pending.\n\nYour application remains received and pending review. Thank you for your interest in trading with VTG.\n\nVTG Account Administration\nVTG — The Private Trade House\nAfrica · China · The World";
         eventKey = "application-received:" + application.data.id;
       }
     }
