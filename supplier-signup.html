@@ -114,9 +114,20 @@ function metadata(d){
   trade_years:d.tradeYears,marketing_subscribed:d.marketingSubscribed==='true'
  };
 }
-function showApplicationReceipt(email,role){
+async function showApplicationReceipt(email,role,emailDelivery){
  const overlay=document.getElementById('vtgApplicationReceipt');
- document.getElementById('vtgReceiptBody').textContent="Your application details have been received by VTG’s admin team. The team will carefully scrutinise your submission and send its decision to your registered email once the review is complete. Please check your inbox over the next 24 hours to 2 days. Do not sign up again with this email while your application is pending. A duplicate registration can delay the review.";
+ if(!emailDelivery){
+  try{
+   const auth=await window.VTG_AUTH_READY;
+   const result=await auth.client.functions.invoke('vtg-email',{body:{event:'onboarding'}});
+   emailDelivery=result.data||null;
+  }catch(error){console.warn('VTG application email could not be confirmed:',error?.message||error);}
+ }
+ const emailSent=!!emailDelivery?.email?.sent;
+ document.getElementById('vtgReceiptTitle').textContent=emailSent?'Application successfully received':'Application received';
+ document.getElementById('vtgReceiptBody').textContent=emailSent
+  ?"Thank you for choosing VTG. Your "+(role==='bank'?'bank / financial institution':'supplier / trading company')+" account application has been received and is awaiting administrative review. Our team will review your submitted business information and supporting documents. An email notification has been sent to "+email+". Please check your inbox and spam or junk folder for the application details and next steps. We will contact you by email if more information or corrections are needed, and notify you when a decision has been made. Please do not submit a duplicate application while this one is pending."
+  :"Thank you for choosing VTG. Your application has been received and remains pending administrative review. We could not send the confirmation email just now. Please check your registered email again later or contact vintageafricatrade@gmail.com for assistance. Your application has not been cancelled, and you should not submit another application.";
  overlay.classList.add('open');document.body.style.overflow='hidden';
  document.getElementById('vtgReceiptContinue').onclick=()=>{location.href='/supplier-dashboard.html#page-profile';};
 }
@@ -187,7 +198,7 @@ $('#signupForm').addEventListener('submit',async e=>{
   const auth=await window.VTG_AUTH_READY;
   const result=await auth.verifySignupCode(email,code);
   const pendingRole=result.user.requestedRole;
-  showApplicationReceipt(email,pendingRole&&pendingRole!=='buyer'?pendingRole:'supplier');
+  showApplicationReceipt(email,pendingRole&&pendingRole!=='buyer'?pendingRole:'supplier',result.emailDelivery);
  }catch(error){
   submitButton.disabled=false;sendButton.disabled=false;setMessage(error.message||'The code could not be verified. Check it and try again.',false);
  }
