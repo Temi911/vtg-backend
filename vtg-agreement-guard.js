@@ -43,6 +43,12 @@
         location.replace('/verification.html?role='+encodeURIComponent(effective));
         return;
       }
+      // Approved suppliers must also finish document verification before
+      // opening operational tools. The verification centre remains accessible.
+      if(effective==='supplier'&&user.businessVerificationStatus!=='verified'&&path!=='/verification.html'){
+        location.replace('/verification.html?role=supplier');
+        return;
+      }
       if(expected&&expected!==effective&&path!=='/verification.html'){signin();return;}
       if(path==='/verification.html'&&expected&&expected!==effective){signin();return;}
       if(typeof user.agreementRequired!=='boolean')throw new Error('VTG could not confirm your current agreement status.');
