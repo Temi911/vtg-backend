@@ -8,3 +8,9 @@ verify_jwt = true
 
 [functions.vtg-admin-roles]
 verify_jwt = false
+
+[functions.vtg-account-support]
+verify_jwt = false
+
+[functions.vtg-inspection-workflow]
+verify_jwt = false
