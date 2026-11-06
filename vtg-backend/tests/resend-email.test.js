@@ -32,7 +32,7 @@ test('role approval sends a best-effort applicant decision email only after the 
   assert.match(endpoint, /vtg_admin_review_role_request/);
   assert.ok(endpoint.indexOf('vtg_admin_review_role_request') < endpoint.indexOf('await deliverTrackedEmail'));
   assert.match(endpoint, /business_application_" \+ body\.decision/);
-  assert.match(endpoint, /email delivery is deliberately\s+best-effort/i);
+  assert.match(endpoint, /best-effort and must never undo a successful account decision/i);
 });
 
 test('company document review sends a best-effort verification update', () => {
