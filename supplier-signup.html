@@ -19,7 +19,7 @@
 .vtg-receipt p{font-size:13.5px;line-height:1.8;color:#65757e;margin:0 0 20px}
 .vtg-receipt button{border:0;border-radius:10px;padding:12px 22px;background:#702a30;color:#fff;font:800 13px Manrope,Arial,sans-serif;cursor:pointer}
 @media(prefers-reduced-motion:no-preference){.vtg-receipt{animation:vtgReceiptIn .2s ease-out}@keyframes vtgReceiptIn{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}}
- .vtg-receipt-status{display:inline-block;margin:4px 0 14px;padding:8px 11px;border:1px solid #c9dfd2;border-radius:999px;background:#edf7f0;color:#245b3c;font-size:10px;font-weight:800;letter-spacing:.08em}.vtg-receipt-status:not(:empty){max-width:100%}</style>
+ .vtg-receipt-status{display:inline-block;margin:4px 0 14px;padding:8px 11px;border:1px solid #c9dfd2;border-radius:999px;background:#edf7f0;color:#245b3c;font-size:10px;font-weight:800;letter-spacing:.08em}.vtg-receipt-status:not(:empty){max-width:100%}.vtg-receipt-status.pending{border-color:#e8d5a5;background:#fff7e5;color:#76520d}</style>
 </head>
 <body>
 <div id="vsHeader" data-active=""></div>
@@ -125,7 +125,7 @@ async function showApplicationReceipt(email,role,emailDelivery){
  }
  const emailSent=emailDelivery?.email?.sent===true;
  document.getElementById('vtgReceiptTitle').textContent='Application successfully received';
- document.getElementById('vtgReceiptStatus').textContent=emailSent?'EMAIL CONFIRMATION SENT':'APPLICATION RECEIVED — EMAIL NOT CONFIRMED';
+ const receiptStatus=document.getElementById('vtgReceiptStatus');receiptStatus.className='vtg-receipt-status '+(emailSent?'sent':'pending');receiptStatus.textContent=emailSent?'EMAIL CONFIRMATION SENT':'APPLICATION RECEIVED — EMAIL NOT CONFIRMED';
  document.getElementById('vtgReceiptBody').textContent=emailSent
   ?"Thank you for choosing VTG. Your "+(role==='bank'?'bank / financial institution':'supplier / trading company')+" account application has been received and is awaiting administrative review. Our team will review your organisation details and supporting information. We have sent an email to "+email+" with the review process and next steps. Please check your inbox and spam or junk folder. No further action is required unless our team contacts you for clarification or corrected documents. We will notify you by email when a decision has been made. Your account features will be enabled after approval. Please do not submit a duplicate application while this one is pending."
   :"Thank you for choosing VTG. Your "+(role==='bank'?'bank / financial institution':'supplier / trading company')+" account application has been received and remains pending administrative review. However, VTG could not confirm that the confirmation email was sent. Your application is still in the review queue and has not been cancelled. Please check your registered email later or contact vintageafricatrade@gmail.com for assistance. Do not submit another application while this one is pending.";
