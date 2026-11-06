@@ -30,7 +30,7 @@ test('role approval sends a best-effort applicant decision email only after the 
   const endpoint = readRoot('supabase/functions/vtg-admin-roles/index.ts');
   assert.match(endpoint, /profile\.data\?\.role !== "admin"/);
   assert.match(endpoint, /vtg_admin_review_role_request/);
-  assert.ok(endpoint.indexOf('vtg_admin_review_role_request') < endpoint.indexOf('deliverTrackedEmail'));
+  assert.ok(endpoint.indexOf('vtg_admin_review_role_request') < endpoint.indexOf('await deliverTrackedEmail'));
   assert.match(endpoint, /business_application_" \+ body\.decision/);
   assert.match(endpoint, /email delivery is deliberately\s+best-effort/i);
 });
