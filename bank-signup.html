@@ -10,7 +10,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
 <link rel="stylesheet" href="/vtg-signup.css?v=20261030-1">
-<link rel="stylesheet" href="/vtg-type.css"></head>
+<link rel="stylesheet" href="/vtg-type.css"><style>
+.vtg-receipt-backdrop{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(8,16,24,.66);backdrop-filter:blur(6px)}
+.vtg-receipt-backdrop.open{display:flex}
+.vtg-receipt{width:min(520px,100%);padding:30px 26px;background:#fff;color:#17212b;border:1px solid #e1e6ed;border-radius:20px;box-shadow:0 25px 90px #0005;text-align:center;font-family:Manrope,Arial,sans-serif}
+.vtg-receipt-mark{width:56px;height:56px;margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;background:#e9f7ef;color:#16834c;font-size:28px;font-weight:800}
+.vtg-receipt h2{font-size:21px;line-height:1.3;margin:0 0 12px;color:#17212b}
+.vtg-receipt p{font-size:13.5px;line-height:1.8;color:#65757e;margin:0 0 20px}
+.vtg-receipt button{border:0;border-radius:10px;padding:12px 22px;background:#702a30;color:#fff;font:800 13px Manrope,Arial,sans-serif;cursor:pointer}
+@media(prefers-reduced-motion:no-preference){.vtg-receipt{animation:vtgReceiptIn .2s ease-out}@keyframes vtgReceiptIn{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}}
+</style>
+</head>
 <body>
 <div id="vsHeader" data-active=""></div>
 <script src="/vtg-shell.js?v=20261030-1"></script>
@@ -56,6 +66,7 @@
 </section>
 
 </main>
+<div id="vtgApplicationReceipt" class="vtg-receipt-backdrop" role="dialog" aria-modal="true" aria-labelledby="vtgReceiptTitle" aria-describedby="vtgReceiptBody"><section class="vtg-receipt"><div class="vtg-receipt-mark" aria-hidden="true">✓</div><h2 id="vtgReceiptTitle">Application received</h2><p id="vtgReceiptBody"></p><button id="vtgReceiptContinue" type="button">Continue to VTG</button></section></div>
 <div id="vsFooter"></div>
 <script src="/vtg-supabase-auth.js?v=20261105-agreement-2"></script>
 <script>
@@ -105,6 +116,12 @@ function metadata(d){
   markets_served:d.marketsServed,marketing_subscribed:d.marketingSubscribed==='true'
  };
 }
+function showApplicationReceipt(email,role){
+ const overlay=document.getElementById('vtgApplicationReceipt');
+ document.getElementById('vtgReceiptBody').textContent="Your application details have been received by VTG’s admin team. The team will carefully scrutinise your submission and send its decision to your registered email once the review is complete. Please check your inbox over the next 24 hours to 2 days. Do not sign up again with this email while your application is pending. A duplicate registration can delay the review.";
+ overlay.classList.add('open');document.body.style.overflow='hidden';
+ document.getElementById('vtgReceiptContinue').onclick=()=>{location.href='/verification.html?role='+encodeURIComponent(role);};
+}
 function setMessage(text,ok){
  message.className='message'+(ok?' ok':'');
  message.textContent=text;
@@ -125,12 +142,11 @@ async function beginSignup(){
   const {data,error}=await auth.signUp(email,d.password,metadata(d));
   if(error)throw error;
   if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0){
-   throw new Error('An account may already exist with this email. Please sign in or use account help.');
+   throw new Error('This email already has a VTG account. Sign in using the same email instead of registering again. If VTG rejected your earlier application, open Business Verification to submit a fresh application with this same account.');
   }
   if(data.session){
    const current=await auth.getCurrent();
-   setMessage('Your email is confirmed. Opening your VTG account…',true);
-   location.href='/verification.html?role=bank';
+   showApplicationReceipt(email,'bank');
    return;
   }
   signupStarted=true;
@@ -173,8 +189,7 @@ $('#signupForm').addEventListener('submit',async e=>{
   const auth=await window.VTG_AUTH_READY;
   const result=await auth.verifySignupCode(email,code);
   const pendingRole=result.user.requestedRole;
-  setMessage('Email confirmed. Your bank account-opening application has been received and is awaiting VTG approval. We will send an update to '+email+'.',true);
-  setTimeout(()=>location.href=pendingRole&&pendingRole!=='buyer'?'/verification.html?role='+encodeURIComponent(pendingRole):'/verification.html?role=bank',900);
+  showApplicationReceipt(email,pendingRole&&pendingRole!=='buyer'?pendingRole:'bank');
  }catch(error){
   submitButton.disabled=false;sendButton.disabled=false;setMessage(error.message||'The code could not be verified. Check it and try again.',false);
  }
