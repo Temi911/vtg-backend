@@ -49,3 +49,15 @@ test('inspection workflow scopes inspector queue and evidence to assigned workfo
   assert.match(fn, /evidence-upload/);
   assert.match(fn, /Uploaded evidence object was not found/);
 });
+
+test('notifications and shipment-event compatibility routes use authenticated Supabase functions', () => {
+  const config = JSON.parse(readRoot('vercel.json'));
+  const notifications = config.rewrites.find(x => x.source === '/api/notifications/:path*');
+  const shipmentEvents = config.rewrites.find(x => x.source === '/api/shipment-events/:shipmentId');
+  assert.match(notifications.destination, /functions\/v1\/vtg-notifications\/:path\*$/);
+  assert.match(shipmentEvents.destination, /functions\/v1\/vtg-trade-operations\/shipments\/:shipmentId\/events$/);
+  const notificationFn = readRoot('supabase/functions/vtg-notifications/index.ts');
+  assert.match(notificationFn, /auth\.getUser/);
+  assert.match(notificationFn, /eq\("user_id", user\.id\)/);
+  assert.match(notificationFn, /pathMatch/);
+});
