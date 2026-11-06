@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.vtg-inspection-payments]
 verify_jwt = false
+
+[functions.vtg-wallet]
+verify_jwt = false
