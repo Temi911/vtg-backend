@@ -4,7 +4,7 @@ on:
   push:
     branches: [main, 'feat/**']
   pull_request:
-    branches: [main]
+    branches: [main, 'claude/redesign-public-pages']
 
 permissions:
   contents: read
