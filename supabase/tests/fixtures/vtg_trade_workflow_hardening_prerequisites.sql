@@ -220,6 +220,10 @@ insert into storage.buckets(id,name,public)
 values ('vtg-verification-documents','vtg-verification-documents',false),
        ('vtg-company-logos','vtg-company-logos',true)
 on conflict(id) do nothing;
+create or replace function storage.foldername(name text)
+returns text[] language sql immutable as $
+  select array[split_part(name,'/',1)]
+$;
 alter table storage.objects enable row level security;
 grant insert on storage.objects to authenticated;
 create policy "Verification owner upload objects"
