@@ -37,6 +37,12 @@
       if(user.accountEnvironment==='staff'){location.replace('/workforce-access.html');return;}
       var effective=user.role==='buyer'&&user.requestedRole?user.requestedRole:user.role;
       if(!['buyer','supplier','bank'].includes(effective)){signin();return;}
+      // A requested business role is not yet an approved role. Keep the
+      // applicant in the verification/application centre until an admin approves it.
+      if(user.pendingBusinessVerification&&path!=='/verification.html'){
+        location.replace('/verification.html?role='+encodeURIComponent(effective));
+        return;
+      }
       if(expected&&expected!==effective&&path!=='/verification.html'){signin();return;}
       if(path==='/verification.html'&&expected&&expected!==effective){signin();return;}
       if(typeof user.agreementRequired!=='boolean')throw new Error('VTG could not confirm your current agreement status.');
