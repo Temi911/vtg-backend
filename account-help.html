@@ -85,9 +85,7 @@ function openMode(next){
  if(role==='admin'&&next!=='contact')next='contact';
  mode=next;const cfg=modes[next];if(!cfg)return;
  $('#detail').classList.add('show');$('#detailTitle').textContent=cfg.title;$('#detailDesc').textContent=cfg.desc;$('#fields').innerHTML=fieldMarkup(cfg.fields);$('#submitBtn').textContent=cfg.button;$('#message').className='message';$('#message').textContent='';
- const hash=new URLSearchParams(location.hash.slice(1));
- const hasRecovery=hash.get('type')==='recovery'||!!hash.get('access_token');
- if(next==='reset'&&!hasRecovery){setMessage('This reset link is missing its recovery session. Request a new reset link.','error');$('#submitBtn').disabled=true;}else $('#submitBtn').disabled=false;
+ $('#submitBtn').disabled=false;
  $('#detail').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 document.querySelectorAll('[data-role]').forEach(b=>b.addEventListener('click',()=>{if(roleLocked)return;role=b.dataset.role;history.replaceState(null,'','/account-help.html?role='+role);renderRole();}));
