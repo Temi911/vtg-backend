@@ -2,6 +2,7 @@
 (function(){
   'use strict';
   var path=location.pathname;
+  var params=new URLSearchParams(location.search);
   var expected=path==='/buyer-dashboard.html'?'buyer':
     path==='/supplier-dashboard.html'?'supplier':
     path==='/bank-trade-os.html'?'bank':
@@ -34,23 +35,36 @@
       var current=await auth.getCurrent();
       if(!current){signin();return;}
       var user=current.user||{};
+      if(path==='/verification.html'&&user.role==='admin'&&user.accountEnvironment==='staff'){
+        root.classList.remove('vtg-agreement-checking');
+        return;
+      }
       if(user.accountEnvironment==='staff'){location.replace('/workforce-access.html');return;}
       var effective=user.role==='buyer'&&user.requestedRole?user.requestedRole:user.role;
       if(!['buyer','supplier','bank'].includes(effective)){signin();return;}
-      // A requested business role is not yet an approved role. Keep the
-      // applicant in the verification/application centre until an admin approves it.
-      if(user.pendingBusinessVerification&&path!=='/verification.html'){
-        location.replace('/verification.html?role='+encodeURIComponent(effective));
+
+      // Business applicants use the dashboard's embedded account-status centre.
+      // The legacy standalone verification page is retained for administrators only.
+      if(path==='/verification.html'&&['supplier','bank'].includes(effective)){
+        location.replace((effective==='supplier'?'/supplier-dashboard.html':'/bank-trade-os.html')+'#'+(effective==='supplier'?'page-profile':'settings'));
         return;
       }
-      // Approved suppliers must also finish document verification before
-      // opening operational tools. The verification centre remains accessible.
-      if(effective==='supplier'&&user.businessVerificationStatus!=='verified'&&path!=='/verification.html'){
-        location.replace('/verification.html?role=supplier');
-        return;
+      if(user.pendingBusinessVerification){
+        var applicantPath=effective==='supplier'?'/supplier-dashboard.html':'/bank-trade-os.html';
+        var applicantHash=effective==='supplier'?'#page-profile':'#settings';
+        if(path!==applicantPath){location.replace(applicantPath+applicantHash);return;}
+        root.setAttribute('data-vtg-pending-application','true');
+        if(location.hash!==applicantHash)location.hash=applicantHash;
       }
-      if(expected&&expected!==effective&&path!=='/verification.html'){signin();return;}
-      if(path==='/verification.html'&&expected&&expected!==effective){signin();return;}
+      // An approved supplier must complete document verification before opening
+      // operational tools. Keep the embedded Company & verification page available.
+      if(effective==='supplier'&&!user.pendingBusinessVerification&&user.businessVerificationStatus!=='verified'){
+        if(path!=='/supplier-dashboard.html'||location.hash!=='#page-profile'){
+          location.replace('/supplier-dashboard.html#page-profile');
+          return;
+        }
+      }
+      if(expected&&expected!==effective){signin();return;}
       if(typeof user.agreementRequired!=='boolean')throw new Error('VTG could not confirm your current agreement status.');
       if(user.agreementRequired){location.replace('/signup-agreement.html?next='+encodeURIComponent(path+location.search+location.hash));return;}
       root.classList.remove('vtg-agreement-checking');
