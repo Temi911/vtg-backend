@@ -112,3 +112,60 @@
     }
   });
 })();
+
+// Private administrator account-support inbox.
+(async function(){
+  const $=id=>document.getElementById(id);
+  const rows=$('accountSupportRows'),notice=$('accountSupportNotice'),refresh=$('refreshAccountSupport');
+  if(!rows||!notice)return;
+  const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const date=value=>value?new Date(value).toLocaleString():'—';
+  let auth,current;
+  function message(value,error){notice.textContent=value;notice.style.color=error?'#b42318':'var(--muted)';}
+  async function request(method='GET',body){
+    const headers={apikey:auth.publishableKey,Authorization:'Bearer '+current.session.access_token,Accept:'application/json'};
+    if(body!==undefined)headers['Content-Type']='application/json';
+    const response=await fetch('/api/admin/account-support',{method,headers,body:body===undefined?undefined:JSON.stringify(body),cache:'no-store'});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(data.error||'The account support inbox could not be loaded.');
+    return data;
+  }
+  function render(items){
+    if(!items.length){rows.innerHTML='<tr><td colspan="7" class="emptyHint">No account support requests have been received.</td></tr>';return;}
+    rows.innerHTML=items.map(item=>'<tr>'+
+      '<td>'+esc(date(item.created_at))+'</td>'+
+      '<td>'+esc(item.account_role)+'</td>'+
+      '<td>'+esc(item.contact_email)+'</td>'+
+      '<td>'+esc(item.issue)+'</td>'+
+      '<td style="min-width:220px;white-space:normal">'+esc(item.description)+'</td>'+
+      '<td><span class="status '+(item.status==='resolved'||item.status==='closed'?'done':item.status==='in_review'?'review':'')+'">'+esc(item.status)+'</span></td>'+
+      '<td><div style="display:flex;gap:6px;align-items:center"><select aria-label="Support request status" data-support-status="'+esc(item.id)+'" style="max-width:125px;padding:7px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--ink)">'+
+      ['open','in_review','resolved','closed'].map(status=>'<option value="'+status+'" '+(item.status===status?'selected':'')+'>'+status.replace('_',' ')+'</option>').join('')+
+      '</select><button class="btn" type="button" data-support-save="'+esc(item.id)+'">Save</button></div></td></tr>').join('');
+  }
+  async function load(){
+    message('Loading secure account support requests…');
+    const data=await request();
+    render(data.requests||[]);
+    message((data.requests||[]).length+' support request(s) loaded from Supabase.');
+  }
+  try{
+    auth=await window.VTG_AUTH_READY;
+    current=await auth.getCurrent();
+    if(!current||current.user.role!=='admin'||current.user.accountEnvironment!=='staff'){
+      message('Administrator access is required to view this inbox.',true);return;
+    }
+    await load();
+  }catch(error){message(error.message||'Could not load account support requests.',true);}
+  refresh?.addEventListener('click',async()=>{refresh.disabled=true;try{await load();}catch(error){message(error.message,true);}finally{refresh.disabled=false;}});
+  rows.addEventListener('click',async event=>{
+    const button=event.target.closest('[data-support-save]');
+    if(!button)return;
+    const id=button.dataset.supportSave,select=rows.querySelector('[data-support-status="'+CSS.escape(id)+'"]');
+    if(!select)return;
+    button.disabled=true;
+    try{await request('PATCH',{id,status:select.value});message('Support request status updated.');await load();}
+    catch(error){message(error.message,true);}
+    finally{button.disabled=false;}
+  });
+})();
