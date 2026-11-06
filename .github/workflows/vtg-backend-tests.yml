@@ -55,20 +55,34 @@ jobs:
 
 
   supabase-validation:
-    name: Supabase migrations and Edge Function type checks
+    name: Supabase migration and Edge Function validation
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: vtg_supabase_validation
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d vtg_supabase_validation"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vtg_supabase_validation
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Set up Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-      - name: Start local Supabase services
-        run: supabase start
-      - name: Apply every Supabase migration to a clean local project
-        run: supabase db reset --local
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Build the isolated Supabase schema contract
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/fixtures/vtg_trade_workflow_hardening_prerequisites.sql
+      - name: Apply the VTG workflow-hardening migration
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20261106123000_vtg_trade_workflow_hardening.sql
       - name: Set up Deno
         uses: denoland/setup-deno@v2
         with:
@@ -81,6 +95,3 @@ jobs:
           deno check supabase/functions/vtg-trade-operations/index.ts
           deno check supabase/functions/vtg-live-tracking/index.ts
           deno check supabase/functions/vtg-wallet/index.ts
-      - name: Stop local Supabase services
-        if: always()
-        run: supabase stop --no-backup
