@@ -56,3 +56,26 @@ test('trade documents remain private and signed downloads are scoped to authoris
   assert.match(migration, /lc.bank_id = \(select auth.uid\(\)\)/);
   assert.match(migration, /REVOKE ALL ON FUNCTION public\.vtg_confirm_inspection_payment/);
 });
+
+
+test('live logistics is session-authenticated and buyer-scoped; provider credentials remain server-side', () => {
+  const fn = root('supabase/functions/vtg-live-tracking/index.ts');
+  assert.match(fn, /auth\.getUser/);
+  assert.match(fn, /profile\?\.role !== "buyer"/);
+  assert.match(fn, /profile\?\.is_active !== true/);
+  assert.match(fn, /order\.buyer_id !== buyerId/);
+  assert.match(fn, /SUPABASE_SERVICE_ROLE_KEY/);
+  assert.match(fn, /VIZION_API_KEY/);
+  assert.match(fn, /VESSELFINDER_API_KEY/);
+  assert.match(fn, /source_mode === "sandbox"/);
+  assert.match(fn, /Only timestamped provider events are stored/);
+});
+
+test('trade operations compatibility handler relies on participant RLS for shipment events and quote ownership', () => {
+  const fn = root('supabase/functions/vtg-trade-operations/index.ts');
+  assert.match(fn, /auth\.getUser/);
+  assert.match(fn, /buyer_id,user\.id/);
+  assert.match(fn, /created_by:user\.id/);
+  assert.match(fn, /Only the shipment supplier or an administrator may add events/);
+  assert.match(fn, /GET\|POST \/shipments\/:id\/events/);
+});
