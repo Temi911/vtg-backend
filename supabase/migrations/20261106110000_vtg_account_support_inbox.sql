@@ -13,4 +13,4 @@ create index if not exists vtg_account_support_requests_status_created_idx
 alter table public.vtg_account_support_requests enable row level security;
 revoke all on public.vtg_account_support_requests from anon, authenticated;
 grant all on public.vtg_account_support_requests to service_role;
-comment on table public.vtg_account_support_requests is 'Private VTG account support inbox. Writes are accepted only through the authenticated server-side Edge Function; no client table access.';
+comment on table public.vtg_account_support_requests is 'Private VTG account support inbox. Writes are accepted only through the server-side Edge Function; no client table access.';
