@@ -38,7 +38,7 @@
 .checkline{display:flex;align-items:flex-start;gap:10px;margin-top:10px;font-weight:600}
 .checkline input{margin-top:3px;width:18px;height:18px;accent-color:var(--vs-blue)}
 .message{min-height:1.4em;margin-top:18px;font-size:.9375rem;color:var(--vs-bad)}
-.message.ok,.message.success{color:var(--vs-ok)}
+.message.ok,.message.success,.message.processing{color:var(--vs-ok)}
 .actions{display:flex;justify-content:space-between;gap:12px;margin-top:20px}
 .actionButton{min-height:48px;padding:0 24px;border-radius:10px;border:1px solid var(--vs-line-2);background:var(--vs-paper);color:var(--vs-ink);font-weight:800;font-size:1rem;cursor:pointer}
 .actionButton.primary{background:var(--vs-blue);border-color:var(--vs-blue);color:#fff;margin-left:auto}

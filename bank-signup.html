@@ -10,7 +10,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
 <link rel="stylesheet" href="/vtg-signup.css?v=20261030-1">
-<link rel="stylesheet" href="/vtg-type.css"></head>
+<link rel="stylesheet" href="/vtg-type.css"><style>
+.vtg-receipt-backdrop{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(8,16,24,.66);backdrop-filter:blur(6px)}
+.vtg-receipt-backdrop.open{display:flex}
+.vtg-receipt{width:min(520px,100%);padding:30px 26px;background:#fff;color:#17212b;border:1px solid #e1e6ed;border-radius:20px;box-shadow:0 25px 90px #0005;text-align:center;font-family:Manrope,Arial,sans-serif}
+.vtg-receipt-mark{width:56px;height:56px;margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;background:#e9f7ef;color:#16834c;font-size:28px;font-weight:800}
+.vtg-receipt h2{font-size:21px;line-height:1.3;margin:0 0 12px;color:#17212b}
+.vtg-receipt p{font-size:13.5px;line-height:1.8;color:#65757e;margin:0 0 20px}
+.vtg-receipt button{border:0;border-radius:10px;padding:12px 22px;background:#702a30;color:#fff;font:800 13px Manrope,Arial,sans-serif;cursor:pointer}
+@media(prefers-reduced-motion:no-preference){.vtg-receipt{animation:vtgReceiptIn .2s ease-out}@keyframes vtgReceiptIn{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}}
+ .vtg-receipt-status{display:inline-block;margin:4px 0 14px;padding:8px 11px;border:1px solid #c9dfd2;border-radius:999px;background:#edf7f0;color:#245b3c;font-size:10px;font-weight:800;letter-spacing:.08em}.vtg-receipt-status:not(:empty){max-width:100%}.vtg-receipt-status.pending{border-color:#e8d5a5;background:#fff7e5;color:#76520d}</style>
+</head>
 <body>
 <div id="vsHeader" data-active=""></div>
 <script src="/vtg-shell.js?v=20261030-1"></script>
@@ -46,7 +56,7 @@
 </div></section>
 <section class="step" data-step="3" hidden><div class="fields">
 <div class="field full"><label for="password">Create password *</label><div class="passwordRow"><input id="password" name="password" type="password" autocomplete="new-password" minlength="8" pattern="(?=.*[A-Z])(?=.*\d).{8,}" title="Use at least 8 characters, one uppercase letter and one number." required><button type="button" class="miniButton" id="passwordToggle">Show</button></div><span class="hint">At least 8 characters, including one uppercase letter and one number.</span></div>
-<div class="field full"><label for="verificationCode">Email verification code *</label><div class="verifyRow"><input id="verificationCode" name="verificationCode" inputmode="numeric" autocomplete="one-time-code" minlength="6" maxlength="6" pattern="[0-9]{6}" placeholder="Enter 6-digit code" disabled><button class="miniButton" type="button" id="sendCode">Send code</button></div></div>
+<div class="field full"><label for="verificationCode">Email verification code *</label><div class="verifyRow"><input id="verificationCode" name="verificationCode" inputmode="numeric" autocomplete="one-time-code" minlength="6" maxlength="10" pattern="[0-9]{6,10}" placeholder="Enter your email code" disabled><button class="miniButton" type="button" id="sendCode">Send code</button></div></div>
 <div class="field full"><div class="notice"><strong>Stay informed (optional)</strong><label class="checkline"><input type="checkbox" name="marketingSubscribed" value="true"><span>Send me VTG institutional and trade updates.</span></label></div></div>
 </div></section></div><div id="msg" class="message" role="status" aria-live="polite"></div>
 <div class="actions"><button class="actionButton" type="button" id="backStep" disabled>Previous step</button><button class="actionButton primary" type="button" id="nextStep">Continue</button><button class="actionButton primary" type="submit" id="submitForm" hidden>Create account</button></div>
@@ -56,8 +66,9 @@
 </section>
 
 </main>
+<div id="vtgApplicationReceipt" class="vtg-receipt-backdrop" role="dialog" aria-modal="true" aria-labelledby="vtgReceiptTitle" aria-describedby="vtgReceiptBody"><section class="vtg-receipt"><div class="vtg-receipt-mark" aria-hidden="true">✓</div><h2 id="vtgReceiptTitle">Application received</h2><p id="vtgReceiptStatus" class="vtg-receipt-status" role="status" aria-live="polite"></p><p id="vtgReceiptBody"></p><button id="vtgReceiptContinue" type="button">Continue to VTG</button></section></div>
 <div id="vsFooter"></div>
-<script src="/vtg-supabase-auth.js?v=20261105-otp-1"></script>
+<script src="/vtg-supabase-auth.js?v=20261105-agreement-2"></script>
 <script>
 const AFRICA=[["🇩🇿","Algeria","+213"],["🇦🇴","Angola","+244"],["🇧🇯","Benin","+229"],["🇧🇼","Botswana","+267"],["🇧🇫","Burkina Faso","+226"],["🇧🇮","Burundi","+257"],["🇨🇻","Cabo Verde","+238"],["🇨🇲","Cameroon","+237"],["🇨🇫","Central African Republic","+236"],["🇹🇩","Chad","+235"],["🇰🇲","Comoros","+269"],["🇨🇩","DR Congo","+243"],["🇨🇬","Republic of the Congo","+242"],["🇨🇮","Côte d’Ivoire","+225"],["🇩🇯","Djibouti","+253"],["🇪🇬","Egypt","+20"],["🇬🇶","Equatorial Guinea","+240"],["🇪🇷","Eritrea","+291"],["🇸🇿","Eswatini","+268"],["🇪🇹","Ethiopia","+251"],["🇬🇦","Gabon","+241"],["🇬🇲","Gambia","+220"],["🇬🇭","Ghana","+233"],["🇬🇳","Guinea","+224"],["🇬🇼","Guinea-Bissau","+245"],["🇰🇪","Kenya","+254"],["🇱🇸","Lesotho","+266"],["🇱🇷","Liberia","+231"],["🇱🇾","Libya","+218"],["🇲🇬","Madagascar","+261"],["🇲🇼","Malawi","+265"],["🇲🇱","Mali","+223"],["🇲🇷","Mauritania","+222"],["🇲🇺","Mauritius","+230"],["🇲🇦","Morocco","+212"],["🇲🇿","Mozambique","+258"],["🇳🇦","Namibia","+264"],["🇳🇪","Niger","+227"],["🇳🇬","Nigeria","+234"],["🇷🇼","Rwanda","+250"],["🇸🇹","São Tomé and Príncipe","+239"],["🇸🇳","Senegal","+221"],["🇸🇨","Seychelles","+248"],["🇸🇱","Sierra Leone","+232"],["🇸🇴","Somalia","+252"],["🇿🇦","South Africa","+27"],["🇸🇸","South Sudan","+211"],["🇸🇩","Sudan","+249"],["🇹🇿","Tanzania","+255"],["🇹🇬","Togo","+228"],["🇹🇳","Tunisia","+216"],["🇺🇬","Uganda","+256"],["🇿🇲","Zambia","+260"],["🇿🇼","Zimbabwe","+263"]];
 const CHINA_KOREA=[["🇨🇳","China","+86"],["🇰🇷","South Korea","+82"]];
@@ -105,6 +116,24 @@ function metadata(d){
   markets_served:d.marketsServed,marketing_subscribed:d.marketingSubscribed==='true'
  };
 }
+async function showApplicationReceipt(email,role,emailDelivery){
+ const overlay=document.getElementById('vtgApplicationReceipt');
+ if(!emailDelivery){
+  try{
+   const auth=await window.VTG_AUTH_READY;
+   const result=await auth.client.functions.invoke('vtg-email',{body:{event:'onboarding'}});
+   emailDelivery=result.data||null;
+  }catch(error){console.warn('VTG application email could not be confirmed:',error?.message||error);}
+ }
+ const emailSent=emailDelivery?.email?.sent===true;
+ document.getElementById('vtgReceiptTitle').textContent='Application successfully received';
+ const receiptStatus=document.getElementById('vtgReceiptStatus');receiptStatus.className='vtg-receipt-status '+(emailSent?'sent':'pending');receiptStatus.textContent=emailSent?'EMAIL CONFIRMATION SENT':'APPLICATION RECEIVED — EMAIL NOT CONFIRMED';
+ document.getElementById('vtgReceiptBody').textContent=emailSent
+  ?"Thank you for choosing VTG. Your "+(role==='bank'?'bank / financial institution':'supplier / trading company')+" account application has been received and is awaiting administrative review. Our team will review your organisation details and supporting information. We have sent an email to "+email+" with the review process and next steps. Please check your inbox and spam or junk folder. No further action is required unless our team contacts you for clarification or corrected documents. We will notify you by email when a decision has been made. Your account features will be enabled after approval. Please do not submit a duplicate application while this one is pending."
+  :"Thank you for choosing VTG. Your "+(role==='bank'?'bank / financial institution':'supplier / trading company')+" account application has been received and remains pending administrative review. However, VTG could not confirm that the confirmation email was sent. Your application is still in the review queue and has not been cancelled. Please check your registered email later or contact vintageafricatrade@gmail.com for assistance. Do not submit another application while this one is pending.";
+ overlay.classList.add('open');document.body.style.overflow='hidden';
+ document.getElementById('vtgReceiptContinue').onclick=()=>{location.href='/bank-trade-os.html';};
+}
 function setMessage(text,ok){
  message.className='message'+(ok?' ok':'');
  message.textContent=text;
@@ -125,12 +154,11 @@ async function beginSignup(){
   const {data,error}=await auth.signUp(email,d.password,metadata(d));
   if(error)throw error;
   if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0){
-   throw new Error('An account may already exist with this email. Please sign in or use account help.');
+   throw new Error('This email already has a VTG account. Sign in using the same email instead of registering again. If VTG rejected your earlier application, open Company & verification in your dashboard to submit a fresh application with this same account.');
   }
   if(data.session){
    const current=await auth.getCurrent();
-   setMessage('Your email is confirmed. Opening your VTG account…',true);
-   location.href='/verification.html?role=bank';
+   showApplicationReceipt(email,'bank');
    return;
   }
   signupStarted=true;
@@ -140,7 +168,7 @@ async function beginSignup(){
   sendButton.textContent='Resend code';
   submitButton.textContent='Verify code & create account';
   submitButton.disabled=false;
-  setMessage('A 6-digit verification code has been sent to '+email+'. Enter it below to finish registration.',true);
+  setMessage('A verification code has been sent to '+email+'. Enter it below to finish registration.',true);
   startResendCountdown();
  }catch(error){
   sendButton.disabled=false;submitButton.disabled=false;
@@ -165,7 +193,7 @@ $('#signupForm').addEventListener('submit',async e=>{
  e.preventDefault();
  if(!signupStarted){await beginSignup();return;}
  const email=$('[name=email]').value.trim().toLowerCase(),code=codeInput.value.trim();
- if(!/^\d{6}$/.test(code)){codeInput.setCustomValidity('Enter the 6-digit code from your email.');codeInput.reportValidity();codeInput.focus();return;}
+ if(!/^\d{6,10}$/.test(code)){codeInput.setCustomValidity('Enter the 6–10 digit code from your email.');codeInput.reportValidity();codeInput.focus();return;}
  codeInput.setCustomValidity('');
  submitButton.disabled=true;sendButton.disabled=true;
  setMessage('Verifying your email and creating your VTG session…',false);
@@ -173,8 +201,7 @@ $('#signupForm').addEventListener('submit',async e=>{
   const auth=await window.VTG_AUTH_READY;
   const result=await auth.verifySignupCode(email,code);
   const pendingRole=result.user.requestedRole;
-  setMessage('Email verified. Your VTG account has been created successfully.',true);
-  setTimeout(()=>location.href=pendingRole&&pendingRole!=='buyer'?'/verification.html?role='+encodeURIComponent(pendingRole):'/verification.html?role=bank',900);
+  showApplicationReceipt(email,pendingRole&&pendingRole!=='buyer'?pendingRole:'bank',result.emailDelivery);
  }catch(error){
   submitButton.disabled=false;sendButton.disabled=false;setMessage(error.message||'The code could not be verified. Check it and try again.',false);
  }

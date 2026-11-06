@@ -24,11 +24,12 @@ html[data-theme="light"] .vtg-header-brand .logo-light{display:none!important}
 </style><link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
 <link rel="stylesheet" href="/vtg-dashboard-typography.css?v=20261021-1">
 <link rel="stylesheet" href="/vtg-dash.css?v=20261031-1">
-<link rel="stylesheet" href="/vtg-type.css"></head>
-<body id="vtg-dashboard-top">
+<link rel="stylesheet" href="/vtg-type.css"><style>html.vtg-auth-pending body{visibility:hidden}</style><script>document.documentElement.classList.add("vtg-auth-pending")</script><script src="/vtg-supabase-auth.js?v=20261105-staff-auth-1"></script>
+</head>
+<body id="vtg-dashboard-top"><script>(async function(){const requested=(new URLSearchParams(location.search).get("workspace")||"staff").toLowerCase();try{const auth=await window.VTG_AUTH_READY;const current=await auth.getCurrent();if(!current||current.user.accountEnvironment!=="staff"||!current.user.isActive)throw new Error("Staff access required");if(current.user.role!=="admin"&&!(current.user.workforceMemberships||[]).some(m=>m.status==="active"&&m.workspace_role===requested))throw new Error("Workspace not assigned");const saved=JSON.parse(localStorage.getItem("vtg-auth")||"{}");if(saved.user){saved.user.workspaceRole=current.user.role==="admin"?"admin":requested;localStorage.setItem("vtg-auth",JSON.stringify(saved))}document.documentElement.classList.remove("vtg-auth-pending")}catch(_){location.replace("/workforce-signin.html?workspace="+encodeURIComponent(requested))}})();</script>
 <div class="layout">
 <aside class="sidebar">
-  <div class="brand"><a href="/frontend-v3.html"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><small>Operations workspace</small></div>
+  <div class="brand"><a href="/workforce-access.html"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><small>Operations workspace</small></div>
   <div><div class="navLabel">Workspace</div><nav class="nav" aria-label="Workspace navigation">
     <button class="active" data-view="overview"><span class="ico">▦</span>Overview</button>
     <button data-view="tasks"><span class="ico">☷</span>My task queue</button>
@@ -44,7 +45,7 @@ html[data-theme="light"] .vtg-header-brand .logo-light{display:none!important}
 </aside>
 <div class="sidebarOverlay" id="sidebarOverlay" hidden aria-hidden="true"></div>
 <main class="main">
-<header class="topbar"><a class="vtg-header-brand" href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img class="logo-dark" src="/assets/vtg-logo.svg" alt="Vintage Trade Global"><img class="logo-light" src="/assets/vtg-logo-light.svg" alt="" aria-hidden="true"></a><div style="display:flex;align-items:center;gap:10px"><button class="iconBtn mobileMenu" id="menuBtn" aria-label="Open navigation">☰</button><div class="crumb">VTG / <b id="crumbCurrent">Staff & Operations</b></div></div><div class="topActions"><select class="languageSelect" id="languageSelect" aria-label="Language" title="Change language"><option value="en">English</option><option value="fr">Français</option><option value="zh">中文</option><option value="ko">한국어</option></select><button class="iconBtn" id="themeToggle" title="Switch light/dark mode" aria-label="Switch light/dark mode">☾</button><a class="homeBtn" href="/frontend-v3.html"><span>Home</span> ↗</a><div class="user"><div class="avatar" id="avatar">ST</div><div><b id="userName">Staff workspace</b><small id="userRole">Authorised workforce</small></div></div></div></header>
+<header class="topbar"><a class="vtg-header-brand" href="/workforce-access.html" aria-label="Vintage Trade Global home"><img class="logo-dark" src="/assets/vtg-logo.svg" alt="Vintage Trade Global"><img class="logo-light" src="/assets/vtg-logo-light.svg" alt="" aria-hidden="true"></a><div style="display:flex;align-items:center;gap:10px"><button class="iconBtn mobileMenu" id="menuBtn" aria-label="Open navigation">☰</button><div class="crumb">VTG / <b id="crumbCurrent">Staff & Operations</b></div></div><div class="topActions"><select class="languageSelect" id="languageSelect" aria-label="Language" title="Change language"><option value="en">English</option><option value="fr">Français</option><option value="zh">中文</option><option value="ko">한국어</option></select><button class="iconBtn" id="themeToggle" title="Switch light/dark mode" aria-label="Switch light/dark mode">☾</button><a class="homeBtn" href="/workforce-access.html"><span>Home</span> ↗</a><div class="user"><div class="avatar" id="avatar">ST</div><div><b id="userName">Staff workspace</b><small id="userRole">Authorised workforce</small></div></div></div></header>
 <div class="content"><div class="vs-banner vs-banner--slim"><figure><img src="https://images.pexels.com/photos/256219/pexels-photo-256219.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Software engineers working on computers" loading="lazy" onerror="this.closest('.vs-banner').remove()"><figcaption>Your workforce workspace</figcaption></figure></div>
 <section class="pageHead"><div><div class="eyebrow" id="eyebrow">Work execution</div><h1 id="pageTitle">Staff & Operations</h1><p id="pageDesc">A single place to review assigned work, coordinate handoffs and keep trade operations traceable across the VTG network.</p></div><div class="date" id="today"></div></section>
 <div class="banner"><div class="mark">i</div><div><b id="bannerTitle">Operational records are not connected yet</b><p id="bannerText">This workspace interface is ready for integration. Live tasks, assignments, approvals and activity must come from authenticated backend services; no sample records are presented as real business data.</p></div></div>
@@ -74,7 +75,7 @@ html[data-theme="light"] .vtg-header-brand .logo-light{display:none!important}
 </div></main></div><div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
 (function(){
- const $=id=>document.getElementById(id), root=document.documentElement, params=new URLSearchParams(location.search), preview=params.get('preview')==='1', requested=(params.get('workspace')||'staff').toLowerCase();
+ const $=id=>document.getElementById(id), root=document.documentElement, params=new URLSearchParams(location.search), preview=false, requested=(params.get('workspace')||'staff').toLowerCase();
  const roles={staff:'Staff & Operations',manager:'Management',logistics:'Logistics & Clearing',compliance:'Verification & Compliance',support:'Customer Support',finance:'Finance & Commissions',inspector:'Inspection & Quality',marketing:'Marketing & Catalogue',agent:'Trade Agent'};
  const roleName=roles[requested]||roles.staff;
  const token=(()=>{try{return localStorage.getItem('vtg_access_token')||JSON.parse(localStorage.getItem('vtg-auth')||'{}').accessToken||''}catch(e){return ''}})();
@@ -88,18 +89,15 @@ window.addEventListener('storage',e=>{if(e.key==='vtg-theme-preference'||e.key==
  $('today').textContent=new Intl.DateTimeFormat(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date());
  $('userRole').textContent=roleName;$('crumbCurrent').textContent=roleName;$('pageTitle').textContent=roleName;
  $('avatar').textContent=roleName.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase();
- if(!preview&&!token){location.replace('/workforce-signin.html?workspace='+encodeURIComponent(requested));return}
+ if(!token){location.replace('/workforce-signin.html?workspace='+encodeURIComponent(requested));return}
  if(preview){$('bannerTitle').textContent='Preview mode · interface review only';$('bannerText').textContent='You are viewing the workforce dashboard without a signed-in session. Counts and task records are intentionally blank. Connect the task, approval and audit APIs before using this workspace for official work.'}
  else{
    try{
     const raw=JSON.parse(localStorage.getItem('vtg-auth')||'{}'),user=raw.user||{};
     $('userName').textContent=user.fullName||user.name||user.email||'VTG team member';
-    $('userRole').textContent=(user.role||requested).toString().replace(/[-_]/g,' ');
+    $('userRole').textContent=(user.workspaceRole||user.role||requested).toString().replace(/[-_]/g,' ');
    }catch(e){}
-   // Confirm the session with the API where supported; do not treat a local token as authorization.
-   fetch((window.VTG_API_BASE||'')+'/api/auth/me',{headers:{Authorization:'Bearer '+token,Accept:'application/json'},cache:'no-store'})
-    .then(async r=>{if(r.status===401||r.status===403){try{localStorage.removeItem('vtg_access_token');localStorage.removeItem('vtg-auth')}catch(e){}location.replace('/workforce-signin.html?workspace='+encodeURIComponent(requested));return}if(!r.ok){$('bannerTitle').textContent='Session check could not be completed';$('bannerText').textContent='The identity service did not confirm this session. Live records remain unavailable until authentication and API connectivity are verified.';return}const d=await r.json();const user=d.user||d;const role=String(user.role||'').toLowerCase();if(role!==requested){$('bannerTitle').textContent='Workspace role check required';$('bannerText').textContent='Your authenticated account role does not match this workspace. Use the correct workspace entry or contact the VTG administrator.';return} $('userName').textContent=user.fullName||user.name||user.email||'VTG team member';})
-    .catch(()=>{$('bannerTitle').textContent='Unable to verify the current session';$('bannerText').textContent='The authentication API could not be reached. Operational records are hidden until the session can be verified.'});
+   
  }
  const views={
  overview:['Staff & Operations','Work execution','A single place to review assigned work, coordinate handoffs and keep trade operations traceable across the VTG network.','My task queue','Assigned work and current status'],
@@ -131,7 +129,7 @@ window.addEventListener('storage',e=>{if(e.key==='vtg-theme-preference'||e.key==
  $('taskFilter').addEventListener('change',()=>{if($('taskFilter').value!=='all')toast('Task filters will work when the live task service is connected.')});
 const sidebar=document.querySelector('.sidebar'),overlay=$('sidebarOverlay');function closeMobileMenu(){sidebar?.classList.remove('mobileOpen');if(overlay)overlay.hidden=true;$('menuBtn')?.setAttribute('aria-expanded','false')};function openMobileMenu(){sidebar?.classList.add('mobileOpen');if(overlay)overlay.hidden=false;$('menuBtn')?.setAttribute('aria-expanded','true')};$('menuBtn').addEventListener('click',()=>sidebar?.classList.contains('mobileOpen')?closeMobileMenu():openMobileMenu());overlay?.addEventListener('click',closeMobileMenu);document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',closeMobileMenu));document.querySelectorAll('[data-link]').forEach(b=>b.addEventListener('click',closeMobileMenu));window.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileMenu()});window.addEventListener('resize',()=>{if(window.innerWidth>680)closeMobileMenu()});
 })();
-</script><script src="/vtg-dashboard-footer.js?v=20261020-universal-header-1" defer></script>
+</script>
 <div id="google_translate_element" aria-hidden="true" style="position:fixed;left:-10000px;top:-10000px;width:1px;height:1px;overflow:hidden"></div>
 <script id="vtg-workforce-language">
 (function(){

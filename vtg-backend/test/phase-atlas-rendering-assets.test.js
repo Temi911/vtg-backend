@@ -46,10 +46,12 @@ test('Atlas data includes African, Chinese and South Korean trade locations and 
 test('buyer dashboard embeds the interactive Atlas renderer and keeps regional map controls', () => {
   const dashboard = read('buyer-dashboard.html');
   const renderer = read('vtg-buyer-atlas.js');
+  const shell = read('vtg-buyer-shell.js');
   const data = read('vtg-trade-atlas.js');
   assert.match(dashboard, /id="map" class="vtgBuyerAtlasMap"/);
   assert.match(dashboard, /vtg-buyer-atlas\.js/);
-  assert.match(dashboard, /vtg:buyer-map-region/);
+  assert.match(dashboard, /data-map="(africa|china|korea|world)"/);
+  assert.match(shell, /vtg:buyer-map-region/);
   assert.match(renderer, /tile\.openstreetmap\.org/);
   assert.match(renderer, /https:\/\/www\.openstreetmap\.org\//);
   assert.doesNotMatch(renderer, /cartocdn\.com|tile\.openstreetmap\.de/);

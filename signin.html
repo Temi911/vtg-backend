@@ -44,7 +44,7 @@
 </aside>
 </main>
 <div id="vsFooter"></div>
-<script src="/vtg-supabase-auth.js?v=20261105-otp-1"></script>
+<script src="/vtg-supabase-auth.js?v=20261105-agreement-2"></script>
 <script>
 let role=['buyer','supplier','bank'].includes(new URLSearchParams(location.search).get('role'))?new URLSearchParams(location.search).get('role'):'buyer';
 const nextPath=new URLSearchParams(location.search).get('next');
@@ -67,24 +67,25 @@ document.getElementById('toggle').onclick=()=>{
  p.type=p.type==='password'?'text':'password';b.textContent=p.type==='password'?'Show':'Hide';
 };
 document.getElementById('form').onsubmit=async e=>{
- e.preventDefault();msg.className='msg';msg.textContent='Signing in securely…';
+ e.preventDefault();msg.className='msg processing';msg.textContent='Signing in securely…';
  const submit=e.currentTarget.querySelector('button[type="submit"]');if(submit)submit.disabled=true;
  const d=Object.fromEntries(new FormData(e.currentTarget));
  try{
   const auth=await window.VTG_AUTH_READY;
   const result=await auth.signIn(d.email,d.password);
   const user=result.user;
-  const pending=user.role==='buyer'&&!!user.requestedRole;
-  const effectiveRole=pending?user.requestedRole:user.role;
+  const effectiveRole=user.role;
   if(effectiveRole!==role){
    const names={buyer:'Buyer',supplier:'Supplier',bank:'Bank'};
    throw new Error('This account is registered as a '+(names[effectiveRole]||effectiveRole)+'. Please select '+(names[effectiveRole]||effectiveRole)+' above.');
   }
   msg.className='msg ok';msg.textContent='Signed in successfully. Opening your VTG workspace…';
   setTimeout(()=>{
-   if(pending){location.href='/verification.html?role='+encodeURIComponent(user.requestedRole);return;}
-   if(safeNext){location.href=safeNext;return;}
-   location.href=({buyer:'/buyer-dashboard.html',supplier:'/supplier-dashboard.html',bank:'/bank-trade-os.html'})[user.role]||'/';
+   const destination=user.pendingBusinessVerification
+    ? '/verification.html?role='+encodeURIComponent(effectiveRole)
+    : safeNext||({buyer:'/buyer-dashboard.html',supplier:'/supplier-dashboard.html',bank:'/bank-trade-os.html'})[effectiveRole]||'/';
+   if(user.agreementRequired){location.href='/signup-agreement.html?next='+encodeURIComponent(destination);return;}
+   location.href=destination;
   },450);
  }catch(err){msg.className='msg';msg.textContent=err.message||'Sign in failed';if(submit)submit.disabled=false;}
 };

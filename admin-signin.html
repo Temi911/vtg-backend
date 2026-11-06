@@ -12,15 +12,14 @@
 <link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
 <link rel="stylesheet" href="/vtg-auth.css?v=20261030-1">
 <link rel="stylesheet" href="/vtg-type.css"><link rel="stylesheet" href="/vtg-forms.css?v=20261105-1">
+<script src="/vtg-supabase-auth.js?v=20261105-agreement-2"></script>
 </head>
 <body>
-<div id="vsHeader" data-active=""></div>
-<script src="/vtg-shell.js?v=20261030-1"></script>
 <main id="main" class="au">
 <section class="au-form" aria-labelledby="t"><div class="au-card">
 <span class="vs-eyebrow">Restricted access</span>
 <h1 id="t">Administrator sign-in</h1>
-<p class="sub">Use your registered administrator credentials to continue. Buyer, supplier and finance accounts cannot use this entry.</p>
+<p class="sub">Use your registered administrator credentials to continue. This entry is reserved for authorised VTG administrators.</p>
 <form id="adminForm" class="vtg-form">
 <div><label for="email">Administrator email</label><div class="field"><input id="email" name="email" type="email" autocomplete="username" placeholder="Registered administrator email" required></div></div>
 <div><label for="password">Password</label><div class="field"><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Administrator password" required></div></div>
@@ -28,13 +27,25 @@
 <button class="primary" type="submit"><span>Sign in securely</span><span aria-hidden="true">&rarr;</span></button>
 </form>
 <p class="au-links"><a href="/workforce-access.html">&larr; Workforce access</a></p>
-<p class="au-secure">Administrator authentication is checked by the VTG authentication API. This page does not create administrator accounts or bypass role permissions.</p>
+<p class="au-secure">Administrator authentication is checked by Supabase and the VTG staff account record. This page does not create administrator accounts or bypass role permissions.</p>
 </div></section>
-<aside class="au-side" style="background-image:url('https://images.pexels.com/photos/32845695/pexels-photo-32845695.jpeg?auto=compress&cs=tinysrgb&w=1400')" aria-label="Access information"><h2>Control access. Protect the network.</h2><ul><li><span><b>Separate entry</b>Reserved for authorised VTG administrators.</span></li><li><span><b>Role checked on the server</b>A URL alone never grants access.</span></li><li><span><b>Audited</b>Administrator activity is recorded.</span></li></ul></aside>
-</main>
-<div id="vsFooter"></div>
-<script>
-document.getElementById('adminForm').addEventListener('submit',async function(e){e.preventDefault();const msg=document.getElementById('message');msg.textContent='Checking administrator credentials…';const data=new FormData(e.currentTarget);try{const r=await fetch((window.VTG_API_BASE||'')+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:data.get('email'),password:data.get('password')})});const out=await r.json();if(!r.ok)throw new Error(out.message||'Sign-in failed.');if(!['admin','administrator'].includes(String(out.user?.role||'').toLowerCase()))throw new Error('This account does not have administrator permissions.');if(out.accessToken){localStorage.setItem('vtg_access_token',out.accessToken);localStorage.setItem('vtg-auth',JSON.stringify({user:out.user,accessToken:out.accessToken,refreshToken:out.refreshToken||null}));}msg.textContent='Administrator credentials accepted. Opening the VTG workforce control centre…';const requestedNext=new URLSearchParams(location.search).get('next');let destination='/admin-dashboard-preview.html';if(requestedNext){try{const target=new URL(requestedNext,location.origin);if(target.origin===location.origin)destination=target.pathname+target.search+target.hash}catch(_){}}setTimeout(()=>{location.href=destination},500);}catch(err){msg.textContent=err.message||'Unable to sign in. Please try again.';}});
+<aside class="au-side" style="background-image:url('https://images.pexels.com/photos/32845695/pexels-photo-32845695.jpeg?auto=compress&cs=tinysrgb&w=1400')" aria-label="Access information"><h2>Control access. Protect the network.</h2><ul><li><span><b>Separate entry</b>Reserved for authorised VTG administrators.</span></li><li><span><b>Role checked on the server</b>A URL alone never grants access.</span></li><li><span><b>Audited</b>Administrator activity is recorded.</span></li></ul></a<script>
+document.getElementById('adminForm').addEventListener('submit',async function(e){
+ e.preventDefault();
+ const msg=document.getElementById('message');msg.textContent='Checking administrator credentials…';
+ const data=new FormData(e.currentTarget),submit=e.currentTarget.querySelector('button[type="submit"]');
+ if(submit)submit.disabled=true;
+ try{
+  const auth=await window.VTG_AUTH_READY;
+  await auth.signInAdmin(data.get('email'),data.get('password'));
+  msg.textContent='Administrator access verified. Opening the private control centre…';
+  const requestedNext=new URLSearchParams(location.search).get('next');
+  let destination='/admin-dashboard-preview.html';
+  if(requestedNext){try{const target=new URL(requestedNext,location.origin);if(target.origin===location.origin&&target.pathname==='/admin-dashboard-preview.html')destination=target.pathname+target.search+target.hash}catch(_){}}
+  setTimeout(()=>location.replace(destination),400);
+ }catch(err){msg.textContent=err.message||'Unable to sign in. Please try again.';if(submit)submit.disabled=false;}
+});
+</script>;}});
 </script>
 </body>
 </html>

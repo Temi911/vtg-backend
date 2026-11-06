@@ -24,7 +24,7 @@
 .formMeta label{display:flex;align-items:center;gap:8px;margin:0;font-weight:600}
 .formMeta input[type=checkbox]{width:18px;height:18px;accent-color:var(--vs-blue)}
 .formMeta a,.au-links a{color:var(--vs-blue);font-weight:700}
-.msg{min-height:1.4em;font-size:.9375rem;color:var(--vs-bad)}.msg.ok{color:var(--vs-ok)}
+.msg{min-height:1.4em;font-size:.9375rem;color:var(--vs-bad)}.msg.ok,.msg.processing{color:var(--vs-ok)}
 .au-card .primary{min-height:50px;border:0;border-radius:10px;background:var(--vs-blue);color:#fff;font-size:1rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
 html[data-theme="dark"] .au-card .primary{color:#08162A}
 .au-card .primary:hover{background:var(--vs-blue-h)}

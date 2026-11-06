@@ -35,7 +35,7 @@
 </div></section>
 <section class="step" data-step="2" hidden><div class="fields">
 <div class="field full"><label for="password">Create password *</label><div class="passwordRow"><input id="password" name="password" type="password" autocomplete="new-password" minlength="8" pattern="(?=.*[A-Z])(?=.*\d).{8,}" title="Use at least 8 characters, one uppercase letter and one number." required><button type="button" class="miniButton" id="passwordToggle">Show</button></div><span class="hint">At least 8 characters, including one uppercase letter and one number.</span></div>
-<div class="field full"><label for="verificationCode">Email verification code *</label><div class="verifyRow"><input id="verificationCode" name="verificationCode" inputmode="numeric" autocomplete="one-time-code" minlength="6" maxlength="6" pattern="[0-9]{6}" placeholder="Enter 6-digit code" disabled><button class="miniButton" type="button" id="sendCode">Send code</button></div><span class="hint">Send a code to your email, then enter it here.</span></div>
+<div class="field full"><label for="verificationCode">Email verification code *</label><div class="verifyRow"><input id="verificationCode" name="verificationCode" inputmode="numeric" autocomplete="one-time-code" minlength="6" maxlength="10" pattern="[0-9]{6,10}" placeholder="Enter your email code" disabled><button class="miniButton" type="button" id="sendCode">Send code</button></div><span class="hint">Send a code to your email, then enter it here.</span></div>
 </div></section></div><div id="msg" class="message" role="status" aria-live="polite"></div>
 <div class="actions"><button class="actionButton" type="button" id="backStep" disabled>Previous step</button><button class="actionButton primary" type="button" id="nextStep">Continue</button><button class="actionButton primary" type="submit" id="submitForm" hidden>Create account</button></div>
 </form>
@@ -45,7 +45,7 @@
 
 </main>
 <div id="vsFooter"></div>
-<script src="/vtg-supabase-auth.js?v=20261105-otp-1"></script>
+<script src="/vtg-supabase-auth.js?v=20261105-agreement-2"></script>
 <script>
 const AFRICA=[["🇩🇿","Algeria","+213"],["🇦🇴","Angola","+244"],["🇧🇯","Benin","+229"],["🇧🇼","Botswana","+267"],["🇧🇫","Burkina Faso","+226"],["🇧🇮","Burundi","+257"],["🇨🇻","Cabo Verde","+238"],["🇨🇲","Cameroon","+237"],["🇨🇫","Central African Republic","+236"],["🇹🇩","Chad","+235"],["🇰🇲","Comoros","+269"],["🇨🇩","DR Congo","+243"],["🇨🇬","Republic of the Congo","+242"],["🇨🇮","Côte d’Ivoire","+225"],["🇩🇯","Djibouti","+253"],["🇪🇬","Egypt","+20"],["🇬🇶","Equatorial Guinea","+240"],["🇪🇷","Eritrea","+291"],["🇸🇿","Eswatini","+268"],["🇪🇹","Ethiopia","+251"],["🇬🇦","Gabon","+241"],["🇬🇲","Gambia","+220"],["🇬🇭","Ghana","+233"],["🇬🇳","Guinea","+224"],["🇬🇼","Guinea-Bissau","+245"],["🇰🇪","Kenya","+254"],["🇱🇸","Lesotho","+266"],["🇱🇷","Liberia","+231"],["🇱🇾","Libya","+218"],["🇲🇬","Madagascar","+261"],["🇲🇼","Malawi","+265"],["🇲🇱","Mali","+223"],["🇲🇷","Mauritania","+222"],["🇲🇺","Mauritius","+230"],["🇲🇦","Morocco","+212"],["🇲🇿","Mozambique","+258"],["🇳🇦","Namibia","+264"],["🇳🇪","Niger","+227"],["🇳🇬","Nigeria","+234"],["🇷🇼","Rwanda","+250"],["🇸🇹","São Tomé and Príncipe","+239"],["🇸🇳","Senegal","+221"],["🇸🇨","Seychelles","+248"],["🇸🇱","Sierra Leone","+232"],["🇸🇴","Somalia","+252"],["🇿🇦","South Africa","+27"],["🇸🇸","South Sudan","+211"],["🇸🇩","Sudan","+249"],["🇹🇿","Tanzania","+255"],["🇹🇬","Togo","+228"],["🇹🇳","Tunisia","+216"],["🇺🇬","Uganda","+256"],["🇿🇲","Zambia","+260"],["🇿🇼","Zimbabwe","+263"]];
 const CHINA_KOREA=[["🇨🇳","China","+86"],["🇰🇷","South Korea","+82"]];
@@ -90,8 +90,8 @@ function metadata(d){
   registration_no:d.registrationNo||'',state:d.state||'',marketing_subscribed:d.marketingSubscribed==='true'
  };
 }
-function setMessage(text,ok){
- message.className='message'+(ok?' ok':'');
+function setMessage(text,ok,processing){
+ message.className='message'+(ok?' ok':processing?' processing':'');
  message.textContent=text;
 }
 function startResendCountdown(){
@@ -103,7 +103,7 @@ async function beginSignup(){
  if(!validateAll())return;
  const d=formData(),email=(d.email||'').trim().toLowerCase();
  if(!email){showStep(STEPS.findIndex(s=>s.fields.includes('email')));$('[name=email]').focus();throw new Error('Enter your email address first.');}
- setMessage('Creating your secure account and sending your verification code…',false);
+ setMessage('Creating your secure account and sending your verification code…',false,true);
  sendButton.disabled=true;submitButton.disabled=true;
  try{
   const auth=await window.VTG_AUTH_READY;
@@ -125,7 +125,7 @@ async function beginSignup(){
   sendButton.textContent='Resend code';
   submitButton.textContent='Verify code & create account';
   submitButton.disabled=false;
-  setMessage('A 6-digit verification code has been sent to '+email+'. Enter it below to finish registration.',true);
+  setMessage('A verification code has been sent to '+email+'. Enter it below to finish registration.',true);
   startResendCountdown();
  }catch(error){
   sendButton.disabled=false;submitButton.disabled=false;
@@ -150,10 +150,10 @@ $('#signupForm').addEventListener('submit',async e=>{
  e.preventDefault();
  if(!signupStarted){await beginSignup();return;}
  const email=$('[name=email]').value.trim().toLowerCase(),code=codeInput.value.trim();
- if(!/^\d{6}$/.test(code)){codeInput.setCustomValidity('Enter the 6-digit code from your email.');codeInput.reportValidity();codeInput.focus();return;}
+ if(!/^\d{6,10}$/.test(code)){codeInput.setCustomValidity('Enter the 6–10 digit code from your email.');codeInput.reportValidity();codeInput.focus();return;}
  codeInput.setCustomValidity('');
  submitButton.disabled=true;sendButton.disabled=true;
- setMessage('Verifying your email and creating your VTG session…',false);
+ setMessage('Verifying your email and creating your VTG session…',false,true);
  try{
   const auth=await window.VTG_AUTH_READY;
   const result=await auth.verifySignupCode(email,code);

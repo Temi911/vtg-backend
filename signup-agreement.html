@@ -16,37 +16,78 @@
 <div class="flow-top"></div>
 <div class="flow-bar"><div class="vs-wrap"><a href="/frontend-v3.html" aria-label="Vintage Trade Global home"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a><a class="back" href="/frontend-v3.html">Back to site</a></div></div>
 <main class="flow-main" id="main"><div class="vs-banner"><figure><img src="https://images.pexels.com/photos/7641842/pexels-photo-7641842.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="A person signing a contract" loading="lazy" onerror="this.closest('.vs-banner').remove()"><figcaption>Review and accept the agreement</figcaption></figure></div><div class="flow-card" id="app"><div class="loading">Loading your VTG agreement…</div></div></main>
+<script src="/vtg-supabase-auth.js?v=20261105-agreement-2"></script>
 <script>
-const API='';
-const auth=JSON.parse(localStorage.getItem('vtg-auth')||'{}'); const token=localStorage.getItem('vtg_access_token')||auth.accessToken||'';
 const app=document.getElementById('app');
-function nextForRole(role){if(role==='supplier'||role==='bank')return '/verification.html';if(role==='agent')return '/agent-dashboard.html';if(role==='admin'||role==='administrator')return '/admin-dashboard-preview.html';if(role==='buyer')return '/buyer-dashboard.html';return '/workforce-dashboard.html'}
-async function api(path,options={}){return fetch(API+path,{...options,headers:{'Content-Type':'application/json',Authorization:'Bearer '+token,...(options.headers||{})}})}
+const VERSION='2026-09-01';
+const params=new URLSearchParams(location.search);
+const requestedNext=params.get('next')||'';
+function nextForUser(user){
+  const role=user.requestedRole||user.role;
+  const defaults={buyer:'/buyer-dashboard.html',supplier:'/verification.html',bank:'/verification.html'};
+  const allowed=['/buyer-dashboard.html','/supplier-dashboard.html','/bank-trade-os.html','/verification.html'];
+  try{
+    const candidate=new URL(requestedNext,location.origin);
+    if(candidate.origin===location.origin&&allowed.includes(candidate.pathname))
+      return candidate.pathname+candidate.search+candidate.hash;
+  }catch(_){}
+  return defaults[role]||'/signin.html';
+}
 async function load(){
- if(!token){location.href='/';return}
- try{
-  const r=await api('/api/auth/me'); const d=await r.json();
-  if(!r.ok)throw new Error(d.message||'Your session has expired.');
-  if(!d.agreementRequired){location.href=nextForRole(d.user.role);return}
-  app.innerHTML=`
-   <div class="brand">Vintage Trade Global</div>
-   <div class="eyebrow">Required before workspace access</div>
-   <h1 class="title">Privacy & Signup Agreement</h1>
-   <p class="lead">Before you enter your VTG workspace, please review the information below and confirm that you have read and understood the VTG Privacy Policy and Signup Agreement.</p>
-   <div class="section"><h2>1. Account information</h2><p>VTG uses the information you provide to create and operate your account, verify your email and role, support trade activity, communicate with you, and provide the services connected to your workspace.</p></div>
-   <div class="section"><h2>2. Business and verification information</h2><p>Where your role requires verification, VTG may review business, institutional, licence and supporting documents you submit. Verification does not guarantee a transaction, supplier relationship, financing, shipment, or other commercial outcome.</p></div>
-   <div class="section"><h2>3. Your responsibilities</h2><ul><li>Provide information that is accurate and kept reasonably up to date.</li><li>Keep your password and account credentials private.</li><li>Use VTG only for lawful and legitimate trade activities.</li><li>Do not misrepresent your business, institution, products, documents or authority.</li></ul></div>
-   <div class="section"><h2>4. Privacy</h2><p>VTG will handle personal and business information in accordance with its Privacy Policy and applicable data-protection requirements. You may review the <a href="/privacy.html" target="_blank" rel="noopener">VTG Privacy Policy</a> before accepting.</p></div>
-   <div class="section"><h2>5. Signup and platform terms</h2><p>Your use of VTG is also subject to the <a href="/terms.html" target="_blank" rel="noopener">VTG Signup & Platform Agreement</a>, including rules for account use, verification, marketplace activity, communications, payments, inspections and other platform services.</p></div>
-   <label class="check"><input id="agree" type="checkbox"><span>I confirm that I have read and understood the VTG Privacy Policy and Signup & Platform Agreement, and I agree to them for use of my VTG account.</span></label>
-   <div class="actions"><button id="accept" class="btn primary" disabled>Accept & enter VTG</button><button id="logout" class="btn outline">Sign out</button></div>
-   <div id="msg" class="msg"></div>
-   <p class="note">Agreement version: 2026-09-01. VTG records the acceptance time and account/IP context for compliance and audit purposes.</p>`;
-  const agree=document.getElementById('agree'),accept=document.getElementById('accept'),msg=document.getElementById('msg');
-  agree.onchange=()=>accept.disabled=!agree.checked;
-  accept.onclick=async()=>{accept.disabled=true;msg.textContent='Saving your acceptance…';try{const r=await api('/api/auth/agreements/accept',{method:'POST',body:'{}'});const d=await r.json();if(!r.ok)throw new Error(d.message||'Could not save your acceptance.');msg.className='msg ok';msg.textContent='Agreement accepted. Opening your VTG workspace…';setTimeout(()=>location.href=nextForRole(d.user?.role||JSON.parse(localStorage.getItem('vtg-auth')||'{}').user?.role||'buyer'),350)}catch(e){msg.className='msg';msg.textContent=e.message;accept.disabled=false}};
-  document.getElementById('logout').onclick=()=>{localStorage.removeItem('vtg_access_token');localStorage.removeItem('vtg-auth');location.href='/'};
- }catch(e){app.innerHTML='<div class="eyebrow">VTG Access</div><h1 class="title">Session required</h1><p class="lead">'+e.message+'</p><button class="btn primary" onclick="location.href=\'/\'">Return to VTG</button>'}
+  try{
+    const auth=await window.VTG_AUTH_READY;
+    const current=await auth.getCurrent();
+    if(!current){location.replace('/signin.html');return;}
+    const user=current.user;
+    if(user.accountEnvironment==='staff'){location.replace('/workforce-access.html');return;}
+    if(!['buyer','supplier','bank'].includes(user.role)){location.replace('/signin.html');return;}
+    let status=user.agreementStatus;
+    if(!status){
+      const checked=await auth.client.rpc('vtg_get_agreement_status');
+      if(checked.error)throw checked.error;
+      status=checked.data;
+    }
+    if(!status||typeof status.required!=='boolean')throw new Error('VTG could not verify your agreement status. Please try again.');
+    if(status.required===false){location.replace(nextForUser(user));return;}
+    app.innerHTML=`
+      <div class="brand">Vintage Trade Global</div>
+      <div class="eyebrow">Required before workspace access</div>
+      <h1 class="title">Privacy & Signup Agreement</h1>
+      <p class="lead">Before entering your VTG workspace, please review the current Privacy Policy and Signup & Platform Agreement. Your access will remain on this page until you accept both documents.</p>
+      <div class="section"><h2>1. Account information</h2><p>VTG uses the information you provide to create and operate your account, verify your email and role, support trade activity, communicate with you, and provide the services connected to your workspace.</p></div>
+      <div class="section"><h2>2. Business and verification information</h2><p>Where your role requires verification, VTG may review business, institutional, licence and supporting documents you submit. Verification does not guarantee a transaction, supplier relationship, financing, shipment, or other commercial outcome.</p></div>
+      <div class="section"><h2>3. Your responsibilities</h2><ul><li>Provide information that is accurate and kept reasonably up to date.</li><li>Keep your password and account credentials private.</li><li>Use VTG only for lawful and legitimate trade activities.</li><li>Do not misrepresent your business, institution, products, documents or authority.</li></ul></div>
+      <div class="section"><h2>4. Privacy</h2><p>VTG will handle personal and business information in accordance with its <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and applicable data-protection requirements. Please open and review the policy before accepting.</p></div>
+      <div class="section"><h2>5. Signup and platform terms</h2><p>Your use of VTG is subject to the <a href="/terms.html" target="_blank" rel="noopener">Signup & Platform Agreement</a>, including rules for account use, verification, marketplace activity, communications, payments, inspections and other platform services.</p></div>
+      <label class="check"><input id="agree" type="checkbox"><span>I confirm that I have read and understood the VTG Privacy Policy and Signup & Platform Agreement, and I agree to them for use of my VTG account.</span></label>
+      <div class="actions"><button id="accept" class="btn primary" disabled>Accept & enter VTG</button><button id="logout" class="btn outline">Sign out</button></div>
+      <div id="msg" class="msg" role="status" aria-live="polite"></div>
+      <p class="note">Agreement version: ${VERSION}. Acceptance is securely recorded against your account with a server-generated timestamp. You will be asked again if VTG publishes a new agreement version.</p>`;
+    const agree=document.getElementById('agree'),accept=document.getElementById('accept'),msg=document.getElementById('msg');
+    agree.onchange=()=>{accept.disabled=!agree.checked;};
+    accept.onclick=async()=>{
+      if(!agree.checked)return;
+      accept.disabled=true;msg.textContent='Recording your acceptance securely…';
+      try{
+        const {data,error}=await auth.client.rpc('vtg_accept_current_agreement',{
+          p_agreement_version:status.agreement_version||VERSION,
+          p_privacy_version:status.privacy_version||VERSION,
+          p_terms_version:status.terms_version||VERSION
+        });
+        if(error)throw error;
+        if(!data||data.accepted!==true)throw new Error('VTG could not confirm your acceptance. Please try again.');
+        const verify=await auth.client.rpc('vtg_get_agreement_status');
+        if(verify.error)throw verify.error;
+        if(verify.data?.required)throw new Error('Your acceptance has not yet been confirmed. Please try again.');
+        msg.className='msg ok';msg.textContent='Agreement accepted. Opening your VTG workspace…';
+        setTimeout(()=>location.replace(nextForUser(user)),450);
+      }catch(error){msg.className='msg';msg.textContent=error.message||'Could not save your acceptance.';accept.disabled=false;}
+    };
+    document.getElementById('logout').onclick=async()=>{try{await auth.signOut();}finally{location.replace('/signin.html');}};
+  }catch(error){
+    app.innerHTML='<div class="eyebrow">VTG Access</div><h1 class="title">We could not load your agreement</h1><p class="lead"></p><a class="btn primary" href="/signin.html">Return to sign in</a>';
+    app.querySelector('.lead').textContent=error.message||'Please sign in again.';
+  }
 }
 load();
 </script>

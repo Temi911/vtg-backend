@@ -13,6 +13,34 @@
   ],
   "rewrites": [
     {
+      "source": "/api/admin/account-support",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-account-support/admin"
+    },
+    {
+      "source": "/api/agent/:path*",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-workflow/agent/:path*"
+    },
+    {
+      "source": "/api/inspections/requests/agent",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-workflow/requests/agent"
+    },
+    {
+      "source": "/api/inspections/requests/:id/:action",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-workflow/requests/:id/:action"
+    },
+    {
+      "source": "/api/shipment-events/:shipmentId",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-trade-operations/shipments/:shipmentId/events"
+    },
+    {
+      "source": "/api/notifications/:path*",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-notifications/:path*"
+    },
+    {
+      "source": "/api/notifications",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-notifications"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://vtg-backend-production-ab20.up.railway.app/api/:path*"
     },
@@ -33,7 +61,7 @@
     },
     {
       "source": "/buyer-dashboard-preview.html",
-      "destination": "/buyer-dashboard.html?preview=1",
+      "destination": "/signin.html?role=buyer&next=%2Fbuyer-dashboard.html",
       "permanent": true
     }
   ]
