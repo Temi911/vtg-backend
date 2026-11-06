@@ -2,3 +2,9 @@ project_id = "lxrurbdzphqvkjprlfuv"
 
 [functions.workforce-invitations]
 verify_jwt = false
+
+[functions.vtg-email]
+verify_jwt = true
+
+[functions.vtg-admin-roles]
+verify_jwt = false
