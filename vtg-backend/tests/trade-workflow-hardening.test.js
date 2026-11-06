@@ -87,3 +87,14 @@ test('wallet transfers are session-gated and delegated to the service-only idemp
   assert.match(fn, /idempotency_key/);
   assert.match(fn, /Insufficient wallet balance/);
 });
+
+
+test('supplier storefront publication is gated by VTG supplier verification', () => {
+  const supplier = root('vtg-supplier-products-supabase.js');
+  const buyer = root('vtg-buyer-marketplace-supabase.js');
+  const migration = root('supabase/migrations/20261106123000_vtg_trade_workflow_hardening.sql');
+  assert.match(supplier, /supplierVerificationStatus/);
+  assert.match(supplier, /awaiting supplier verification/);
+  assert.match(buyer, /verified supplier listings/);
+  assert.match(migration, /UPDATE storage\.buckets SET public = false/);
+});
