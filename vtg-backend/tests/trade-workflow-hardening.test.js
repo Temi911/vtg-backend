@@ -79,3 +79,13 @@ test('trade operations compatibility handler relies on participant RLS for shipm
   assert.match(fn, /Only the shipment supplier or an administrator may add events/);
   assert.match(fn, /GET\|POST \/shipments\/:id\/events/);
 });
+
+
+test('wallet transfers are session-gated and delegated to the service-only idempotent ledger RPC', () => {
+  const fn = root('supabase/functions/vtg-wallet/index.ts');
+  assert.match(fn, /auth\.getUser/);
+  assert.match(fn, /profile required|Active VTG profile required/);
+  assert.match(fn, /vtg_wallet_transfer/);
+  assert.match(fn, /idempotency_key/);
+  assert.match(fn, /Insufficient wallet balance/);
+});
