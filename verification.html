@@ -142,6 +142,15 @@ async function init(){
   verificationStatus=currentUser.businessVerificationStatus||'pending';
   if(!['supplier','bank','agent','admin'].includes(role)){location.replace(role==='buyer'?'/buyer-dashboard.html':'/');return;}
   $('#signOut').onclick=async()=>{try{await auth.signOut();}finally{location.replace('/signin.html?role='+encodeURIComponent(role));}};
+  if(currentUser.pendingBusinessVerification&&['supplier','bank'].includes(role)){
+   $('#intro').textContent='Your account-opening application has been received and is awaiting review by the VTG team.';
+   $('#notice').textContent='You do not need to submit another application. We will send an update to your registered email address when a decision is made. After approval, you can continue with the required company verification documents.';
+   $('#verificationStateTitle').textContent='Account opening awaiting approval';
+   $('#verificationStateText').textContent='Your application is in the VTG review queue. Your operational workspace will remain unavailable until approval.';
+   $('#verificationStateBadge').textContent='AWAITING APPROVAL';
+   $('#logoCard').classList.add('hidden');$('#uploadCard').classList.add('hidden');$('#myDocs').classList.add('hidden');
+   return;
+  }
   if(role==='admin'){
    $('#uploadCard').classList.add('hidden');$('#logoCard').classList.add('hidden');$('#myDocs').classList.add('hidden');$('#statusCard').classList.add('hidden');
    $('#notice').textContent='Review submitted company credentials and documents. Approve only evidence that is sufficient and appears legitimate. Request corrections with a clear explanation.';
