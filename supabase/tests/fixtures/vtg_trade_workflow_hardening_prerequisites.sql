@@ -34,6 +34,31 @@ create table public.profiles (
   account_environment text not null default 'trade',
   is_active boolean not null default true
 );
+
+create table public.role_requests (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id),
+  requested_role public.vtg_account_role not null,
+  organization_name text not null,
+  country text,
+  registration_reference text,
+  message text,
+  status text not null default 'pending',
+  reviewer_id uuid,
+  reviewer_notes text,
+  created_at timestamptz not null default now(),
+  reviewed_at timestamptz,
+  application_data jsonb not null default '{}'::jsonb
+);
+create table public.audit_events (
+  id uuid primary key default gen_random_uuid(),
+  actor_id uuid references auth.users(id),
+  event_type text not null,
+  entity_type text not null,
+  entity_id uuid,
+  details jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
 create table public.supplier_profiles (
   user_id uuid primary key references auth.users(id),
   verification_status public.vtg_document_status not null default 'pending',
