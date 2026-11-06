@@ -118,7 +118,7 @@ function showApplicationReceipt(email,role){
  const overlay=document.getElementById('vtgApplicationReceipt');
  document.getElementById('vtgReceiptBody').textContent="Your application details have been received by VTG’s admin team. The team will carefully scrutinise your submission and send its decision to your registered email once the review is complete. Please check your inbox over the next 24 hours to 2 days. Do not sign up again with this email while your application is pending. A duplicate registration can delay the review.";
  overlay.classList.add('open');document.body.style.overflow='hidden';
- document.getElementById('vtgReceiptContinue').onclick=()=>{location.href='/verification.html?role='+encodeURIComponent(role);};
+ document.getElementById('vtgReceiptContinue').onclick=()=>{location.href='/supplier-dashboard.html#page-profile';};
 }
 function setMessage(text,ok,processing){
  message.className='message'+(ok?' ok':processing?' processing':'');
@@ -140,7 +140,7 @@ async function beginSignup(){
   const {data,error}=await auth.signUp(email,d.password,metadata(d));
   if(error)throw error;
   if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0){
-   throw new Error('This email already has a VTG account. Sign in using the same email instead of registering again. If VTG rejected your earlier application, open Business Verification to submit a fresh application with this same account.');
+   throw new Error('This email already has a VTG account. Sign in using the same email instead of registering again. If VTG rejected your earlier application, open Company & verification in your dashboard to submit a fresh application with this same account.');
   }
   if(data.session){
    const current=await auth.getCurrent();
