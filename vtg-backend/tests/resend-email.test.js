@@ -38,7 +38,7 @@ test('role approval sends a best-effort applicant decision email only after the 
 test('company document review sends a best-effort verification update', () => {
   const endpoint = readRoot('supabase/functions/vtg-verification/index.ts');
   assert.match(endpoint, /if \(!admin\) return out\(\{ error: "Administrator required" \}/);
-  assert.ok(endpoint.indexOf('reviewed_at: new Date()') < endpoint.indexOf('deliverTrackedEmail'));
+  assert.ok(endpoint.indexOf('reviewed_at: new Date().toISOString()') < endpoint.indexOf('const delivery = await deliverTrackedEmail'));
   assert.match(endpoint, /company_verification_update/);
   assert.match(endpoint, /company-verification-document-review:/);
 });
