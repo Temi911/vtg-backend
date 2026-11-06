@@ -122,4 +122,7 @@ test('bank workspace is verified-account scoped and exposes only assigned trade 
   assert.match(migration, /assigned lc banks read linked shipment events/);
   assert.match(migration, /verified assigned bank or admin updates lc/);
   assert.match(migration, /vtg_bank_lc_review_events/);
+  assert.match(migration, /vtg_guard_bank_lc_update/);
+  assert.match(migration, /Banks may not change LC parties, terms, value or assignment/);
+  assert.match(migration, /current_setting\('vtg\.bank_lc_review_note'/);
 });
