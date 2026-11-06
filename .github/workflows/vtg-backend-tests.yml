@@ -83,6 +83,10 @@ jobs:
         run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/fixtures/vtg_trade_workflow_hardening_prerequisites.sql
       - name: Apply the VTG workflow-hardening migration
         run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20261106123000_vtg_trade_workflow_hardening.sql
+      - name: Apply the rejected business-application reapply migration
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20261106140000_vtg_business_application_reapply.sql
+      - name: Test safe business-application reapplication
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/vtg_business_application_reapply.test.sql
       - name: Set up Deno
         uses: denoland/setup-deno@v2
         with:
