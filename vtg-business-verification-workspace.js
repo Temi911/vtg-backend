@@ -14,7 +14,7 @@ function message(s,ok){const n=host.querySelector('[data-vtg-message]');if(n){n.
 function latestDocs(){const m=new Map();for(const d of docs)if(!m.has(d.doc_type))m.set(d.doc_type,d);return m;}
 function render(){
  const latest=latestDocs(),logo=latest.get('company_logo'),items=required[role]||[];
- const rejected=docs.filter(d=>d.status==='rejected');
+ const rejected=[...latest.values()].filter(d=>d.status==='rejected');
  const all=[...items.map(x=>x[0]),'company_logo'].every(k=>latest.has(k)&&latest.get(k).status!=='rejected');
  const state=user.businessVerificationStatus==='verified'||user.verificationStatus==='verified'?'verified':rejected.length?'needs_correction':(user.businessVerificationStatus||user.verificationStatus|| (all?'under_review':'pending'));
  const verified=state==='verified';
@@ -60,7 +60,12 @@ host.addEventListener('click',async e=>{
   if(btn.hasAttribute('data-vtg-resubmit')){
    const result=await client.rpc('vtg_resubmit_rejected_role_request',{p_requested_role:role});
    if(result.error)throw result.error;
-   message('Your corrected application has been resubmitted for review.',true);return;
+   const state=await client.from('role_requests').select('status')
+    .eq('user_id',user.id).eq('requested_role',role)
+    .order('created_at',{ascending:false}).limit(1).maybeSingle();
+   if(state.error)throw state.error;
+   host.innerHTML='<section class="vtg-vpanel"><header><div><span class="vtg-veye">ACCOUNT APPLICATION</span><h2>Application resubmitted</h2><p>Your application is back in VTG’s review queue. No further action is required unless our team contacts you.</p></div><span class="vtg-vstate">Awaiting approval</span></header><p class="vtg-vstate-note">We will email you when a decision has been made. Please check your inbox and spam or junk folder.</p></section>';
+   return;
   }
   const type=btn.getAttribute('data-vtg-upload')||'company_logo';
   const input=type==='company_logo'?host.querySelector('[data-vtg-logo-input]'):host.querySelector('[data-vtg-type="'+type+'"]');
@@ -78,6 +83,25 @@ host.addEventListener('click',async e=>{
   user=current.user;role=user.role==='buyer'&&user.requestedRole?user.requestedRole:user.role;
   if(!['supplier','bank'].includes(role))throw new Error('This verification workspace is for supplier and bank accounts.');
   client=auth.client;if(!client)throw new Error('Secure document storage is unavailable.');
+  // A new supplier/bank applicant must wait for account-opening approval before
+  // entering the separate document-verification stage.
+  if(user.pendingBusinessVerification){
+   const application=await client.from('role_requests')
+    .select('status,reviewer_notes,created_at')
+    .eq('user_id',user.id).eq('requested_role',role)
+    .order('created_at',{ascending:false}).limit(1).maybeSingle();
+   if(application.error)throw application.error;
+   const status=application.data?.status||'pending';
+   const notes=application.data?.reviewer_notes||'';
+   if(status==='rejected'){
+    host.innerHTML='<section class="vtg-vpanel"><header><div><span class="vtg-veye">ACCOUNT APPLICATION</span><h2>Application needs attention</h2><p>VTG has reviewed your account-opening application and has not approved it at this time.</p></div><span class="vtg-vstate warn">Action required</span></header><p class="vtg-vstate-note">'+esc(notes||'Please resubmit your application for another review.')+'</p><div class="vtg-vfooter"><span data-vtg-message role="status"></span><button type="button" data-vtg-resubmit>Resubmit application</button></div></section>';
+   }else if(status==='approved'){
+    host.innerHTML='<section class="vtg-vpanel"><header><div><span class="vtg-veye">ACCOUNT APPLICATION</span><h2>Approval recorded</h2><p>Your account-opening application has been approved. Refresh this page or sign in again to continue to business verification.</p></div><span class="vtg-vstate good">Approved</span></header></section>';
+   }else{
+    host.innerHTML='<section class="vtg-vpanel"><header><div><span class="vtg-veye">ACCOUNT APPLICATION</span><h2>Application received</h2><p>Your '+(role==='bank'?'bank / financial institution':'supplier / trading company')+' account application is awaiting VTG administrative approval.</p></div><span class="vtg-vstate">Awaiting approval</span></header><p class="vtg-vstate-note">No further action is required while your application is being reviewed. VTG will send an email to your registered address when a decision has been made. Please check your inbox and spam or junk folder. Business document verification and workspace features will become available after account approval.</p></section>';
+   }
+   return;
+  }
   await refresh();
  }catch(err){message(err.message||'Could not load verification records.',false);}
 })();
