@@ -87,6 +87,10 @@ jobs:
         run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20261106140000_vtg_business_application_reapply.sql
       - name: Test safe business-application reapplication
         run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/vtg_business_application_reapply.test.sql
+      - name: Apply business-verification upload approval gate
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20261106150000_vtg_gate_business_verification_uploads.sql
+      - name: Test verification uploads require approved account roles
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/vtg_business_verification_upload_gate.test.sql
       - name: Set up Deno
         uses: denoland/setup-deno@v2
         with:
