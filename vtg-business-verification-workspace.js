@@ -16,7 +16,7 @@ function render(){
  const latest=latestDocs(),logo=latest.get('company_logo'),items=required[role]||[];
  const rejected=docs.filter(d=>d.status==='rejected');
  const all=[...items.map(x=>x[0]),'company_logo'].every(k=>latest.has(k)&&latest.get(k).status!=='rejected');
- const state=user.businessVerificationStatus||user.verificationStatus||(rejected.length?'needs_correction':all?'under_review':'pending');
+ const state=user.businessVerificationStatus==='verified'||user.verificationStatus==='verified'?'verified':rejected.length?'needs_correction':(user.businessVerificationStatus||user.verificationStatus|| (all?'under_review':'pending'));
  const verified=state==='verified';
  host.querySelector('[data-vtg-state]').textContent=verified?'Verified':statusLabel(state).replace(/^./,x=>x.toUpperCase());
  host.querySelector('[data-vtg-state]').className='vtg-vstate '+(verified?'good':state==='needs_correction'?'warn':'');
