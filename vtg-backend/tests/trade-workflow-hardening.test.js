@@ -40,7 +40,7 @@ test('payment API routes remain on the Railway fallback until Supabase payment p
   assert.ok(fallback.destination.includes('railway.app/api/:path*'));
   const callback = root('inspection-payment-callback.html');
   assert.match(callback, /inspectionId/);
-  assert.match(callback, /\\/api\\/inspections\\/payment\\/verify/);
+  assert.ok(callback.includes('/api/inspections/payment/verify'));
 });
 
 test('trade documents remain private and signed downloads are scoped to authorised trade participants', () => {
