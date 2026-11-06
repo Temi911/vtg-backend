@@ -134,7 +134,11 @@ async function reviewDoc(id,status){
 }
 async function init(){
  try{
-  auth=await window.VTG_AUTH_READY;client=auth.client;
+  if(!window.VTG_AUTH_READY)throw new Error('Secure sign-in service is not available. Please refresh and try again.');
+  await window.VTG_AUTH_READY;
+  auth=window.VTGAuth||window.VTG_AUTH||null;
+  client=auth?.client||window.VTG_SUPABASE||null;
+  if(!auth?.getCurrent||!client)throw new Error('Secure sign-in service did not finish initialising. Please refresh and try again.');
   const current=await auth.getCurrent();
   if(!current){location.replace('/signin.html?role=supplier');return;}
   currentUser=current.user;role=currentUser.role==='buyer'&&currentUser.requestedRole?currentUser.requestedRole:currentUser.role;
