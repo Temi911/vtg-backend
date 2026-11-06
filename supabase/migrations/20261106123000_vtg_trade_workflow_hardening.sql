@@ -35,7 +35,7 @@ returns trigger
 language plpgsql
 security invoker
 set search_path = public, private, pg_temp
-as $
+as $$
 begin
   if auth.uid() is not null and not private.vtg_is_admin() then
     if tg_op = 'INSERT' then
@@ -50,7 +50,7 @@ begin
   end if;
   return new;
 end;
-$;
+$$;
 
 drop trigger if exists vtg_guard_bank_verification_fields on public.bank_profiles;
 create trigger vtg_guard_bank_verification_fields
@@ -58,7 +58,7 @@ before insert or update on public.bank_profiles
 for each row execute function public.vtg_guard_bank_verification_fields();
 
 -- A bank can read only trade documents attached to an LC explicitly assigned to that bank.
-do $
+do $$
 begin
   if not exists (
     select 1 from pg_policies
@@ -99,7 +99,7 @@ begin
       );
   end if;
 end;
-$;
+$$;
 
 do $$
 begin
