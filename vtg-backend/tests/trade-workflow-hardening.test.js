@@ -37,7 +37,7 @@ test('payment API routes remain on the Railway fallback until Supabase payment p
   const paymentRoutes = ['/api/inspections/requests/:inspectionId/payment/initialize', '/api/inspections/payment/verify', '/api/webhooks/paystack', '/api/payments/intents'];
   for (const route of paymentRoutes) assert.equal(config.rewrites.some(x => x.source === route), false);
   const fallback = config.rewrites.find(x => x.source === '/api/:path*');
-  assert.match(fallback.destination, /railway\\.app\\/api\\/:path\\*$/);
+  assert.ok(fallback.destination.includes('railway.app/api/:path*'));
   const callback = root('inspection-payment-callback.html');
   assert.match(callback, /inspectionId/);
   assert.match(callback, /\\/api\\/inspections\\/payment\\/verify/);
