@@ -31,6 +31,15 @@ BEGIN
     RAISE EXCEPTION 'This account is not eligible to resubmit this application' USING ERRCODE = '42501';
   END IF;
 
+  IF EXISTS (
+    SELECT 1 FROM public.role_requests
+    WHERE user_id = v_user_id
+      AND requested_role = p_requested_role::public.vtg_account_role
+      AND status = 'pending'
+  ) THEN
+    RAISE EXCEPTION 'Only an application rejected by VTG can be resubmitted. Pending applications must wait for review.';
+  END IF;
+
   SELECT * INTO v_previous
   FROM public.role_requests
   WHERE user_id = v_user_id
