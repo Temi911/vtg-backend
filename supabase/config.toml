@@ -17,3 +17,15 @@ verify_jwt = false
 
 [functions.vtg-notifications]
 verify_jwt = false
+
+[functions.vtg-finance-inspections]
+verify_jwt = false
+
+[functions.vtg-trade-operations]
+verify_jwt = false
+
+[functions.vtg-live-tracking]
+verify_jwt = false
+
+[functions.vtg-inspection-payments]
+verify_jwt = false
