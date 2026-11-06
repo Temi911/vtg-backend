@@ -52,7 +52,7 @@ test('trade documents remain private and signed downloads are scoped to authoris
   assert.match(migration, /assigned lc banks read trade documents/);
   assert.match(migration, /assigned lc banks read private trade document objects/);
   assert.match(migration, /lc.bank_id = \(select auth.uid\(\)\)/);
-  assert.match(migration, /REVOKE ALL ON FUNCTION public\.vtg_confirm_inspection_payment/);
+  assert.match(migration, /revoke all on function public\.vtg_confirm_inspection_payment/i);
 });
 
 
@@ -72,7 +72,7 @@ test('live logistics is session-authenticated and buyer-scoped; provider credent
 test('trade operations compatibility handler relies on participant RLS for shipment events and quote ownership', () => {
   const fn = root('supabase/functions/vtg-trade-operations/index.ts');
   assert.match(fn, /auth\.getUser/);
-  assert.match(fn, /buyer_id,user\.id/);
+  assert.match(fn, /eq\("buyer_id",user\.id\)/);
   assert.match(fn, /created_by:user\.id/);
   assert.match(fn, /Only the shipment supplier or an administrator may add events/);
   assert.match(fn, /GET\|POST \/shipments\/:id\/events/);
