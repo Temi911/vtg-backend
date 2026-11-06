@@ -64,7 +64,7 @@
 </section>
 
 </main>
-<div id="vtgApplicationReceipt" class="vtg-receipt-backdrop" role="dialog" aria-modal="true" aria-labelledby="vtgReceiptTitle" aria-describedby="vtgReceiptBody"><section class="vtg-receipt"><div class="vtg-receipt-mark" aria-hidden="true">✓</div><h2 id="vtgReceiptTitle">Application received</h2><p id="vtgReceiptBody"></p><button id="vtgReceiptContinue" type="button">Continue to VTG</button></section></div>
+<div id="vtgApplicationReceipt" class="vtg-receipt-backdrop" role="dialog" aria-modal="true" aria-labelledby="vtgReceiptTitle" aria-describedby="vtgReceiptBody"><section class="vtg-receipt"><div class="vtg-receipt-mark" aria-hidden="true">✓</div><h2 id="vtgReceiptTitle">Application received</h2><p id="vtgReceiptStatus" class="vtg-receipt-status" role="status" aria-live="polite"></p><p id="vtgReceiptBody"></p><button id="vtgReceiptContinue" type="button">Continue to VTG</button></section></div>
 <div id="vsFooter"></div>
 <script src="/vtg-supabase-auth.js?v=20261105-agreement-2"></script>
 <script>
@@ -123,11 +123,12 @@ async function showApplicationReceipt(email,role,emailDelivery){
    emailDelivery=result.data||null;
   }catch(error){console.warn('VTG application email could not be confirmed:',error?.message||error);}
  }
- const emailSent=!!emailDelivery?.email?.sent;
- document.getElementById('vtgReceiptTitle').textContent=emailSent?'Application successfully received':'Application received';
+ const emailSent=emailDelivery?.email?.sent===true;
+ document.getElementById('vtgReceiptTitle').textContent='Application successfully received';
+ document.getElementById('vtgReceiptStatus').textContent=emailSent?'EMAIL CONFIRMATION SENT':'APPLICATION RECEIVED — EMAIL NOT CONFIRMED';
  document.getElementById('vtgReceiptBody').textContent=emailSent
-  ?"Thank you for choosing VTG. Your "+(role==='bank'?'bank / financial institution':'supplier / trading company')+" account application has been received and is awaiting administrative review. Our team will review your submitted business information and supporting documents. An email notification has been sent to "+email+". Please check your inbox and spam or junk folder for the application details and next steps. We will contact you by email if more information or corrections are needed, and notify you when a decision has been made. Please do not submit a duplicate application while this one is pending."
-  :"Thank you for choosing VTG. Your application has been received and remains pending administrative review. We could not send the confirmation email just now. Please check your registered email again later or contact vintageafricatrade@gmail.com for assistance. Your application has not been cancelled, and you should not submit another application.";
+  ?"Thank you for choosing VTG. Your "+(role==='bank'?'bank / financial institution':'supplier / trading company')+" account application has been received and is awaiting administrative review. Our team will review your organisation details and supporting information. We have sent an email to "+email+" with the review process and next steps. Please check your inbox and spam or junk folder. No further action is required unless our team contacts you for clarification or corrected documents. We will notify you by email when a decision has been made. Your account features will be enabled after approval. Please do not submit a duplicate application while this one is pending."
+  :"Thank you for choosing VTG. Your "+(role==='bank'?'bank / financial institution':'supplier / trading company')+" account application has been received and remains pending administrative review. However, VTG could not confirm that the confirmation email was sent. Your application is still in the review queue and has not been cancelled. Please check your registered email later or contact vintageafricatrade@gmail.com for assistance. Do not submit another application while this one is pending.";
  overlay.classList.add('open');document.body.style.overflow='hidden';
  document.getElementById('vtgReceiptContinue').onclick=()=>{location.href='/supplier-dashboard.html#page-profile';};
 }
