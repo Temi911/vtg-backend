@@ -108,9 +108,20 @@ Deno.serve(async (req: Request) => {
   const user = identity.data.user;
   const admin = createClient(url, service, { auth: { persistSession: false, autoRefreshToken: false } });
   const profile = await admin.from("profiles").select("role,is_active,full_name").eq("id", user.id).maybeSingle();
-  if (profile.error || !profile.data?.is_active) return out({ error: "Active account required." }, 403);
+  if (profile.error || !profile.data) return out({ error: "Account profile not found." }, 403);
 
   const body = await req.json().catch(() => ({}));
+  // Pending supplier/bank applicants may receive only their application receipt.
+  // This does not activate the account or grant dashboard permissions.
+  const pendingApplication = await admin.from("role_requests").select("id,requested_role,status,organization_name")
+    .eq("user_id", user.id).in("requested_role", ["supplier", "bank"])
+    .eq("status", "pending")
+    .order("created_at", { ascending: false }).limit(1).maybeSingle();
+  const isPendingApplicant = Boolean(pendingApplication.data);
+  if (!profile.data.is_active && !(body.event === "onboarding" && isPendingApplicant)) {
+    return out({ error: "Active account required." }, 403);
+  }
+
   if (body.event === "onboarding") {
     let role = profile.data.role;
     let eventType = "account_welcome";
@@ -118,13 +129,8 @@ Deno.serve(async (req: Request) => {
     let heading = "Welcome to VTG";
     let message = "Your VTG account is ready. Sign in to explore your workspace and continue your trade activities.";
     let eventKey = "onboarding:" + user.id;
-    if (role === "buyer") {
-      // A buyer may have applied for a business role; only send the application receipt for a pending request.
-      const application = await admin.from("role_requests").select("id,requested_role,status,organization_name")
-        .eq("user_id", user.id).in("requested_role", ["supplier", "bank"])
-        .order("created_at", { ascending: false }).limit(1).maybeSingle();
-      if (application.data?.status === "pending") {
-        role = application.data.requested_role;
+    if (isPendingApplicant) {
+        role = pendingApplication.data.requested_role;
         eventType = "business_application_received";
         const roleLabel = role === "supplier" ? "Supplier" : "Bank / financial institution";
         subject = "VTG " + roleLabel + " Account Application Received — Awaiting Review";
