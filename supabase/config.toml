@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.vtg-inspection-workflow]
 verify_jwt = false
+
+[functions.vtg-notifications]
+verify_jwt = false
