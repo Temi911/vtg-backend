@@ -99,7 +99,7 @@ Deno.serve(async (req: Request) => {
   return reply({
     ok: true,
     requestId: result.data.id,
-    message: "Your support request has been received by VTG. Keep an eye on your inbox for a response.",
+    message: "Your support request has been recorded. VTG support can review it through the administrator inbox.",
     emailNotification: "queued_for_support_review",
   }, 201);
 });
