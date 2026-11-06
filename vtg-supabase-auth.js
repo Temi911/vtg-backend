@@ -124,6 +124,13 @@
           }
           await addAgreementStatus(user);
           save(data.session, user);
+          // Send the verified account's welcome/application receipt without blocking sign-in.
+          try {
+            const delivery = await client.functions.invoke('vtg-email', { body: { event: 'onboarding' } });
+            if (delivery.error) console.warn('VTG onboarding email was not sent:', delivery.error.message || delivery.error);
+          } catch (emailError) {
+            console.warn('VTG onboarding email is temporarily unavailable:', emailError?.message || emailError);
+          }
           return { session: data.session, user };
         },
         async signIn(email, password) {
