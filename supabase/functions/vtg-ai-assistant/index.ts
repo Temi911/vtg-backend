@@ -103,7 +103,7 @@ Deno.serve(async (req: Request) => {
   let lastFailure: "timeout" | "connection" | "provider" | "empty" = "provider";
   for (const provider of providers) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 25000);
+    const timeout = setTimeout(() => controller.abort(), 12000);
     let upstream: Response;
     try {
       upstream = await fetch(provider.base + "/chat/completions", {
@@ -128,7 +128,8 @@ Deno.serve(async (req: Request) => {
 
     if (!upstream.ok) {
       lastFailure = "provider";
-      console.warn("VTG AI provider returned an error; trying next provider", provider.name, upstream.status);
+      const providerError = await upstream.text().catch(() => "");
+      console.warn("VTG AI provider returned an error; trying next provider", provider.name, upstream.status, providerError.slice(0, 300));
       continue;
     }
 
@@ -155,5 +156,14 @@ Deno.serve(async (req: Request) => {
     empty: "The AI providers returned an empty response. Please try again shortly.",
     provider: "The AI providers could not complete this request. Please try again shortly.",
   };
-  return response({ error: { code: "AI_PROVIDER_UNAVAILABLE", message: messages[lastFailure] } }, lastFailure === "timeout" ? 504 : 502);
+  // Return a normal chat payload when providers are temporarily unavailable.
+  // The dashboard can display this in the assistant bubble instead of surfacing
+  // Supabase's generic "Edge Function returned a non-2xx status code" error.
+  return response({
+    reply: "VTG AI is temporarily unable to reach its response service. Your message has not been submitted as a trade instruction. Please try again shortly. If this continues, contact VTG support at vintageafricatrade@gmail.com.",
+    role: accountRole,
+    mode: "fallback",
+    retryable: true,
+    error: { code: "AI_PROVIDER_UNAVAILABLE", message: messages[lastFailure] },
+  });
 });
