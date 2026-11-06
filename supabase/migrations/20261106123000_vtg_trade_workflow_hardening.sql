@@ -321,6 +321,8 @@ begin
     raise exception 'A verified assigned bank and supported review status are required';
   end if;
 
+  perform set_config('vtg.bank_lc_review_note', left(coalesce(p_note,''),1000), true);
+
   update public.letters_of_credit lc
   set status = p_status, updated_at = now()
   where lc.id = p_lc_id
@@ -341,11 +343,48 @@ begin
     raise exception 'LC is not assigned to this verified bank';
   end if;
 
-  insert into public.vtg_bank_lc_review_events(lc_id,bank_id,actor_id,status,note)
-  values(updated_lc,actor,actor,p_status,left(coalesce(p_note,''),1000));
-
   return updated_lc;
 end;
 $$;
 revoke all on function public.vtg_bank_review_lc(uuid,text,text) from public, anon;
 grant execute on function public.vtg_bank_review_lc(uuid,text,text) to authenticated;
+
+
+-- A bank may only change its assigned LC review status; all other LC fields stay immutable.
+create or replace function public.vtg_guard_bank_lc_update()
+returns trigger
+language plpgsql
+security invoker
+set search_path = public, private, pg_temp
+as $$
+declare review_note text;
+begin
+  if auth.uid() is not null and not private.vtg_is_admin() then
+    if old.bank_id is distinct from auth.uid()
+       or new.id is distinct from old.id
+       or new.order_id is distinct from old.order_id
+       or new.buyer_id is distinct from old.buyer_id
+       or new.supplier_id is distinct from old.supplier_id
+       or new.bank_id is distinct from old.bank_id
+       or new.reference is distinct from old.reference
+       or new.amount is distinct from old.amount
+       or new.currency is distinct from old.currency
+       or new.expiry_date is distinct from old.expiry_date
+       or new.created_at is distinct from old.created_at then
+      raise exception 'Banks may not change LC parties, terms, value or assignment';
+    end if;
+    if new.status not in ('under_review','documents_requested','declined') then
+      raise exception 'Unsupported bank LC review status';
+    end if;
+    new.updated_at := now();
+    review_note := current_setting('vtg.bank_lc_review_note', true);
+    insert into public.vtg_bank_lc_review_events(lc_id,bank_id,actor_id,status,note)
+    values(old.id,auth.uid(),auth.uid(),new.status,nullif(review_note,''));
+  end if;
+  return new;
+end;
+$$;
+drop trigger if exists vtg_guard_bank_lc_update on public.letters_of_credit;
+create trigger vtg_guard_bank_lc_update
+before update on public.letters_of_credit
+for each row execute function public.vtg_guard_bank_lc_update();
