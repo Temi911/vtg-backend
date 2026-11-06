@@ -288,5 +288,5 @@ const initialLanguage=localStorage.getItem('vtg-language')||localStorage.getItem
  $('exportAdminSettings')?.addEventListener('click',()=>download('vtg-admin-settings-preview.json',{scope:'local preview only; no live settings changed',exportedAt:new Date().toISOString(),appearance:{theme:$('skinSelect')?.value||'executive',language:$('languageSelect')?.value||'en'},reviewChecklist:readChecks()}));
 })();
 </script>
-<script src="/vtg-workforce-admin.js?v=20261105-1"></script>
+<script src="/vtg-workforce-admin.js?v=20261106-1"></script>
 </body></html>
