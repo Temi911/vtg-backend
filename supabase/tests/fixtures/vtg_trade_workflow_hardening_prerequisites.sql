@@ -220,6 +220,9 @@ insert into storage.buckets(id,name,public)
 values ('vtg-verification-documents','vtg-verification-documents',false),
        ('vtg-company-logos','vtg-company-logos',true)
 on conflict(id) do nothing;
+grant usage on schema auth, storage to authenticated;
+grant execute on function auth.uid() to authenticated;
+grant select on public.profiles to authenticated;
 create or replace function storage.foldername(name text)
 returns text[] language sql immutable as $
   select array[split_part(name,'/',1)]
