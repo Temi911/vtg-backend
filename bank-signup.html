@@ -173,7 +173,7 @@ $('#signupForm').addEventListener('submit',async e=>{
   const auth=await window.VTG_AUTH_READY;
   const result=await auth.verifySignupCode(email,code);
   const pendingRole=result.user.requestedRole;
-  setMessage('Email verified. Your VTG account has been created successfully.',true);
+  setMessage('Email confirmed. Your bank account-opening application has been received and is awaiting VTG approval. We will send an update to '+email+'.',true);
   setTimeout(()=>location.href=pendingRole&&pendingRole!=='buyer'?'/verification.html?role='+encodeURIComponent(pendingRole):'/verification.html?role=bank',900);
  }catch(error){
   submitButton.disabled=false;sendButton.disabled=false;setMessage(error.message||'The code could not be verified. Check it and try again.',false);
