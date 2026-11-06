@@ -98,3 +98,28 @@ test('supplier storefront publication is gated by VTG supplier verification', ()
   assert.match(buyer, /verified supplier listings/);
   assert.match(migration, /UPDATE storage\.buckets SET public = false/);
 });
+
+
+test('bank workspace is verified-account scoped and exposes only assigned trade records', () => {
+  const fn = root('supabase/functions/vtg-bank-trade-workspace/index.ts');
+  const ui = root('vtg-bank-trade-supabase.js');
+  const page = root('bank-trade-os.html');
+  const migration = root('supabase/migrations/20261106123000_vtg_trade_workflow_hardening.sql');
+  assert.match(fn, /profile\?\.role !== "bank"/);
+  assert.match(fn, /account_environment !== "trade"/);
+  assert.match(fn, /bank\.verification_status !== "verified"/);
+  assert.match(fn, /\.eq\("bank_id", user\.id\)/);
+  assert.match(fn, /vtg_bank_review_lc/);
+  assert.match(fn, /does not issue LCs or execute\/release payments/);
+  assert.match(ui, /createSignedUrl\(path, 60\)/);
+  assert.match(ui, /vtg-bank-trade-workspace/);
+  assert.match(page, /vtgBankLiveCases/);
+  assert.match(page, /vtgBankLiveDocuments/);
+  assert.match(page, /vtgBankLiveShipments/);
+  assert.match(page, /vtgBankLivePayments/);
+  assert.match(migration, /assigned lc banks read linked orders/);
+  assert.match(migration, /assigned lc banks read linked shipments/);
+  assert.match(migration, /assigned lc banks read linked shipment events/);
+  assert.match(migration, /verified assigned bank or admin updates lc/);
+  assert.match(migration, /vtg_bank_lc_review_events/);
+});
