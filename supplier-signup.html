@@ -25,10 +25,10 @@
 <div id="vsHeader" data-active=""></div>
 <script src="/vtg-shell.js?v=20261030-1"></script>
 <main id="main" class="vs-wrap sg">
-<aside class="sg-side"><figure class="vs-sidephoto"><img src="https://images.pexels.com/photos/17937671/pexels-photo-17937671.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Worker in a factory" loading="lazy" onerror="this.parentNode.remove()"></figure><span class="eyebrow">A clearer way to trade</span><h1>Bring your business to global buyers.</h1><p>Create your company profile so buyers can understand your products, capabilities and business credentials.</p><div class="benefits"><div class="benefit"><span class="check">✓</span><span>Dedicated supplier workspace and relevant tools</span></div><div class="benefit"><span class="check">✓</span><span>Secure email verification during registration</span></div><div class="benefit"><span class="check">✓</span><span>Verification steps for trusted trade relationships</span></div></div></div></aside>
+<aside class="sg-side"><figure class="vs-sidephoto"><img src="https://images.pexels.com/photos/17937671/pexels-photo-17937671.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Worker in a factory" loading="lazy" onerror="this.parentNode.remove()"></figure><span class="eyebrow">A clearer way to trade</span><h1>Bring your business to global buyers.</h1><p>Create your company profile so buyers can understand your products, capabilities and business credentials.</p><div class="benefits"><div class="benefit"><span class="check">✓</span><span>Dedicated supplier workspace and relevant tools</span></div><div class="benefit"><span class="check">✓</span><span>Secure email verification during registration</span></div><div class="benefit"><span class="check">✓</span><span>Account review by VTG before supplier access is enabled</span></div></div></div></aside>
 <section class="formPanel" aria-label="Supplier registration form">
 <div class="formTop"><span class="roleTag">Supplier / Trading Company</span><span class="secureTag"><span class="secureDot"></span> Secure registration</span></div>
-<p class="intro">Tell us about your company, authorised representative and products. Verification documents are handled in the next stage.</p>
+<p class="intro">Tell us about your company, authorised representative and products. After you submit, VTG will review your application. You do not need to complete business verification or upload documents during signup.</p>
 <div class="stepMeta"><span><strong id="stepName"></strong></span><span id="stepCount">Step 1 of 4</span></div><div class="track" role="progressbar" aria-label="Registration progress" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" id="progressTrack"><span id="progressBar"></span></div>
 <form id="signupForm" class="vtg-form" novalidate><div class="fieldsRoot">
 <section class="step" data-step="0"><div class="fields">
@@ -50,7 +50,7 @@
 <div class="field"><label for="tradeYears">Years in international trade *</label><input id="tradeYears" name="tradeYears" type="number" min="0" max="100" required></div>
 <div class="field"><label for="licenseNumber">Business / trade licence number *</label><input id="licenseNumber" name="licenseNumber" required></div>
 <div class="field full"><label for="regulator">Issuing authority / regulator *</label><input id="regulator" name="regulator" required></div>
-<div class="field full"><div class="notice"><strong>Company verification</strong>Registration and licence documents are requested during the next verification stage, before supplier privileges are enabled.</div></div>
+<div class="field full"><div class="notice"><strong>What happens next</strong>Submit your application and wait for VTG administrator approval. We will email you when a decision has been made. No document upload or separate business-verification step is required during signup.</div></div>
 </div></section>
 <section class="step" data-step="3" hidden><div class="fields">
 <div class="field full"><label for="password">Create password *</label><div class="passwordRow"><input id="password" name="password" type="password" autocomplete="new-password" minlength="8" pattern="(?=.*[A-Z])(?=.*\d).{8,}" title="Use at least 8 characters, one uppercase letter and one number." required><button type="button" class="miniButton" id="passwordToggle">Show</button></div><span class="hint">At least 8 characters, including one uppercase letter and one number.</span></div>
@@ -60,7 +60,7 @@
 <div class="actions"><button class="actionButton" type="button" id="backStep" disabled>Previous step</button><button class="actionButton primary" type="button" id="nextStep">Continue</button><button class="actionButton primary" type="submit" id="submitForm" hidden>Create account</button></div>
 </form>
 <div class="bottomLinks"><span>Already registered? <a href="/signin.html">Sign in</a></span><a href="/signup.html">Choose another account type</a></div>
-<p class="footnote">By creating an account, you agree to complete VTG’s applicable account and business verification steps. Do not submit passwords or verification codes to anyone outside the VTG signup flow.</p>
+<p class="footnote">By creating an account, you agree to submit your supplier application for VTG administrator review. You will receive an email when a decision has been made. Do not submit passwords or verification codes to anyone outside the VTG signup flow.</p>
 </section>
 
 </main>
@@ -152,7 +152,7 @@ async function beginSignup(){
   const {data,error}=await auth.signUp(email,d.password,metadata(d));
   if(error)throw error;
   if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0){
-   throw new Error('This email already has a VTG account. Sign in using the same email instead of registering again. If VTG rejected your earlier application, open Company & verification in your dashboard to submit a fresh application with this same account.');
+   throw new Error('This email already has a VTG account. Sign in using the same email instead of registering again. If your earlier application was not approved, sign in with this account and follow the application status instructions. Do not create a duplicate account.');
   }
   if(data.session){
    const current=await auth.getCurrent();
