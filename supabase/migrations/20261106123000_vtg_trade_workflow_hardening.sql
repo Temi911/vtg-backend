@@ -301,3 +301,51 @@ begin
   end if;
 end;
 $$;
+
+
+create or replace function public.vtg_bank_review_lc(
+  p_lc_id uuid,
+  p_status text,
+  p_note text default null
+)
+returns uuid
+language plpgsql
+security invoker
+set search_path = public, pg_temp
+as $$
+declare
+  actor uuid := auth.uid();
+  updated_lc uuid;
+begin
+  if actor is null or p_status not in ('under_review','documents_requested','declined') then
+    raise exception 'A verified assigned bank and supported review status are required';
+  end if;
+
+  update public.letters_of_credit lc
+  set status = p_status, updated_at = now()
+  where lc.id = p_lc_id
+    and lc.bank_id = actor
+    and exists (
+      select 1
+      from public.profiles p
+      join public.bank_profiles bp on bp.user_id=p.id
+      where p.id=actor
+        and p.role='bank'::public.vtg_account_role
+        and p.account_environment='trade'
+        and p.is_active=true
+        and bp.verification_status='verified'::public.vtg_document_status
+    )
+  returning lc.id into updated_lc;
+
+  if updated_lc is null then
+    raise exception 'LC is not assigned to this verified bank';
+  end if;
+
+  insert into public.vtg_bank_lc_review_events(lc_id,bank_id,actor_id,status,note)
+  values(updated_lc,actor,actor,p_status,left(coalesce(p_note,''),1000));
+
+  return updated_lc;
+end;
+$$;
+revoke all on function public.vtg_bank_review_lc(uuid,text,text) from public, anon;
+grant execute on function public.vtg_bank_review_lc(uuid,text,text) to authenticated;
