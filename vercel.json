@@ -13,6 +13,18 @@
   ],
   "rewrites": [
     {
+      "source": "/api/agent/:path*",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-workflow/agent/:path*"
+    },
+    {
+      "source": "/api/inspections/requests/agent",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-workflow/requests/agent"
+    },
+    {
+      "source": "/api/inspections/requests/:id/:action",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-workflow/requests/:id/:action"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://vtg-backend-production-ab20.up.railway.app/api/:path*"
     },
