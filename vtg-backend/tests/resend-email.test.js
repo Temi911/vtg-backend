@@ -47,6 +47,6 @@ test('email delivery ledger is private to service-role operations', () => {
   const migration = readRoot('supabase/migrations/20261106100000_vtg_resend_email_delivery_log.sql');
   assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.vtg_email_deliveries/i);
   assert.match(migration, /ENABLE ROW LEVEL SECURITY/i);
-  assert.match(migration, /REVOKE ALL ON TABLE public\.vtg_email_deliveries FROM anon, authenticated/i);
-  assert.match(migration, /GRANT ALL ON TABLE public\.vtg_email_deliveries TO service_role/i);
+  assert.match(migration, /REVOKE ALL ON public\.vtg_email_deliveries FROM anon, authenticated/i);
+  assert.match(migration, /GRANT ALL ON public\.vtg_email_deliveries TO service_role/i);
 });
