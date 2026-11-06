@@ -51,5 +51,8 @@ test('trade documents remain private and signed downloads are scoped to authoris
   assert.match(docs, /createSignedUrl/);
   assert.match(docs, /vtg-trade-documents/);
   assert.match(migration, /trade_documents/);
+  assert.match(migration, /assigned lc banks read trade documents/);
+  assert.match(migration, /assigned lc banks read private trade document objects/);
+  assert.match(migration, /lc.bank_id = \(select auth.uid\(\)\)/);
   assert.match(migration, /REVOKE ALL ON FUNCTION public\.vtg_confirm_inspection_payment/);
 });
