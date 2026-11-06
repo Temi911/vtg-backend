@@ -1,0 +1,156 @@
+/* VTG form system — one modern, consistent look for every public form.
+   Loaded last on each page so it wins over page-level form styles.
+   Tokens are scoped (--vf-*) and follow html[data-theme="light|dark"]. */
+:root{
+  --vf-ink:#0f1c33;--vf-label:#1b2a44;--vf-muted:#5b6b82;--vf-line:#cdd6e3;--vf-line-hover:#94a8c6;
+  --vf-field:#fff;--vf-field-dis:#f1f4f9;--vf-surface:#f6f8fc;
+  --vf-blue:#1558D6;--vf-blue-h:#0a47b3;--vf-blue-soft:#e8f0ff;--vf-sun:#FFB81C;
+  --vf-err:#c0262d;--vf-err-soft:#fdecee;--vf-ok:#0e7c4a;--vf-ok-soft:#e6f6ee;
+  --vf-ring:color-mix(in srgb,#1558D6 22%,transparent);
+  --vf-radius:12px;--vf-h:48px;
+}
+html[data-theme="dark"]{
+  --vf-ink:#eaf0f8;--vf-label:#d3dcea;--vf-muted:#9fb0c6;--vf-line:#2f3d52;--vf-line-hover:#4b5f7c;
+  --vf-field:#101a2a;--vf-field-dis:#0c1421;--vf-surface:#0c1421;
+  --vf-blue:#4d8dff;--vf-blue-h:#78a8ff;--vf-blue-soft:#14284d;
+  --vf-err:#ff7b82;--vf-err-soft:#3a1519;--vf-ok:#4fd49a;--vf-ok-soft:#0f2a1e;
+  --vf-ring:color-mix(in srgb,#4d8dff 32%,transparent);
+}
+
+/* ---------- Labels, hints, groups ---------- */
+html body form label,html body .field>label,html body .vs-field>label{
+  display:block;margin:0 0 6px;font-size:.8125rem;font-weight:700;letter-spacing:.01em;line-height:1.35;color:var(--vf-label)
+}
+html body form label:has(>input[type=checkbox]),html body form label:has(>input[type=radio]){
+  display:flex;align-items:flex-start;gap:10px;margin:0;font-size:.9375rem;font-weight:500;letter-spacing:0;color:var(--vf-ink);cursor:pointer
+}
+html body form :is(small,.hint,.help,.helper,.note,.field-note){color:var(--vf-muted);font-size:.8125rem;line-height:1.5}
+html body form fieldset{
+  margin:0 0 18px;padding:18px 18px 8px;border:1px solid var(--vf-line);border-radius:14px;background:transparent;min-width:0
+}
+html body form legend{
+  padding:0 8px;font-size:.75rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--vf-blue)
+}
+
+/* ---------- Text controls ---------- */
+html body form :is(
+  input:not([type=checkbox],[type=radio],[type=range],[type=file],[type=submit],[type=button],[type=reset],[type=hidden],[type=color],[type=image]),
+  select,textarea
+),
+html body :is(.field,.vs-field) :is(input:not([type=checkbox],[type=radio],[type=file],[type=hidden]),select,textarea){
+  width:100%!important;min-height:var(--vf-h)!important;padding:12px 14px!important;box-sizing:border-box;
+  border:1.5px solid var(--vf-line)!important;border-radius:var(--vf-radius)!important;
+  background-color:var(--vf-field)!important;color:var(--vf-ink)!important;-webkit-text-fill-color:var(--vf-ink);
+  font-weight:500;font-size:.9375rem;line-height:1.4;font-family:inherit;box-shadow:0 1px 0 rgba(15,28,51,.04);
+  transition:border-color .15s ease,box-shadow .15s ease,background-color .15s ease;
+  accent-color:var(--vf-blue)
+}
+html body form textarea{min-height:128px;resize:vertical;line-height:1.6}
+html body form :is(input,select,textarea)::placeholder{color:var(--vf-muted)!important;opacity:.85;-webkit-text-fill-color:var(--vf-muted)}
+html body form :is(input,select,textarea):hover:not(:disabled):not(:focus){border-color:var(--vf-line-hover)!important}
+html body form :is(input,select,textarea):focus,
+html body form :is(input,select,textarea):focus-visible{
+  outline:none!important;border-color:var(--vf-blue)!important;box-shadow:0 0 0 4px var(--vf-ring)!important
+}
+html body form :is(input,select,textarea):disabled,html body form :is(input,select,textarea)[readonly]{
+  background-color:var(--vf-field-dis)!important;color:var(--vf-muted)!important;-webkit-text-fill-color:var(--vf-muted);cursor:not-allowed;opacity:.9
+}
+
+/* Validation: only after the user has interacted */
+html body form :is(input,select,textarea):user-invalid,
+html body form :is(input,select,textarea)[aria-invalid="true"]{
+  border-color:var(--vf-err)!important;box-shadow:0 0 0 4px color-mix(in srgb,var(--vf-err) 16%,transparent)!important
+}
+html body form :is(input,select,textarea):user-valid:not(:placeholder-shown):not(select){border-color:color-mix(in srgb,var(--vf-ok) 55%,var(--vf-line))!important}
+
+/* Selects: custom chevron */
+html body form select{
+  appearance:none;-webkit-appearance:none;padding-right:42px!important;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235b6b82' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")!important;
+  background-repeat:no-repeat!important;background-position:right 14px center!important;background-size:16px!important
+}
+html[data-theme="dark"] body form select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239fb0c6' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")!important
+}
+html body form select option{background:var(--vf-field);color:var(--vf-ink)}
+html body form select[multiple]{background-image:none!important;padding-right:14px!important}
+
+/* Autofill keeps the theme */
+html body form input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px var(--vf-field) inset!important;-webkit-text-fill-color:var(--vf-ink)!important;caret-color:var(--vf-ink)}
+
+/* ---------- Checkbox, radio, file ---------- */
+html body form input:is([type=checkbox],[type=radio]){
+  appearance:none!important;-webkit-appearance:none!important;flex:none;width:20px!important;height:20px!important;min-height:0!important;min-width:0!important;margin:1px 0 0!important;padding:0!important;
+  border:1.5px solid var(--vf-line-hover)!important;background:var(--vf-field)!important;cursor:pointer;display:inline-grid!important;place-content:center;box-shadow:none!important;
+  transition:background-color .15s,border-color .15s,box-shadow .15s
+}
+html body form input[type=checkbox]{border-radius:6px!important}
+html body form input[type=radio]{border-radius:50%!important}
+html body form input:is([type=checkbox],[type=radio])::after{content:"";width:10px;height:10px;transform:scale(0);transition:transform .12s ease-in-out}
+html body form input[type=checkbox]::after{clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0,43% 62%);background:#fff;width:11px;height:11px}
+html body form input[type=radio]::after{border-radius:50%;background:#fff;width:8px;height:8px}
+html body form input:is([type=checkbox],[type=radio]):checked{background:var(--vf-blue)!important;border-color:var(--vf-blue)!important}
+html body form input:is([type=checkbox],[type=radio]):checked::after{transform:scale(1)}
+html body form input:is([type=checkbox],[type=radio]):focus-visible{box-shadow:0 0 0 4px var(--vf-ring)!important;outline:none}
+html body form input[type=file]{
+  width:100%;padding:10px;border:1.5px dashed var(--vf-line-hover);border-radius:var(--vf-radius);background:var(--vf-surface);color:var(--vf-muted);font-weight:500;font-size:.875rem;line-height:1.4;font-family:inherit;cursor:pointer
+}
+html body form input[type=file]::file-selector-button{
+  margin-right:12px;padding:9px 14px;border:0;border-radius:9px;background:var(--vf-blue);color:#fff;font-weight:700;font-size:.8125rem;line-height:1;font-family:inherit;cursor:pointer;transition:background-color .15s
+}
+html body form input[type=file]::file-selector-button:hover{background:var(--vf-blue-h)}
+html body form input[type=range]{width:100%;accent-color:var(--vf-blue)}
+
+/* ---------- Buttons inside forms ---------- */
+html body form :is(button[type=submit],input[type=submit],button.btn,button.submit,button.primary,a.primary,.primary-btn):not(.outline,.secondary,.ghost,.toggle,.vs-btn,[id*=oggle]){
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--vf-h);padding:0 22px;border:0!important;border-radius:var(--vf-radius)!important;
+  background:var(--vf-blue)!important;color:#fff!important;-webkit-text-fill-color:#fff;font-weight:800;font-size:.9375rem;line-height:1;font-family:inherit;letter-spacing:.01em;
+  cursor:pointer;box-shadow:0 6px 16px -6px color-mix(in srgb,var(--vf-blue) 70%,transparent);
+  transition:background-color .15s ease,transform .08s ease,box-shadow .15s ease
+}
+html[data-theme="dark"] body form :is(button[type=submit],input[type=submit],button.btn,button.submit,button.primary,a.primary,.primary-btn):not(.outline,.secondary,.ghost,.toggle,.vs-btn,[id*=oggle]){color:#06142e!important;-webkit-text-fill-color:#06142e}
+html body form :is(button[type=submit],input[type=submit],button.btn,button.submit,button.primary,.primary-btn):not(.outline,.secondary,.ghost,.toggle,.vs-btn,[id*=oggle]):hover:not(:disabled){
+  background:var(--vf-blue-h)!important;box-shadow:0 10px 22px -8px color-mix(in srgb,var(--vf-blue) 75%,transparent)
+}
+html body form :is(button[type=submit],input[type=submit],button.btn,button.submit,button.primary,.primary-btn):not(.outline,.secondary,.ghost,.toggle,.vs-btn,[id*=oggle]):active:not(:disabled){transform:translateY(1px)}
+html body form :is(button,input[type=submit],.btn):focus-visible{outline:3px solid var(--vf-sun)!important;outline-offset:2px}
+html body form :is(button,input[type=submit]):disabled{opacity:.55;cursor:not-allowed;box-shadow:none;transform:none}
+html body form :is(.btn.outline,.btn.secondary,button.secondary,button.outline,button.ghost){
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--vf-h);padding:0 20px;border:1.5px solid var(--vf-line)!important;border-radius:var(--vf-radius)!important;
+  background:var(--vf-field)!important;color:var(--vf-ink)!important;-webkit-text-fill-color:var(--vf-ink);font-weight:700;font-size:.9375rem;line-height:1;font-family:inherit;cursor:pointer;box-shadow:none;
+  transition:border-color .15s,background-color .15s
+}
+html body form :is(.btn.outline,.btn.secondary,button.secondary,button.outline,button.ghost):hover:not(:disabled){border-color:var(--vf-blue)!important;background:var(--vf-blue-soft)!important}
+
+/* Inline "Send code" style buttons sitting beside an input */
+html body form :is(.verifyRow,.inline-row,.input-row,.codeRow){display:flex;gap:10px;align-items:stretch}
+html body form :is(.verifyRow,.inline-row,.input-row,.codeRow)>input{flex:1 1 auto;min-width:0}
+html body form :is(.verifyRow,.inline-row,.input-row,.codeRow)>button{flex:none;white-space:nowrap}
+
+/* ---------- Messages ---------- */
+html body form :is(.message,.msg,.alert,.form-error,.error-msg){
+  margin:14px 0 0;padding:12px 14px;border-radius:var(--vf-radius);font-size:.875rem;font-weight:600;line-height:1.5;
+  background:var(--vf-err-soft);color:var(--vf-err);border:1px solid color-mix(in srgb,var(--vf-err) 30%,transparent)
+}
+html body form :is(.message,.msg,.alert):empty{display:none}
+html body form :is(.message.ok,.msg.ok,.alert.ok,.alert.success,.message.success){background:var(--vf-ok-soft);color:var(--vf-ok);border-color:color-mix(in srgb,var(--vf-ok) 30%,transparent)}
+
+/* ---------- Layout helpers ---------- */
+html body form :is(.fields,.form-grid,.grid2){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 16px}
+html body form :is(.fields,.form-grid,.grid2)>:is(.full,.span-2,textarea){grid-column:1/-1}
+html body form :is(.actions,.form-actions,.buttons){display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-top:22px}
+@media(max-width:640px){
+  html body form :is(.fields,.form-grid,.grid2){grid-template-columns:1fr}
+  html body form :is(.actions,.form-actions,.buttons)>*{flex:1 1 100%}
+  html body form :is(.verifyRow,.inline-row,.input-row,.codeRow){flex-direction:column}
+  html body form :is(input:not([type=checkbox],[type=radio],[type=file],[type=hidden]),select,textarea){font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){html body form *{transition:none!important}}
+
+/* Never let a display rule above defeat the hidden attribute (multi-step forms toggle it). */
+html body form [hidden]{display:none!important}
+/* Groups of checkbox/radio labels */
+html body form :is(.options,.checks,.choice-row){display:flex;flex-wrap:wrap;gap:12px 22px;margin:4px 0}
+html body form .options>label{display:flex;align-items:center;gap:10px;margin:0;font-size:.9375rem;font-weight:500;color:var(--vf-ink)}
+
+html body form .btn.hidden{display:none!important}
