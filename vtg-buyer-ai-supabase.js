@@ -31,7 +31,19 @@ async function submit(event){
   if(typeof data?.reply!=='string'||!data.reply.trim())throw new Error('VTG AI returned an empty response. Please try again.');
   show(data.reply.trim()+'\n\nVTG AI guidance only — confirm critical requirements with your bank, licensed advisers and relevant official authorities.');
  }catch(error){
-  show(error?.message||'VTG AI is temporarily unavailable. Please try again.',true);
+  let friendly=error?.message||'VTG AI is temporarily unavailable. Please try again shortly.';
+  // Supabase FunctionsHttpError keeps the HTTP response in error.context.
+  // Read it safely so the buyer never sees the generic non-2xx message.
+  try{
+   const response=error?.context;
+   if(response&&typeof response.clone==='function'){
+    const payload=await response.clone().json().catch(()=>null);
+    const serverMessage=payload?.error?.message||payload?.reply;
+    if(typeof serverMessage==='string'&&serverMessage.trim())friendly=serverMessage.trim();
+    else if(response.status>=500)friendly='VTG AI is temporarily unavailable. Your question was not submitted as a trade instruction. Please try again shortly.';
+   }
+  }catch(_){}
+  show(friendly,true);
  }finally{busy=false;setBusy(false);}
 }
 const form=$('aiForm');
