@@ -81,7 +81,9 @@ document.getElementById('form').onsubmit=async e=>{
   }
   msg.className='msg ok';msg.textContent='Signed in successfully. Opening your VTG workspace…';
   setTimeout(()=>{
-   const destination=safeNext||({buyer:'/buyer-dashboard.html',supplier:'/supplier-dashboard.html',bank:'/bank-trade-os.html'})[effectiveRole]||'/';
+   const destination=user.pendingBusinessVerification
+    ? '/verification.html?role='+encodeURIComponent(effectiveRole)
+    : safeNext||({buyer:'/buyer-dashboard.html',supplier:'/supplier-dashboard.html',bank:'/bank-trade-os.html'})[effectiveRole]||'/';
    if(user.agreementRequired){location.href='/signup-agreement.html?next='+encodeURIComponent(destination);return;}
    location.href=destination;
   },450);
