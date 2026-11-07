@@ -19,7 +19,7 @@ test('buyer AI checklist is connected to the authenticated Supabase function',()
 
 test('VTG AI Edge Function validates JWT, active buyer role and input limits',()=>{
  assert.match(edge,/auth\.getUser\(token\)/);
- assert.match(edge,/profile\?\.role !== "buyer"/);
+ assert.match(edge,/\["buyer", "supplier", "bank"\]\.includes\(accountRole\)/); // buyer, supplier and bank only; staff roles are rejected
  assert.match(edge,/profile\?\.is_active !== true/);
  assert.match(edge,/message\.length > 6000/);
  assert.match(edge,/RATE_LIMITED/);

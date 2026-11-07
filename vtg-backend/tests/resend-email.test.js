@@ -21,7 +21,7 @@ test('VTG email endpoint requires a verified active authenticated account', () =
   const endpoint = readRoot('supabase/functions/vtg-email/index.ts');
   assert.match(endpoint, /auth\.getUser\(token\)/);
   assert.match(endpoint, /email_confirmed_at/);
-  assert.match(endpoint, /profile\.data\?\.is_active/);
+  assert.match(endpoint, /!profile\.data\.is_active && !\(body\.event === "onboarding" && isPendingApplicant\)/); // inactive accounts only get the pending-applicant receipt
   assert.match(endpoint, /notification\.data/);
   assert.match(endpoint, /\.eq\("user_id", user\.id\)/);
 });
