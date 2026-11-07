@@ -2,10 +2,10 @@
 'use strict';
 const $=id=>document.getElementById(id);
 const esc=v=>typeof window.esc==='function'?window.esc(v):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let loading=false,queued=false,client=null,liveChannel=null;
+let loading=false,queued=false,client=null,buyerId=null,liveChannel=null;
 async function getClient(){
  const auth=await window.VTG_AUTH_READY;if(!auth?.client)throw new Error('VTG secure account service is unavailable. Please reload and try again.');
- const {data,error}=await auth.client.auth.getSession();if(error)throw error;if(!data.session)throw new Error('Your secure session has expired. Please sign in again.');
+ const {data,error}=await auth.client.auth.getSession();if(error)throw error;if(!data.session)throw new Error('Your secure session has expired. Please sign in again.');buyerId=data.session.user.id;
  const {data:p,error:pe}=await auth.client.from('profiles').select('role,is_active').eq('id',data.session.user.id).single();if(pe)throw pe;
  if(p.role!=='buyer'||!p.is_active)throw new Error('An active buyer account is required.');return auth.client;
 }
@@ -16,11 +16,11 @@ function renderMilestones(a){if(!a.length)return '<p class="small muted" style="
 function scheduleLoad(){if(queued)return;queued=true;setTimeout(()=>{queued=false;load();},180);}
 async function load(){
  const host=$('liveOrdersRows');if(!host||loading)return;
- if(new URLSearchParams(location.search).get('preview')==='1'){host.innerHTML='<div class="empty">Preview mode: account-linked orders and logistics events are private records. Sign in as a buyer to view them.</div>';return;}
+ 
  loading=true;host.innerHTML='<div class="empty">Loading account-linked orders from VTG…</div>';
  try{
   client=client||await getClient();
-  const {data:orders,error}=await client.from('trade_orders').select('id,reference,status,quantity,unit_price,currency,incoterm,origin_port,destination_port,created_at,supplier:profiles!trade_orders_supplier_id_fkey(full_name),product:products(name)').order('created_at',{ascending:false}).limit(100);
+  const {data:orders,error}=await client.from('trade_orders').select('id,reference,status,quantity,unit_price,currency,incoterm,origin_port,destination_port,created_at,supplier:profiles!trade_orders_supplier_id_fkey(full_name),product:products(name)').eq('buyer_id',buyerId).order('created_at',{ascending:false}).limit(100);
   if(error)throw error;if(!orders?.length){host.innerHTML='<div class="empty">No orders have been created for this buyer account yet. An accepted supplier quotation can create a linked trade order.</div>';return;}
   const cards=await Promise.all(orders.map(async o=>{
    const [sr,mr]=await Promise.all([

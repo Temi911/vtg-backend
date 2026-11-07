@@ -1,0 +1,63 @@
+/* VTG AI public page */
+body.ai{background:var(--vs-bg)}
+.ai .wrap{width:100%;max-width:1200px;margin:0 auto;padding:0 24px}
+.ai .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border-radius:10px;border:1px solid var(--vs-line-2);background:var(--vs-paper);color:var(--vs-ink);font-weight:800;font-size:.9375rem;text-decoration:none;cursor:pointer}
+.ai .btn:hover{border-color:var(--vs-blue);color:var(--vs-blue)}
+.ai .btn.primary{background:var(--vs-blue);border-color:var(--vs-blue);color:#fff}
+html[data-theme="dark"] .ai .btn.primary{color:#08162A}
+.ai .btn.primary:hover{background:var(--vs-blue-h);color:#fff}
+html[data-theme="dark"] .ai .btn.primary:hover{color:#08162A}
+.ai .btn svg{width:18px;height:18px}
+.ai .eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:.8125rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--vs-blue)}
+.ai .eyebrow::before{content:"";width:22px;height:3px;border-radius:2px;background:var(--vs-sun)}
+.ai .eyebrow svg{display:none}
+.ai .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;padding-top:64px;padding-bottom:56px}
+.ai .hero h1{font-size:clamp(2.2rem,4.8vw,3.6rem);letter-spacing:-.035em;line-height:1.05;margin:16px 0 18px}
+.ai .hero h1 span{color:var(--vs-blue)}
+.ai .hero p{font-size:1.125rem;line-height:1.7;color:var(--vs-ink-2);max-width:56ch}
+.ai .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.ai .heroPanel{position:relative;overflow:hidden;background:linear-gradient(150deg,#0B2A55,#1558D6);border-radius:18px;padding:26px;color:#fff;display:grid;gap:14px}
+.ai .orb{position:absolute;right:-70px;top:-70px;width:200px;height:200px;border-radius:50%;background:var(--vs-sun);opacity:.92;pointer-events:none}
+.ai .panelHead{position:relative;display:flex;flex-wrap:wrap;gap:8px 12px;justify-content:space-between;align-items:center}
+.ai .panelHead b{font-size:1.125rem;color:#fff}
+.ai .sampleTag{font-size:.75rem;font-weight:800;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.3)}
+.ai .sampleTask{position:relative;display:flex;gap:14px;align-items:flex-start;padding:16px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2)}
+.ai .sampleTask b{display:block;color:#fff;margin-bottom:2px}
+.ai .sampleTask p{font-size:.9375rem;color:#E3EEFF;line-height:1.55}
+.ai .ico{display:grid;place-items:center;width:42px;height:42px;border-radius:10px;flex:none;background:var(--vs-sun);color:#0B1F3A}
+.ai .ico svg{width:22px;height:22px}
+.ai .section{padding:64px 0}
+.ai .section.alt{background:var(--vs-tint);border-block:1px solid var(--vs-line)}
+.ai .sectionHead{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:end;margin-bottom:32px}
+.ai .sectionHead h2{font-size:clamp(1.6rem,3vw,2.2rem);margin-top:10px}
+.ai .sectionHead p{color:var(--vs-ink-2);line-height:1.7}
+.ai .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.ai .feature{background:var(--vs-paper);border:1px solid var(--vs-line);border-radius:14px;padding:24px;box-shadow:var(--vs-shadow)}
+.ai .feature .ico{margin-bottom:16px}
+.ai .feature h3{font-size:1.1875rem;margin-bottom:8px}
+.ai .feature p{color:var(--vs-ink-2);line-height:1.65;font-size:.9688rem}
+.ai .demo{background:var(--vs-paper);border:1px solid var(--vs-line);border-radius:16px;overflow:hidden;box-shadow:var(--vs-shadow)}
+.ai .demoHead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;padding:16px 24px;background:var(--vs-tint);border-bottom:1px solid var(--vs-line)}
+.ai .demoHead span{color:var(--vs-muted);font-size:.875rem}
+.ai .demoBody{display:grid;grid-template-columns:260px 1fr;min-height:320px}
+.ai .demoChoices{display:grid;align-content:start;gap:8px;padding:20px;border-right:1px solid var(--vs-line)}
+.ai .demoChoice{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 14px;border-radius:10px;border:1px solid var(--vs-line);background:var(--vs-paper);color:var(--vs-ink);font-weight:700;font-size:.9375rem;text-align:left;cursor:pointer}
+.ai .demoChoice svg{width:18px;height:18px;flex:none}
+.ai .demoChoice:hover{border-color:var(--vs-blue)}
+.ai .demoChoice[aria-pressed="true"]{background:var(--vs-blue-soft);border-color:var(--vs-blue);box-shadow:inset 3px 0 0 var(--vs-sun)}
+.ai .demoResult{padding:28px}
+.ai .demoResult h3{font-size:1.375rem;margin-bottom:10px}
+.ai .demoResult p,.ai .demoResult li{color:var(--vs-ink-2);line-height:1.7}
+.ai .demoResult ul{margin:14px 0;padding-left:22px;display:grid;gap:6px}
+.ai .demoNote{padding:14px 24px;border-top:1px solid var(--vs-line);background:var(--vs-sun-soft);color:var(--vs-ink);font-size:.875rem}
+.ai .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.ai .step{background:var(--vs-paper);border:1px solid var(--vs-line);border-radius:14px;padding:24px;border-top:4px solid var(--vs-sun)}
+.ai .stepNum{display:block;font-size:.8125rem;font-weight:800;letter-spacing:.12em;color:var(--vs-blue);margin-bottom:10px}
+.ai .step h3{font-size:1.1875rem;margin-bottom:8px}
+.ai .step p{color:var(--vs-ink-2);line-height:1.65}
+.ai .bottomCta{display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between;padding:36px;border-radius:18px;background:linear-gradient(120deg,#0B2A55,#1558D6);color:#fff}
+.ai .bottomCta h2{color:#fff;font-size:clamp(1.4rem,2.6vw,1.9rem);max-width:24ch}
+.ai .bottomCta p{color:#E3EEFF;margin-top:10px;max-width:56ch;line-height:1.65}
+.ai .bottomCta .btn.primary{background:var(--vs-sun);border-color:var(--vs-sun);color:#0B1F3A}
+@media (max-width:960px){.ai .hero{grid-template-columns:1fr;gap:32px;padding-top:40px}.ai .sectionHead{grid-template-columns:1fr;gap:12px}.ai .grid,.ai .steps{grid-template-columns:1fr 1fr}.ai .demoBody{grid-template-columns:1fr}.ai .demoChoices{grid-template-columns:1fr 1fr;border-right:0;border-bottom:1px solid var(--vs-line)}}
+@media (max-width:600px){.ai .wrap{padding:0 16px}.ai .grid,.ai .steps{grid-template-columns:1fr}.ai .section{padding:44px 0}.ai .demoChoices{grid-template-columns:1fr}.ai .demoResult{padding:20px}.ai .bottomCta{padding:26px 20px}.ai .actions .btn{width:100%}}

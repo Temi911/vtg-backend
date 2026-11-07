@@ -33,11 +33,6 @@
   async function loadOrders(){
     const select=$('documentOrderId'),host=$('liveDocumentsRows');
     if(!select||!host)return;
-    if(new URLSearchParams(location.search).get('preview')==='1'){
-      select.innerHTML='<option value="">Sign in to load account orders</option>';
-      showEmpty('Preview mode: uploaded order documents are private account records. Sign in as a buyer to view them.');
-      return;
-    }
     if(busy)return;
     busy=true;host.innerHTML='<div class="empty">Loading your orders from VTG…</div>';
     try{
@@ -122,10 +117,10 @@
     finally{button.disabled=false;}
   }
   document.addEventListener('DOMContentLoaded',()=>{
-    $('documentOrderId')?.addEventListener('change',loadForOrder);
-    $('refreshLiveDocuments')?.addEventListener('click',loadOrders);
-    $('liveDocumentForm')?.addEventListener('submit',upload);
-    $('liveDocumentsRows')?.addEventListener('click',download);
+    $('documentOrderId')?.addEventListener('change',e=>{e.stopImmediatePropagation();loadForOrder()},true);
+    $('refreshLiveDocuments')?.addEventListener('click',e=>{e.stopImmediatePropagation();loadOrders()},true);
+    $('liveDocumentForm')?.addEventListener('submit',e=>{e.stopImmediatePropagation();upload(e)},true);
+    $('liveDocumentsRows')?.addEventListener('click',e=>{if(e.target.closest('[data-supabase-document]')){e.stopImmediatePropagation();download(e)}},true);
     loadOrders();
   },{once:true});
   window.VTGBuyerDocuments={loadOrders,loadForOrder};

@@ -7,12 +7,10 @@ const app = require('../src/server');
 const htmlPath = path.join(__dirname, '..', '..', 'marketplace.html');
 const html = fs.readFileSync(htmlPath, 'utf8');
 
-test('current VTG marketplace exposes product discovery and supplier listings', () => {
-  assert.match(html, /VTG Marketplace — Products & Suppliers/);
-  assert.match(html, /id="search"/);
-  assert.match(html, /id="category"/);
-  assert.match(html, /id="products"/);
-  assert.match(html, /id="count"/);
+test('current VTG frontend exposes the core trade interface', () => {
+  assert.match(html, /id="newsDrawer"/);
+  assert.match(html, /id="mapDrawer"/);
+  assert.match(html, /id="authForm"/);
 });
 
 test('marketplace includes quote request workflow and current site navigation assets', () => {

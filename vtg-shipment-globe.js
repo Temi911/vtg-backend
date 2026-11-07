@@ -21,7 +21,7 @@ const read=k=>{try{const v=JSON.parse(localStorage.getItem(k)||'[]');return Arra
 function records(role){
  if(role==='supplier')return read('vtg-supplier-os-shipments-v2').map(x=>({ref:x.ref||x.id||'Shipment',goods:x.goods||'Goods not specified',origin:x.origin,destination:x.destination,status:x.status||'Not recorded',source:'supplier shipment'}));
  if(role==='bank')return read('vtg-bank-finance-cases-v2').filter(x=>x.source==='buyer-shared-desk'&&/departed|in transit|arrived|customs|delivered|at sea|shipped/i.test(String(x.stage||''))).map(x=>{const p=String(x.corridor||'').split(/→|↔/);return{ref:x.id,goods:x.goods||'Goods not specified',origin:p[0]||'',destination:p[1]||'',status:x.stage,source:'customer case'}});
- return read('vtg-shared-trades-v1').filter(x=>/departed|in transit|arrived|customs|delivered|at sea|shipped/i.test(String(x.shipmentStatus||x.shippingStatus||''))).map(x=>({ref:x.orderRef||x.id,goods:x.product||'Goods not specified',origin:x.origin,destination:x.destination,status:x.shipmentStatus||x.shippingStatus,source:'buyer order'}));
+ return [];
 }
 async function buyerShipmentRecords(){
  const auth=await window.VTG_AUTH_READY;
