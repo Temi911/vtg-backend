@@ -50,15 +50,10 @@
     },
     {
       "source": "/",
-      "destination": "/marketplace.html"
+      "destination": "/frontend-v3.html"
     }
   ],
   "redirects": [
-    {
-      "source": "/frontend-v3.html",
-      "destination": "/marketplace.html",
-      "permanent": true
-    },
     {
       "source": "/trade-workspace.html",
       "destination": "/signin.html",

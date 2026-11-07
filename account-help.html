@@ -30,7 +30,7 @@
 <section class="detail" id="detail" aria-live="polite"><h3 id="detailTitle"></h3><p class="muted" id="detailDesc"></p><form id="detailForm" novalidate class="vtg-form"><div id="fields"></div><button class="btn" id="submitBtn" type="submit">Continue</button></form><div class="message" id="message" role="status"></div></section>
 <p class="note" id="secureNote">For your safety, VTG never asks you to send your password or verification code to support.</p>
 </section></div>
-<footer class="footer">Need to return? <a href="/signin.html">Back to Sign In</a> · <a href="/marketplace.html">VTG Home</a></footer>
+<footer class="footer">Need to return? <a href="/signin.html">Back to Sign In</a> · <a href="/frontend-v3.html">VTG Home</a></footer>
 </main>
 <div id="vsFooter"></div>
 <script>
@@ -39,7 +39,7 @@
 const $=s=>document.querySelector(s);
 const params=new URLSearchParams(location.search);
 const requestedRole=params.get('role');
-const roleLocked=['buyer','supplier','bank','agent','admin'].includes(requestedRole);
+const roleLocked=['buyer','supplier','bank','admin'].includes(requestedRole);
 let role=roleLocked?requestedRole:'buyer';
 let mode=params.get('mode')||'';
 let auth=null;

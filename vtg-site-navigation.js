@@ -133,11 +133,9 @@
   function syncBrandLogos() {
     var darkMode = document.documentElement.getAttribute('data-theme') === 'dark';
     document.querySelectorAll('img[src*="vtg-logo"], img[alt*="Vintage Trade Global"], img[alt="VTG"]').forEach(function (img) {
-      // The footer is dark (night) or brand blue (day), so it always uses the light logo.
-      var onDark = darkMode || !!img.closest('#vtgFooter');
-      var src = onDark ? '/assets/vtg-logo-light.svg' : '/assets/vtg-logo.svg';
+      var src = darkMode ? '/assets/vtg-logo-light.svg' : '/assets/vtg-logo.svg';
       if (img.getAttribute('src') !== src) img.setAttribute('src', src);
-      img.setAttribute('data-vtg-theme-logo', onDark ? 'light-on-dark' : 'dark-on-light');
+      img.setAttribute('data-vtg-theme-logo', darkMode ? 'light-on-dark' : 'dark-on-light');
       img.style.setProperty('display', 'block', 'important');
       img.style.setProperty('visibility', 'visible', 'important');
       img.style.setProperty('opacity', '1', 'important');
@@ -216,7 +214,7 @@
   }
   function isWorkspaceDashboardPage() {
     var path = (window.location.pathname || '').toLowerCase();
-    return path.endsWith('/bank-trade-os.html') || /(?:^|\/)[^/]*dashboard[^/]*\.html$/.test(path) || /(?:^|\/)(?:trade-os|inspection-admin)\.html$/.test(path);
+    return /(?:^|\/)[^/]*dashboard[^/]*\.html$/.test(path) || /(?:^|\/)(?:bank-trade-os|trade-os|inspection-admin)\.html$/.test(path);
   }
   function hasDownstreamPageLinks() {
     if (isHomePage() || isWorkspaceDashboardPage()) return true;
@@ -523,19 +521,6 @@
       ['trade-classic','Trade Classic','VTG red, clean and familiar'],
       ['ocean-route','Ocean Route','Ocean blue and teal'],
       ['graphite-port','Graphite Port','Quiet graphite and steel']
-    ];
-    // Workspace themes are managed by each authenticated dashboard, independently of visitor themes.
-    var workspacePresets = [
-      ['executive','Executive','Executive command palette'],
-      ['ocean-finance','Ocean Finance','Ocean finance palette'],
-      ['emerald-trade','Emerald Trade','Emerald trade palette'],
-      ['copper-ledger','Copper Ledger','Copper ledger palette'],
-      ['indigo-intel','Indigo Intelligence','Indigo intelligence palette'],
-      ['crimson-ops','Crimson Operations','Crimson operations palette'],
-      ['mono-pro','Monochrome Pro','Monochrome professional palette'],
-      ['sandstone','Sandstone','Sandstone palette'],
-      ['arctic-blue','Arctic Blue','Arctic blue palette'],
-      ['midnight-harbor','Midnight Harbor','Midnight harbor palette']
     ];
 
     var root = document.documentElement;
@@ -961,8 +946,6 @@
     enforceFinalShellThemeAndSelection();
     enforceEveryPageIconTheme();
     enforceNightFooterContrast();
-    var footerCss = document.getElementById('vtg-footer-controls-style');
-    if (footerCss) document.head.appendChild(footerCss);
     setActiveFooterLink();
     window.addEventListener('hashchange', setActiveFooterLink);
     window.addEventListener('popstate', setActiveFooterLink);
