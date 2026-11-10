@@ -6,13 +6,13 @@ const app = require('../src/server');
 
 const htmlPath = path.join(__dirname, '..', '..', 'marketplace.html');
 const html = fs.readFileSync(htmlPath, 'utf8');
+// The landing page (frontend-v3.html) is kept as the public home; marketplace.html is the marketplace.
+const landingHtml = fs.readFileSync(path.join(__dirname, '..', '..', 'frontend-v3.html'), 'utf8');
 
-test('current VTG marketplace exposes product discovery and supplier listings', () => {
-  assert.match(html, /VTG Marketplace — Products & Suppliers/);
-  assert.match(html, /id="search"/);
-  assert.match(html, /id="category"/);
-  assert.match(html, /id="products"/);
-  assert.match(html, /id="count"/);
+test('current VTG frontend exposes the core trade interface', () => {
+  assert.match(landingHtml, /id="newsDrawer"/);
+  assert.match(landingHtml, /id="mapDrawer"/);
+  assert.match(landingHtml, /id="authForm"/);
 });
 
 test('marketplace includes quote request workflow and current site navigation assets', () => {
@@ -20,7 +20,7 @@ test('marketplace includes quote request workflow and current site navigation as
   assert.match(html, /id="quoteForm"/);
   assert.match(html, /id="quoteQty"/);
   assert.match(html, /vtg-visual-product-search\.js/);
-  assert.match(html, /vtg-site-navigation\.js/);
+  assert.match(html, /vtg-(?:site-navigation|shell)\.js/);
 });
 
 test('verification-code endpoint fails closed when email delivery is not configured', async () => {

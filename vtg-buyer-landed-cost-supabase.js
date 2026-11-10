@@ -4,9 +4,28 @@ const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=v=>'$'+Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 let client=null,userId=null;
-function cart(){try{const a=JSON.parse(localStorage.getItem('vtg-buyer-cart-cart')||'[]');return Array.isArray(a)?a:[]}catch(_){return[]}}
-function estimate(){
- const items=cart().map(x=>({product_id:String(x.id||''),name:String(x.name||'Product'),unit_price_usd:Number(x.price)||0,quantity:Math.max(0,Number(x.qty)||0),line_total_usd:(Number(x.price)||0)*(Number(x.qty)||0)}));
+async function cart(){
+ const {data:state,error}=await client.from('buyer_cart_states').select('items').eq('buyer_id',userId).maybeSingle();
+ if(error)throw error;
+ const raw=Array.isArray(state?.items)?state.items:[];
+ const quantities=raw.map(x=>({id:String(x.id||''),qty:Math.floor(Number(x.qty)||0)})).filter(x=>x.id&&x.qty>0);
+ if(!quantities.length)return [];
+ const ids=[...new Set(quantities.map(x=>x.id))];
+ const {data:products,error:productError}=await client.from('vtg_marketplace_products').select('id,name,unit_price,currency').in('id',ids);
+ if(productError)throw productError;
+ const byId=new Map((products||[]).map(p=>[p.id,p]));
+ return quantities.map(item=>{
+  const p=byId.get(item.id);
+  if(!p)throw new Error('A cart product is no longer active or verified. Refresh your marketplace cart before estimating landed cost.');
+  if(String(p.currency||'USD').toUpperCase()!=='USD')throw new Error('Your cart contains non-USD products. Separate currency totals before preparing a USD landed-cost estimate.');
+  const price=Number(p.unit_price);
+  if(!Number.isFinite(price)||price<0)throw new Error('A cart product has an invalid price. Refresh the marketplace cart.');
+  return {id:p.id,name:p.name,price,qty:item.qty};
+ });
+}
+async function estimate(){
+ const cartItems=await cart();
+ const items=cartItems.map(x=>({product_id:String(x.id),name:String(x.name||'Product'),unit_price_usd:Number(x.price)||0,quantity:Math.max(0,Number(x.qty)||0),line_total_usd:(Number(x.price)||0)*(Number(x.qty)||0)}));
  const goods=items.reduce((n,x)=>n+x.line_total_usd,0),shipping=Math.max(0,Number($('shipping').value)||0),insurance=Math.max(0,Number($('insurance').value)||0),percent=Math.min(100,Math.max(0,Number($('duty').value)||0)),duty=goods*percent/100,other=Math.max(0,Number($('other').value)||0);
  return {title:'Landed cost estimate',goods_subtotal:+goods.toFixed(2),shipping_usd:+shipping.toFixed(2),insurance_usd:+insurance.toFixed(2),duty_percent:percent,duty_usd:+duty.toFixed(2),other_charges_usd:+other.toFixed(2),estimated_total_usd:+(goods+shipping+insurance+duty+other).toFixed(2),cart_snapshot:items};
 }
@@ -32,7 +51,7 @@ async function loadSaved(){
 }
 async function save(event){
  event.preventDefault();event.stopImmediatePropagation();const b=$('saveEstimate');b.disabled=true;
- try{await session();const {error}=await client.from('buyer_landed_cost_estimates').insert({...estimate(),buyer_id:userId});if(error)throw error;notice('Your landed-cost estimate has been saved to your VTG account.');await loadSaved()}
+ try{await session();const payload=await estimate();if(!payload.cart_snapshot.length)throw new Error('Add live marketplace products to your account cart before saving a landed-cost estimate.');const {error}=await client.from('buyer_landed_cost_estimates').insert({...payload,buyer_id:userId});if(error)throw error;notice('Your landed-cost estimate has been saved to your VTG account.');await loadSaved()}
  catch(e){notice(e.message||'Could not save estimate.')}
  finally{b.disabled=false}
 }

@@ -3,7 +3,6 @@
   const $=id=>document.getElementById(id);
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let client=null,userId=null,items=[];
-  const preview=new URLSearchParams(location.search).get('preview')==='1';
   function notice(message,isError=false){
     const host=$('supplierRows');
     if(host)host.innerHTML='<div class="empty">'+esc(message)+'</div>';
@@ -33,7 +32,6 @@
   }
   async function load(){
     const rows=$('supplierRows');
-    if(preview){if(rows)rows.innerHTML='<div class="empty">Preview mode: supplier contacts are saved in this browser only. Sign in to save them to your VTG account across devices.</div>';return;}
     if(rows)rows.innerHTML='<div class="empty">Loading your saved suppliers…</div>';
     try{
       await session();
@@ -85,7 +83,6 @@
     finally{if(button)button.disabled=false;}
   }
   $('supplierForm')?.addEventListener('submit',event=>{
-    if(preview)return;
     if(!window.VTGBuyerSuppliers)return;
     event.preventDefault();
     save(event.currentTarget);

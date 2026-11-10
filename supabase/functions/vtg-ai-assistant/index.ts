@@ -18,8 +18,14 @@ const SYSTEM_PROMPT = [
   "For banking, credit, legal, customs, tax, sanctions, restricted goods and regulatory decisions, provide general educational context only and direct the user to their bank, licensed professional or relevant official authority for a decision.",
   "Never claim to submit an RFQ, verify a supplier, book an inspection, file customs documents, move funds or execute a trade. VTG AI only provides guidance.",
   "Do not ask for passwords, payment-card details, private keys, authentication codes or unnecessary sensitive personal information.",
-  "Keep the tone professional, clear and practical. Adapt to the buyer/importer role. Do not treat user-supplied claims as independently verified."
+  "Keep the tone professional, clear and practical. Do not treat user-supplied claims as independently verified."
 ].join(" ");
+
+const ROLE_GUIDANCE: Record<string, string> = {
+  buyer: "Adapt to the buyer/importer role. Help structure sourcing requests, assess quotations using only supplied facts, prepare due-diligence questions and organise import documentation.",
+  supplier: "Adapt to the supplier/exporter role. Help prepare accurate quotations, product specifications, capacity evidence, production milestones, export documentation and buyer communications. Do not claim a buyer or supplier is verified unless a trusted verification source is explicitly provided.",
+  bank: "Adapt to the bank/trade-finance operations role. Help organise document-review checklists, LC preparation questions, transaction workflow controls, exception tracking and customer communications. Never approve credit, issue or amend a financial instrument, authenticate funds, make compliance determinations or authorise a payment."
+};
 
 function response(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: cors });
@@ -59,8 +65,9 @@ Deno.serve(async (req: Request) => {
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles").select("role,is_active").eq("id", userData.user.id).single();
-  if (profileError || profile?.role !== "buyer" || profile?.is_active !== true) {
-    return response({ error: { code: "BUYER_ACCESS_REQUIRED", message: "An active VTG buyer account is required to use this assistant." } }, 403);
+  const accountRole = String(profile?.role || "").toLowerCase();
+  if (profileError || !["buyer", "supplier", "bank"].includes(accountRole) || profile?.is_active !== true) {
+    return response({ error: { code: "WORKSPACE_ACCESS_REQUIRED", message: "An active VTG buyer, supplier or bank account is required to use this assistant." } }, 403);
   }
 
   if (!rateAllowed(userData.user.id)) {
@@ -96,7 +103,7 @@ Deno.serve(async (req: Request) => {
   let lastFailure: "timeout" | "connection" | "provider" | "empty" = "provider";
   for (const provider of providers) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 25000);
+    const timeout = setTimeout(() => controller.abort(), 12000);
     let upstream: Response;
     try {
       upstream = await fetch(provider.base + "/chat/completions", {
@@ -106,7 +113,7 @@ Deno.serve(async (req: Request) => {
         body: JSON.stringify({
           model: provider.model, temperature: 0.3, max_tokens: 1100,
           messages: [
-            { role: "system", content: SYSTEM_PROMPT },
+            { role: "system", content: SYSTEM_PROMPT + " " + ROLE_GUIDANCE[accountRole] },
             { role: "user", content: message },
           ],
         }),
@@ -121,7 +128,8 @@ Deno.serve(async (req: Request) => {
 
     if (!upstream.ok) {
       lastFailure = "provider";
-      console.warn("VTG AI provider returned an error; trying next provider", provider.name, upstream.status);
+      const providerError = await upstream.text().catch(() => "");
+      console.warn("VTG AI provider returned an error; trying next provider", provider.name, upstream.status, providerError.slice(0, 300));
       continue;
     }
 
@@ -135,7 +143,7 @@ Deno.serve(async (req: Request) => {
 
     return response({
       reply: reply.trim(),
-      role: "buyer",
+      role: accountRole,
       model: provider.model,
       provider: provider.name,
       mode: "live",
@@ -148,5 +156,14 @@ Deno.serve(async (req: Request) => {
     empty: "The AI providers returned an empty response. Please try again shortly.",
     provider: "The AI providers could not complete this request. Please try again shortly.",
   };
-  return response({ error: { code: "AI_PROVIDER_UNAVAILABLE", message: messages[lastFailure] } }, lastFailure === "timeout" ? 504 : 502);
+  // Return a normal chat payload when providers are temporarily unavailable.
+  // The dashboard can display this in the assistant bubble instead of surfacing
+  // Supabase's generic "Edge Function returned a non-2xx status code" error.
+  return response({
+    reply: "VTG AI is temporarily unable to reach its response service. Your message has not been submitted as a trade instruction. Please try again shortly. If this continues, contact VTG support at vintageafricatrade@gmail.com.",
+    role: accountRole,
+    mode: "fallback",
+    retryable: true,
+    error: { code: "AI_PROVIDER_UNAVAILABLE", message: messages[lastFailure] },
+  });
 });

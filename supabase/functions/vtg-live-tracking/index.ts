@@ -107,7 +107,7 @@ async function storeCargoEvents(provider: CargoProvider, payload: any, forcedRef
     const dedupe = provider + ":" + (n.provider_event_id || await crypto.subtle.digest("SHA-256", new TextEncoder().encode(JSON.stringify(n))).then(b => Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")));
     const { data: saved, error } = await admin.from("shipment_tracking_events").upsert({
       tracking_reference_id: ref.id, shipment_id: ref.shipment_id, trade_order_id: ref.trade_order_id, buyer_id: ref.buyer_id,
-      provider, provider_event_id: n.provider_event_id, idempotency_key: dedupe, ...n, source_mode: ref.source_mode, raw_payload: e,
+      ...n, provider, provider_event_id: n.provider_event_id, idempotency_key: dedupe, source_mode: ref.source_mode, raw_payload: e,
     }, { onConflict: "idempotency_key", ignoreDuplicates: true }).select("id");
     if (error) throw error;
     if (saved?.length) {
@@ -237,6 +237,6 @@ async function main(req: Request) {
       return json({ok:true,source_mode:"sandbox",message:"Sandbox milestone saved. It is clearly labelled as test data and is not a real shipment update."});
     }
     return json({error:"Unknown action"},400);
-  } catch(e) { return json({error:String(e?.message||e)},400); }
+  } catch(e) { return json({error:e instanceof Error ? e.message : String(e)},400); }
 }
 Deno.serve(main);

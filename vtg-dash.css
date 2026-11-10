@@ -1,0 +1,88 @@
+/* VTG workspace skin — brand colours and calmer surfaces for the signed-in dashboards.
+   Loaded last. Remaps each dashboard's own variables, so layout and behaviour are untouched. */
+html[data-theme="light"] body,html:not([data-theme]) body{
+ --bg:#F3F7FC;--panel:#FFFFFF;--panel2:#EEF4FC;--surface:#FFFFFF;--surface2:#EEF4FC;--card:#FFFFFF;
+ --ink:#0B1F3A;--text:#0B1F3A;--muted:#52667E;--line:#D5E0EE;
+ --red:#1558D6;--accent:#1558D6;--accent2:#0F46AE;--r:#1558D6;--teal:#1558D6;
+ --soft:#E4EEFC;--redSoft:#E4EEFC;--green:#0C7A4F;--amber:#8A5A00;--blue:#1558D6;
+ --shadow:0 1px 2px rgba(11,31,58,.05),0 8px 24px rgba(11,31,58,.06)}
+html[data-theme="dark"] body{
+ --bg:#08162A;--panel:#0F2340;--panel2:#132B4C;--surface:#0F2340;--surface2:#132B4C;--card:#0F2340;
+ --ink:#EEF4FC;--text:#EEF4FC;--muted:#A9BAD0;--line:#233C5E;
+ --red:#6BA6FF;--accent:#6BA6FF;--accent2:#8DB8FF;--r:#6BA6FF;--teal:#6BA6FF;
+ --soft:#173560;--redSoft:#173560;--green:#4BD39B;--amber:#FFC83D;--blue:#82B3FF;
+ --shadow:none}
+body{font-family:Manrope,Inter,system-ui,sans-serif}
+html body .topline{background:linear-gradient(90deg,#FFB81C 0 96px,#1558D6 96px)}
+html body .btn.primary,html body button.primary,html body .primary.btn{background:var(--accent,var(--red,#1558D6));border-color:var(--accent,var(--red,#1558D6));color:#fff}
+html[data-theme="dark"] body .btn.primary,html[data-theme="dark"] body button.primary,html[data-theme="dark"] body .primary.btn{color:#06101F}
+html body .btn:hover,html body .iconBtn:hover{border-color:var(--accent,var(--red,#1558D6))}
+html body .topbar{background:var(--panel,var(--surface,#fff))}
+html body :focus-visible{outline:3px solid #FFB81C;outline-offset:2px}
+html[data-theme="dark"] body .eyebrow,html[data-theme="dark"] body .panelHead .eyebrow{color:#8DB8FF}
+html[data-theme="dark"] body .commandHero .eyebrow{color:#FFD772}
+html[data-theme="dark"] body .btn.primary,html[data-theme="dark"] body button.primary,html[data-theme="dark"][data-skin] body .btn.primary,html[data-theme="dark"][data-skin] .btn.primary,html[data-theme="dark"][data-skin] button.primary{color:#06101F!important}
+html[data-theme="dark"] body .stat-icon,html[data-theme="dark"] body .statIcon,html[data-theme="dark"] body .tile .ico{color:#8DB8FF}
+html[data-theme="dark"] body .task-mark{color:#8DB8FF}
+html[data-theme="dark"] body :is(.ico,.metricIcon,.eyebrow,.pill,.mark,.healthSymbol,.queueicon,.quickIcon,.sidebar a.active,.sidebar .active,nav a.active,.items a.active,a.active){color:#8DB8FF!important}
+
+/* ===== v2 professional layer: offsets below the shared 64px header ===== */
+:root{--vf-h:64px}
+@media(max-width:720px){:root{--vf-h:58px}}
+body .sidebar,body aside.side,body .side{top:var(--vf-h)!important;height:calc(100vh - var(--vf-h))!important;height:calc(100dvh - var(--vf-h))!important;max-height:none}
+@media(max-width:1000px){
+  body .sidebar,body aside.side,body .side{z-index:60}
+  body .sidebar.mobileOpen,body .side.mobileOpen{top:var(--vf-h)!important;inset:var(--vf-h) auto 0 0!important}
+}
+/* sticky in-page headers must clear the shared bar */
+body .topbar,body header.top{top:var(--vf-h)!important}
+/* shared header hamburger */
+#vtg-shared-footer .vf-menu svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+/* surfaces: consistent professional card treatment */
+body .panel,body .card,body .stat,body .metric,body .tile,body .module-card,body .quickCard{border-radius:12px;box-shadow:0 1px 2px rgba(10,30,70,.06),0 6px 18px -12px rgba(10,30,70,.18)}
+body table th{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase}
+body .tableWrap,body .tablewrap{border-radius:12px;overflow:auto}
+body button:focus-visible,body a:focus-visible,body input:focus-visible,body select:focus-visible{outline:2px solid #1558D6;outline-offset:2px}
+/* group buttons: readable in both themes */
+html[data-theme="light"] body .sidebar .groupBtn,html[data-theme="light"] body .sidebar .groupBtn[aria-expanded]{background:transparent!important;color:#1f2f46!important;box-shadow:none!important}
+html[data-theme="light"] body .sidebar .groupBtn:hover,html[data-theme="light"] body .sidebar .groupBtn[aria-expanded="true"]{background:#EAF1FD!important;color:#0B3D91!important;box-shadow:inset 3px 0 #1558D6!important}
+html[data-theme="dark"] body .sidebar .groupBtn[aria-expanded]{color:#E3ECF7!important;background:transparent!important}
+html[data-theme="dark"] body .sidebar .groupBtn:hover,html[data-theme="dark"] body .sidebar .groupBtn[aria-expanded="true"]{background:#16294A!important;color:#fff!important;box-shadow:inset 3px 0 #6BA6FF!important}
+html[data-theme="light"] body .sidebar .profile small,html[data-theme="light"] body .sidebar .brand small,html[data-theme="light"] body .sidebar .label{color:#4b5b6e!important}
+html[data-theme="light"] body .sidebar .profile strong,html[data-theme="light"] body .sidebar .brand strong{color:#14233a}
+
+/* page photo banner (dashboards) */
+.vs-banner{margin:0 0 18px;padding:0}
+.vs-banner figure{margin:0;position:relative;border-radius:16px;overflow:hidden;background:#E8F1FD;aspect-ratio:21/6}
+.vs-banner--slim figure{aspect-ratio:auto;height:clamp(96px,12vw,150px)}
+.vs-banner img{width:100%;height:100%;object-fit:cover;display:block}
+.vs-banner figcaption{position:absolute;left:0;right:0;bottom:0;padding:26px 18px 10px;color:#fff;font-size:13px;font-weight:700;background:linear-gradient(transparent,rgba(5,20,50,.72))}
+
+
+/* Unified workspace form controls — consistent across buyer, supplier, bank, admin and staff tools */
+body :is(form,.form,.formCard,.form-card,.modal,.drawer) :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=submit]),select,textarea),
+body :is(.field,.form-group,.formGroup,.formField,.inputGroup) :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=submit]),select,textarea){
+ width:100%;min-width:0;min-height:44px;padding:10px 13px;border:1px solid var(--line,#D5E0EE);
+ border-radius:10px;background:var(--panel,#fff);color:var(--ink,#0B1F3A);
+ font:500 13px/1.45 Manrope,system-ui,sans-serif;box-shadow:0 1px 2px rgba(10,30,70,.035);
+ transition:border-color .15s ease,box-shadow .15s ease
+}
+body :is(form,.form,.formCard,.form-card,.modal,.drawer) textarea{min-height:104px;resize:vertical;line-height:1.55}
+body :is(form,.form,.formCard,.form-card,.modal,.drawer) :is(input,select,textarea):focus,
+body :is(.field,.form-group,.formGroup,.formField,.inputGroup) :is(input,select,textarea):focus{
+ outline:none;border-color:var(--accent,#1558D6);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent,#1558D6) 16%,transparent)
+}
+body :is(form,.form,.formCard,.form-card,.modal,.drawer) label,
+body :is(.field,.form-group,.formGroup,.formField,.inputGroup)>label{
+ display:block;margin:0 0 6px;color:var(--ink,#0B1F3A);font-size:12px;font-weight:750;letter-spacing:.005em
+}
+body :is(form,.form,.formCard,.form-card) :is(input[type=checkbox],input[type=radio]){width:17px;height:17px;min-height:17px;accent-color:var(--accent,#1558D6)}
+body :is(form,.form,.formCard,.form-card) fieldset{min-width:0;margin:0;padding:15px;border:1px solid var(--line,#D5E0EE);border-radius:12px;background:var(--panel2,#EEF4FC)}
+body :is(form,.form,.formCard,.form-card) legend{padding:0 7px;color:var(--ink,#0B1F3A);font-size:12px;font-weight:800}
+body :is(form,.form,.formCard,.form-card) :is(button[type=submit],.btn.primary,button.primary){
+ min-height:44px;padding:0 18px;border-radius:10px;font:800 12px Manrope,system-ui,sans-serif
+}
+body :is(form,.form,.formCard,.form-card) :is(.hint,.help-text,.form-hint,.field-help){color:var(--muted,#52667E);font-size:11px;line-height:1.5}
+body :is(form,.form,.formCard,.form-card) :is(.error,.field-error,[aria-invalid=true]){color:#B3261E}
+html[data-theme="dark"] body :is(form,.form,.formCard,.form-card) :is(.error,.field-error,[aria-invalid=true]){color:#FF8F86}
+body :is(form,.form,.formCard,.form-card) :is(input,select,textarea)[aria-invalid=true]{border-color:#B3261E;box-shadow:0 0 0 3px rgba(179,38,30,.12)}

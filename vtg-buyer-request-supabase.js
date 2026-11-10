@@ -5,7 +5,6 @@
   const $=id=>document.getElementById(id);
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let client=null,products=[];
-  const preview=new URLSearchParams(location.search).get('preview')==='1';
   const field=form.querySelector('[name="product"]')?.closest('.field');
   if(!field)return;
   const picker=document.createElement('label');
@@ -15,7 +14,6 @@
   const select=$('sbRfqProduct'),help=$('sbRfqProductHelp');
   function setStatus(message){help.textContent=message;}
   async function initialise(){
-    if(preview){select.innerHTML='<option value="">Live requests are available after sign-in</option>';select.disabled=true;return;}
     try{
       const auth=await window.VTG_AUTH_READY;
       const result=await auth.client.auth.getSession();
@@ -42,7 +40,6 @@
     }catch(error){select.innerHTML='<option value="">Live catalogue unavailable</option>';setStatus(error.message||'Could not load supplier products.');}
   }
   form.addEventListener('submit',async event=>{
-    if(preview)return;
     event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
     if(!client){setStatus('A valid buyer sign-in and live supplier catalogue are required.');return;}
     const product=products.find(p=>p.id===select.value);
