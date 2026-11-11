@@ -7,7 +7,7 @@ const root = path.resolve(__dirname, '../..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 
 test('active Atlas launcher assets exist at the URLs requested by the UI', () => {
-  const launcher = read('vtg-ui-repair.js');
+  const launcher = read('frontend-v3.html');
   assert.match(launcher, /\/vtg-map-atlas-ui\.js/);
   assert.ok(fs.existsSync(path.join(root, 'vtg-map-atlas-ui.js')), 'active map renderer must not live only in archive/');
   assert.ok(fs.existsSync(path.join(root, 'vtg-trade-atlas.js')), 'active trade data must not live only in archive/');
