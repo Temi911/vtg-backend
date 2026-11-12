@@ -238,7 +238,8 @@ html[data-vtg-pending-application="true"] #page-profile>.panel:last-child{displa
         <div class="field"><label for="liveProductMOQ">Minimum order quantity</label><input id="liveProductMOQ" name="minOrderQty" maxlength="100" placeholder="e.g. 50 units"></div>
         <div class="field"><label for="liveProductHS">HS code</label><input id="liveProductHS" name="hsCode" maxlength="30" placeholder="If known"></div>
         <div class="field"><label for="liveProductLead">Lead time</label><input id="liveProductLead" name="leadTime" maxlength="120" placeholder="e.g. 15–25 days"></div>
-        <div class="field full"><label for="liveProductImage">Product image URL (optional)</label><input id="liveProductImage" name="imageUrl" type="url" maxlength="2000" placeholder="https://…"></div>
+        <div class="field full"><label for="liveProductFiles">Product photos (optional, up to 4 · JPEG, PNG or WEBP · 5 MB each)</label><input id="liveProductFiles" name="imageFiles" type="file" accept="image/jpeg,image/png,image/webp" multiple></div>
+        <div class="field full"><label for="liveProductImage">Or paste an image URL (optional)</label><input id="liveProductImage" name="imageUrl" type="url" maxlength="2000" placeholder="https://…"></div>
         <div class="field full"><label for="liveProductDescription">Description / specifications</label><textarea id="liveProductDescription" name="description" maxlength="5000" placeholder="Accurate specifications, materials, quality grades, packaging and exclusions"></textarea></div>
       </div>
       <div class="form-actions"><button class="btn primary" type="submit" id="liveProductSave">Save to VTG catalogue</button><button class="btn" type="button" id="liveProductCancel">Cancel</button></div>

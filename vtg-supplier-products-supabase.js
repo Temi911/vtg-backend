@@ -68,7 +68,18 @@ document.addEventListener('submit',event=>{
    const leadText=String(fd.get('leadTime')||'').trim(),leadMatch=leadText.match(/^\s*(\d+)\s*(?:days?)?\s*$/i);
    const image=String(fd.get('imageUrl')||'').trim(),description=String(fd.get('description')||'').trim();
    const details=[description,leadText&&!leadMatch?'Supplier-stated lead time: '+leadText:''].filter(Boolean).join('\n\n')||null;
-   const payload={supplier_id:user.id,name,category:String(fd.get('category')||'').trim()||null,description:details,unit_price:price,currency:'USD',minimum_order_quantity:moq,hs_code:String(fd.get('hsCode')||'').trim()||null,lead_time_days:leadMatch?Number(leadMatch[1]):null,origin_country:profile.country||null,image_urls:image?[image]:[],is_active:true};
+   const files=[...(form.elements.imageFiles?.files||[])];
+   if(files.length>4)throw new Error('Upload at most four product photos.');
+   const okTypes={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'};
+   for(const f of files){if(!okTypes[f.type])throw new Error('Photos must be JPEG, PNG or WEBP.');if(f.size>5242880)throw new Error(f.name+' is larger than 5 MB.');}
+   const uploaded=[];
+   for(const f of files){
+    const path=user.id+'/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+okTypes[f.type];
+    const up=await db.storage.from('vtg-product-images').upload(path,f,{contentType:f.type,upsert:false});
+    if(up.error)throw new Error('Photo upload failed: '+up.error.message);
+    uploaded.push(db.storage.from('vtg-product-images').getPublicUrl(path).data.publicUrl);
+   }
+   const payload={supplier_id:user.id,name,category:String(fd.get('category')||'').trim()||null,description:details,unit_price:price,currency:'USD',minimum_order_quantity:moq,hs_code:String(fd.get('hsCode')||'').trim()||null,lead_time_days:leadMatch?Number(leadMatch[1]):null,origin_country:profile.country||null,image_urls:[...uploaded,...(image?[image]:[])].slice(0,5),is_active:true};
    const result=await db.from('products').insert(payload).select('id').single();
    if(result.error)throw result.error;
    form.reset();form.classList.add('hidden');
