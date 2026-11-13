@@ -18,8 +18,7 @@ with tiers(min_quantity,max_quantity,fee) as (
     (1001,5000,45::numeric),
     (5001,10000,65::numeric),
     (10001,25000,90::numeric),
-    (25001,50000,125::numeric),
-    (50001,null::integer,125::numeric)
+    (25001,50000,125::numeric)
 ), countries(country) as (values ('China'),('South Korea')),
 levels(service_level) as (values ('basic'),('standard'),('advanced'))
 insert into public.vtg_inspection_pricing
