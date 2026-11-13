@@ -28,11 +28,11 @@ create table if not exists public.supplier_trade_quotations (
  updated_at timestamptz not null default now(),
  unique(request_id,supplier_id)
 );
-do $ begin
+do $$ begin
  if not exists (select 1 from pg_constraint where conname='buyer_trade_requests_accepted_quote_id_fkey') then
   alter table public.buyer_trade_requests add constraint buyer_trade_requests_accepted_quote_id_fkey foreign key (accepted_quote_id) references public.supplier_trade_quotations(id) on delete set null;
  end if;
-end $;
+end $$;
 alter table public.buyer_trade_requests enable row level security;
 alter table public.supplier_trade_quotations enable row level security;
 grant select, insert, update on public.buyer_trade_requests to authenticated;
