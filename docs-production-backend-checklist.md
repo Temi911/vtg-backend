@@ -27,10 +27,11 @@ Columns used by the function: country ('China' or 'South Korea'), category, serv
 Add at least one active row per country with category 'general-merchandise' and each service level.
 
 ## 4. Repo migrations applied
-Compare Database > Migrations with supabase/migrations (39 files, latest 20261106150000). Apply missing ones in order.
+Compare Database > Migrations with supabase/migrations (latest 20261113090000). Apply missing ones in order.
 
 ## 5. Storage
 Bucket vtg-trade-documents exists and is private.
+Apply supabase/migrations/20261112220000_supplier_product_images_bucket.sql (public bucket vtg-product-images: supplier product photos) and 20261113090000_supplier_documents_bucket.sql (private bucket vtg-supplier-documents: supplier document files). Until applied, supplier photo/document uploads show an error.
 
 ## 6. Smoke test with a real buyer account
 Sign in, then: marketplace loads products; add to cart; "Request quotations"; RFQs page shows the request; Product verification > Request inspection quotes a fee; AI assistant answers; upload a PDF under Documents.
