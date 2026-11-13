@@ -36,6 +36,12 @@ Deno.serve(async(req)=>{
   return out({requests:(q.data??[]).map(x=>({...x,requested_checks:x.scope,status:x.status==="accepted"||x.status==="scheduled"?"assigned":x.status==="completed"?(x.buyer_decision==="approved"?"completed":x.buyer_decision==="rejected"?"rejected":"awaiting_buyer"):x.status}))});
  }
  const own=()=>db.from("vtg_inspection_requests").select("*").eq("id",parts[1]).maybeSingle();
+ const findPricing=async(country:string,category:string,inspectionType:string,level:string,qty:number)=>{
+  const lookup=(categoryKey:string)=>db.from("vtg_inspection_pricing").select("*").eq("country",country).eq("inspection_type",inspectionType).eq("service_level",level).eq("active",true).eq("category",categoryKey).lte("min_quantity",qty).or("max_quantity.is.null,max_quantity.gte."+qty).limit(1).maybeSingle();
+  let result=await lookup(category);
+  if(!result.data&&!result.error&&category!=="general-merchandise")result=await lookup("general-merchandise");
+  return result;
+ };
  if(action==="admin/pricing"&&(req.method==="POST"||req.method==="PATCH")){
   if(!isAdmin)return out({error:"Administrator required"},403);
   const country=text(body.country),category=text(body.category).toLowerCase()||"general-merchandise",inspectionType=text(body.inspectionType)||"product-quality-verification",level=text(body.serviceLevel),min=Number(body.minQuantity??1),max=body.maxQuantity==null?null:Number(body.maxQuantity),coord=Number(body.coordinationFeeUsd??body.buyerFeeUsd),provider=body.providerFeeUsd==null||body.providerFeeUsd===""?null:Number(body.providerFeeUsd),payout=Number(body.agentPayoutUsd??0);
@@ -57,7 +63,7 @@ Deno.serve(async(req)=>{
   if(profile.role!=="buyer")return out({error:"Buyer account required"},403);
   const country=text(body.country),category=text(body.category).toLowerCase(),inspectionType=text(body.inspectionType)||"product-quality-verification",qty=Number(body.quantity),level=text(body.serviceLevel)||"standard";
   if(!["China","South Korea"].includes(country)||!category||!["factory-inspection","pre-shipment-inspection","product-quality-verification","sample-inspection"].includes(inspectionType)||!Number.isInteger(qty)||qty<1||!["basic","standard","advanced"].includes(level))return out({error:"Invalid inspection quote request"},400);
-  const q=await db.from("vtg_inspection_pricing").select("*").eq("country",country).eq("inspection_type",inspectionType).eq("service_level",level).eq("active",true).lte("min_quantity",qty).or("max_quantity.is.null,max_quantity.gte."+qty).in("category",[category,"general-merchandise"]).order("category",{ascending:false}).limit(1).maybeSingle();
+  const q=await findPricing(country,category,inspectionType,level,qty);
   if(q.error||!q.data)return out({error:"No active quantity-based coordination fee is configured for this inspection"},422);
   if(q.data.provider_fee_usd===null||q.data.provider_fee_usd===undefined)return out({error:"The inspection provider has not supplied its actual fee yet. VTG will not estimate or invent this cost."},422);
   const coordination=Number(q.data.coordination_fee_usd??q.data.buyer_fee_usd),provider=Number(q.data.provider_fee_usd),extras=(body.addVideo?5:0)+(body.urgent?10:0),buyer=coordination+provider+extras,payout=Number(q.data.agent_payout_usd)+(body.addVideo?3:0)+(body.urgent?7:0);
@@ -70,7 +76,7 @@ Deno.serve(async(req)=>{
   if(order.error||!order.data||["cancelled","delivered"].includes(order.data.status))return out({error:"Eligible order not found"},403);
   const country=text(body.country),level=text(body.serviceLevel)||"standard",inspectionType=text(body.inspectionType)||"product-quality-verification",qty=Number(body.quantity),category=text(body.category);
   if(!["China","South Korea"].includes(country)||!["basic","standard","advanced"].includes(level)||!["factory-inspection","pre-shipment-inspection","product-quality-verification","sample-inspection"].includes(inspectionType)||!category||!Number.isInteger(qty)||qty<1||!text(body.city)||!text(body.productName))return out({error:"Country, city, product, category, inspection type, service level and quantity are required"},400);
-  const pricing=await db.from("vtg_inspection_pricing").select("*").eq("country",country).eq("inspection_type",inspectionType).eq("service_level",level).eq("active",true).lte("min_quantity",qty).or("max_quantity.is.null,max_quantity.gte."+qty).in("category",[category.toLowerCase(),"general-merchandise"]).order("category",{ascending:false}).limit(1).maybeSingle();
+  const pricing=await findPricing(country,category.toLowerCase(),inspectionType,level,qty);
   if(pricing.error||!pricing.data)return out({error:"VTG's quantity-based coordination fee is not configured for this request"},422);
   if(pricing.data.provider_fee_usd===null||pricing.data.provider_fee_usd===undefined)return out({error:"The inspection provider has not supplied its actual fee yet. No request or payment has been created."},422);
   const coordination=Number(pricing.data.coordination_fee_usd??pricing.data.buyer_fee_usd),provider=Number(pricing.data.provider_fee_usd),extras=(body.addVideo?5:0)+(body.urgent?10:0),buyer=coordination+provider+extras,payout=Number(pricing.data.agent_payout_usd)+(body.addVideo?3:0)+(body.urgent?7:0);
