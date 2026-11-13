@@ -24,12 +24,24 @@ async function submit(event){
   if(profile?.role!=='buyer'||profile?.is_active!==true)throw new Error('An active VTG buyer account is required.');
   const {data,error}=await auth.client.functions.invoke('vtg-ai-assistant',{body:{message:question}});
   if(error){
-   const detail=data?.error?.message||error.message||'The assistant could not complete this request.';
+   let detail=error.message||'The assistant could not complete this request.';
+   try{
+    const payload=await error.context?.json?.();
+    if(payload?.error?.message)detail=payload.error.message;
+    else if(typeof payload?.error==='string')detail=payload.error;
+   }catch(_){}
    throw new Error(detail);
   }
+  if(typeof data?.reply==='string'&&data.reply.trim()){
+   const fallback=data.mode==='fallback'||Boolean(data.error);
+   const serviceNote=fallback
+    ? '\\n\\nService status: VTG AI could not reach its response provider. This is a temporary service notice, not a trade recommendation. Please try again shortly.'
+    : '';
+   show(data.reply.trim()+serviceNote+'\\n\\nVTG AI guidance only — confirm critical requirements with your bank, licensed advisers and relevant official authorities.');
+   return;
+  }
   if(data?.error)throw new Error(data.error.message||'VTG AI could not complete this request.');
-  if(typeof data?.reply!=='string'||!data.reply.trim())throw new Error('VTG AI returned an empty response. Please try again.');
-  show(data.reply.trim()+'\n\nVTG AI guidance only — confirm critical requirements with your bank, licensed advisers and relevant official authorities.');
+  throw new Error('VTG AI returned an empty response. Please try again.');
  }catch(error){
   show(error?.message||'VTG AI is temporarily unavailable. Please try again.',true);
  }finally{busy=false;setBusy(false);}

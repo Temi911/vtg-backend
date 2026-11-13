@@ -4,6 +4,7 @@
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let ctx=null,pricing=[],busy=false;
  function note(msg,bad){const n=$('inspectionRequestNotice');if(!n)return;n.textContent=msg;n.className='notice'+(bad?' error':'');n.hidden=!msg}
+ function explain(error){const message=String(error?.message||'');if(/No active price configured|Inspection pricing is not configured/i.test(message))return 'VTG inspection pricing has not been configured yet. No fee has been quoted, no inspection request has been created, and no payment has been taken. Please contact VTG support or try again later.';return message||'The inspection service is temporarily unavailable.'}
  async function context(){
   if(ctx)return ctx;
   let auth;try{auth=await window.VTG_AUTH_READY}catch(e){auth={client:window.VTG_SUPABASE}}
@@ -46,7 +47,7 @@
   const f=$('inspectionRequestForm');if(!f||busy)return;const b=payload(f);
   if(!b.country||!b.category||!(b.quantity>0)){note('Choose country, category and a whole-number quantity to see the fee.',true);return}
   try{const r=await call('quote','POST',b);$('inspectionQuote').textContent='Inspection fee: USD '+Number(r.quote.buyerFeeUsd).toFixed(2);note('')}
-  catch(e){$('inspectionQuote').textContent='';note(e.message,true)}
+  catch(e){$('inspectionQuote').textContent='';note(explain(e),true)}
  }
  async function submit(ev){
   ev.preventDefault();if(busy)return;const f=ev.currentTarget,b=payload(f);
@@ -58,7 +59,7 @@
    note('Inspection request '+(r.request?.reference||'')+' created. Fee USD '+Number(r.payment?.amountUsd||0).toFixed(2)+' — payment status: '+(r.payment?.status||'unpaid')+'. VTG will assign an inspector; no inspection is carried out until the request is paid and assigned.');
    f.reset();$('inspectionQuote').textContent='';
    $('refreshLiveInspections')?.click();
-  }catch(e){note(e.message,true)}
+  }catch(e){note(explain(e),true)}
   finally{busy=false;if(btn)btn.disabled=false}
  }
  document.addEventListener('DOMContentLoaded',()=>{
