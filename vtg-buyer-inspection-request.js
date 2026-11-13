@@ -4,7 +4,7 @@
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let ctx=null,pricing=[],busy=false;
  function note(msg,bad){const n=$('inspectionRequestNotice');if(!n)return;n.textContent=msg;n.className='notice'+(bad?' error':'');n.hidden=!msg}
- function explain(error){const message=String(error?.message||'');if(/No active price configured|Inspection pricing is not configured/i.test(message))return 'VTG inspection pricing has not been configured yet. No fee has been quoted, no inspection request has been created, and no payment has been taken. Please contact VTG support or try again later.';return message||'The inspection service is temporarily unavailable.'}
+ function explain(error){const message=String(error?.message||'');if(/provider has not supplied its actual fee/i.test(message))return 'The inspection provider has not confirmed its actual charge yet. Your VTG coordination fee is quantity-based, but we will only show a total after the provider confirms its fee. No request or payment has been created.';if(/No active price configured|Inspection pricing is not configured|quantity-based coordination fee/i.test(message))return 'VTG inspection pricing is not configured for this request yet. No fee has been quoted, no inspection request has been created, and no payment has been taken.';return message||'The inspection service is temporarily unavailable.'}
  async function context(){
   if(ctx)return ctx;
   let auth;try{auth=await window.VTG_AUTH_READY}catch(e){auth={client:window.VTG_SUPABASE}}
@@ -46,7 +46,7 @@
  async function quote(){
   const f=$('inspectionRequestForm');if(!f||busy)return;const b=payload(f);
   if(!b.country||!b.category||!(b.quantity>0)){note('Choose country, category and a whole-number quantity to see the fee.',true);return}
-  try{const r=await call('quote','POST',b);$('inspectionQuote').textContent='Inspection fee: USD '+Number(r.quote.buyerFeeUsd).toFixed(2);note('')}
+  try{const r=await call('quote','POST',b),q=r.quote;$('inspectionQuote').textContent='Inspection provider: USD '+Number(q.providerFeeUsd).toFixed(2)+' · VTG coordination: USD '+Number(q.coordinationFeeUsd).toFixed(2)+(q.additionalServicesUsd?' · Additional services: USD '+Number(q.additionalServicesUsd).toFixed(2):'')+' · Total: USD '+Number(q.buyerFeeUsd).toFixed(2);note('Provider cost and VTG coordination are shown separately. The quotation is subject to buyer approval.')}
   catch(e){$('inspectionQuote').textContent='';note(explain(e),true)}
  }
  async function submit(ev){
