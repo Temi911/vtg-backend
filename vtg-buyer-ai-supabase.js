@@ -35,9 +35,9 @@ async function submit(event){
   if(typeof data?.reply==='string'&&data.reply.trim()){
    const fallback=data.mode==='fallback'||Boolean(data.error);
    const serviceNote=fallback
-    ? '\\n\\nService status: VTG AI could not reach its response provider. This is a temporary service notice, not a trade recommendation. Please try again shortly.'
+    ? '\n\nService status: VTG AI could not reach its response provider. This is a temporary service notice, not a trade recommendation. Please try again shortly.'
     : '';
-   show(data.reply.trim()+serviceNote+'\\n\\nVTG AI guidance only — confirm critical requirements with your bank, licensed advisers and relevant official authorities.');
+   show(data.reply.trim()+serviceNote+'\n\nVTG AI guidance only — confirm critical requirements with your bank, licensed advisers and relevant official authorities.');
    return;
   }
   if(data?.error)throw new Error(data.error.message||'VTG AI could not complete this request.');
