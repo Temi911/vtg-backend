@@ -41,13 +41,21 @@ function inlineMarkdown(value){
 }
 function markdown(value){
  const lines=String(value??'').replace(/\r/g,'').split('\n'),out=[];
- let paragraph=[],listType='',items=[];
+ let paragraph=[],listType='',items=[],tableHeaders=[],tableItems=[];
  const flushP=()=>{if(paragraph.length){out.push('<p>'+paragraph.map(inlineMarkdown).join('<br>')+'</p>');paragraph=[];}};
  const flushL=()=>{if(items.length){out.push('<'+listType+'>'+items.map(x=>'<li>'+inlineMarkdown(x)+'</li>').join('')+'</'+listType+'>');items=[];listType='';}};
+ const flushT=()=>{if(tableItems.length){out.push('<ul>'+tableItems.map(row=>'<li>'+tableHeaders.map((h,i)=>'<strong>'+inlineMarkdown(h)+':</strong> '+inlineMarkdown(row[i]||'')).join('; ')+'</li>').join('')+'</ul>');}tableHeaders=[];tableItems=[];};
  for(const line of lines){
   const s=line.trim();
-  if(!s){flushP();flushL();continue;}
-  if(/^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$/.test(s))continue;
+  if(!s){flushP();flushL();flushT();continue;}
+  if(s.startsWith('|')&&s.endsWith('|')){
+   flushP();flushL();
+   const cells=s.split('|').slice(1,-1).map(cell=>cell.trim());
+   if(cells.every(cell=>/^:?-{3,}:?$/.test(cell)))continue;
+   if(!tableHeaders.length)tableHeaders=cells;else tableItems.push(cells);
+   continue;
+  }
+  flushT();
   const h=s.match(/^(#{1,3})\s+(.+)$/);
   if(h){flushP();flushL();const n=h[1].length;out.push('<h'+n+'>'+inlineMarkdown(h[2])+'</h'+n+'>');continue;}
   const bullet=s.match(/^(?:[-*•])\s+(.+)$/);
@@ -55,7 +63,7 @@ function markdown(value){
   if(bullet||numbered){flushP();const type=numbered?'ol':'ul';if(listType&&listType!==type)flushL();listType=type;items.push((bullet||numbered)[1]);continue;}
   flushL();paragraph.push(s);
  }
- flushP();flushL();
+ flushP();flushL();flushT();
  return out.join('');
 }
 function bubbleRow(msg,first,onEdit){
