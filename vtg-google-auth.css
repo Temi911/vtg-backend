@@ -1,0 +1,12 @@
+.vtg-google{margin:0 0 18px}
+.vtg-google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:11px;padding:12px 16px;border-radius:12px;border:1.5px solid #cfd6e2;background:#fff;color:#1f2733;font:700 15px Manrope,system-ui,Arial,sans-serif;cursor:pointer;transition:box-shadow .15s,border-color .15s,background .15s}
+.vtg-google-btn:hover:not(:disabled){border-color:#1558D6;box-shadow:0 2px 10px rgba(21,88,214,.15)}
+.vtg-google-btn:disabled{opacity:.65;cursor:wait}
+.vtg-google-btn svg{width:20px;height:20px;flex:none}
+.vtg-google-or{display:flex;align-items:center;gap:12px;margin:16px 0 0;color:#6b7788;font-size:12.5px;text-transform:uppercase;letter-spacing:.08em}
+.vtg-google-or:before,.vtg-google-or:after{content:"";flex:1;height:1px;background:#d9dfe9}
+.vtg-google-note{margin:8px 2px 0;font-size:12.5px;line-height:1.5;color:#5b6677}
+.vtg-google-msg{margin:8px 2px 0;font-size:13px;color:#a3261f;line-height:1.45}
+html[data-theme="dark"] .vtg-google-btn{background:#141b23;border-color:#34424f;color:#f3f5f7}
+html[data-theme="dark"] .vtg-google-or{color:#9aa8b6}html[data-theme="dark"] .vtg-google-or:before,html[data-theme="dark"] .vtg-google-or:after{background:#2b3743}
+html[data-theme="dark"] .vtg-google-note{color:#b4c0cb}

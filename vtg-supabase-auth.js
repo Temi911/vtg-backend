@@ -36,12 +36,37 @@
         };
       };
 
+      const isGoogleUser = (user) => (user?.identities || []).some(i => i.provider === 'google') || user?.app_metadata?.provider === 'google';
+      async function needsCompletion(session) {
+        if (!isGoogleUser(session.user)) return false;
+        try {
+          const { data, error } = await client.from('profiles').select('onboarding_completed_at').eq('id', session.user.id).maybeSingle();
+          if (error) return false;
+          return !!data && !data.onboarding_completed_at;
+        } catch (_) { return false; }
+      }
+
       async function profile(session) {
         const { data, error } = await client.from('profiles')
           .select('id,email,full_name,phone,role,account_environment,preferred_language,country,city,is_active')
           .eq('id', session.user.id).maybeSingle();
         if (error) throw error;
         const result = normalize(data, session.user);
+        if (!result.requestedRole && result.databaseRole === 'buyer') {
+          // Google sign-ups carry no sign-up metadata, so read an open supplier/bank application instead.
+          try {
+            const pending = await client.from('role_requests').select('requested_role')
+              .eq('user_id', session.user.id).eq('status', 'pending').in('requested_role', ['supplier', 'bank'])
+              .order('created_at', { ascending: false }).limit(1).maybeSingle();
+            if (!pending.error && pending.data?.requested_role) {
+              result.requestedRole = pending.data.requested_role;
+              result.pendingBusinessVerification = true;
+              result.role = pending.data.requested_role;
+            }
+          } catch (_) { /* optional */ }
+        }
+        result.signInMethod = isGoogleUser(session.user) ? 'google' : 'password';
+        result.needsProfileCompletion = await needsCompletion(session);
         if (result.accountEnvironment === 'staff') {
           const memberships = await client.from('vtg_workforce_members')
             .select('workspace_role,status')
@@ -137,6 +162,40 @@
             console.warn('VTG onboarding email is temporarily unavailable:', emailError?.message || emailError);
           }
           return { session: data.session, user, emailDelivery };
+        },
+        /* Google: one button for sign-in and sign-up. The role is remembered locally (not in the URL) so the redirect
+           address stays exactly the one already allow-listed for e-mail confirmation links. */
+        async signInWithGoogle(role) {
+          const wanted = ['buyer', 'supplier', 'bank'].includes(role) ? role : 'buyer';
+          try { sessionStorage.setItem('vtg-google-intent', JSON.stringify({ role: wanted, at: Date.now() })); } catch (_) {}
+          const { error } = await client.auth.signInWithOAuth({
+            provider: 'google',
+            options: { redirectTo: location.origin + '/auth-callback.html', queryParams: { prompt: 'select_account' } }
+          });
+          if (error) {
+            const text = String(error.message || '');
+            throw new Error(/provider.*(not|disabled)|unsupported/i.test(text)
+              ? 'Google sign-in is not switched on for this VTG site yet. Please use your email and password, or contact VTG support.'
+              : text || 'Google sign-in could not start. Please try again.');
+          }
+        },
+        googleIntent() {
+          try {
+            const v = JSON.parse(sessionStorage.getItem('vtg-google-intent') || 'null');
+            if (v && Date.now() - v.at < 30 * 60 * 1000 && ['buyer', 'supplier', 'bank'].includes(v.role)) return v.role;
+          } catch (_) {}
+          return null;
+        },
+        clearGoogleIntent() { try { sessionStorage.removeItem('vtg-google-intent'); } catch (_) {} },
+        async completeGoogleProfile(details) {
+          const { data, error } = await client.rpc('vtg_complete_google_profile', { p_details: details });
+          if (error) throw new Error(error.message || 'We could not save your details. Please try again.');
+          let emailDelivery = { sent: false };
+          try {
+            const delivery = await client.functions.invoke('vtg-email', { body: { event: 'onboarding' } });
+            if (!delivery.error) emailDelivery = delivery.data || emailDelivery;
+          } catch (_) { /* receipt e-mail is best effort */ }
+          return { ...data, emailDelivery };
         },
         async signIn(email, password) {
           const result = await signInRaw(email, password);

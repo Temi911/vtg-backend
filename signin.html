@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
 <link rel="stylesheet" href="/vtg-auth.css?v=20261030-1">
-<link rel="stylesheet" href="/vtg-type.css"></head>
+<link rel="stylesheet" href="/vtg-type.css"><link rel="stylesheet" href="/vtg-loader.css?v=20261114-v1"><script src="/vtg-loader.js?v=20261114-v1" defer></script><link rel="stylesheet" href="/vtg-google-auth.css?v=20261114-g1"><script src="/vtg-google-auth.js?v=20261114-g1" defer></script></head>
 <body>
 <div id="vsHeader" data-active=""></div>
 <script src="/vtg-shell.js?v=20261030-1"></script>
@@ -24,7 +24,7 @@
 <button type="button" data-role="supplier">Supplier</button>
 <button type="button" data-role="bank">Bank</button>
 </div>
-<form id="form" class="vtg-form">
+<div data-vtg-google data-role="auto" data-label="Continue with Google" data-note="Signing in with Google creates your VTG account if you do not have one yet."></div><form id="form" class="vtg-form">
 <div><label for="email">Email address</label><div class="field"><input id="email" name="email" type="email" autocomplete="email" placeholder="you@company.com" required></div></div>
 <div><label for="password">Password</label><div class="field"><input id="password" name="password" type="password" minlength="8" autocomplete="current-password" placeholder="Your password" required><button class="toggle" id="toggle" type="button" aria-label="Show password">Show</button></div></div>
 <div class="formMeta"><label class="remember" for="remember"><input id="remember" type="checkbox" name="remember"> Remember me</label><a class="forgot" id="accountHelpLink" href="/account-help.html?role=buyer">Need sign-in help?</a></div>
@@ -44,7 +44,7 @@
 </aside>
 </main>
 <div id="vsFooter"></div>
-<script src="/vtg-supabase-auth.js?v=20261105-agreement-2"></script>
+<script src="/vtg-supabase-auth.js?v=20261114-google-1"></script>
 <script>
 let role=['buyer','supplier','bank'].includes(new URLSearchParams(location.search).get('role'))?new URLSearchParams(location.search).get('role'):'buyer';
 const nextPath=new URLSearchParams(location.search).get('next');
@@ -79,7 +79,7 @@ document.getElementById('form').onsubmit=async e=>{
    const names={buyer:'Buyer',supplier:'Supplier',bank:'Bank'};
    throw new Error('This account is registered as a '+(names[effectiveRole]||effectiveRole)+'. Please select '+(names[effectiveRole]||effectiveRole)+' above.');
   }
-  msg.className='msg ok';msg.textContent='Signed in successfully. Opening your VTG workspace…';
+  msg.className='msg ok';msg.textContent='Signed in successfully. Opening your VTG workspace…';if(window.VTGLoader)window.VTGLoader.show('Opening your VTG workspace');
   setTimeout(()=>{
    const destination=user.pendingBusinessVerification
     ? '/verification.html?role='+encodeURIComponent(effectiveRole)

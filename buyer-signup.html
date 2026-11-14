@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
 <link rel="stylesheet" href="/vtg-signup.css?v=20261030-1">
-<link rel="stylesheet" href="/vtg-type.css"></head>
+<link rel="stylesheet" href="/vtg-type.css"><link rel="stylesheet" href="/vtg-loader.css?v=20261114-v1"><script src="/vtg-loader.js?v=20261114-v1" defer></script><link rel="stylesheet" href="/vtg-google-auth.css?v=20261114-g1"><script src="/vtg-google-auth.js?v=20261114-g1" defer></script></head>
 <body>
 <div id="vsHeader" data-active=""></div>
 <script src="/vtg-shell.js?v=20261030-1"></script>
@@ -22,7 +22,7 @@
 <div class="formTop"><span class="roleTag">Buyer / Importer</span><span class="secureTag"><span class="secureDot"></span> Secure registration</span></div>
 <p class="intro">A few details to set up your buyer profile. You can review everything before creating your account.</p>
 <div class="stepMeta"><span><strong id="stepName"></strong></span><span id="stepCount">Step 1 of 3</span></div><div class="track" role="progressbar" aria-label="Registration progress" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1" id="progressTrack"><span id="progressBar"></span></div>
-<form id="signupForm" class="vtg-form" novalidate><div class="fieldsRoot">
+<div data-vtg-google data-role="buyer" data-label="Sign up with Google" data-note="Skip the long form: we take your name and verified email from Google, then ask only for the few details we still need."></div><form id="signupForm" class="vtg-form" novalidate><div class="fieldsRoot">
 <section class="step" data-step="0"><div class="fields">
 <div class="field"><label for="fullName">Full name *</label><input id="fullName" name="fullName" autocomplete="name" required></div>
 <div class="field"><label for="email">Email address *</label><input id="email" name="email" type="email" autocomplete="email" required></div>
@@ -47,7 +47,7 @@
 
 </main>
 <div id="vsFooter"></div>
-<script src="/vtg-supabase-auth.js?v=20261105-agreement-2"></script>
+<script src="/vtg-supabase-auth.js?v=20261114-google-1"></script>
 <script>
 const AFRICA=[["🇩🇿","Algeria","+213"],["🇦🇴","Angola","+244"],["🇧🇯","Benin","+229"],["🇧🇼","Botswana","+267"],["🇧🇫","Burkina Faso","+226"],["🇧🇮","Burundi","+257"],["🇨🇻","Cabo Verde","+238"],["🇨🇲","Cameroon","+237"],["🇨🇫","Central African Republic","+236"],["🇹🇩","Chad","+235"],["🇰🇲","Comoros","+269"],["🇨🇩","DR Congo","+243"],["🇨🇬","Republic of the Congo","+242"],["🇨🇮","Côte d’Ivoire","+225"],["🇩🇯","Djibouti","+253"],["🇪🇬","Egypt","+20"],["🇬🇶","Equatorial Guinea","+240"],["🇪🇷","Eritrea","+291"],["🇸🇿","Eswatini","+268"],["🇪🇹","Ethiopia","+251"],["🇬🇦","Gabon","+241"],["🇬🇲","Gambia","+220"],["🇬🇭","Ghana","+233"],["🇬🇳","Guinea","+224"],["🇬🇼","Guinea-Bissau","+245"],["🇰🇪","Kenya","+254"],["🇱🇸","Lesotho","+266"],["🇱🇷","Liberia","+231"],["🇱🇾","Libya","+218"],["🇲🇬","Madagascar","+261"],["🇲🇼","Malawi","+265"],["🇲🇱","Mali","+223"],["🇲🇷","Mauritania","+222"],["🇲🇺","Mauritius","+230"],["🇲🇦","Morocco","+212"],["🇲🇿","Mozambique","+258"],["🇳🇦","Namibia","+264"],["🇳🇪","Niger","+227"],["🇳🇬","Nigeria","+234"],["🇷🇼","Rwanda","+250"],["🇸🇹","São Tomé and Príncipe","+239"],["🇸🇳","Senegal","+221"],["🇸🇨","Seychelles","+248"],["🇸🇱","Sierra Leone","+232"],["🇸🇴","Somalia","+252"],["🇿🇦","South Africa","+27"],["🇸🇸","South Sudan","+211"],["🇸🇩","Sudan","+249"],["🇹🇿","Tanzania","+255"],["🇹🇬","Togo","+228"],["🇹🇳","Tunisia","+216"],["🇺🇬","Uganda","+256"],["🇿🇲","Zambia","+260"],["🇿🇼","Zimbabwe","+263"]];
 const CHINA_KOREA=[["🇨🇳","China","+86"],["🇰🇷","South Korea","+82"]];

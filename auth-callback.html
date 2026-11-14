@@ -2,35 +2,48 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#17191b"><title>Confirming your VTG account</title>
+<meta name="theme-color" content="#ffffff"><title>Opening your VTG account</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:#17191b;color:#f3efe6;font:15px Manrope,Arial,sans-serif}
-.panel{width:min(480px,100%);padding:38px;border:1px solid #514b43;border-radius:18px;background:#202326;text-align:center}
-.mark{font-size:12px;letter-spacing:.2em;color:#b49a70}.title{font-size:25px;margin:18px 0 10px}.copy{color:#c9c4ba;line-height:1.7}.error{color:#f1a29a}.link{display:inline-block;margin-top:20px;color:#e2c99e}
-</style>
-<script src="/vtg-supabase-auth.js?v=20261105-agreement-2"></script>
+<link rel="stylesheet" href="/vtg-loader.css?v=20261114-v1">
+<style>html,body{margin:0;background:#fff}</style>
+<script src="/vtg-loader.js?v=20261114-v1" defer></script>
+<script src="/vtg-supabase-auth.js?v=20261114-google-1"></script>
 </head>
-<body><main class="panel"><div class="mark">VINTAGE AFRICA TRADE</div><h1 class="title" id="title">Confirming your account</h1><p class="copy" id="copy">Please wait while we securely complete your sign-in.</p><a class="link" id="link" href="/signin.html" hidden>Return to sign in</a></main>
+<body>
+<main class="vtg-loader" id="panel" role="status" aria-live="polite">
+<svg class="vtg-loader-v" viewBox="0 0 105 110" aria-hidden="true" focusable="false"><defs><pattern id="cbp" width="22" height="22" patternUnits="userSpaceOnUse"><rect width="22" height="22" fill="#a20d12"/><path d="M11 2L19 11L11 20L3 11Z" fill="none" stroke="#ef9a88" stroke-width="1.7"/><path d="M11 6L15 11L11 16L7 11Z" fill="none" stroke="#f5c0a9" stroke-width="1.1"/><circle cx="11" cy="11" r="1.5" fill="#f3b49f"/><path d="M1 1L5 5M17 17L21 21M21 1L17 5M5 17L1 21" stroke="#d95545" stroke-width="1"/></pattern><clipPath id="cbc"><path d="M7 10H31L51 76L72 10H96L65 101H39Z"/></clipPath></defs><path class="vtg-v-ghost" d="M7 10H31L51 76L72 10H96L65 101H39Z"/><g clip-path="url(#cbc)"><g class="vtg-v-fill"><rect width="105" height="110" fill="url(#cbp)"/></g></g><path class="vtg-v-outline" d="M7 10H31L51 76L72 10H96L65 101H39Z"/></svg>
+<p class="vtg-loader-title" id="title">Confirming your account</p>
+<p class="vtg-loader-sub" id="copy">Please wait while we securely complete your sign-in.</p>
+<a class="vtg-loader-link" id="link" href="/signin.html" hidden>Return to sign in</a>
+</main>
 <script>
 (async()=>{
- const title=document.getElementById('title'),copy=document.getElementById('copy'),link=document.getElementById('link');
+ const panel=document.getElementById('panel'),title=document.getElementById('title'),copy=document.getElementById('copy'),link=document.getElementById('link');
+ const fail=(head,text)=>{panel.classList.add('is-error');title.textContent=head;copy.textContent=text;link.hidden=false;};
  try{
   const auth=await window.VTG_AUTH_READY;
-  const params=new URLSearchParams(location.search),code=params.get('code'),tokenHash=params.get('token_hash'),type=params.get('type')||'signup';
-  if(code){const {error}=await auth.client.auth.exchangeCodeForSession(code);if(error)throw error;}
-  else if(tokenHash){const {error}=await auth.client.auth.verifyOtp({token_hash:tokenHash,type});if(error)throw error;}
+  const params=new URLSearchParams(location.search),hash=new URLSearchParams(location.hash.replace(/^#/,''));
+  const providerError=params.get('error_description')||hash.get('error_description')||params.get('error');
+  if(providerError){fail('Sign-in was not completed',/access_denied/i.test(providerError)?'Google sign-in was cancelled. You can try again or use your email and password.':providerError.replace(/\+/g,' '));return;}
+  const code=params.get('code'),tokenHash=params.get('token_hash'),type=params.get('type')||'signup';
+  // The client may already have exchanged the code on load; only exchange it ourselves if there is no session yet.
+  let existing=(await auth.client.auth.getSession()).data.session;
+  if(!existing&&code){const {error}=await auth.client.auth.exchangeCodeForSession(code);if(error)throw error;}
+  else if(!existing&&tokenHash){const {error}=await auth.client.auth.verifyOtp({token_hash:tokenHash,type});if(error)throw error;}
   const current=await auth.getCurrent();
   if(!current)throw new Error('This confirmation link is missing, expired or was opened in a different browser. Return to sign in or request a fresh email.');
   history.replaceState({},document.title,location.pathname);
   const user=current.user,pending=Boolean(user.pendingBusinessVerification);
+  if(user.accountEnvironment==='staff'){await auth.client.auth.signOut({scope:'local'});['vtg_access_token','vtg-auth'].forEach(k=>localStorage.removeItem(k));fail('Staff accounts use Workforce Access','This is a private VTG staff account. Please sign in through Workforce Access.');return;}
   const dest=pending?'/verification.html?role='+encodeURIComponent(user.requestedRole||user.role):({buyer:'/buyer-dashboard.html',supplier:'/supplier-dashboard.html',bank:'/bank-trade-os.html',agent:'/agent-dashboard.html',admin:'/admin-dashboard-preview.html'})[user.role]||'/';
-  title.textContent='Email confirmed';copy.textContent='Your VTG account is confirmed. Opening the next step…';
+  const intent=auth.googleIntent();auth.clearGoogleIntent();
+  title.textContent=user.signInMethod==='google'?'Signed in with Google':'Email confirmed';copy.textContent='Opening the next step…';
   setTimeout(()=>{
+   if(user.needsProfileCompletion){location.replace('/complete-profile.html?role='+encodeURIComponent(intent||'buyer')+'&next='+encodeURIComponent(dest));return;}
    if(user.agreementRequired){location.replace('/signup-agreement.html?next='+encodeURIComponent(dest));return;}
    location.replace(dest);
-  },900);
- }catch(error){title.textContent='We could not complete confirmation';copy.className='copy error';copy.textContent=error.message||'Please try signing in again.';link.hidden=false;}
+  },600);
+ }catch(error){fail('We could not complete sign-in',error.message||'Please try signing in again.');}
 })();
 </script></body></html>
