@@ -107,6 +107,14 @@ function listen(){
    if(pendingIdx>=0)messages.splice(pendingIdx,1);
    const hydrated=await hydrateAttachments([m]);messages.push(hydrated[0]||m);draw();
   }
+ }).on('postgres_changes',{event:'INSERT',schema:'public',table:'vtg_chat_attachments'},async payload=>{
+  const attachment=payload.new;if(!attachment||String(attachment.conversation_id)!==activeId)return;
+  const index=messages.findIndex(m=>String(m.id)===String(attachment.message_id));if(index<0)return;
+  try{
+   const hydrated=await hydrateAttachments([messages[index]]);
+   if(hydrated[0])messages[index]=hydrated[0];
+   draw();
+  }catch(_){}
  }).subscribe();
  callChannel=client.channel('vtg-calls-'+userId).on('postgres_changes',{event:'*',schema:'public',table:'vtg_calls'},payload=>{
   const r=payload.new||payload.old||{};
