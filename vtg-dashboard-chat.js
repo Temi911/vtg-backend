@@ -65,7 +65,7 @@ function boot(){
    const client=await ready();const context=history.slice(0,-1).slice(-8).filter(item=>item.text).map(item=>({role:item.mine?'user':'assistant',content:item.text}));
    let attachments=[];
    if(items.length){const {userId}=await C.clientReady();try{attachments=await window.VTGAttach.uploadForAI(client,userId,items);}catch(e){throw new Error('Your files could not be uploaded. '+(e.message||'Please try again.'));}}
-   const {data,error}=await client.functions.invoke('vtg-ai-assistant',{body:{message,context,...(attachments.length?{attachments:attachments.map(a=>({path:a.path,name:a.name,mime:a.mime}))}:{})}});
+   const {data,error}=await client.functions.invoke('vtg-ai-assistant',{body:{message,context,page:location.pathname+(location.hash||''),...(attachments.length?{attachments:attachments.map(a=>({path:a.path,name:a.name,mime:a.mime}))}:{})}});
    if(typeof data?.reply==='string'&&data.reply.trim()){const fallback=data.mode==='fallback'||Boolean(data.error)||Boolean(error);typing(false);push(data.reply.trim()+(fallback?'\n\nService note: VTG AI could not reach its response provider, so this is not a trade recommendation. Please try again shortly.':''),false);return;}
    if(error)throw new Error(await errorDetail(error));if(data?.error)throw new Error(data.error.message||(typeof data.error==='string'?data.error:'VTG AI could not complete this request.'));
    throw new Error('VTG AI returned an empty response. Please try again.');

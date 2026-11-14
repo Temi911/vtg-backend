@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>Complete your VTG profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#f3f5f8;color:#18212b;font:15px/1.5 Manrope,system-ui,Arial,sans-serif}
+.top{background:#fff;border-bottom:1px solid #e1e6ed;padding:12px 20px}.top img{height:42px;display:block}
+main{max-width:640px;margin:0 auto;padding:28px 18px 60px}
+.card{background:#fff;border:1px solid #e1e6ed;border-radius:16px;padding:26px;box-shadow:0 12px 35px #18212b0b}
+h1{margin:0 0 6px;font-size:24px}.sub{margin:0 0 20px;color:#5b6677}
+.who{display:flex;align-items:center;gap:10px;background:#eef4ff;border-radius:10px;padding:10px 12px;margin-bottom:18px;font-size:14px}
+.who b{display:block}.role{display:inline-block;margin:0 0 16px;padding:3px 10px;border-radius:20px;background:#fff3d1;color:#8a5a00;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid .full{grid-column:1/-1}
+label{display:block;font-size:13px;font-weight:700;margin:0 0 5px}label small{font-weight:500;color:#6b7788}
+input,select,textarea{width:100%;padding:11px 12px;border:1.5px solid #cfd6e2;border-radius:10px;background:#fff;color:#18212b;font:inherit}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#1558D6;box-shadow:0 0 0 3px #1558d626}
+.msg{min-height:20px;margin:14px 0 0;font-size:14px;color:#a3261f}.msg.ok{color:#177451}
+button.primary{margin-top:18px;width:100%;padding:13px;border:0;border-radius:12px;background:#1558D6;color:#fff;font:800 15px Manrope,sans-serif;cursor:pointer}
+button.primary:disabled{opacity:.6;cursor:wait}
+.fine{margin-top:14px;font-size:12.5px;color:#5b6677}
+.group[hidden]{display:none}
+@media(max-width:560px){.grid{grid-template-columns:1fr}}
+</style>
+<link rel="stylesheet" href="/vtg-loader.css?v=20261114-v1"><script src="/vtg-loader.js?v=20261114-v1" defer></script>
+<script src="/vtg-supabase-auth.js?v=20261114-google-1"></script>
+</head>
+<body>
+<div class="top"><a href="/frontend-v3.html"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a></div>
+<main><div class="card" id="card" hidden>
+<span class="role" id="roleTag">Buyer</span>
+<h1>Almost there</h1>
+<p class="sub">Google gave us your name and verified email. Tell us a little more so VTG can set up your workspace.</p>
+<div class="who"><div><b id="whoName"></b><span id="whoEmail"></span></div></div>
+<form id="form" novalidate>
+<div class="grid">
+<div class="full"><label for="full_name">Full name</label><input id="full_name" name="full_name" autocomplete="name" required minlength="2" maxlength="120"></div>
+<div><label for="country">Country</label><select id="country" name="country" required></select></div>
+<div><label for="city">City</label><input id="city" name="city" autocomplete="address-level2" required minlength="2" maxlength="80"></div>
+<div><label for="phone">Phone <small>(with country code)</small></label><input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="+234 800 000 0000" maxlength="30"></div>
+<div><label for="preferred_language">Preferred language</label><select id="preferred_language" name="preferred_language"><option value="en">English</option><option value="fr">Français</option><option value="zh">中文</option><option value="ko">한국어</option><option value="pt">Português</option><option value="ar">العربية</option></select></div>
+</div>
+<div class="group grid" id="g-buyer" style="margin-top:14px">
+<div><label for="buyer_type">Buyer type</label><select id="buyer_type" name="buyer_type"><option value="business">Business</option><option value="individual">Individual</option><option value="dealer">Dealer</option><option value="ngo">NGO</option></select></div>
+<div><label for="company_name">Company name <small>(optional)</small></label><input id="company_name" name="company_name" maxlength="150"></div>
+</div>
+<div class="group grid" id="g-supplier" style="margin-top:14px" hidden>
+<div class="full"><label for="s_org">Company name</label><input id="s_org" name="organization_name" maxlength="150"></div>
+<div><label for="s_reg">Business registration no.</label><input id="s_reg" name="registration_reference" maxlength="80"></div>
+<div><label for="s_lic">Export licence no. <small>(if any)</small></label><input id="s_lic" name="license_number" maxlength="80"></div>
+<div><label for="s_model">Business model</label><select id="s_model" name="business_model"><option value="manufacturer">Manufacturer</option><option value="trading_company">Trading company</option><option value="wholesaler">Wholesaler</option></select></div>
+<div><label for="s_cat">Main product category</label><input id="s_cat" name="product_category" maxlength="120"></div>
+<div class="full"><label for="s_mk">Export markets <small>(for example Nigeria, Ghana, Kenya)</small></label><input id="s_mk" name="export_markets" maxlength="200"></div>
+</div>
+<div class="group grid" id="g-bank" style="margin-top:14px" hidden>
+<div class="full"><label for="b_org">Bank / institution name</label><input id="b_org" name="organization_name" maxlength="150"></div>
+<div><label for="b_type">Institution type</label><select id="b_type" name="institution_type"><option value="commercial_bank">Commercial bank</option><option value="development_bank">Development bank</option><option value="trade_finance">Trade finance institution</option><option value="other">Other</option></select></div>
+<div><label for="b_reg">Regulator</label><input id="b_reg" name="regulator" maxlength="120"></div>
+<div><label for="b_lic">Licence / registration no.</label><input id="b_lic" name="license_number" maxlength="80"></div>
+<div><label for="b_swift">SWIFT / BIC <small>(if any)</small></label><input id="b_swift" name="swift_code" maxlength="11" style="text-transform:uppercase"></div>
+<div><label for="b_title">Your title</label><input id="b_title" name="officer_title" maxlength="100"></div>
+<div><label for="b_branch">Branch</label><input id="b_branch" name="branch" maxlength="120"></div>
+</div>
+<p class="fine" id="reviewNote" hidden>Supplier and bank accounts are reviewed by VTG before they are approved. Until then your account works as a buyer account and you will be told when the review is complete.</p>
+<div class="msg" id="msg" role="status" aria-live="polite"></div>
+<button class="primary" type="submit" id="save">Save and continue</button>
+<p class="fine">By continuing you confirm the details are accurate. You will review the VTG agreements on the next step if they apply to your account.</p>
+</form></div></main>
+<script>
+(async()=>{
+ const $=id=>document.getElementById(id);
+ const AFRICA=['Algeria','Angola','Benin','Botswana','Burkina Faso','Burundi','Cabo Verde','Cameroon','Central African Republic','Chad','Comoros','Republic of the Congo','DR Congo',"Côte d'Ivoire",'Djibouti','Egypt','Equatorial Guinea','Eritrea','Eswatini','Ethiopia','Gabon','Gambia','Ghana','Guinea','Guinea-Bissau','Kenya','Lesotho','Liberia','Libya','Madagascar','Malawi','Mali','Mauritania','Mauritius','Morocco','Mozambique','Namibia','Niger','Nigeria','Rwanda','São Tomé and Príncipe','Senegal','Seychelles','Sierra Leone','Somalia','South Africa','South Sudan','Sudan','Tanzania','Togo','Tunisia','Uganda','Zambia','Zimbabwe'];
+ const SETS={buyer:AFRICA,supplier:['China','South Korea'],bank:[...AFRICA,'China','South Korea']};
+ const NAMES={buyer:'Buyer / Importer',supplier:'Supplier',bank:'Bank'};
+ const params=new URLSearchParams(location.search);
+ const role=['buyer','supplier','bank'].includes(params.get('role'))?params.get('role'):'buyer';
+ const next=/^\/[a-z0-9\-]+\.html(\?[^#]*)?$/i.test(params.get('next')||'')?params.get('next'):'/buyer-dashboard.html';
+ if(window.VTGLoader)VTGLoader.show('Loading your profile');
+ let auth,current;
+ try{auth=await window.VTG_AUTH_READY;current=await auth.getCurrent();}catch(e){current=null;}
+ if(!current){location.replace('/signin.html');return;}
+ const user=current.user;
+ if(!user.needsProfileCompletion){location.replace(next);return;}
+ if(window.VTGLoader)VTGLoader.hide();
+ $('card').hidden=false;$('roleTag').textContent=NAMES[role];
+ $('whoName').textContent=user.fullName||'Your Google account';$('whoEmail').textContent=user.email;
+ $('full_name').value=user.fullName||'';
+ $('country').innerHTML='<option value="">Select country</option>'+SETS[role].map(c=>'<option>'+c+'</option>').join('');
+ ['buyer','supplier','bank'].forEach(r=>{const g=$('g-'+r);g.hidden=r!==role;g.querySelectorAll('input,select').forEach(el=>el.disabled=r!==role);});
+ $('reviewNote').hidden=role==='buyer';
+ if(role==='supplier'){$('s_org').required=true;$('s_reg').required=true;}
+ if(role==='bank'){$('b_org').required=true;$('b_lic').required=true;}
+ $('form').addEventListener('submit',async e=>{
+  e.preventDefault();const msg=$('msg'),btn=$('save');msg.className='msg';msg.textContent='';
+  if(!e.currentTarget.checkValidity()){e.currentTarget.reportValidity();return;}
+  btn.disabled=true;if(window.VTGLoader)VTGLoader.show('Saving your details');
+  const details={requested_role:role};
+  new FormData(e.currentTarget).forEach((v,k)=>{if(String(v).trim())details[k]=String(v).trim();});
+  try{
+   const result=await auth.completeGoogleProfile(details);
+   const fresh=await auth.getCurrent();
+   if(window.VTGLoader)VTGLoader.show('Opening your VTG account');
+   setTimeout(()=>{
+    if(result.role_request_created){location.replace('/verification.html?role='+encodeURIComponent(role));return;}
+    if(fresh&&fresh.user.agreementRequired){location.replace('/signup-agreement.html?next='+encodeURIComponent(next));return;}
+    location.replace(next);
+   },500);
+  }catch(err){if(window.VTGLoader)VTGLoader.hide();msg.textContent=err.message||'We could not save your details.';btn.disabled=false;}
+ });
+})();
+</script></body></html>
