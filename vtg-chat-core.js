@@ -76,7 +76,8 @@ function bubbleRow(msg,first,onEdit){
  const t=document.createElement('div');t.className='vtg-wa-text';t.innerHTML=markdown(msg.text);
  const m=document.createElement('span');m.className='vtg-wa-meta';
  m.innerHTML='<span>'+esc(time(msg.at))+'</span>'+(msg.mine?'<span class="vtg-wa-tick'+(msg.pending?' pending':'')+'">'+(msg.pending?I.clock:I.tick)+'</span>':'');
- b.append(t);
+ if(String(msg.text||'').trim())b.append(t);
+ if(msg.attachments?.length&&window.VTGAttach){try{window.VTGAttach.render(b,msg.attachments,msg.client);}catch(_){}}
  if(msg.mine&&msg.editable&&typeof onEdit==='function'){
   const edit=document.createElement('button');edit.type='button';edit.className='vtg-wa-edit';edit.textContent='Edit';
   edit.setAttribute('aria-label','Edit your message');edit.addEventListener('click',()=>onEdit(msg));b.append(edit);
