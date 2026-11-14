@@ -54,7 +54,8 @@ fileInput.addEventListener('change',()=>{
  const allowed=/^(application\/(pdf|msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document|vnd\.ms-excel|vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet)|text\/(plain|csv)|image\/(jpeg|png|webp|gif)|video\/(mp4|webm|quicktime))$/i;
  for(const file of [...fileInput.files]){
   if(queuedFiles.length>=5)break;
-  const limit=file.type.startsWith('video/')?15*1024*1024:file.type.startsWith('image/')?10*1024*1024:25*1024*1024;\n  if(file.size>limit||!allowed.test(file.type))continue;
+  const limit=file.type.startsWith('video/')?15*1024*1024:file.type.startsWith('image/')?10*1024*1024:25*1024*1024;
+  if(file.size>limit||!allowed.test(file.type))continue;
   if(!queuedFiles.some(x=>x.name===file.name&&x.size===file.size))queuedFiles.push(file);
  }
  fileInput.value='';renderQueuedFiles();
