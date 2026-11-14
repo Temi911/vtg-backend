@@ -11,12 +11,12 @@ host.innerHTML='<aside class="vtg-wa-side"><div class="vtg-wa-sidehead"><strong>
  +'<div class="vtg-wa-main"><header class="vtg-wa-head"><button type="button" class="vtg-wa-iconbtn vtg-wa-back" data-back aria-label="Back to chats">'+I.back+'</button><div class="vtg-wa-avatar" data-avatar>V</div><div class="vtg-wa-title"><strong data-title>Choose a chat</strong><small data-sub>Secure account-linked trade messages</small></div><div class="vtg-wa-actions"><button type="button" class="vtg-wa-iconbtn" data-voice aria-label="Start voice call" title="Voice call (up to 5 people)" disabled>'+I.phone+'</button><button type="button" class="vtg-wa-iconbtn" data-video aria-label="Start video call" title="Video call (up to 5 people)" disabled>'+I.video+'</button></div></header>'
  +'<div class="vtg-wa-callbar" data-callbar><span data-calltext></span><button type="button" data-joincall>Join</button></div>'
  +'<div class="vtg-wa-stream" data-log role="log" aria-live="polite"></div>'
- +'<div class="vtg-wa-file-pending" data-pending-files hidden></div><form class="vtg-wa-compose" data-form><input type="file" data-file-input multiple hidden accept=".pdf,.txt,.csv,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp,.gif,.mp4,.webm,.mov,application/pdf,text/plain,text/csv,image/*,video/*"><button type="button" class="vtg-wa-attach" data-attach aria-label="Attach files" title="Attach files">'+I.plus+'</button><textarea data-input rows="1" maxlength="4000" placeholder="Type a message or attach files" aria-label="Type a message"></textarea><button class="vtg-wa-send" data-send type="submit" aria-label="Send message">'+I.send+'</button></form>
- +'<div class="vtg-wa-note">Only people in a chat can read messages and attachments. You can share documents, pictures and videos with partners linked to your trade records. Files are stored privately and access is limited to chat participants. Do not share passwords, one-time codes or bank credentials.</div></div>';
+ +'<form class="vtg-wa-compose" data-form><textarea data-input rows="1" maxlength="4000" placeholder="Type a message" aria-label="Type a message" required></textarea><button class="vtg-wa-send" data-send type="submit" aria-label="Send message">'+I.send+'</button></form>'
+ +'<div class="vtg-wa-note">Only people in a chat can read or send messages, and you can only chat with partners linked to your trade records. Do not share passwords, one-time codes or bank credentials.</div></div>';
 const $=s=>host.querySelector(s);
-const list=$('[data-list]'),log=$('[data-log]'),form=$('[data-form]'),input=$('[data-input]'),sendBtn=$('[data-send]'),picker=$('[data-picker]'),fileInput=$('[data-file-input]'),pendingFiles=$('[data-pending-files]');
+const list=$('[data-list]'),log=$('[data-log]'),form=$('[data-form]'),input=$('[data-input]'),sendBtn=$('[data-send]'),picker=$('[data-picker]');
 const titleEl=$('[data-title]'),subEl=$('[data-sub]'),avatarEl=$('[data-avatar]'),voiceBtn=$('[data-voice]'),videoBtn=$('[data-video]'),callbar=$('[data-callbar]');
-let client=null,userId='',convs=[],activeId='',members={},messages=[],busy=false,channel=null,callChannel=null,liveCalls={},queuedFiles=[];
+let client=null,userId='',convs=[],activeId='',members={},messages=[],busy=false,channel=null,callChannel=null,liveCalls={};
 const memberCache={};
 
 function empty(el,text){el.innerHTML='<div class="vtg-wa-empty">'+esc(text)+'</div>';}
@@ -97,7 +97,7 @@ async function openConv(id){
 }
 function listen(){
  if(channel)return;
- channel=client.channel('vtg-msgs-'+userId).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},async payload=>{
+ channel=client.channel('vtg-msgs-'+userId).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},payload=>{
   const m=payload.new;if(!m)return;
   const c=convs.find(x=>String(x.id)===String(m.conversation_id));
   if(c){c.last_message=m.body;c.last_at=m.created_at;convs.sort((a,b)=>new Date(b.last_at)-new Date(a.last_at));renderList();}
@@ -105,16 +105,8 @@ function listen(){
   if(String(m.conversation_id)===activeId&&!messages.some(x=>String(x.id)===String(m.id))){
    const pendingIdx=messages.findIndex(x=>x.pending&&x.body===m.body&&String(x.sender_id)===String(m.sender_id));
    if(pendingIdx>=0)messages.splice(pendingIdx,1);
-   const hydrated=await hydrateAttachments([m]);messages.push(hydrated[0]||m);draw();
+   messages.push(m);draw();
   }
- }).on('postgres_changes',{event:'INSERT',schema:'public',table:'vtg_chat_attachments'},async payload=>{
-  const attachment=payload.new;if(!attachment||String(attachment.conversation_id)!==activeId)return;
-  const index=messages.findIndex(m=>String(m.id)===String(attachment.message_id));if(index<0)return;
-  try{
-   const hydrated=await hydrateAttachments([messages[index]]);
-   if(hydrated[0])messages[index]=hydrated[0];
-   draw();
-  }catch(_){}
  }).subscribe();
  callChannel=client.channel('vtg-calls-'+userId).on('postgres_changes',{event:'*',schema:'public',table:'vtg_calls'},payload=>{
   const r=payload.new||payload.old||{};
@@ -156,50 +148,22 @@ picker.addEventListener('click',async e=>{
 });
 
 /* ---- sending */
-function renderQueuedFiles(){
- pendingFiles.hidden=!queuedFiles.length;
- pendingFiles.innerHTML=queuedFiles.map((f,i)=>'<span>'+esc(f.name)+' <button type="button" data-remove-file="'+i+'" aria-label="Remove '+esc(f.name)+'">×</button></span>').join('');
-}
-$('[data-attach]').addEventListener('click',()=>fileInput.click());
-fileInput.addEventListener('change',()=>{
- const incoming=[...fileInput.files];fileInput.value='';
- for(const file of incoming){
-  if(queuedFiles.length>=8)break;
-  if(file.size>100*1024*1024)continue;
-  if(!/^(application\/(pdf|msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document|vnd\.ms-excel|vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet)|text\/(plain|csv)|image\/(jpeg|png|webp|gif)|video\/(mp4|webm|quicktime))$/i.test(file.type))continue;
-  if(!queuedFiles.some(x=>x.name===file.name&&x.size===file.size))queuedFiles.push(file);
- }
- renderQueuedFiles();
-});
-pendingFiles.addEventListener('click',e=>{const b=e.target.closest('[data-remove-file]');if(!b)return;queuedFiles.splice(Number(b.dataset.removeFile),1);renderQueuedFiles();});
 form.addEventListener('submit',async e=>{
- e.preventDefault();if(busy)return;const body=input.value.trim(),files=[...queuedFiles];if(!body&&!files.length)return;
+ e.preventDefault();if(busy)return;const body=input.value.trim();if(!body)return;
  if(!activeId){empty(log,'Choose a chat first, or start a new one.');return;}
- if(body.length>4000)return;
- busy=true;sendBtn.disabled=true;input.value='';input.style.height='';queuedFiles=[];renderQueuedFiles();
+ if(body.length>4000){return;}
+ busy=true;sendBtn.disabled=true;input.value='';input.style.height='';
  const temp={id:'tmp-'+Date.now(),sender_id:userId,body,created_at:new Date().toISOString(),pending:true};
  messages.push(temp);draw();
- const uploaded=[];
  try{
-  for(const file of files){
-   const clean=file.name.replace(/[^a-zA-Z0-9._-]/g,'_').slice(-100)||'attachment';
-   const path=activeId+'/'+userId+'/'+crypto.randomUUID()+'-'+clean;
-   const {error:uploadError}=await client.storage.from('vtg-chat-attachments').upload(path,file,{contentType:file.type,upsert:false});
-   if(uploadError)throw uploadError;
-   uploaded.push({path,file});
-  }
-  const {data,error}=await client.from('messages').insert({conversation_id:activeId,sender_id:userId,body:body||' '}).select('id,sender_id,body,created_at').single();
+  const {data,error}=await client.from('messages').insert({conversation_id:activeId,sender_id:userId,body}).select('id,sender_id,body,created_at').single();
   if(error)throw error;
-  const records=uploaded.map(x=>({conversation_id:activeId,message_id:data.id,uploaded_by:userId,storage_path:x.path,original_name:x.file.name,mime_type:x.file.type,size_bytes:x.file.size,attachment_type:x.file.type.startsWith('image/')?'image':x.file.type.startsWith('video/')?'video':'document'}));
-  if(records.length){const {error:ae}=await client.from('vtg_chat_attachments').insert(records);if(ae)throw ae;}
-  const hydrated=await hydrateAttachments([data]);
-  const i=messages.findIndex(x=>x.id===temp.id);if(i>=0)messages.splice(i,1);
-  if(!messages.some(x=>String(x.id)===String(data.id)))messages.push(hydrated[0]||data);
-  draw();loadList();
+  const i=messages.findIndex(x=>x.id===temp.id);
+  if(i>=0){if(messages.some(x=>String(x.id)===String(data.id)))messages.splice(i,1);else messages[i]=data;}else if(!messages.some(x=>String(x.id)===String(data.id)))messages.push(data);
+  draw();
  }catch(err){
-  for(const x of uploaded)await client.storage.from('vtg-chat-attachments').remove([x.path]).catch(()=>{});
-  messages=messages.filter(x=>x.id!==temp.id);draw();input.value=body;queuedFiles=files;renderQueuedFiles();
-  const note=document.createElement('div');note.className='vtg-wa-empty';note.textContent='Message or attachment not sent: '+(err.message||'request failed');log.append(note);log.scrollTop=log.scrollHeight;
+  messages=messages.filter(x=>x.id!==temp.id);draw();input.value=body;
+  const note=document.createElement('div');note.className='vtg-wa-empty';note.textContent='Message not sent: '+(err.message||'request failed');log.append(note);log.scrollTop=log.scrollHeight;
  }finally{busy=false;sendBtn.disabled=false;input.focus();}
 });
 input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,130)+'px';});
