@@ -84,7 +84,7 @@ Deno.serve(async (req: Request) => {
   const providers = [
     {
       name: "gemini",
-      apiKey: Deno.env.get("VTG_AI_API_KEY"),
+      apiKey: Deno.env.get("GEMINI_API_KEY") || Deno.env.get("VTG_AI_API_KEY"),
       base: (Deno.env.get("VTG_AI_BASE_URL") || "https://generativelanguage.googleapis.com/v1beta/openai").replace(/\/+$/, ""),
       model: Deno.env.get("VTG_AI_MODEL") || "gemini-2.5-flash",
     },
