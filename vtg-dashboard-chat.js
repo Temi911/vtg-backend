@@ -10,7 +10,7 @@ root.innerHTML='<section class="vtg-wa vtg-wa-card" aria-label="VTG AI chat">'
  +'<header class="vtg-wa-head"><div class="vtg-wa-avatar ai">AI</div><div class="vtg-wa-title"><strong>VTG AI Trade Desk</strong><small>Trade guidance for your '+C.esc(roleNames[role]||'VTG')+' workspace</small></div></header>'
  +'<div class="vtg-wa-stream" id="vtgChatStream" role="log" aria-live="polite" aria-relevant="additions text"></div>'
  +'<div class="vtg-wa-file-pending" id="vtgAIPendingFiles" hidden></div><form class="vtg-wa-compose" id="vtgChatForm"><input type="file" id="vtgAIFileInput" multiple hidden accept=".pdf,.txt,.csv,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp,.gif,.mp4,.webm,.mov,application/pdf,text/plain,text/csv,image/*,video/*"><button type="button" class="vtg-wa-attach" id="vtgAIAttach" aria-label="Attach files" title="Attach files">'+I.plus+'</button><textarea id="vtgChatInput" rows="1" maxlength="6000" placeholder="Message VTG AI or attach files" aria-label="Message VTG AI"></textarea><button class="vtg-wa-send" id="vtgChatSend" type="submit" aria-label="Send message">'+I.send+'</button></form>
- +'<div class="vtg-wa-note">VTG AI uses relevant information from your VTG workspace and your message to prepare responses. This information is sent to VTG's configured AI providers. Do not share passwords, payment credentials or authentication codes. VTG AI provides trade-preparation guidance, not bank approval, legal advice, customs clearance or independent verification.</div></section>';
+ +'<div class="vtg-wa-note">VTG AI uses relevant information from your VTG workspace and your message to prepare responses. Files you attach are also processed for your request. PDFs, Word and Excel files, images and short videos are supported within file-size limits; scanned PDFs may need OCR. This information is sent to VTG's configured AI providers. Do not share passwords, payment credentials or authentication codes. VTG AI provides trade-preparation guidance, not bank approval, legal advice, customs clearance or independent verification.</div></section>';
 const stream=root.querySelector('#vtgChatStream'),form=root.querySelector('#vtgChatForm'),input=root.querySelector('#vtgChatInput'),send=root.querySelector('#vtgChatSend'),fileInput=root.querySelector('#vtgAIFileInput'),attachBtn=root.querySelector('#vtgAIAttach'),pendingFiles=root.querySelector('#vtgAIPendingFiles');
 const history=[];let busy=false,typingRow=null,seq=0;
 function push(text,mine){history.push({id:++seq,mine,ai:!mine,name:'VTG AI',senderId:mine?'me':'ai',text,at:new Date(),editable:mine});draw();}
@@ -54,7 +54,7 @@ fileInput.addEventListener('change',()=>{
  const allowed=/^(application\/(pdf|msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document|vnd\.ms-excel|vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet)|text\/(plain|csv)|image\/(jpeg|png|webp|gif)|video\/(mp4|webm|quicktime))$/i;
  for(const file of [...fileInput.files]){
   if(queuedFiles.length>=5)break;
-  if(file.size>50*1024*1024||!allowed.test(file.type))continue;
+  const limit=file.type.startsWith('video/')?15*1024*1024:file.type.startsWith('image/')?10*1024*1024:25*1024*1024;\n  if(file.size>limit||!allowed.test(file.type))continue;
   if(!queuedFiles.some(x=>x.name===file.name&&x.size===file.size))queuedFiles.push(file);
  }
  fileInput.value='';renderQueuedFiles();
