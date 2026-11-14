@@ -13,9 +13,17 @@ root.innerHTML='<section class="vtg-wa vtg-wa-card" aria-label="VTG AI chat">'
  +'<div class="vtg-wa-note">VTG AI provides trade-preparation guidance, not bank approval, legal advice, customs clearance or independent verification. Do not share passwords or payment credentials.</div></section>';
 const stream=root.querySelector('#vtgChatStream'),form=root.querySelector('#vtgChatForm'),input=root.querySelector('#vtgChatInput'),send=root.querySelector('#vtgChatSend');
 const history=[];let busy=false,typingRow=null,seq=0;
-function push(text,mine){history.push({id:++seq,mine,ai:!mine,name:'VTG AI',senderId:mine?'me':'ai',text,at:new Date()});draw();}
+function push(text,mine){history.push({id:++seq,mine,ai:!mine,name:'VTG AI',senderId:mine?'me':'ai',text,at:new Date(),editable:mine});draw();}
+function editMessage(msg){
+ const index=history.findIndex(item=>item.id===msg.id);
+ if(index<0)return;
+ history.splice(index);
+ input.value=msg.text;
+ input.style.height='auto';input.style.height=Math.min(input.scrollHeight,130)+'px';
+ draw();input.focus();input.setSelectionRange(input.value.length,input.value.length);
+}
 function draw(){
- C.renderStream(stream,history);
+ C.renderStream(stream,history,undefined,editMessage);
  if(typingRow){stream.append(typingRow);stream.scrollTop=stream.scrollHeight;}
 }
 function typing(on){

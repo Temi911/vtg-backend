@@ -135,3 +135,18 @@ html[data-theme="dark"] .vtg-wa-item .vtg-wa-avatar{color:#9DBBF5}
 }
 @media(prefers-reduced-motion:reduce){.vtg-wa-typing i,.vtg-wa-live:before{animation:none}.vtg-wa-stream{scroll-behavior:auto}}
 .vtg-call-tile .st:empty{display:none}
+
+/* Rich text in AI and message bubbles */
+.vtg-wa-text{display:block;white-space:normal;overflow-wrap:anywhere}
+.vtg-wa-text p{margin:0 0 9px;line-height:1.62}
+.vtg-wa-text p:last-child{margin-bottom:0}
+.vtg-wa-text h1,.vtg-wa-text h2,.vtg-wa-text h3{margin:12px 0 6px;font-size:1.02em;line-height:1.35;font-weight:800}
+.vtg-wa-text h1:first-child,.vtg-wa-text h2:first-child,.vtg-wa-text h3:first-child{margin-top:0}
+.vtg-wa-text ul,.vtg-wa-text ol{margin:5px 0 10px;padding-left:21px}
+.vtg-wa-text li{margin:3px 0;line-height:1.55}
+.vtg-wa-text strong{font-weight:800}
+.vtg-wa-text em{font-style:italic}
+.vtg-wa-text u{text-decoration-thickness:1px;text-underline-offset:2px}
+.vtg-wa-text code{padding:1px 4px;border-radius:4px;background:rgba(100,116,139,.14);font-size:.92em}
+.vtg-wa-edit{display:inline-flex;align-items:center;margin:7px 7px 0 0;padding:3px 8px;border:1px solid var(--wa-line);border-radius:999px;background:transparent;color:var(--wa-muted);font-size:10px;font-weight:700}
+.vtg-wa-edit:hover{color:var(--wa-blue);border-color:var(--wa-blue)}
