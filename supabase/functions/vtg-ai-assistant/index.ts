@@ -305,13 +305,13 @@ Deno.serve(async (req: Request) => {
   } catch (error) {
     return response({ error: { code: "ATTACHMENT_READ_FAILED", message: error instanceof Error ? error.message : "VTG could not read one of the attachments." } }, 400);
   }
-  const enrichedMessage = message + (attachmentContext.text ? "\\n\\nATTACHED FILE CONTENT AND ANALYSIS:\\n" + attachmentContext.text : "");
+  const enrichedMessage = message + (attachmentContext.text ? "\n\nATTACHED FILE CONTENT AND ANALYSIS:\n" + attachmentContext.text : "");
   const openAIUserContent: unknown = attachmentContext.images.length
     ? [{ type: "text", text: enrichedMessage }, ...attachmentContext.images.map(url => ({ type: "image_url", image_url: { url, detail: "high" } }))]
     : enrichedMessage;
   const anthropicUserContent: unknown = attachmentContext.images.length
     ? [{ type: "text", text: enrichedMessage }, ...attachmentContext.images.map(url => {
-        const match = url.match(/^data:(image\\/(?:jpeg|png|webp|gif));base64,(.+)$/);
+        const match = url.match(/^data:(image\/(?:jpeg|png|webp|gif));base64,(.+)$/);
         return match ? { type: "image", source: { type: "base64", media_type: match[1], data: match[2] } } : { type: "text", text: "An attached image could not be passed to the model." };
       })]
     : enrichedMessage;
