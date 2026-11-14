@@ -12,8 +12,8 @@ root.innerHTML='<section class="vtg-wa vtg-wa-card" aria-label="VTG AI chat">'
  +'<div class="vtg-wa-file-pending" id="vtgAIPendingFiles" hidden></div><form class="vtg-wa-compose" id="vtgChatForm"><input type="file" id="vtgAIFileInput" multiple hidden accept=".pdf,.txt,.csv,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp,.gif,.mp4,.webm,.mov,application/pdf,text/plain,text/csv,image/*,video/*"><button type="button" class="vtg-wa-attach" id="vtgAIAttach" aria-label="Attach files" title="Attach files">'+I.plus+'</button><textarea id="vtgChatInput" rows="1" maxlength="6000" placeholder="Message VTG AI or attach files" aria-label="Message VTG AI"></textarea><button class="vtg-wa-send" id="vtgChatSend" type="submit" aria-label="Send message">'+I.send+'</button></form>
  +'<div class="vtg-wa-note">VTG AI uses relevant information from your VTG workspace and your message to prepare responses. Files you attach are also processed for your request. PDFs, Word and Excel files, images and short videos are supported within file-size limits; scanned PDFs may need OCR. This information is sent to VTG's configured AI providers. Do not share passwords, payment credentials or authentication codes. VTG AI provides trade-preparation guidance, not bank approval, legal advice, customs clearance or independent verification.</div></section>';
 const stream=root.querySelector('#vtgChatStream'),form=root.querySelector('#vtgChatForm'),input=root.querySelector('#vtgChatInput'),send=root.querySelector('#vtgChatSend'),fileInput=root.querySelector('#vtgAIFileInput'),attachBtn=root.querySelector('#vtgAIAttach'),pendingFiles=root.querySelector('#vtgAIPendingFiles');
-const history=[];let busy=false,typingRow=null,seq=0;
-function push(text,mine){history.push({id:++seq,mine,ai:!mine,name:'VTG AI',senderId:mine?'me':'ai',text,at:new Date(),editable:mine});draw();}
+const history=[];let busy=false,typingRow=null,seq=0,activeClient=null,activeUserId='',queuedFiles=[];
+function push(text,mine,attachments=[]){history.push({id:++seq,mine,ai:!mine,name:'VTG AI',senderId:mine?'me':'ai',text,at:new Date(),editable:mine,attachments});draw();}
 function editMessage(msg){
  const index=history.findIndex(item=>item.id===msg.id);
  if(index<0)return;
@@ -38,7 +38,7 @@ async function ready(){
  const {data:profile,error}=await client.from('profiles').select('role,is_active').eq('id',userId).single();
  if(error)throw error;
  if(!profile?.is_active||profile.role!==role)throw new Error('An active '+(roleNames[role]||'VTG')+' account is required to use this assistant.');
- return client;
+ activeClient=client;activeUserId=userId;return client;
 }
 async function errorDetail(error){
  let detail=error?.message||'VTG AI could not complete this request.';
