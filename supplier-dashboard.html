@@ -119,7 +119,7 @@ html[data-vtg-pending-application="true"] #page-profile>*:not(:last-child){displ
 html[data-vtg-pending-application="true"] #page-profile>.panel:last-child{display:block!important}
 </style><link rel="stylesheet" href="/vtg-dash.css?v=20261031-1">
 <link rel="stylesheet" href="/vtg-type.css"><link rel="stylesheet" href="/vtg-dashboard-chat.css?v=20261105-chat-2">
-<link rel="stylesheet" href="/vtg-business-verification-workspace.css?v=20261106-1"></head>
+<link rel="stylesheet" href="/vtg-business-verification-workspace.css?v=20261106-1"><link rel="stylesheet" href="/vtg-chat-whatsapp.css?v=20261114-wa-1"></head>
 <body id="vtg-dashboard-top">
 <div class="app">
 <aside class="sidebar" id="sidebar" aria-label="Supplier navigation">
@@ -363,8 +363,6 @@ document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',(
 document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
 $('mobileMenu').addEventListener('click',()=>$('sidebar').classList.toggle('open'));
 $('supplierMeeting')?.addEventListener('click',()=>toast('Meeting request is a workspace action only; no invitation was sent.'));
-$('supplierVoice')?.addEventListener('click',()=>toast('Voice calling is not connected. No microphone was activated.'));
-$('supplierVideo')?.addEventListener('click',()=>toast('Video calling is not connected. No camera was activated.'));
 $('skinSelect').addEventListener('change',e=>applySkin(e.target.value));
 $('settingsSkin').addEventListener('change',e=>applySkin(e.target.value));
 $('themeToggle').addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';setTheme(next);$('settingsTheme').value=next});
@@ -474,6 +472,6 @@ bootSupplierWorkspace();
 <script src="/vtg-supplier-orders-supabase.js?v=20261112-1"></script>
 <script src="/vtg-supplier-documents-supabase.js?v=20261113-1"></script>
 <script src="/vtg-supplier-shared-trade-desk-supabase.js?v=20261105-trade-workflow-6"></script>
-<script src="/vtg-dashboard-chat.js?v=20261105-chat-1"></script>
-<script src="/vtg-cross-account-messages.js?v=20261105-peer-chat-2"></script>\n<script src="/vtg-notifications-supabase.js?v=20261105-notifications-1"></script>
+<script src="/vtg-chat-core.js?v=20261114-wa-1"></script><script src="/vtg-dashboard-chat.js?v=20261114-wa-1"></script>
+<script src="/vtg-calls.js?v=20261114-wa-1"></script><script src="/vtg-cross-account-messages.js?v=20261114-wa-1"></script>\n<script src="/vtg-notifications-supabase.js?v=20261105-notifications-1"></script>
 </body></html>

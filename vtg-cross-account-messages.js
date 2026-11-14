@@ -1,76 +1,196 @@
+/* VTG account messages — WhatsApp-style chats between trade-linked buyers, suppliers and banks.
+   Own messages: right (blue). Other people: left, named, each with their own colour. */
 (function(){
 'use strict';
-const root=document.querySelector('[data-vtg-peer-chat]');if(!root)return;
-const $=sel=>root.querySelector(sel),role=String(document.documentElement.dataset.vtgRole||'').toLowerCase();
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const roleNames={buyer:'Buyer',supplier:'Supplier',bank:'Bank',agent:'Trade agent'};
-const list=$('[data-vtg-conversations]'),log=$('[data-vtg-log]'),form=$('[data-vtg-form]'),input=$('[data-vtg-input]'),title=$('[data-vtg-title]'),send=$('[data-vtg-send]');
-let conversations=[],activeId='',busy=false,client=null,userId='',channel=null;
-function placeholder(target,message){if(target)target.innerHTML='<div class="empty">'+esc(message)+'</div>'}
-async function session(){
- const auth=await window.VTG_AUTH_READY;client=auth?.client||window.VTG_SUPABASE;
- if(!client?.auth)throw new Error('VTG account service is unavailable. Refresh and sign in again.');
- const {data,error}=await client.auth.getSession();if(error)throw error;if(!data.session)throw new Error('Sign in to view account conversations.');
- userId=data.session.user.id;
- const {data:profile,error:pe}=await client.from('profiles').select('role,is_active').eq('id',userId).single();
- if(pe)throw pe;if(profile?.role!==role||profile?.is_active!==true)throw new Error('An active '+(roleNames[role]||'VTG')+' account is required.');
- return data.session;
+const host=document.querySelector('[data-vtg-peer-chat]');if(!host||!window.VTGChat)return;
+const C=window.VTGChat,I=C.icons,esc=C.esc;
+const role=String(document.documentElement.dataset.vtgRole||'').toLowerCase();
+const roleNames={buyer:'Buyer',supplier:'Supplier',bank:'Bank'};
+host.className='vtg-wa vtg-wa-messages';
+host.innerHTML='<aside class="vtg-wa-side"><div class="vtg-wa-sidehead"><strong>Chats</strong><button type="button" class="vtg-wa-sidebtn" data-new>'+I.plus+' New chat</button><button type="button" class="vtg-wa-sidebtn ghost" data-refresh>Refresh</button></div><div data-picker hidden></div><div class="vtg-wa-list" data-list role="list"></div></aside>'
+ +'<div class="vtg-wa-main"><header class="vtg-wa-head"><button type="button" class="vtg-wa-iconbtn vtg-wa-back" data-back aria-label="Back to chats">'+I.back+'</button><div class="vtg-wa-avatar" data-avatar>V</div><div class="vtg-wa-title"><strong data-title>Choose a chat</strong><small data-sub>Secure account-linked trade messages</small></div><div class="vtg-wa-actions"><button type="button" class="vtg-wa-iconbtn" data-voice aria-label="Start voice call" title="Voice call (up to 5 people)" disabled>'+I.phone+'</button><button type="button" class="vtg-wa-iconbtn" data-video aria-label="Start video call" title="Video call (up to 5 people)" disabled>'+I.video+'</button></div></header>'
+ +'<div class="vtg-wa-callbar" data-callbar><span data-calltext></span><button type="button" data-joincall>Join</button></div>'
+ +'<div class="vtg-wa-stream" data-log role="log" aria-live="polite"></div>'
+ +'<form class="vtg-wa-compose" data-form><textarea data-input rows="1" maxlength="4000" placeholder="Type a message" aria-label="Type a message" required></textarea><button class="vtg-wa-send" data-send type="submit" aria-label="Send message">'+I.send+'</button></form>'
+ +'<div class="vtg-wa-note">Only people in a chat can read or send messages, and you can only chat with partners linked to your trade records. Do not share passwords, one-time codes or bank credentials.</div></div>';
+const $=s=>host.querySelector(s);
+const list=$('[data-list]'),log=$('[data-log]'),form=$('[data-form]'),input=$('[data-input]'),sendBtn=$('[data-send]'),picker=$('[data-picker]');
+const titleEl=$('[data-title]'),subEl=$('[data-sub]'),avatarEl=$('[data-avatar]'),voiceBtn=$('[data-voice]'),videoBtn=$('[data-video]'),callbar=$('[data-callbar]');
+let client=null,userId='',convs=[],activeId='',members={},messages=[],busy=false,channel=null,callChannel=null,liveCalls={};
+const memberCache={};
+
+function empty(el,text){el.innerHTML='<div class="vtg-wa-empty">'+esc(text)+'</div>';}
+async function boot(){
+ const s=await C.clientReady();client=s.client;userId=s.userId;
+ const {data:profile,error}=await client.from('profiles').select('role,is_active').eq('id',userId).single();
+ if(error)throw error;
+ if(!profile?.is_active||profile.role!==role)throw new Error('An active '+(roleNames[role]||'VTG')+' account is required.');
+}
+async function membersOf(id){
+ if(memberCache[id])return memberCache[id];
+ const {data,error}=await client.rpc('vtg_conversation_members',{p_conversation_id:id});
+ if(error)throw error;
+ const tones=C.toneMap((data||[]).map(m=>m.user_id),userId);
+ const map={};(data||[]).forEach(m=>{map[m.user_id]={id:m.user_id,name:m.display_name,role:m.role,tone:tones[String(m.user_id)]??0,me:String(m.user_id)===String(userId)};});
+ return (memberCache[id]=map);
+}
+function convTitle(c){
+ const others=Object.values(c.members||{}).filter(m=>!m.me).map(m=>m.name);
+ return c.title||others.join(', ')||'Trade chat';
 }
 function renderList(){
- list.innerHTML=conversations.length?conversations.map(c=>'<button type="button" class="vtg-peer-thread '+(String(c.id)===String(activeId)?'active':'')+'" data-vtg-thread="'+esc(c.id)+'"><strong>'+esc(c.order_reference||'Trade conversation')+'</strong><small>'+esc(c.last_message||'No messages yet')+'</small></button>').join(''):'<div class="empty">No account conversations are linked to this workspace yet. A conversation appears when a supported trade workflow adds your account as a participant.</div>';
+ if(!convs.length){empty(list,'No chats yet. Tap “New chat” to message a partner linked to your trade records.');return;}
+ list.innerHTML=convs.map(c=>{
+  const t=convTitle(c),live=liveCalls[c.id];
+  return '<button type="button" role="listitem" class="vtg-wa-item'+(String(c.id)===String(activeId)?' active':'')+'" data-open="'+esc(c.id)+'"><div class="vtg-wa-avatar">'+esc(C.initials(t))+'</div><div class="vtg-wa-item-body"><div class="vtg-wa-item-top"><strong>'+esc(t)+'</strong><time>'+(c.last_at?esc(C.time(c.last_at)):'')+'</time></div><small>'+(live?'<span class="vtg-wa-live">Call in progress</span>':esc(c.last_message||'No messages yet'))+'</small></div></button>';
+ }).join('');
 }
 async function loadList(){
- placeholder(list,'Loading account conversations…');
+ empty(list,'Loading chats…');
  try{
-  await session();
-  const [created,participantRows]=await Promise.all([
-   client.from('conversations').select('id,order_id,created_at').eq('created_by',userId),
-   client.from('conversation_participants').select('conversation_id').eq('user_id',userId)
-  ]);
-  if(created.error)throw created.error;if(participantRows.error)throw participantRows.error;
-  const ids=[...new Set([...(created.data||[]).map(x=>x.id),...(participantRows.data||[]).map(x=>x.conversation_id)])];
-  if(!ids.length){conversations=[];activeId='';renderList();title.textContent='No conversation selected';placeholder(log,'Your account has no linked conversations yet.');return}
-  const {data:rows,error}=await client.from('conversations').select('id,order_id,created_at').in('id',ids).order('created_at',{ascending:false});
+  if(!client)await boot();
+  const {data:rows,error}=await client.from('conversations').select('id,title,is_group,created_at').order('created_at',{ascending:false});
   if(error)throw error;
-  const orderIds=[...new Set((rows||[]).map(x=>x.order_id).filter(Boolean))];let orderMap={};
-  if(orderIds.length){const {data:orders,error:oe}=await client.from('trade_orders').select('id,reference').in('id',orderIds);if(oe)throw oe;orderMap=Object.fromEntries((orders||[]).map(o=>[o.id,o.reference]));}
-  const {data:messages,error:me}=await client.from('messages').select('conversation_id,body,created_at').in('conversation_id',ids).order('created_at',{ascending:false}).limit(500);
-  if(me)throw me;const latest={};(messages||[]).forEach(m=>{if(!latest[m.conversation_id])latest[m.conversation_id]=m;});
-  conversations=(rows||[]).map(c=>({...c,order_reference:orderMap[c.order_id]||'General trade conversation',last_message:latest[c.id]?.body||'No messages yet'}));
+  const ids=(rows||[]).map(r=>r.id);
+  convs=[];
+  if(ids.length){
+   const [msgs,mems,calls]=await Promise.all([
+    client.from('messages').select('conversation_id,body,created_at').in('conversation_id',ids).order('created_at',{ascending:false}).limit(400),
+    Promise.all(ids.slice(0,40).map(id=>membersOf(id).catch(()=>({})))),
+    client.from('vtg_calls').select('id,conversation_id,kind').in('conversation_id',ids).eq('status','active')
+   ]);
+   if(msgs.error)throw msgs.error;
+   const latest={};(msgs.data||[]).forEach(m=>{if(!latest[m.conversation_id])latest[m.conversation_id]=m;});
+   liveCalls={};(calls.data||[]).forEach(c=>{liveCalls[c.conversation_id]=c;});
+   convs=rows.map((r,i)=>({...r,members:mems[i]||memberCache[r.id]||{},last_message:latest[r.id]?.body,last_at:latest[r.id]?.created_at||r.created_at}));
+   convs.sort((a,b)=>new Date(b.last_at)-new Date(a.last_at));
+  }
   renderList();
-  if(activeId&&conversations.some(c=>String(c.id)===String(activeId)))await loadMessages(activeId);
-  else if(conversations.length)await loadMessages(conversations[0].id);
- }catch(e){placeholder(list,'Live conversations could not be loaded: '+(e.message||'Supabase request failed'));const b=document.createElement('button');b.type='button';b.className='vtg-peer-refresh';b.textContent='Try again';b.addEventListener('click',loadList);list.append(b);}
+  if(activeId&&convs.some(c=>String(c.id)===activeId))refreshHeader();
+ }catch(e){
+  list.innerHTML='<div class="vtg-wa-empty">Chats could not be loaded: '+esc(e.message||'request failed')+'<br><br><button type="button" class="vtg-wa-sidebtn" data-refresh>Try again</button></div>';
+ }
 }
-function watchConversation(id){
- if(channel){client.removeChannel(channel);channel=null;}
- channel=client.channel('vtg-chat-'+id).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'conversation_id=eq.'+id},()=>loadMessages(id)).subscribe();
+function refreshHeader(){
+ const c=convs.find(x=>String(x.id)===activeId);if(!c)return;
+ const t=convTitle(c),n=Object.keys(c.members||{}).length;
+ titleEl.textContent=t;avatarEl.textContent=C.initials(t);
+ subEl.textContent=n>2?n+' people · '+Object.values(c.members).map(m=>m.me?'You':m.name).join(', '):(Object.values(c.members).find(m=>!m.me)?.role?roleNames[Object.values(c.members).find(m=>!m.me).role]||'Trade partner':'Trade partner');
+ const canCall=n>=2&&n<=5&&!!window.VTGCalls;voiceBtn.disabled=videoBtn.disabled=!canCall;
+ const live=liveCalls[activeId];callbar.classList.toggle('show',!!live);
+ if(live)$('[data-calltext]').textContent='A '+live.kind+' call is in progress in this chat.';
 }
-async function loadMessages(id){
- activeId=String(id);renderList();placeholder(log,'Loading messages…');
+function toRows(rows){
+ return rows.map(m=>{const mem=members[m.sender_id];return {id:m.id,senderId:m.sender_id,mine:String(m.sender_id)===String(userId),name:mem?.name||'Trade partner',tone:mem?.tone??0,text:m.body||'',at:m.created_at,pending:m.pending};});
+}
+function draw(){C.renderStream(log,toRows(messages),'No messages yet. Say hello below.');}
+async function openConv(id){
+ activeId=String(id);host.classList.add('is-open');renderList();empty(log,'Loading messages…');
  try{
-  await session();
-  const {data:rows,error}=await client.from('messages').select('id,conversation_id,sender_id,body,created_at').eq('conversation_id',activeId).order('created_at',{ascending:true}).limit(500);
+  members=await membersOf(activeId);
+  const c=convs.find(x=>String(x.id)===activeId);if(c)c.members=members;
+  refreshHeader();
+  const {data,error}=await client.from('messages').select('id,sender_id,body,created_at').eq('conversation_id',activeId).order('created_at',{ascending:true}).limit(500);
   if(error)throw error;
-  const {data:roles,error:roleError}=await client.rpc('vtg_conversation_sender_roles',{p_conversation_id:activeId});
-  const roleMap=!roleError?Object.fromEntries((roles||[]).map(x=>[x.user_id,String(x.role||'other').toLowerCase()])):{};
-  log.innerHTML=rows?.length?rows.map(m=>{const mine=String(m.sender_id)===String(userId),senderRole=roleMap[m.sender_id]||'other';const label=mine?'You':(roleNames[senderRole]||'Trade partner');return '<div class="bubble '+(mine?'mine':'')+'" data-sender-role="'+esc(senderRole)+'">'+esc(m.body||'')+'<small>'+esc(label)+' · '+esc(m.created_at?new Date(m.created_at).toLocaleString():'')+'</small></div>';}).join(''):'<div class="empty">No messages in this conversation yet. You can send the first message below.</div>';
-  const c=conversations.find(x=>String(x.id)===activeId);title.textContent=c?.order_reference||'Live trade conversation';log.scrollTop=log.scrollHeight;watchConversation(activeId);
- }catch(e){placeholder(log,'Messages could not be loaded: '+(e.message||'Supabase request failed'));}
+  messages=data||[];draw();
+ }catch(e){empty(log,'Messages could not be loaded: '+(e.message||'request failed'));}
 }
-list.addEventListener('click',e=>{const b=e.target.closest('[data-vtg-thread]');if(b)loadMessages(b.dataset.vtgThread);});
-root.querySelector('[data-vtg-refresh]')?.addEventListener('click',loadList);
+function listen(){
+ if(channel)return;
+ channel=client.channel('vtg-msgs-'+userId).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},payload=>{
+  const m=payload.new;if(!m)return;
+  const c=convs.find(x=>String(x.id)===String(m.conversation_id));
+  if(c){c.last_message=m.body;c.last_at=m.created_at;convs.sort((a,b)=>new Date(b.last_at)-new Date(a.last_at));renderList();}
+  else loadList();
+  if(String(m.conversation_id)===activeId&&!messages.some(x=>String(x.id)===String(m.id))){
+   const pendingIdx=messages.findIndex(x=>x.pending&&x.body===m.body&&String(x.sender_id)===String(m.sender_id));
+   if(pendingIdx>=0)messages.splice(pendingIdx,1);
+   messages.push(m);draw();
+  }
+ }).subscribe();
+ callChannel=client.channel('vtg-calls-'+userId).on('postgres_changes',{event:'*',schema:'public',table:'vtg_calls'},payload=>{
+  const r=payload.new||payload.old||{};
+  if(payload.eventType==='DELETE'||r.status==='ended')delete liveCalls[r.conversation_id];
+  else if(r.status==='active'){liveCalls[r.conversation_id]=r;if(payload.eventType==='INSERT'&&String(r.started_by)!==String(userId))window.VTGCalls?.incoming?.(r,convTitleById(r.conversation_id));}
+  renderList();if(String(r.conversation_id)===activeId)refreshHeader();
+ }).subscribe();
+}
+function convTitleById(id){const c=convs.find(x=>String(x.id)===String(id));return c?convTitle(c):'Trade chat';}
+
+/* ---- new chat picker */
+async function showPicker(){
+ picker.hidden=false;picker.className='vtg-wa-picker';picker.innerHTML='<h4>Start a chat</h4><small>Loading your trade partners…</small>';
+ try{
+  if(!client)await boot();
+  const {data,error}=await client.rpc('vtg_chat_contacts');if(error)throw error;
+  if(!data?.length){picker.innerHTML='<h4>Start a chat</h4><small>No trade partners are linked to your account yet. Partners appear here once you share an order or letter of credit.</small><div class="row"><button type="button" class="vtg-wa-sidebtn ghost" data-cancel>Close</button></div>';return;}
+  picker.innerHTML='<h4>Start a chat</h4><small>Pick 1 partner, or up to 4 for a group (5 people max).</small>'
+   +data.map(c=>'<label><input type="checkbox" value="'+esc(c.user_id)+'"><span>'+esc(c.display_name)+'<small>'+esc(roleNames[c.role]||c.role)+'</small></span></label>').join('')
+   +'<input type="text" data-grouptitle maxlength="80" placeholder="Group name (optional)" hidden><div class="err" data-pickerr></div><div class="row"><button type="button" class="vtg-wa-sidebtn" data-start>Start chat</button><button type="button" class="vtg-wa-sidebtn ghost" data-cancel>Cancel</button></div>';
+ }catch(e){picker.innerHTML='<h4>Start a chat</h4><div class="err">'+esc(e.message||'Contacts could not be loaded')+'</div><div class="row"><button type="button" class="vtg-wa-sidebtn ghost" data-cancel>Close</button></div>';}
+}
+picker.addEventListener('change',e=>{
+ const boxes=[...picker.querySelectorAll('input[type=checkbox]')],on=boxes.filter(b=>b.checked);
+ if(on.length>4){e.target.checked=false;picker.querySelector('[data-pickerr]').textContent='A chat can have at most 5 people including you.';return;}
+ picker.querySelector('[data-pickerr]').textContent='';
+ const gt=picker.querySelector('[data-grouptitle]');if(gt)gt.hidden=on.length<2;
+});
+picker.addEventListener('click',async e=>{
+ if(e.target.closest('[data-cancel]')){picker.hidden=true;return;}
+ if(!e.target.closest('[data-start]'))return;
+ const ids=[...picker.querySelectorAll('input[type=checkbox]:checked')].map(b=>b.value),err=picker.querySelector('[data-pickerr]');
+ if(!ids.length){err.textContent='Choose at least one partner.';return;}
+ try{
+  const title=picker.querySelector('[data-grouptitle]')?.value||null;
+  const {data,error}=await client.rpc('vtg_open_conversation',{p_partner_ids:ids,p_title:title});if(error)throw error;
+  picker.hidden=true;delete memberCache[data];await loadList();await openConv(data);
+ }catch(ex){err.textContent=ex.message||'Chat could not be started';}
+});
+
+/* ---- sending */
 form.addEventListener('submit',async e=>{
  e.preventDefault();if(busy)return;const body=input.value.trim();if(!body)return;
- if(!activeId){placeholder(log,'There is no active conversation to receive this message yet.');return;}
- if(body.length>4000){placeholder(log,'Please keep messages under 4,000 characters.');return}
- busy=true;send.disabled=true;
- try{await session();const {error}=await client.from('messages').insert({conversation_id:activeId,sender_id:userId,body});if(error)throw error;input.value='';await Promise.all([loadMessages(activeId),loadList()]);}
- catch(err){placeholder(log,'Message was not sent: '+(err.message||'Supabase request failed'));}
- finally{busy=false;send.disabled=false;input.focus();}
+ if(!activeId){empty(log,'Choose a chat first, or start a new one.');return;}
+ if(body.length>4000){return;}
+ busy=true;sendBtn.disabled=true;input.value='';input.style.height='';
+ const temp={id:'tmp-'+Date.now(),sender_id:userId,body,created_at:new Date().toISOString(),pending:true};
+ messages.push(temp);draw();
+ try{
+  const {data,error}=await client.from('messages').insert({conversation_id:activeId,sender_id:userId,body}).select('id,sender_id,body,created_at').single();
+  if(error)throw error;
+  const i=messages.findIndex(x=>x.id===temp.id);
+  if(i>=0){if(messages.some(x=>String(x.id)===String(data.id)))messages.splice(i,1);else messages[i]=data;}else if(!messages.some(x=>String(x.id)===String(data.id)))messages.push(data);
+  draw();
+ }catch(err){
+  messages=messages.filter(x=>x.id!==temp.id);draw();input.value=body;
+  const note=document.createElement('div');note.className='vtg-wa-empty';note.textContent='Message not sent: '+(err.message||'request failed');log.append(note);log.scrollTop=log.scrollHeight;
+ }finally{busy=false;sendBtn.disabled=false;input.focus();}
 });
+input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,130)+'px';});
 input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit();}});
-placeholder(list,'Sign in to load account conversations.');placeholder(log,'Choose a conversation to view its messages.');
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',loadList,{once:true});else loadList();
-window.VTGPeerMessages={refresh:loadList,open:loadMessages};
+
+/* ---- calls */
+function startCall(kind){
+ if(!window.VTGCalls||!activeId)return;
+ const c=convs.find(x=>String(x.id)===activeId);
+ window.VTGCalls.start({client,userId,conversationId:activeId,kind,members,title:c?convTitle(c):'Trade chat'});
+}
+voiceBtn.addEventListener('click',()=>startCall('voice'));
+videoBtn.addEventListener('click',()=>startCall('video'));
+$('[data-joincall]').addEventListener('click',()=>{
+ const live=liveCalls[activeId];if(!live||!window.VTGCalls)return;
+ const c=convs.find(x=>String(x.id)===activeId);
+ window.VTGCalls.start({client,userId,conversationId:activeId,kind:live.kind,members,title:c?convTitle(c):'Trade chat'});
+});
+
+host.addEventListener('click',e=>{
+ const open=e.target.closest('[data-open]');if(open){openConv(open.dataset.open);return;}
+ if(e.target.closest('[data-new]')){picker.hidden?showPicker():picker.hidden=true;return;}
+ if(e.target.closest('[data-refresh]')){Object.keys(memberCache).forEach(k=>delete memberCache[k]);loadList();return;}
+ if(e.target.closest('[data-back]')){host.classList.remove('is-open');}
+});
+window.VTGPeerMessages={refresh:loadList,open:openConv,openWithCall(conversationId){return openConv(conversationId);}};
+empty(log,'Choose a chat to read its messages.');
+const start=()=>loadList().then(()=>{if(client)listen();});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
