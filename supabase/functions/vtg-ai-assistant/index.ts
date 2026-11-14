@@ -84,6 +84,7 @@ Deno.serve(async (req: Request) => {
   // VTG_ENABLE_PAID_AI_FALLBACKS is explicitly set to "true" in Supabase secrets.
   // All provider credentials remain server-side.
   const paidFallbacksEnabled = Deno.env.get("VTG_ENABLE_PAID_AI_FALLBACKS") === "true";
+  const trimTrailingSlash = (value: string) => value.endsWith("/") ? value.slice(0, -1) : value;
   type Provider = {
     name: string;
     apiKey: string | undefined;
@@ -95,7 +96,7 @@ Deno.serve(async (req: Request) => {
     {
       name: "gemini",
       apiKey: Deno.env.get("GEMINI_API_KEY") || Deno.env.get("VTG_AI_API_KEY"),
-      base: (Deno.env.get("VTG_AI_BASE_URL") || "https://generativelanguage.googleapis.com/v1beta/openai").replace(/\\/+$/, ""),
+      base: trimTrailingSlash(Deno.env.get("VTG_AI_BASE_URL") || "https://generativelanguage.googleapis.com/v1beta/openai"),
       model: Deno.env.get("VTG_AI_MODEL") || "gemini-2.5-flash",
       protocol: "openai",
     },
@@ -131,7 +132,7 @@ Deno.serve(async (req: Request) => {
       {
         name: "openai",
         apiKey: Deno.env.get("OPENAI_API_KEY") || Deno.env.get("VTG_OPENAI_API_KEY"),
-        base: (Deno.env.get("VTG_OPENAI_BASE_URL") || "https://api.openai.com/v1").replace(/\\/+$/, ""),
+        base: trimTrailingSlash(Deno.env.get("VTG_OPENAI_BASE_URL") || "https://api.openai.com/v1"),
         model: Deno.env.get("VTG_OPENAI_MODEL") || "gpt-4o-mini",
         protocol: "openai" as const,
       },
