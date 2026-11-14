@@ -33,17 +33,27 @@ async function getClient(){
 form.addEventListener('submit',async event=>{
  event.preventDefault();if(busy)return;
  const message=input.value.trim();if(!message)return;
- 
  busy=true;send.disabled=true;input.disabled=true;
  addBubble({text:message,kind:'self',label:'You',role:role});
  input.value='';const pending=typing();
  try{
   const client=await getClient();
   const {data,error}=await client.functions.invoke('vtg-ai-assistant',{body:{message}});
-  if(error)throw new Error(data?.error?.message||error.message||'VTG AI could not complete this request.');
+  if(error)throw new Error(error.message||'VTG AI could not complete this request.');
+  // The Edge Function may return a user-safe fallback reply together with
+  // an error object describing the unavailable upstream provider. Display
+  // that reply instead of discarding it as a failed request.
+  if(typeof data?.reply==='string'&&data.reply.trim()){
+   const fallback=data.mode==='fallback'||Boolean(data.error);
+   const statusNote=fallback
+    ? '\n\nService status: '+(data.error?.message||'The AI response provider is temporarily unavailable.')+' Your message was not submitted as a trade instruction. Please try again later.'
+    : '';
+   pending.remove();
+   addBubble({text:data.reply.trim()+statusNote,kind:'ai',label:'VTG AI',role:'ai'});
+   return;
+  }
   if(data?.error)throw new Error(data.error.message||'VTG AI could not complete this request.');
-  if(typeof data?.reply!=='string'||!data.reply.trim())throw new Error('VTG AI returned an empty response. Please try again.');
-  pending.remove();addBubble({text:data.reply.trim(),kind:'ai',label:'VTG AI',role:'ai'});
+  throw new Error('VTG AI returned an empty response. Please try again.');
  }catch(error){
   pending.remove();addBubble({text:error?.message||'VTG AI is temporarily unavailable. Please try again.',kind:'ai',label:'VTG AI',role:'ai'});
  }finally{busy=false;send.disabled=false;input.disabled=false;input.focus();}
