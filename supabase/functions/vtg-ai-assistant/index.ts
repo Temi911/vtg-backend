@@ -1,6 +1,8 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import * as pdfjsLib from "npm:pdfjs-dist@4.10.38/legacy/build/pdf.mjs";
+import mammoth from "npm:mammoth@1.9.0";
+import * as XLSX from "npm:xlsx@0.18.5";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -220,11 +222,23 @@ async function loadAIFileContext(supabase: ReturnType<typeof createClient>, user
         const extracted = await extractPdfText(bytes);
         notes.push("PDF " + record.original_name + "\n" + (extracted || "No selectable text was found. This may be a scanned PDF and needs OCR.") );
       } catch { notes.push(record.original_name + ": PDF text extraction failed. The file was received but could not be read."); }
+    } else if (mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+      try {
+        const arrayBuffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+        const extracted = await mammoth.extractRawText({ arrayBuffer });
+        notes.push("WORD DOCUMENT " + record.original_name + "\n" + String(extracted.value || "").slice(0, 16000));
+      } catch { notes.push(record.original_name + ": Word document text extraction failed."); }
+    } else if (mime === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || mime === "application/vnd.ms-excel") {
+      try {
+        const workbook = XLSX.read(bytes, { type: "array", cellDates: true });
+        const sheets = workbook.SheetNames.slice(0, 8).map(name => "Sheet " + name + "\n" + XLSX.utils.sheet_to_csv(workbook.Sheets[name]).slice(0, 6000));
+        notes.push("SPREADSHEET " + record.original_name + "\n" + sheets.join("\n\n").slice(0, 18000));
+      } catch { notes.push(record.original_name + ": spreadsheet extraction failed."); }
     } else if (mime.startsWith("video/")) {
       const analysis = await analyzeVideoWithGemini(bytes, mime, String(record.original_name || "video"));
       notes.push("VIDEO " + record.original_name + "\n" + (analysis || "The video was uploaded, but automatic video analysis was unavailable. Try a shorter MP4/WebM video under 15 MB or share key screenshots and a transcript."));
     } else {
-      notes.push(record.original_name + ": uploaded, but this file format is not yet supported for content extraction. Supported readable formats are PDF, TXT, CSV, common images and short MP4/WebM videos.");
+      notes.push(record.original_name + ": uploaded, but this file format is not yet supported for content extraction. Supported readable formats are PDF, DOCX, XLSX, TXT, CSV, common images and short MP4/WebM videos.");
     }
     await supabase.from("vtg_ai_attachments").update({ processing_status: "ready" }).eq("id", record.id).eq("owner_id", userId);
   }
