@@ -77,9 +77,23 @@ Deno.serve(async (req: Request) => {
     return response({ error: { code: "RATE_LIMITED", message: "You have reached the VTG AI request limit. Please wait a few minutes and try again." } }, 429);
   }
 
-  let body: { message?: unknown };
+  let body: { message?: unknown; context?: unknown };
   try { body = await req.json(); } catch { return response({ error: { code: "INVALID_JSON", message: "Please send a valid trade question." } }, 400); }
   const message = typeof body.message === "string" ? body.message.trim() : "";
+  const context: Array<{ role: "user" | "assistant"; content: string }> = [];
+  if (Array.isArray(body.context)) {
+    let contextChars = 0;
+    for (const item of body.context.slice(-8)) {
+      if (!item || typeof item !== "object") continue;
+      const role = (item as { role?: unknown }).role;
+      const content = (item as { content?: unknown }).content;
+      if ((role !== "user" && role !== "assistant") || typeof content !== "string") continue;
+      const clean = content.trim().slice(0, 4000);
+      if (!clean || contextChars + clean.length > 12000) continue;
+      context.push({ role, content: clean });
+      contextChars += clean.length;
+    }
+  }
   if (!message) return response({ error: { code: "MESSAGE_REQUIRED", message: "Please enter your trade question." } }, 400);
   if (message.length > 6000) return response({ error: { code: "MESSAGE_TOO_LONG", message: "Please keep each question under 6,000 characters." } }, 413);
 
@@ -163,7 +177,7 @@ Deno.serve(async (req: Request) => {
           max_tokens: 1800,
           temperature: 0.3,
           system: SYSTEM_PROMPT + " " + ROLE_GUIDANCE[accountRole],
-          messages: [{ role: "user", content: message }],
+          messages: [...context, { role: "user", content: message }],
         };
       } else {
         headers.Authorization = `Bearer ${provider.apiKey}`;
@@ -177,6 +191,7 @@ Deno.serve(async (req: Request) => {
           max_tokens: 1100,
           messages: [
             { role: "system", content: SYSTEM_PROMPT + " " + ROLE_GUIDANCE[accountRole] },
+            ...context,
             { role: "user", content: message },
           ],
         };
