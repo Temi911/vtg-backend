@@ -30,20 +30,53 @@ function toneMap(memberIds,myId){
  const map={};others.forEach((id,i)=>{map[id]=i%6;});return map;
 }
 /* msg: {id, mine, name, tone, text, at, ai, pending} */
-function bubbleRow(msg,first){
+/* Safe, lightweight Markdown for chat bubbles. Text is escaped before formatting is applied. */
+function inlineMarkdown(value){
+ let s=esc(value);
+ s=s.replace(/`([^`]+)`/g,'<code>$1</code>');
+ s=s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+ s=s.replace(/__([^_]+)__/g,'<u>$1</u>');
+ s=s.replace(/(^|[^*])\*([^*]+)\*(?!\*)/g,'$1<em>$2</em>');
+ return s;
+}
+function markdown(value){
+ const lines=String(value??'').replace(/\r/g,'').split('\n'),out=[];
+ let paragraph=[],listType='',items=[];
+ const flushP=()=>{if(paragraph.length){out.push('<p>'+paragraph.map(inlineMarkdown).join('<br>')+'</p>');paragraph=[];}};
+ const flushL=()=>{if(items.length){out.push('<'+listType+'>'+items.map(x=>'<li>'+inlineMarkdown(x)+'</li>').join('')+'</'+listType+'>');items=[];listType='';}};
+ for(const line of lines){
+  const s=line.trim();
+  if(!s){flushP();flushL();continue;}
+  if(/^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$/.test(s))continue;
+  const h=s.match(/^(#{1,3})\s+(.+)$/);
+  if(h){flushP();flushL();const n=h[1].length;out.push('<h'+n+'>'+inlineMarkdown(h[2])+'</h'+n+'>');continue;}
+  const bullet=s.match(/^(?:[-*•])\s+(.+)$/);
+  const numbered=s.match(/^\d+[.)]\s+(.+)$/);
+  if(bullet||numbered){flushP();const type=numbered?'ol':'ul';if(listType&&listType!==type)flushL();listType=type;items.push((bullet||numbered)[1]);continue;}
+  flushL();paragraph.push(s);
+ }
+ flushP();flushL();
+ return out.join('');
+}
+function bubbleRow(msg,first,onEdit){
  const row=document.createElement('div');
  row.className='vtg-wa-row '+(msg.mine?'is-self':'is-other')+(first?' first':'');
  row.dataset.tone=msg.ai?'ai':String(msg.tone??0);
  if(msg.id!=null)row.dataset.msgId=String(msg.id);
  const b=document.createElement('div');b.className='vtg-wa-bubble';
  if(!msg.mine&&first&&msg.name){const n=document.createElement('span');n.className='vtg-wa-name';n.textContent=msg.name;b.append(n);}
- const t=document.createElement('span');t.className='vtg-wa-text';t.textContent=msg.text;
+ const t=document.createElement('div');t.className='vtg-wa-text';t.innerHTML=markdown(msg.text);
  const m=document.createElement('span');m.className='vtg-wa-meta';
  m.innerHTML='<span>'+esc(time(msg.at))+'</span>'+(msg.mine?'<span class="vtg-wa-tick'+(msg.pending?' pending':'')+'">'+(msg.pending?I.clock:I.tick)+'</span>':'');
- b.append(t,m);row.append(b);return row;
+ b.append(t);
+ if(msg.mine&&msg.editable&&typeof onEdit==='function'){
+  const edit=document.createElement('button');edit.type='button';edit.className='vtg-wa-edit';edit.textContent='Edit';
+  edit.setAttribute('aria-label','Edit your message');edit.addEventListener('click',()=>onEdit(msg));b.append(edit);
+ }
+ b.append(m);row.append(b);return row;
 }
 /* Full re-render of a stream with day separators and name grouping. */
-function renderStream(stream,msgs,emptyText){
+function renderStream(stream,msgs,emptyText,onEdit){
  stream.innerHTML='';
  if(!msgs.length){const e=document.createElement('div');e.className='vtg-wa-empty';e.textContent=emptyText||'No messages yet.';stream.append(e);return;}
  let lastDay='',lastKey='';
@@ -51,7 +84,7 @@ function renderStream(stream,msgs,emptyText){
   const d=day(m.at);
   if(d!==lastDay){const s=document.createElement('div');s.className='vtg-wa-day';s.textContent=d;stream.append(s);lastDay=d;lastKey='';}
   const key=(m.mine?'me':String(m.senderId||m.name))+'|'+(m.ai?'ai':'');
-  stream.append(bubbleRow(m,key!==lastKey));lastKey=key;
+  stream.append(bubbleRow(m,key!==lastKey,onEdit));lastKey=key;
  });
  stream.scrollTop=stream.scrollHeight;
 }
@@ -65,5 +98,5 @@ function clientReady(){
   return {client,userId:data.session.user.id};
  })();
 }
-window.VTGChat={esc,icons:I,initials,time,day,toneMap,bubbleRow,renderStream,clientReady};
+window.VTGChat={esc,icons:I,initials,time,day,toneMap,bubbleRow,renderStream,markdown,clientReady};
 })();
