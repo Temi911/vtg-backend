@@ -65,7 +65,7 @@ function render(container,att,client){
   const resolve=()=>a.file?Promise.resolve(URL.createObjectURL(a.file)):signedUrl(client,a.bucket,a.path);
   if(kind==='image'){
    box.innerHTML='<img alt="'+esc(a.name)+'" loading="lazy">'+'<div class="vtg-wa-att-cap">'+label+'</div>';
-   resolve().then(u=>{const img=box.querySelector('img');img.src=u;img.addEventListener('click',()=>window.open(u,'_blank','noopener'));}).catch(()=>{box.innerHTML='<div class="vtg-wa-att-file"><span class="vtg-wa-att-ico">IMG</span>'+label+'</div>';});
+   resolve().then(u=>{const img=box.querySelector('img');img.addEventListener('error',()=>{box.innerHTML='<a class="vtg-wa-att-file" href="'+esc(u)+'" target="_blank" rel="noopener"><span class="vtg-wa-att-ico">IMG</span>'+label+'</a>';});img.src=u;img.addEventListener('click',()=>window.open(u,'_blank','noopener'));}).catch(()=>{box.innerHTML='<div class="vtg-wa-att-file"><span class="vtg-wa-att-ico">IMG</span>'+label+'</div>';});
   }else if(kind==='video'){
    box.innerHTML='<video controls preload="metadata" playsinline></video><div class="vtg-wa-att-cap">'+label+'</div>';
    resolve().then(u=>{box.querySelector('video').src=u;}).catch(()=>{box.innerHTML='<div class="vtg-wa-att-file"><span class="vtg-wa-att-ico">VID</span>'+label+'</div>';});
