@@ -28,7 +28,7 @@ test('VTG AI Edge Function validates JWT, active buyer role and input limits',()
  assert.match(edge,/RATE_LIMITED/);
  assert.match(edge,/VTG_AI_API_KEY/);
  assert.match(edge,/AI_NOT_CONFIGURED/);
- assert.match(edge,/max_tokens: 1100/);
+ assert.match(edge,/max_tokens: 1800/);
 });
 
 test('VTG AI does not claim authority or invent trade evidence',()=>{

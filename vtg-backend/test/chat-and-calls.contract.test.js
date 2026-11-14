@@ -31,10 +31,11 @@ test('own bubbles are right/blue and other people are left with name and per-per
  assert.match(ai,/is-other first/);
 });
 
-test('chat never uses innerHTML with message text',()=>{
- assert.match(core,/t\.textContent=msg\.text/);
+test('chat renders message text only through the escaping markdown helper',()=>{
+ assert.match(core,/t\.innerHTML=markdown\(msg\.text\)/);
+ assert.match(core,/function inlineMarkdown\(value\)\{\n let s=esc\(value\)/);
  assert.match(core,/n\.textContent=msg\.name/);
- assert.doesNotMatch(core,/innerHTML\s*=\s*[^;]*msg\.text/);
+ assert.doesNotMatch(core,/innerHTML\s*=\s*msg\.text/);
 });
 
 test('messages are limited to participants and sender cannot be spoofed',()=>{

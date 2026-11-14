@@ -150,3 +150,20 @@ html[data-theme="dark"] .vtg-wa-item .vtg-wa-avatar{color:#9DBBF5}
 .vtg-wa-text code{padding:1px 4px;border-radius:4px;background:rgba(100,116,139,.14);font-size:.92em}
 .vtg-wa-edit{display:inline-flex;align-items:center;margin:7px 7px 0 0;padding:3px 8px;border:1px solid var(--wa-line);border-radius:999px;background:transparent;color:var(--wa-muted);font-size:10px;font-weight:700}
 .vtg-wa-edit:hover{color:var(--wa-blue);border-color:var(--wa-blue)}
+
+/* ---- attachments (VTG chat) */
+.vtg-wa-clip{flex:none;margin-right:4px}
+.vtg-wa-tray{display:flex;gap:6px;flex-wrap:wrap;padding:6px 10px;border-top:1px solid rgba(0,0,0,.08);background:rgba(0,0,0,.02)}
+.vtg-wa-chip{display:flex;align-items:center;gap:6px;max-width:100%;padding:4px 6px 4px 4px;border-radius:10px;background:#fff;border:1px solid rgba(0,0,0,.12);font-size:12px}
+.vtg-wa-chip-name{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vtg-wa-chip small{opacity:.6}
+.vtg-wa-chip button{border:0;background:none;font-size:16px;line-height:1;cursor:pointer;padding:0 4px;color:inherit}
+.vtg-wa-atts{display:flex;flex-direction:column;gap:6px;margin:4px 0}
+.vtg-wa-att img,.vtg-wa-att video{display:block;max-width:100%;width:260px;max-height:260px;object-fit:cover;border-radius:8px;background:rgba(0,0,0,.08);cursor:pointer}
+.vtg-wa-att video{cursor:auto;object-fit:contain}
+.vtg-wa-att-cap{display:flex;justify-content:space-between;gap:8px;font-size:11px;opacity:.75;margin-top:2px}
+.vtg-wa-att-file{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:rgba(0,0,0,.08);color:inherit;text-decoration:none;font-size:13px}
+.vtg-wa-att-ico{flex:none;display:inline-grid;place-items:center;min-width:34px;height:34px;padding:0 4px;border-radius:6px;background:#1558D6;color:#fff;font-size:10px;font-weight:700}
+.vtg-wa-att-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:190px}
+.vtg-wa-att-size{opacity:.7;font-size:11px}
+@media(max-width:520px){.vtg-wa-att img,.vtg-wa-att video{width:100%}}
