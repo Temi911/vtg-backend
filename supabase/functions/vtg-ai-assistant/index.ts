@@ -188,7 +188,7 @@ Deno.serve(async (req: Request) => {
         requestBody = {
           model: provider.model,
           temperature: 0.3,
-          max_tokens: 1100,
+          max_tokens: 1800,
           messages: [
             { role: "system", content: SYSTEM_PROMPT + " " + ROLE_GUIDANCE[accountRole] },
             ...context,
