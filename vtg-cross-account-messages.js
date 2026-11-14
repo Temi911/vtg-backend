@@ -97,7 +97,7 @@ async function openConv(id){
 }
 function listen(){
  if(channel)return;
- channel=client.channel('vtg-msgs-'+userId).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},payload=>{
+ channel=client.channel('vtg-msgs-'+userId).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},async payload=>{
   const m=payload.new;if(!m)return;
   const c=convs.find(x=>String(x.id)===String(m.conversation_id));
   if(c){c.last_message=m.body;c.last_at=m.created_at;convs.sort((a,b)=>new Date(b.last_at)-new Date(a.last_at));renderList();}
