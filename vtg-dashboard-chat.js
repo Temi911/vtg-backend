@@ -46,12 +46,17 @@ form.addEventListener('submit',async event=>{
  try{
   const client=await ready();
   const {data,error}=await client.functions.invoke('vtg-ai-assistant',{body:{message}});
+  // A provider-unavailable response may contain both a useful fallback reply
+  // and error metadata. Display the reply first instead of discarding it.
+  if(typeof data?.reply==='string'&&data.reply.trim()){
+   const fallback=data.mode==='fallback'||Boolean(data.error)||Boolean(error);
+   typing(false);
+   push(data.reply.trim()+(fallback?'\n\nService note: VTG AI could not reach its response provider, so this is not a trade recommendation. Please try again shortly.':''),false);
+   return;
+  }
   if(error)throw new Error(await errorDetail(error));
   if(data?.error)throw new Error(data.error.message||(typeof data.error==='string'?data.error:'VTG AI could not complete this request.'));
-  if(typeof data?.reply!=='string'||!data.reply.trim())throw new Error('VTG AI returned an empty response. Please try again.');
-  const fallback=data.mode==='fallback';
-  typing(false);
-  push(data.reply.trim()+(fallback?'\n\nService note: VTG AI could not reach its response provider, so this is not a trade recommendation. Please try again shortly.':''),false);
+  throw new Error('VTG AI returned an empty response. Please try again.');
  }catch(error){
   typing(false);push(error?.message||'VTG AI is temporarily unavailable. Please try again.',false);
  }finally{busy=false;send.disabled=false;input.focus();}
