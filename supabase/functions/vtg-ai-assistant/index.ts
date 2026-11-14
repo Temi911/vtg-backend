@@ -80,20 +80,62 @@ Deno.serve(async (req: Request) => {
   if (!message) return response({ error: { code: "MESSAGE_REQUIRED", message: "Please enter your trade question." } }, 400);
   if (message.length > 6000) return response({ error: { code: "MESSAGE_TOO_LONG", message: "Please keep each question under 6,000 characters." } }, 413);
 
-  // Provider order: Gemini first, OpenAI second. All credentials remain server-side.
-  const providers = [
+  // Free providers are attempted first. Paid providers are only enabled when
+  // VTG_ENABLE_PAID_AI_FALLBACKS is explicitly set to "true" in Supabase secrets.
+  // All provider credentials remain server-side.
+  const paidFallbacksEnabled = Deno.env.get("VTG_ENABLE_PAID_AI_FALLBACKS") === "true";
+  type Provider = {
+    name: string;
+    apiKey: string | undefined;
+    model: string;
+    protocol: "openai" | "anthropic";
+    base: string;
+  };
+  const providers: Provider[] = [
     {
       name: "gemini",
       apiKey: Deno.env.get("GEMINI_API_KEY") || Deno.env.get("VTG_AI_API_KEY"),
-      base: (Deno.env.get("VTG_AI_BASE_URL") || "https://generativelanguage.googleapis.com/v1beta/openai").replace(/\/+$/, ""),
+      base: (Deno.env.get("VTG_AI_BASE_URL") || "https://generativelanguage.googleapis.com/v1beta/openai").replace(/\\/+$/, ""),
       model: Deno.env.get("VTG_AI_MODEL") || "gemini-2.5-flash",
+      protocol: "openai",
     },
     {
-      name: "openai",
-      apiKey: Deno.env.get("OPENAI_API_KEY") || Deno.env.get("VTG_OPENAI_API_KEY"),
-      base: (Deno.env.get("VTG_OPENAI_BASE_URL") || "https://api.openai.com/v1").replace(/\/+$/, ""),
-      model: Deno.env.get("VTG_OPENAI_MODEL") || "gpt-4o-mini",
+      name: "groq",
+      apiKey: Deno.env.get("GROQ_API_KEY"),
+      base: "https://api.groq.com/openai/v1",
+      model: Deno.env.get("GROQ_MODEL") || "openai/gpt-oss-120b",
+      protocol: "openai",
     },
+    {
+      name: "openrouter",
+      apiKey: Deno.env.get("OPENROUTER_API_KEY"),
+      base: "https://openrouter.ai/api/v1",
+      model: Deno.env.get("OPENROUTER_MODEL") || "openrouter/free",
+      protocol: "openai",
+    },
+    ...(paidFallbacksEnabled ? [
+      {
+        name: "deepseek",
+        apiKey: Deno.env.get("DEEPSEEK_API_KEY"),
+        base: "https://api.deepseek.com",
+        model: Deno.env.get("DEEPSEEK_MODEL") || "deepseek-flash",
+        protocol: "openai" as const,
+      },
+      {
+        name: "anthropic",
+        apiKey: Deno.env.get("ANTHROPIC_API_KEY"),
+        base: "https://api.anthropic.com",
+        model: Deno.env.get("ANTHROPIC_MODEL") || "claude-haiku-5-5",
+        protocol: "anthropic" as const,
+      },
+      {
+        name: "openai",
+        apiKey: Deno.env.get("OPENAI_API_KEY") || Deno.env.get("VTG_OPENAI_API_KEY"),
+        base: (Deno.env.get("VTG_OPENAI_BASE_URL") || "https://api.openai.com/v1").replace(/\\/+$/, ""),
+        model: Deno.env.get("VTG_OPENAI_MODEL") || "gpt-4o-mini",
+        protocol: "openai" as const,
+      },
+    ] : []),
   ].filter((provider) => Boolean(provider.apiKey));
 
   if (providers.length === 0) {
@@ -103,20 +145,47 @@ Deno.serve(async (req: Request) => {
   let lastFailure: "timeout" | "connection" | "provider" | "empty" = "provider";
   for (const provider of providers) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 12000);
+    const timeout = setTimeout(() => controller.abort(), 8000);
     let upstream: Response;
     try {
-      upstream = await fetch(provider.base + "/chat/completions", {
-        method: "POST",
-        signal: controller.signal,
-        headers: { Authorization: `Bearer ${provider.apiKey}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: provider.model, temperature: 0.3, max_tokens: 1100,
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      let requestBody: Record<string, unknown>;
+
+      if (provider.protocol === "anthropic") {
+        headers["x-api-key"] = provider.apiKey!;
+        headers["anthropic-version"] = "2023-06-01";
+        requestBody = {
+          model: provider.model,
+          max_tokens: 1100,
+          temperature: 0.3,
+          system: SYSTEM_PROMPT + " " + ROLE_GUIDANCE[accountRole],
+          messages: [{ role: "user", content: message }],
+        };
+      } else {
+        headers.Authorization = `Bearer ${provider.apiKey}`;
+        if (provider.name === "openrouter") {
+          headers["HTTP-Referer"] = "https://vintageafricatrade.com";
+          headers["X-Title"] = "VTG — The Private Trade House";
+        }
+        requestBody = {
+          model: provider.model,
+          temperature: 0.3,
+          max_tokens: 1100,
           messages: [
             { role: "system", content: SYSTEM_PROMPT + " " + ROLE_GUIDANCE[accountRole] },
             { role: "user", content: message },
           ],
-        }),
+        };
+      }
+
+      const endpoint = provider.protocol === "anthropic"
+        ? provider.base + "/v1/messages"
+        : provider.base + "/chat/completions";
+      upstream = await fetch(endpoint, {
+        method: "POST",
+        signal: controller.signal,
+        headers,
+        body: JSON.stringify(requestBody),
       });
     } catch (error) {
       lastFailure = error instanceof Error && error.name === "AbortError" ? "timeout" : "connection";
@@ -128,13 +197,17 @@ Deno.serve(async (req: Request) => {
 
     if (!upstream.ok) {
       lastFailure = "provider";
-      const providerError = await upstream.text().catch(() => "");
-      console.warn("VTG AI provider returned an error; trying next provider", provider.name, upstream.status, providerError.slice(0, 300));
+      // Never write provider response bodies or credentials to application logs.
+      console.warn("VTG AI provider returned an error; trying next provider", provider.name, upstream.status);
       continue;
     }
 
     const payload = await upstream.json().catch(() => ({}));
-    const reply = payload?.choices?.[0]?.message?.content;
+    const reply = provider.protocol === "anthropic"
+      ? (Array.isArray(payload?.content)
+          ? payload.content.find((block: { type?: string; text?: string }) => block?.type === "text")?.text
+          : undefined)
+      : payload?.choices?.[0]?.message?.content;
     if (typeof reply !== "string" || !reply.trim()) {
       lastFailure = "empty";
       console.warn("VTG AI provider returned an empty response; trying next provider", provider.name);
