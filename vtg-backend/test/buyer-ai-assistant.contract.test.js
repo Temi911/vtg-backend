@@ -4,14 +4,17 @@ const fs=require('node:fs');
 const path=require('node:path');
 const root=path.resolve(__dirname,'..','..');
 const html=fs.readFileSync(path.join(root,'buyer-dashboard.html'),'utf8');
-const client=fs.readFileSync(path.join(root,'vtg-buyer-ai-supabase.js'),'utf8');
+const client=fs.readFileSync(path.join(root,'vtg-dashboard-chat.js'),'utf8');
 const edge=fs.readFileSync(path.join(root,'supabase/functions/vtg-ai-assistant/index.ts'),'utf8');
 
-test('buyer AI checklist is connected to the authenticated Supabase function',()=>{
- assert.match(html,/vtg-buyer-ai-supabase\.js/);
- assert.match(html,/maxlength="6000"/);
- assert.match(html,/aria-live="polite"/);
- assert.match(client,/window\.VTG_AUTH_READY/);
+test('buyer AI chat is connected to the authenticated Supabase function',()=>{
+ assert.match(html,/id="vtg-ai-chat"/);
+ assert.match(html,/vtg-dashboard-chat\.js/);
+ assert.doesNotMatch(html,/vtg-buyer-ai-supabase\.js/);
+ assert.match(client,/maxlength="6000"/);
+ assert.match(client,/aria-live="polite"/);
+ assert.match(client,/VTGChat/);
+ assert.match(client,/clientReady/);
  assert.match(client,/from\('profiles'\)/);
  assert.match(client,/functions\.invoke\('vtg-ai-assistant'/);
  assert.doesNotMatch(client,/fetch\s*\(|\/api\/ai-assistant\/chat/);
