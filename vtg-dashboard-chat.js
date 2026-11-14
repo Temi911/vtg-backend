@@ -53,7 +53,8 @@ form.addEventListener('submit',async event=>{
  busy=true;send.disabled=true;typing(true);
  try{
   const client=await ready();
-  const {data,error}=await client.functions.invoke('vtg-ai-assistant',{body:{message}});
+  const context=history.slice(0,-1).slice(-8).map(item=>({role:item.mine?'user':'assistant',content:item.text}));
+  const {data,error}=await client.functions.invoke('vtg-ai-assistant',{body:{message,context}});
   // A provider-unavailable response may contain both a useful fallback reply
   // and error metadata. Display the reply first instead of discarding it.
   if(typeof data?.reply==='string'&&data.reply.trim()){
