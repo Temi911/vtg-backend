@@ -67,7 +67,7 @@ async function buildBusinessContext(supabase: ReturnType<typeof createClient>, u
   }
 
   if (role === "buyer") {
-    const [rfqDrafts, requests, quotes, orders, landedCosts, fxPlans, lcDrafts, lcs, documents] = await Promise.all([
+    const [rfqDrafts, requests, quotes, orders, landedCosts, fxPlans, lcDrafts, lcs, documents, savedSuppliers, inspections, inspectionPayments, paymentIntents] = await Promise.all([
       safeRows(supabase, "buyer_rfq_drafts", "product,sourcing_country,quantity,destination,specifications,created_at", "buyer_id", userId),
       safeRows(supabase, "buyer_trade_requests", "reference,product,sourcing_market,quantity,destination,specifications,status,created_at", "buyer_id", userId),
       safeRows(supabase, "trade_quotes", "order_id,product_id,quantity,unit_price,currency,incoterm,delivery_days,status,buyer_message,supplier_message,valid_until,created_at", "buyer_id", userId),
@@ -77,8 +77,16 @@ async function buildBusinessContext(supabase: ReturnType<typeof createClient>, u
       safeRows(supabase, "buyer_lc_request_drafts", "issuing_bank_name,beneficiary_name,supplier_country,requested_amount,currency,purchase_reference,preferred_lc_type,latest_shipment_date,expiry_date,goods_summary,supporting_notes,status,created_at", "buyer_id", userId),
       safeRows(supabase, "letters_of_credit", "reference,amount,currency,status,expiry_date,created_at", "buyer_id", userId),
       safeRows(supabase, "trade_documents", "order_id,document_type,file_name,status,review_notes,created_at", "owner_id", userId),
+      safeRows(supabase, "buyer_saved_suppliers", "company_name,country,products,notes,created_at", "buyer_id", userId),
+      safeRows(supabase, "vtg_inspection_requests", "reference,inspection_type,requested_date,location,scope,status,findings,country,city,supplier_name,product_name,category,quantity,service_level,payment_status,inspection_summary,buyer_decision,buyer_notes,created_at", "requested_by", userId),
+      safeRows(supabase, "vtg_inspection_payments", "inspection_id,amount_usd,amount_ngn,currency,status,paid_at,created_at", "buyer_id", userId),
+      safeRows(supabase, "vtg_payment_intents", "order_id,amount,currency,purpose,status,created_at", "payer_id", userId),
     ]);
-    Object.assign(context, { rfq_drafts: rfqDrafts, trade_requests: requests, quotations: quotes, orders, landed_cost_estimates: landedCosts, fx_planning: fxPlans, letter_of_credit_drafts: lcDrafts, letters_of_credit: lcs, document_register: documents });
+    Object.assign(context, { rfq_drafts: rfqDrafts, trade_requests: requests, quotations: quotes, orders, landed_cost_estimates: landedCosts, fx_planning: fxPlans, letter_of_credit_drafts: lcDrafts, letters_of_credit: lcs, document_register: documents, saved_suppliers: savedSuppliers, inspection_workflows: inspections, inspection_payment_status: inspectionPayments, payment_intents: paymentIntents });
+    try {
+      const { data: cart } = await supabase.from("buyer_cart_states").select("items,updated_at").eq("buyer_id", userId).maybeSingle();
+      if (cart) context.current_cart = cart;
+    } catch { /* optional cart context */ }
     const orderIds = orders.map((item: Record<string, unknown>) => item.id).filter((id: unknown): id is string => typeof id === "string");
     if (orderIds.length) {
       try {
@@ -87,15 +95,17 @@ async function buildBusinessContext(supabase: ReturnType<typeof createClient>, u
       } catch { /* optional shipment context */ }
     }
   } else if (role === "supplier") {
-    const [products, quotations, orders, workspace, opportunities, documents] = await Promise.all([
+    const [products, quotations, orders, workspace, opportunities, documents, inspections, paymentIntents] = await Promise.all([
       safeRows(supabase, "products", "name,category,description,unit_price,currency,minimum_order_quantity,hs_code,lead_time_days,origin_country,is_verified,is_active,created_at", "supplier_id", userId),
       safeRows(supabase, "supplier_trade_quotations", "request_id,supplier_company,currency,unit_price,lead_time,incoterms,validity,notes,status,created_at", "supplier_id", userId),
       safeRows(supabase, "trade_orders", "id,reference,buyer_id,product_id,status,quantity,unit_price,currency,incoterm,origin_port,destination_port,notes,created_at", "supplier_id", userId),
       safeRows(supabase, "supplier_workspace_records", "record_type,payload,created_at,updated_at", "user_id", userId),
       safeRows(supabase, "buyer_trade_requests", "reference,product,sourcing_market,quantity,destination,specifications,status,created_at", "status", "open"),
       safeRows(supabase, "trade_documents", "order_id,document_type,file_name,status,review_notes,created_at", "owner_id", userId),
+      safeRows(supabase, "vtg_inspection_requests", "reference,inspection_type,requested_date,location,scope,status,findings,country,city,product_name,category,quantity,service_level,payment_status,inspection_summary,created_at", "supplier_id", userId),
+      safeRows(supabase, "vtg_payment_intents", "order_id,amount,currency,purpose,status,created_at", "payee_id", userId),
     ]);
-    Object.assign(context, { product_catalogue: products, submitted_quotations: quotations, orders, saved_workspace_records: workspace, available_buyer_opportunities: opportunities, document_register: documents });
+    Object.assign(context, { product_catalogue: products, submitted_quotations: quotations, orders, saved_workspace_records: workspace, available_buyer_opportunities: opportunities, document_register: documents, inspection_workflows: inspections, payment_intents: paymentIntents });
   } else if (role === "bank") {
     const [lcs, reviewedDocuments] = await Promise.all([
       safeRows(supabase, "letters_of_credit", "reference,order_id,buyer_id,supplier_id,amount,currency,status,expiry_date,created_at", "bank_id", userId),
