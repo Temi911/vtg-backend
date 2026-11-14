@@ -150,3 +150,19 @@ html[data-theme="dark"] .vtg-wa-item .vtg-wa-avatar{color:#9DBBF5}
 .vtg-wa-text code{padding:1px 4px;border-radius:4px;background:rgba(100,116,139,.14);font-size:.92em}
 .vtg-wa-edit{display:inline-flex;align-items:center;margin:7px 7px 0 0;padding:3px 8px;border:1px solid var(--wa-line);border-radius:999px;background:transparent;color:var(--wa-muted);font-size:10px;font-weight:700}
 .vtg-wa-edit:hover{color:var(--wa-blue);border-color:var(--wa-blue)}
+
+/* Secure chat attachments */
+.vtg-wa-attach{width:40px;height:40px;flex:none;display:grid;place-items:center;border:1px solid var(--wa-line);border-radius:50%;background:var(--wa-panel);color:var(--wa-muted);font-size:18px}
+.vtg-wa-attach:hover{color:var(--wa-blue);border-color:var(--wa-blue)}
+.vtg-wa-file-pending{display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px;background:var(--wa-bg);border-top:1px solid var(--wa-line)}
+.vtg-wa-file-pending[hidden]{display:none}
+.vtg-wa-file-pending span{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:5px 9px;border:1px solid var(--wa-line);border-radius:999px;background:var(--wa-panel);color:var(--wa-ink);font-size:11px;overflow-wrap:anywhere}
+.vtg-wa-file-pending button{border:0;background:transparent;color:var(--wa-muted);font-size:16px;line-height:1}
+.vtg-wa-attachments{display:grid;gap:7px;margin-top:7px;max-width:100%}
+.vtg-wa-attachment{display:grid;gap:4px;max-width:100%;font-size:11px;color:var(--wa-muted)}
+.vtg-wa-image-link{display:block;max-width:min(100%,340px);border-radius:9px;overflow:hidden}
+.vtg-wa-image-link img{display:block;max-width:100%;max-height:280px;object-fit:contain;background:rgba(0,0,0,.05)}
+.vtg-wa-video{display:block;width:min(100%,360px);max-height:260px;border-radius:9px;background:#000}
+.vtg-wa-file-link{display:inline-flex;align-items:center;gap:5px;padding:8px 10px;border:1px solid var(--wa-line);border-radius:8px;color:var(--wa-blue);background:var(--wa-panel);text-decoration:none;font-weight:700;overflow-wrap:anywhere}
+.vtg-wa-row.is-self .vtg-wa-file-link{color:#fff;background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3)}
+.vtg-wa-note{line-height:1.5}
