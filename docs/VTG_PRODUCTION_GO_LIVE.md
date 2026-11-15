@@ -26,7 +26,9 @@ select
   exists(select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace
          where n.nspname='public' and p.proname='vtg_complete_google_profile') as google_rpc,
   exists(select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace
-         where n.nspname='public' and p.proname='vtg_open_conversation') as chat_rpc;
+         where n.nspname='public' and p.proname='vtg_open_conversation') as chat_rpc,
+  exists(select 1 from information_schema.columns
+         where table_schema='public' and table_name='profiles' and column_name='vtg_user_id') as user_id_col;
 ```
 
 ## 2. Migrations, in this order (files in `supabase/migrations/`)
@@ -36,6 +38,7 @@ select
 | 2 | `20261114101500_revert_vtg_chat_attachments.sql` | **Only** if `old_ai_attachments_table` or an old `chat_attachments_table` already exists from the earlier attachment attempt. It drops those tables and old storage policies. Skip it on a clean database. |
 | 3 | `20261114120000_vtg_chat_attachments.sql` | `chat_attachments_table` is empty or `chat_bucket`/`ai_bucket` is false (after step 2 if that was needed). |
 | 4 | `20261114200000_vtg_google_signup_profile.sql` | `google_rpc` is false. Adds `profiles.onboarding_completed_at` (existing rows backfilled) and `vtg_complete_google_profile`. |
+| 5 | `20261115120000_vtg_user_id.sql` | `user_id_col` is false. Gives every user a permanent ID like `VTG-100001` (existing users numbered in sign-up order) and shows it in the buyer, supplier and bank dashboards. Until it runs, dashboards simply show no ID. |
 
 Open each file, read it, paste it into the SQL Editor and run it. Re-run the query in section 1 afterwards; all
 values for the features you want should now be non-null / true.
