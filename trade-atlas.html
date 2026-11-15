@@ -54,7 +54,7 @@ html[data-theme="dark"] .searchRow input{background:#091219;color:var(--text);bo
 </style>
 <link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
 <link rel="stylesheet" href="/vtg-atlas.css?v=20261030-1">
-<link rel="stylesheet" href="/vtg-type.css"><link rel="stylesheet" href="/vtg-loader.css?v=20261114-v1"><script src="/vtg-loader.js?v=20261114-v1" defer></script></head>
+<link rel="stylesheet" href="/vtg-type.css"><link rel="stylesheet" href="/vtg-loader.css?v=20261115-ring-1"><script src="/vtg-loader.js?v=20261115-ring-1" defer></script></head>
 <body>
 <div id="vsHeader" data-active="atlas"></div>
 <script src="/vtg-shell.js?v=20261030-1"></script>
@@ -84,7 +84,7 @@ html[data-theme="dark"] .searchRow input{background:#091219;color:var(--text);bo
 </main>
 <div id="vsFooter"></div>
 
-<script src="/vtg-ports-data.js?v=20261114-ports-1"></script><script src="/vtg-port-gallery.js?v=20261114-ports-1"></script>
+<script src="/vtg-ports-data.js?v=20261115-ports-2"></script><script src="/vtg-port-gallery.js?v=20261115-ports-2"></script>
 <script src="https://unpkg.com/globe.gl" defer></script>
 <script src="https://unpkg.com/lucide@latest" defer></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -191,7 +191,7 @@ function init(){
     .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
     .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
     .showAtmosphere(true).atmosphereColor('#55bfe8').atmosphereAltitude(.18)
-    .pointsData(hubs.concat(window.VTGPortGallery?window.VTGPortGallery.globePoints():[])).pointLat('lat').pointLng('lng').pointColor('color').pointAltitude(.018).pointRadius(d=>d.type==='Sea port' ? .12 : .10)
+    .pointsData(hubs.concat(window.VTGPortGallery?window.VTGPortGallery.globePoints():[])).pointLat('lat').pointLng('lng').pointColor('color').pointAltitude(.018).pointRadius(d=>d.r||(d.type==='Sea port' ? .06 : .05))
     .pointLabel(()=>'')
     .arcsData(arcs).arcStartLat('startLat').arcStartLng('startLng').arcEndLat('endLat').arcEndLng('endLng')
     .arcColor('color').arcDashLength(.55).arcDashGap(2.2).arcDashAnimateTime(2800).arcStroke(.55)
@@ -259,7 +259,7 @@ function init(){
   watchTiles(baseTiles);
   const hubIcon=(hub)=>L.divIcon({
    className:'vtg-atlas-marker-wrap',
-   html:'<span style="display:block;width:8px;height:8px;border-radius:50%;background:'+(hub.type==='Airport'?'#c88a18':'#c83232')+';border:2px solid #fff;box-shadow:0 1px 7px #12212b99"></span>',
+   html:'<span style="display:block;width:6px;height:6px;border-radius:50%;background:'+(hub.type==='Airport'?'#c88a18':'#c83232')+';border:1.5px solid #fff;box-shadow:0 1px 7px #12212b99"></span>',
    iconSize:[8,8],iconAnchor:[4,4]
   });
   hubs.forEach(h=>{
