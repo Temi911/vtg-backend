@@ -25,7 +25,7 @@ html[data-theme="light"] .vtg-header-brand .logo-light{display:none!important}
 </style><link rel="stylesheet" href="/vtg-typography.css?v=20261020-global-manrope-1" data-vtg-typography="1">
 <link rel="stylesheet" href="/vtg-dashboard-typography.css?v=20261021-1">
 <link rel="stylesheet" href="/vtg-dash.css?v=20261031-1">
-<link rel="stylesheet" href="/vtg-type.css"><style>html.vtg-auth-pending body{visibility:hidden}</style><script>document.documentElement.classList.add("vtg-auth-pending")</script><script src="/vtg-supabase-auth.js?v=20261105-staff-auth-1"></script>
+<link rel="stylesheet" href="/vtg-type.css"><style>html.vtg-auth-pending body{visibility:hidden}</style><script>document.documentElement.classList.add("vtg-auth-pending")</script><script src="/vtg-supabase-auth.js?v=20261115-uid-1"></script>
 <link rel="stylesheet" href="/vtg-loader.css?v=20261115-logo-1"><script src="/vtg-loader.js?v=20261115-logo-1" defer></script></head>
 <body id="vtg-dashboard-top"><script>(async function(){try{const auth=await window.VTG_AUTH_READY;const current=await auth.getCurrent();const memberships=current?.user?.workforceMemberships||[];if(!current||current.user.accountEnvironment!=="staff"||!current.user.isActive||(current.user.role!=="admin"&&!memberships.some(m=>m.workspace_role==="agent"&&m.status==="active")))throw new Error("Staff access required");document.documentElement.classList.remove("vtg-auth-pending")}catch(_){location.replace("/workforce-signin.html?workspace=agent")}})();</script>
 <div class="app">

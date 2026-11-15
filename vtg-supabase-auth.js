@@ -65,6 +65,10 @@
             }
           } catch (_) { /* optional */ }
         }
+        try { // permanent VTG user ID (column may not exist on older databases)
+          const idRow = await client.from('profiles').select('vtg_user_id').eq('id', session.user.id).maybeSingle();
+          if (!idRow.error && idRow.data?.vtg_user_id) result.vtgUserId = idRow.data.vtg_user_id;
+        } catch (_) { /* optional */ }
         result.signInMethod = isGoogleUser(session.user) ? 'google' : 'password';
         result.needsProfileCompletion = await needsCompletion(session);
         if (result.accountEnvironment === 'staff') {
