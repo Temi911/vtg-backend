@@ -44,18 +44,18 @@ const SEA_OK=/\b(ports?|seaports?|harbou?rs?|terminals?|containers?|ships?|shipp
 const AIR_OK=/\b(airports?|airfield|aerodrome|aircraft|aeroplanes?|airplanes?|airliners?|planes?|runways?|apron|tarmac|terminals?|control tower|hangar|airbus|boeing|embraer|flights?|aviation|jets?|airlines?)\b/i;
 const OFF_TOPIC=/\b(portraits?|selfie|wedding|church|mosque|hotel|restaurant|food|party|football|stadium|concert|protest|election|market stall|school|students?|bride|funeral)\b/i;
 const relevant=(text,kind)=>!OFF_TOPIC.test(text)&&(kind==='A'?AIR_OK:SEA_OK).test(text);
-function toPhotos(json,nameTokens,trusted,kind){
+function toPhotos(json,nameTokens,trusted,kind,mode){
  const pages=Object.values(json?.query?.pages||{}),out=[];
  for(const pg of pages){
   const ii=pg.imageinfo?.[0];if(!ii||!/^image\/(jpeg|png|webp)$/.test(ii.mime||''))continue;
   const title=String(pg.title||'').replace(/^File:/,'').replace(/\.[a-z]+$/i,'');
   if(BAD.test(title)||(ii.width||0)<600||(ii.height||0)<350)continue;
   const mdx=ii.extmetadata||{};
-  if(!relevant(title+' '+String(mdx.ImageDescription?.value||'').replace(/<[^>]*>/g,' ')+' '+String(mdx.Categories?.value||'').replace(/\|/g,' '),kind))continue;
+  if(mode==='article'?OFF_TOPIC.test(title):!relevant(title+' '+String(mdx.ImageDescription?.value||'').replace(/<[^>]*>/g,' ')+' '+String(mdx.Categories?.value||'').replace(/\|/g,' '),kind))continue;
   const tl=norm(title),hits=nameTokens.filter(t=>tl.includes(t)).length;
   if(!trusted&&nameTokens.length&&!hits)continue;
   const md=ii.extmetadata||{},strip=h=>String(h||'').replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim();
-  out.push({src:ii.thumburl||ii.url,page:ii.descriptionurl,title:strip(md.ObjectName?.value)||title,credit:strip(md.Artist?.value).slice(0,80)||'Wikimedia Commons contributor',license:strip(md.LicenseShortName?.value)||'See file page',licenseUrl:md.LicenseUrl?.value||'',score:hits*10+(trusted?0:5)+Math.min((ii.width||0)/1000,3)});
+  out.push({src:ii.thumburl||ii.url,page:ii.descriptionurl,title:strip(md.ObjectName?.value)||title,credit:strip(md.Artist?.value).slice(0,80)||'Wikimedia Commons contributor',license:strip(md.LicenseShortName?.value)||'See file page',licenseUrl:md.LicenseUrl?.value||'',score:hits*10+(mode==='article'?8:trusted?0:5)+Math.min((ii.width||0)/1000,3)});
  }
  return out;
 }
@@ -63,10 +63,21 @@ async function findPhotos(p){
  const nt=tokens(p.n),word=p.t==='A'?'airport':'port';
  const queries=[`"${p.n}" ${word}`,`${p.n} ${p.k||p.c} ${word}`];
  const calls=queries.map(q=>getJSON(API+'&generator=search&gsrnamespace=6&gsrlimit=20&gsrsearch='+encodeURIComponent(q+' filetype:bitmap')).then(j=>toPhotos(j,nt,false,p.t)).catch(()=>[]));
- if(Number.isFinite(p.lat)&&Number.isFinite(p.lon))calls.push(getJSON('https://commons.wikimedia.org/w/api.php?format=json&origin=*&action=query&list=geosearch&gsnamespace=6&gsradius=5000&gslimit=40&gscoord='+p.lat+'%7C'+p.lon).then(async j=>{
+ if(Number.isFinite(p.lat)&&Number.isFinite(p.lon))calls.push(getJSON('https://commons.wikimedia.org/w/api.php?format=json&origin=*&action=query&list=geosearch&gsnamespace=6&gsradius=10000&gslimit=40&gscoord='+p.lat+'%7C'+p.lon).then(async j=>{
   const ids=(j?.query?.geosearch||[]).map(g=>g.pageid).slice(0,30);if(!ids.length)return [];
   return toPhotos(await getJSON(API+'&pageids='+ids.join('%7C')),nt,true,p.t);
  }).catch(()=>[]));
+ /* Photos used in the place's own Wikipedia article (the article must clearly be about this place). */
+ calls.push((async()=>{
+  const wp='https://en.wikipedia.org/w/api.php?format=json&origin=*&action=query';
+  const sr=await getJSON(wp+'&list=search&srlimit=3&srsearch='+encodeURIComponent(p.n+' '+word));
+  const hit=(sr?.query?.search||[]).find(x=>{const t=norm(x.title);return nt.length&&nt.filter(k=>t.includes(k)).length>=Math.min(2,nt.length);});
+  if(!hit)return [];
+  const im=await getJSON(wp+'&prop=images&imlimit=40&titles='+encodeURIComponent(hit.title));
+  const files=Object.values(im?.query?.pages||{}).flatMap(pg=>(pg.images||[]).map(i=>i.title)).filter(t=>/\.(jpe?g|png|webp)$/i.test(t)&&!BAD.test(t)).slice(0,30);
+  if(!files.length)return [];
+  return toPhotos(await getJSON(API+'&titles='+encodeURIComponent(files.join('|'))),nt,true,p.t,'article');
+ })().catch(()=>[]));
  const all=(await Promise.all(calls)).flat(),seen=new Set(),uniq=[];
  all.sort((a,b)=>b.score-a.score).forEach(x=>{if(!seen.has(x.src)){seen.add(x.src);uniq.push(x);}});
  return uniq.slice(0,MAX_PHOTOS);
@@ -85,8 +96,8 @@ async function findSummary(p){
   return {text:pg.extract.trim(),url:pg.fullurl,title:pg.title};
  }catch(_){return null;}
 }
-function cacheGet(id){try{const v=JSON.parse(localStorage.getItem('vtgpg:v1:'+id)||'null');return v&&Date.now()-v.at<TTL?v:null;}catch(_){return null;}}
-function cachePut(id,photos,summary){try{localStorage.setItem('vtgpg:v1:'+id,JSON.stringify({at:Date.now(),photos,summary}));}catch(_){}}
+function cacheGet(id){try{const v=JSON.parse(localStorage.getItem('vtgpg:v2:'+id)||'null');return v&&Date.now()-v.at<TTL?v:null;}catch(_){return null;}}
+function cachePut(id,photos,summary){try{localStorage.setItem('vtgpg:v2:'+id,JSON.stringify({at:Date.now(),photos,summary}));}catch(_){}}
 
 /* ---- UI */
 let root=null,timer=null,state=null,lastFocus=null;
@@ -192,17 +203,27 @@ async function open(q){
 }
 
 /* ---- helpers for map pages */
+let zoomTimer=null;
+/* Zooms the globe and/or map in on a place, then opens its photos and details. */
+function zoomOpen(q,ctx){
+ ctx=ctx||{};const lat=+q.lat,lon=+(q.lon!==undefined?q.lon:q.lng),go=Number.isFinite(lat)&&Number.isFinite(lon)&&(ctx.globe||ctx.map);
+ if(go){
+  if(ctx.globe)try{ctx.globe.pointOfView({lat,lng:lon,altitude:.3},1000);}catch(_){}
+  if(ctx.map)try{ctx.map.flyTo([lat,lon],10,{duration:1.1});}catch(_){}
+ }
+ clearTimeout(zoomTimer);zoomTimer=setTimeout(()=>open(q),go?1150:0);
+}
 function addToLeaflet(L,map,opts){
  opts=opts||{};const group=L.layerGroup(),renderer=L.canvas({padding:.5});
  places().forEach(p=>{
   if(opts.types&&!opts.types.includes(p.t))return;
   const m=L.circleMarker([p.lat,p.lon],{renderer,radius:p.t==='A'?2.2:2.4,color:'#fff',weight:.6,fillColor:p.t==='A'?'#FFB81C':'#1558D6',fillOpacity:.92});
   m.bindTooltip(esc(p.n)+' · '+(p.t==='A'?'airport':'seaport')+(p.c?' · '+esc(p.c):''),{direction:'top'});
-  m.on('click',()=>open(p));m.addTo(group);
+  m.on('click',()=>zoomOpen(p,{map}));m.addTo(group);
  });
  group.addTo(map);return group;
 }
 function globePoints(){return places().map(p=>({lat:p.lat,lng:p.lon,name:p.n,color:p.t==='A'?'#FFB81C':'#1558D6',r:.045,place:p}));}
 function search(q){q=norm(q);if(!q)return null;return places().find(p=>norm(p.n)===q||(p.code&&p.code.toLowerCase()===q))||places().find(p=>norm(p.n+' '+p.k+' '+p.c).includes(q))||null;}
-window.VTGPortGallery={open,close,resolve,search,places,addToLeaflet,globePoints,_findPhotos:findPhotos};
+window.VTGPortGallery={open,close,resolve,search,places,addToLeaflet,globePoints,zoomOpen,_findPhotos:findPhotos};
 })();

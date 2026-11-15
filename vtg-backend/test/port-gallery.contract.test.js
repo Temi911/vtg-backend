@@ -25,7 +25,7 @@ test('gallery rotates every 4 seconds, is pausable and credits photos',()=>{
  assert.match(gallery,/safeUrl/);
  assert.doesNotMatch(gallery,/api[_-]?key|service_role/i);
 });
-for(const [file,hook] of [['trade-atlas.html','openHubGallery'],['vtg-buyer-atlas.js','VTGPortGallery.open'],['vtg-map-atlas-ui.js','VTGPortGallery.open'],['vtg-shipment-globe.js','VTGPortGallery.open']]){
+for(const [file,hook] of [['trade-atlas.html','openHubGallery'],['vtg-buyer-atlas.js','VTGPortGallery.open'],['vtg-map-atlas-ui.js','VTGPortGallery.open'],['vtg-shipment-globe.js','VTGPortGallery.zoomOpen']]){
  test(file+' opens the gallery on click',()=>assert.match(read(file),new RegExp(hook.replace('.','\\.'))));
 }
 test('every page with a map loads port data and gallery before the map code',()=>{

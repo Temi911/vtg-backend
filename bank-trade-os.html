@@ -2,7 +2,7 @@
 <html data-vtg-role="bank" lang="en" data-theme="dark" data-skin="crimson-ops">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="/vtg-agreement-guard.js?v=20261115-v2"></script>
+<script src="/vtg-agreement-guard.js?v=20261115-v3"></script>
 <meta name="description" content="VTG Bank & Finance Workspace for trade finance case management, document review and settlement coordination.">
 <meta name="theme-color" content="#1558D6"><title>Bank & Finance Workspace | VTG</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,7 +54,7 @@ html[data-vtg-pending-application="true"] #view-settings>.panel:last-child{displ
 <link rel="stylesheet" href="/vtg-dashboard-typography.css?v=20261021-1">
 <link rel="stylesheet" href="/vtg-dash.css?v=20261031-1">
 <link rel="stylesheet" href="/vtg-type.css"><link rel="stylesheet" href="/vtg-dashboard-chat.css?v=20261114-att-2">
-<link rel="stylesheet" href="/vtg-business-verification-workspace.css?v=20261106-1"><link rel="stylesheet" href="/vtg-chat-whatsapp.css?v=20261114-att-2"><link rel="stylesheet" href="/vtg-loader.css?v=20261115-ring-1"><script src="/vtg-loader.js?v=20261115-ring-1" defer></script></head>
+<link rel="stylesheet" href="/vtg-business-verification-workspace.css?v=20261106-1"><link rel="stylesheet" href="/vtg-chat-whatsapp.css?v=20261114-att-2"><link rel="stylesheet" href="/vtg-loader.css?v=20261115-logo-1"><script src="/vtg-loader.js?v=20261115-logo-1" defer></script></head>
 <body id="vtg-dashboard-top">
 <div class="app">
 <aside class="sidebar" id="sidebar">
@@ -129,7 +129,7 @@ html[data-vtg-pending-application="true"] #view-settings>.panel:last-child{displ
 </div></main></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="modal hidden" id="caseModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modalbox"><div class="modalhead"><h2 id="modalTitle">New trade finance case</h2><button class="btn" id="closeModal" type="button">Close</button></div><form id="caseForm"><div class="two"><div class="field"><label for="fref">Internal reference</label><input id="fref" maxlength="50" required placeholder="e.g. VTG-TF-2026-005"></div><div class="field"><label for="fcorridor">Trade corridor</label><select id="fcorridor"><option>Nigeria ↔ China</option><option>Nigeria ↔ South Korea</option><option>Africa ↔ China</option><option>Africa ↔ South Korea</option><option>Other Africa–World corridor</option></select></div></div><div class="two"><div class="field"><label for="finstrument">Finance pathway</label><select id="finstrument"><option>LC preparation</option><option>Documentary collection</option><option>Trade finance enquiry</option><option>Payment assurance enquiry</option><option>Other / to be determined</option></select></div><div class="field"><label for="fcurrency">Currency</label><select id="fcurrency"><option>USD</option><option>NGN</option><option>CNY</option><option>KRW</option><option>EUR</option><option>GBP</option></select></div></div><div class="two"><div class="field"><label for="famount">Indicative amount (numeric)</label><input id="famount" type="number" min="0" step="0.01" required placeholder="0.00"></div><div class="field"><label for="fstage">Current preparation stage</label><select id="fstage"><option>Draft</option><option>Awaiting documents</option><option>Under review</option><option>Conditional review</option><option>Closed</option></select></div></div><div class="field"><label for="fgoods">Goods / trade summary</label><textarea id="fgoods" maxlength="600" required placeholder="Goods, shipment window and non-sensitive context only"></textarea></div><div class="noticebar">Do not enter account numbers, credentials, customer identity documents or confidential banking details. This creates a browser-local preparation record only.</div><div class="actions"><button class="btn primary" type="submit">Save local case</button><button class="btn" type="button" id="cancelModal">Cancel</button></div></form></div></div>
-<script src="/vtg-supabase-auth.js?v=20261114-google-1"></script>
+<script src="/vtg-supabase-auth.js?v=20261115-google-2"></script>
 <script src="/vtg-business-verification-workspace.js?v=20261106-1"></script>
 <script>
 (function(){
@@ -260,7 +260,7 @@ recordAudit('Workspace opened','Bank & Finance','Workspace loaded in '+(isPrevie
   const script=document.createElement('script');script.src='https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';script.async=true;document.head.appendChild(script);
 })();
 </script>
-<script src="/vtg-ports-data.js?v=20261115-ports-2"></script><script src="/vtg-port-gallery.js?v=20261115-ports-2"></script><script src="/vtg-shipment-globe.js?v=20261115-lane-1" defer></script><script src="/vtg-dashboard-footer.js?v=20261020-universal-header-1" defer></script>
+<script src="/vtg-ports-data.js?v=20261115-ports-3"></script><script src="/vtg-port-gallery.js?v=20261115-ports-3"></script><script src="/vtg-shipment-globe.js?v=20261115-lane-2" defer></script><script src="/vtg-dashboard-footer.js?v=20261020-universal-header-1" defer></script>
 <script src="/vtg-supabase-auth.js?v=20261105-auth-1"></script>
 <script src="/vtg-chat-core.js?v=20261114-att-2"></script><script src="/vtg-chat-attachments.js?v=20261114-att-2"></script><script src="/vtg-dashboard-chat.js?v=20261114-att-2"></script>
 <script src="/vtg-calls.js?v=20261114-att-2"></script><script src="/vtg-cross-account-messages.js?v=20261114-att-2"></script>\n<script src="/vtg-notifications-supabase.js?v=20261105-notifications-1"></script>

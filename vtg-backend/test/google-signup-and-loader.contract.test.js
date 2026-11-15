@@ -30,9 +30,9 @@ test('sign-in and all three sign-up pages offer Google',()=>{
  for(const f of ['signin.html','buyer-signup.html','supplier-signup.html','bank-signup.html']){
   const h=read(f);assert.match(h,/data-vtg-google/,f);assert.match(h,/vtg-google-auth\.js/,f);}
 });
-test('the callback page is a white V loader, not the old black page',()=>{
+test('the callback page is a white logo loader, not the old black page',()=>{
  const h=read('auth-callback.html');
- assert.doesNotMatch(h,/#17191b|#202326/);assert.match(h,/vtg-loader\.css/);assert.match(h,/vtg-v-fill/);
+ assert.doesNotMatch(h,/#17191b|#202326/);assert.match(h,/vtg-loader\.css/);assert.match(h,/vtg-v-ring/);
  assert.match(h,/exchangeCodeForSession/);assert.match(h,/!existing&&code/);
 });
 test('every page loads the loader so Loading placeholders become the V',()=>{
