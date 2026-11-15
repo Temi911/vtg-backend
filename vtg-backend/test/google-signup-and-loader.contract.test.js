@@ -26,8 +26,9 @@ test('older databases without the onboarding column cannot break sign-in',()=>{
  assert.doesNotMatch(auth.match(/\.select\('id,email,full_name[^']*'\)/)[0],/onboarding_completed_at/);
  assert.match(auth,/if \(error\) return false;/);
 });
-test('sign-in and all three sign-up pages offer Google',()=>{
- for(const f of ['signin.html','buyer-signup.html','supplier-signup.html','bank-signup.html']){
+test('the three sign-up pages offer Google; the sign-in page does not',()=>{
+ const si=read('signin.html');assert.doesNotMatch(si,/data-vtg-google|vtg-google-auth/);
+ for(const f of ['buyer-signup.html','supplier-signup.html','bank-signup.html']){
   const h=read(f);assert.match(h,/data-vtg-google/,f);assert.match(h,/vtg-google-auth\.js/,f);}
 });
 test('the callback page is a white logo loader, not the old black page',()=>{
