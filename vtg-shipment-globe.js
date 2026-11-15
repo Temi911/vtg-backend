@@ -16,6 +16,43 @@ const places=[
  {keys:['ulsan'],name:'Ulsan, South Korea',lat:35.52,lng:129.31},{keys:['seoul'],name:'Seoul, South Korea',lat:37.57,lng:126.98}];
 const norm=v=>String(v||'').toLowerCase().replace(/[→↔]/g,' ').replace(/\s+/g,' ').trim();
 const locate=v=>{const s=norm(v);return places.find(p=>p.keys.some(k=>s.includes(k)))||null};
+/* ---- sea lanes: indicative route a ship would follow between two recorded places (not a live position) */
+const RAD=Math.PI/180;
+function gcPoints(a,b){
+ const f1=a[0]*RAD,l1=a[1]*RAD,f2=b[0]*RAD,l2=b[1]*RAD;
+ const d=2*Math.asin(Math.sqrt(Math.sin((f2-f1)/2)**2+Math.cos(f1)*Math.cos(f2)*Math.sin((l2-l1)/2)**2));
+ if(!d||!isFinite(d))return [a,b];
+ const n=Math.max(2,Math.ceil(d/0.02)),out=[];
+ for(let i=0;i<=n;i++){const t=i/n,A=Math.sin((1-t)*d)/Math.sin(d),B=Math.sin(t*d)/Math.sin(d);
+  const x=A*Math.cos(f1)*Math.cos(l1)+B*Math.cos(f2)*Math.cos(l2),y=A*Math.cos(f1)*Math.sin(l1)+B*Math.cos(f2)*Math.sin(l2),z=A*Math.sin(f1)+B*Math.sin(f2);
+  out.push([Math.atan2(z,Math.hypot(x,y))/RAD,Math.atan2(y,x)/RAD]);}
+ return out;
+}
+const isAsia=p=>p.lng>100&&p.lat>18,isWAfrica=p=>p.lng<10&&p.lng>-20&&p.lat<9;
+function seaWaypoints(a,b){
+ let A=a,B=b,rev=false;
+ if(isWAfrica(a)&&isAsia(b)){A=b;B=a;rev=true;}
+ if(!(isAsia(A)&&isWAfrica(B)))return [[a.lat,a.lng],[b.lat,b.lng]];
+ const w=[[A.lat,A.lng]];
+ if(A.lat>=37&&A.lng<120)w.push([38.6,119.4],[38.1,121.8],[34.5,123.5]);
+ if(A.lng>=118&&A.lng<123&&A.lat>=28&&A.lat<37)w.push([30,123.2]);
+ if(A.lat>=25)w.push([24.5,119.5]);
+ if(A.lng<115.2)w.push([22.2,113.8],[21.7,114.3]);else w.push([22,116]);
+ w.push([11,111],[1.3,104.5],[1.2,103.7],[2.4,101.4],[4,99.5],[6,97.2],[6.4,94.3],[5.2,80.5],[-12,60],[-30,36],[-35.4,21],[-35,17.5],[-31,15],[-22,11.5],[-12,10.5],[-3,7.5],[3.2,4.3],[B.lat,B.lng]);
+ return rev?w.reverse():w;
+}
+function buildLane(r){
+ const wp=seaWaypoints(r.from,r.to),pts=[];
+ for(let i=0;i<wp.length-1;i++){const seg=gcPoints(wp[i],wp[i+1]);(i?seg.slice(1):seg).forEach(q=>pts.push(q));}
+ const cum=[0];for(let i=1;i<pts.length;i++){const dl=pts[i][0]-pts[i-1][0],dg=(pts[i][1]-pts[i-1][1])*Math.cos(pts[i][0]*RAD);cum.push(cum[i-1]+Math.hypot(dl,dg));}
+ return {pts,cum,total:cum[cum.length-1]||1};
+}
+function laneAt(lane,f){
+ const target=Math.max(0,Math.min(1,f))*lane.total;let i=1;while(i<lane.cum.length-1&&lane.cum[i]<target)i++;
+ const c0=lane.cum[i-1],c1=lane.cum[i],t=c1>c0?(target-c0)/(c1-c0):0,a=lane.pts[i-1],b=lane.pts[i];
+ return {lat:a[0]+(b[0]-a[0])*t,lng:a[1]+(b[1]-a[1])*t,east:b[1]>=a[1]};
+}
+const SHIP_SVG='<svg viewBox="0 0 30 18" width="22" height="13" aria-hidden="true" style="display:block;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.55))"><path d="M1 9h28l-4.5 7H5.5z" fill="#d3423e" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/><rect x="6" y="4" width="4" height="5" fill="#fff"/><rect x="11" y="3" width="4" height="6" fill="#ffb81c"/><rect x="16" y="4" width="3.4" height="5" fill="#fff"/><rect x="21" y="1.5" width="4.4" height="7.5" fill="#fff"/><rect x="22.2" y="3" width="2" height="1.6" fill="#d3423e"/></svg>';
 const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const read=k=>{try{const v=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(v)?v:[]}catch(_){return[]}};
 function records(role){
@@ -54,6 +91,7 @@ async function init(){
  panel.innerHTML='<style>.vtgShipmentPanel{margin:16px 0 22px;border:1px solid var(--line,#2a3945);border-radius:18px;overflow:hidden;background:var(--panel,#121c25);color:var(--ink,var(--text,#edf3f7))}.vtgShipmentPanel .saHead{padding:18px 20px;border-bottom:1px solid var(--line,#2a3945)}.vtgShipmentPanel h2{font-size:18px;margin:0 0 6px}.vtgShipmentPanel p{font-size:12px;line-height:1.6;color:var(--muted,#aab8c3);margin:0}.vtgShipmentPanel .saBadge{display:inline-block;margin-top:9px;font-size:10px;border:1px solid var(--line,#2a3945);padding:5px 9px;border-radius:99px}.vtgShipmentPanel .saMapHead{padding:14px 18px;border-top:1px solid var(--line,#2a3945);font-size:13px;font-weight:800}.vtgShipmentPanel #vtgShipmentGlobe{height:340px;min-height:280px;background:radial-gradient(ellipse at center,#15364b 0%,#071321 70%)}.vtgShipmentPanel #vtgShipmentMap{height:360px;min-height:300px;background:#eaf0f4}.vtgShipmentPanel .saList{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;padding:14px}.vtgShipmentPanel .saItem{padding:12px;border:1px solid var(--line,#2a3945);border-radius:12px;cursor:pointer}.vtgShipmentPanel .saItem[aria-pressed=true]{border-color:#55c6a1;box-shadow:0 0 0 1px #55c6a1}.vtgShipmentPanel .saItem b,.vtgShipmentPanel .saItem small{display:block}.vtgShipmentPanel .saItem b{font-size:12px;margin-bottom:5px}.vtgShipmentPanel .saItem small{font-size:11px;line-height:1.6;color:var(--muted,#aab8c3)}.vtgShipmentPanel .saEmpty{padding:16px;color:var(--muted,#aab8c3);font-size:12px;line-height:1.7}.vtgShipmentPanel .saNote{padding:10px 16px;font-size:11px;color:var(--muted,#aab8c3);border-top:1px solid var(--line,#2a3945)}@media(max-width:700px){.vtgShipmentPanel #vtgShipmentGlobe{height:290px;min-height:250px}.vtgShipmentPanel #vtgShipmentMap{height:320px}}</style><div class="saHead"><h2>Trade Atlas & shipment map</h2><p>Select a shipment below to highlight its route on the map. Only routes tied to this workspace&#39;s recorded orders or shipments are shown.</p><span class="saBadge">'+(role==='bank'?'Bank view · authorised customer case records':role==='supplier'?'Supplier view · your recorded shipments':'Buyer view · your recorded orders')+'</span></div><div class="saList" id="vtgSARoutes"><div class="saEmpty">Loading recorded route details…</div></div><div class="saMapHead">3D Trade Atlas · only recorded shipment routes</div><div id="vtgShipmentGlobe" role="img" aria-label="Interactive 3D Earth showing only this workspace&#39;s recorded shipment routes"></div><div class="saMapHead">Matching geographic map</div><div id="vtgShipmentMap" role="region" aria-label="Interactive map of this workspace&#39;s recorded shipment routes"></div><div class="saNote">The moving ship illustrates the selected route, not live vessel GPS. Actual vessel positions require verified carrier/AIS updates. Generic country-only routes are not drawn.</div>';
  if(role==='bank')target.insertBefore(panel,target.firstElementChild);else target.insertBefore(panel,target.firstElementChild?.nextElementSibling||null);
  const list=panel.querySelector('#vtgSARoutes');
+ panel.insertAdjacentHTML('beforeend','<p style="margin:0;padding:10px 20px 14px;font-size:11.5px;line-height:1.5;color:var(--muted,#8aa0b2)">Only locations on your own shipments are shown. The red-to-green line is the indicative sea lane between the recorded origin and destination and the small ship shows the direction of travel. It is not a live vessel position; live AIS positions (gold dot) appear only when a tracking feed is connected. Click an origin or destination dot for port or airport photos.</p>');
  let sourceRecords=[];
  if(role==='buyer'){
   try{sourceRecords=await buyerShipmentRecords();}
@@ -62,7 +100,8 @@ async function init(){
  const routes=sourceRecords.map(r=>{const from=locate(r.origin),to=locate(r.destination);return from&&to&&from.name!==to.name?{...r,from,to}:null}).filter(Boolean);
  list.innerHTML=routes.length?routes.map((r,i)=>'<button type="button" class="saItem" data-route="'+i+'" aria-pressed="'+(i===0?'true':'false')+'"><b>'+esc(r.goods)+' · '+esc(r.ref)+'</b><small>'+esc(r.from.name)+' → '+esc(r.to.name)+'</small><small>Status: '+esc(r.status)+' · Select to focus both views</small>'+(r.carrier?'<small>Carrier: '+esc(r.carrier)+'</small>':'')+'</button>').join(''):'<div class="saEmpty"><strong>No specific route is available yet.</strong><br>Record a shipment with a recognised origin port/city, destination port/city and a movement status. Country-only entries and unrelated sample corridors are intentionally excluded.</div>';
  let map=null,mapRoutes=[],shipMarker=null,selected=-1,globe=null,liveVesselMarker=null,liveVesselPosition=null,globePoints=[];
- const shipIcon=()=>window.L.divIcon({className:'vtgShipMarker',html:'<div style="font-size:20px;filter:drop-shadow(0 1px 2px #0008);transform:rotate(0deg)">⛴</div>',iconSize:[24,24],iconAnchor:[12,12]});
+ const shipIcon=()=>window.L.divIcon({className:'vtgShipMarker',html:'<div class="vtgShipFlip" style="width:22px;height:13px">'+SHIP_SVG+'</div>',iconSize:[22,13],iconAnchor:[11,7]});
+ const lanes=routes.map(buildLane);const openPlace=pl=>{if(window.VTGPortGallery){try{window.VTGPortGallery.open({name:pl.name,lat:pl.lat,lng:pl.lng});}catch(_){}}};let globeShips=[],leafShips=[],lastTick=0;
  function applyLiveVesselPosition(p){
   const lat=Number(p?.latitude),lng=Number(p?.longitude);
   if(!Number.isFinite(lat)||lat < -90||lat > 90||!Number.isFinite(lng)||lng < -180||lng > 180)return;
@@ -81,7 +120,25 @@ async function init(){
   }
  }
  window.addEventListener('vtg:buyer-vessel-position',event=>applyLiveVesselPosition(event.detail||{}));
- function focus(i){if(i<0||i>=routes.length)return;selected=i;list.querySelectorAll('[data-route]').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.route===i)));if(globe){const r=routes[i];globe.pointOfView({lat:(r.from.lat+r.to.lat)/2,lng:(r.from.lng+r.to.lng)/2,altitude:1.75},650)}if(map&&mapRoutes[i]){map.fitBounds(mapRoutes[i].getBounds().pad(.35),{maxZoom:6});mapRoutes.forEach((l,j)=>l.setStyle({weight:j===i?5:2.5,opacity:j===i?1:.35,color:j===i?'#d3423e':'#607d8b'}));const r=routes[i],line=mapRoutes[i];if(shipMarker)map.removeLayer(shipMarker);shipMarker=window.L.marker([r.from.lat,r.from.lng],{icon:shipIcon(),interactive:false}).addTo(map);let t=0;const start=performance.now();const animate=now=>{if(selected!==i||!shipMarker||!map)return;const p=Math.min(1,((now-start)%7000)/7000);const lat=r.from.lat+(r.to.lat-r.from.lat)*p,lng=r.from.lng+(r.to.lng-r.from.lng)*p;shipMarker.setLatLng([lat,lng]);if(selected===i)requestAnimationFrame(animate)};requestAnimationFrame(animate)}}
+ function focus(i){if(i<0||i>=routes.length)return;selected=i;list.querySelectorAll('[data-route]').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.route===i)));
+  if(globe){const pts=lanes[i].pts,mid=pts[Math.floor(pts.length/2)];globe.pointOfView({lat:mid[0],lng:mid[1],altitude:routes[i].from.name&&lanes[i].total>60?2.1:1.5},650);if(typeof globe.pathStroke==='function')globe.pathStroke(d=>d.routeIndex===i?.75:.35);}
+  if(map&&mapRoutes[i]){map.fitBounds(mapRoutes[i].getBounds().pad(.3),{maxZoom:6});mapRoutes.forEach((l,j)=>l.setStyle({weight:j===i?3.5:2,opacity:j===i?1:.4,color:j===i?'#d3423e':'#607d8b'}));}
+ }
+ /* one loop moves a small ship along every route's lane, from origin to destination, on both the map and the globe */
+ function tickShips(now){
+  requestAnimationFrame(tickShips);
+  if(now-lastTick<45||document.hidden||!panel.offsetParent)return;lastTick=now;
+  const PERIOD=19000,TRAVEL=17000;
+  const prog=i=>Math.min(1,(((now+i*2300)%PERIOD))/TRAVEL);
+  if(map&&window.L&&!leafShips.length&&routes.length)leafShips=routes.map((r,i)=>{const m=window.L.marker([r.from.lat,r.from.lng],{icon:shipIcon(),interactive:false,keyboard:false,zIndexOffset:900}).addTo(map);return m;});
+  leafShips.forEach((m,i)=>{const p=laneAt(lanes[i],prog(i));m.setLatLng([p.lat,p.lng]);const el=m.getElement&&m.getElement();const f=el&&el.firstChild;if(f)f.style.transform=p.east?'none':'scaleX(-1)';});
+  if(globe&&typeof globe.htmlElementsData==='function'&&routes.length){
+   if(!globeShips.length)globeShips=routes.map((r,i)=>{const el=document.createElement('div');el.style.cssText='pointer-events:none;width:22px;height:13px;transform:translate(-50%,-50%)';el.innerHTML=SHIP_SVG;return {lat:r.from.lat,lng:r.from.lng,el,i};});
+   globeShips.forEach(g=>{const p=laneAt(lanes[g.i],prog(g.i));g.lat=p.lat;g.lng=p.lng;g.el.firstChild.style.transform=p.east?'none':'scaleX(-1)';});
+   globe.htmlElementsData(globeShips);
+  }
+ }
+ requestAnimationFrame(tickShips);
  list.querySelectorAll('[data-route]').forEach(b=>b.addEventListener('click',()=>focus(+b.dataset.route)));
  const initShipmentGlobe=()=>{
   const node=panel.querySelector('#vtgShipmentGlobe');
@@ -97,13 +154,14 @@ async function init(){
    const endpoints=new Map();
    routes.forEach((r,i)=>{[[r.from,0],[r.to,1]].forEach(([p,side])=>{if(!endpoints.has(p.name))endpoints.set(p.name,{name:p.name,lat:p.lat,lng:p.lng,color:side?'#64d9b0':'#f06a60',routeIndex:i})})});
    const points=[...endpoints.values()];globePoints=points;
-   const arcs=routes.map((r,i)=>({startLat:r.from.lat,startLng:r.from.lng,endLat:r.to.lat,endLng:r.to.lng,color:['#64d9b0','#f06a60'],routeIndex:i,label:r.goods+' · '+r.status}));
+   const paths=routes.map((r,i)=>({pts:lanes[i].pts,routeIndex:i,label:r.goods+' · '+r.status}));
    globe=window.Globe()(node)
     .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
     .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
     .showAtmosphere(true).atmosphereColor('#55bfe8').atmosphereAltitude(.16)
-    .pointsData(points.concat(window.VTGPortGallery?window.VTGPortGallery.globePoints():[])).pointLat('lat').pointLng('lng').pointColor('color').pointAltitude(.018).pointRadius(.12).pointLabel('name')
-    .arcsData(arcs).arcStartLat('startLat').arcStartLng('startLng').arcEndLat('endLat').arcEndLng('endLng').arcColor('color').arcDashLength(.52).arcDashGap(2).arcDashAnimateTime(2800).arcStroke(.6)
+    .pointsData(points).pointLat('lat').pointLng('lng').pointColor('color').pointAltitude(.012).pointRadius(.05).pointLabel('name')
+    .pathsData(paths).pathPoints('pts').pathPointLat(q=>q[0]).pathPointLng(q=>q[1]).pathPointAlt(.004).pathColor(()=>['#64d9b0','#f06a60']).pathStroke(.5).pathDashLength(.3).pathDashGap(.12).pathDashAnimateTime(9000).pathLabel('label')
+    .htmlLat('lat').htmlLng('lng').htmlAltitude(.012).htmlElement(d=>d.el).htmlTransitionDuration(0)
     .onPointClick(p=>{if(p.place&&window.VTGPortGallery){window.VTGPortGallery.open(p.place);}else{if(Number.isInteger(p.routeIndex))focus(p.routeIndex);if(window.VTGPortGallery){try{window.VTGPortGallery.open({name:p.name,lat:p.lat,lng:p.lng});}catch(_){}}}globe.pointOfView({lat:p.lat,lng:p.lng,altitude:1.25},700)});
    globe.width(node.clientWidth||600).height(node.clientHeight||340).pointOfView({lat:15,lng:55,altitude:2.2},0);
    const dayTexture='https://unpkg.com/three-globe/example/img/earth-day.jpg';
@@ -125,8 +183,8 @@ async function init(){
   const node=panel.querySelector('#vtgShipmentMap');map=window.L.map(node,{worldCopyJump:true,zoomControl:true,scrollWheelZoom:true,minZoom:2,maxZoom:18}).setView([17,38],2);
   let tiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map),failed=0,loaded=false;
   tiles.on('tileload',()=>{loaded=true});tiles.on('tileerror',()=>{if(!loaded&&++failed===4){map.removeLayer(tiles);const alt=L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:20,attribution:'&copy; OpenStreetMap contributors &copy; CARTO'}).addTo(map);alt.on('tileerror',()=>{node.insertAdjacentHTML('beforeend','<div style="padding:12px;font-size:12px">Map tiles unavailable on this connection. <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">Open OpenStreetMap</a>.</div>')})}});
-  routes.forEach((r,i)=>{const line=L.polyline([[r.from.lat,r.from.lng],[r.to.lat,r.to.lng]],{color:i===0?'#d3423e':'#607d8b',weight:i===0?5:2.5,opacity:i===0?1:.5,dashArray:'7 7'}).addTo(map);line.bindTooltip(esc(r.goods)+' · '+esc(r.status));line.on('click',()=>focus(i));mapRoutes.push(line);L.circleMarker([r.from.lat,r.from.lng],{radius:3.5,color:'#fff',weight:1.2,fillColor:'#e46b42',fillOpacity:1}).bindTooltip('Origin: '+esc(r.from.name)).addTo(map);L.circleMarker([r.to.lat,r.to.lng],{radius:3.5,color:'#fff',weight:1.2,fillColor:'#078c91',fillOpacity:1}).bindTooltip('Destination: '+esc(r.to.name)).addTo(map)});
-  if(window.VTGPortGallery)window.VTGPortGallery.addToLeaflet(L,map);if(routes.length)focus(0);else map.setView([17,38],2);if(liveVesselPosition)applyLiveVesselPosition(liveVesselPosition);setTimeout(()=>map.invalidateSize(),180);window.addEventListener('resize',()=>map&&map.invalidateSize(),{passive:true});document.querySelectorAll('[data-view="atlas"],[data-page="logistics"],[data-view="shipments"]').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>{if(map)map.invalidateSize();if(globe){const n=panel.querySelector('#vtgShipmentGlobe');globe.width(n.clientWidth||600).height(n.clientHeight||340)}},220)));
+  routes.forEach((r,i)=>{const line=L.polyline(lanes[i].pts,{color:i===0?'#d3423e':'#607d8b',weight:i===0?3.5:2,opacity:i===0?1:.4,dashArray:'6 6'}).addTo(map);line.bindTooltip(esc(r.goods)+' · '+esc(r.status));line.on('click',()=>focus(i));mapRoutes.push(line);L.circleMarker([r.from.lat,r.from.lng],{radius:2.6,color:'#fff',weight:1,fillColor:'#e46b42',fillOpacity:1}).bindTooltip('Origin: '+esc(r.from.name)).on('click',()=>openPlace(r.from)).addTo(map);L.circleMarker([r.to.lat,r.to.lng],{radius:2.6,color:'#fff',weight:1,fillColor:'#078c91',fillOpacity:1}).bindTooltip('Destination: '+esc(r.to.name)).on('click',()=>openPlace(r.to)).addTo(map)});
+  if(routes.length)focus(0);else map.setView([17,38],2);if(liveVesselPosition)applyLiveVesselPosition(liveVesselPosition);setTimeout(()=>map.invalidateSize(),180);window.addEventListener('resize',()=>map&&map.invalidateSize(),{passive:true});document.querySelectorAll('[data-view="atlas"],[data-page="logistics"],[data-view="shipments"]').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>{if(map)map.invalidateSize();if(globe){const n=panel.querySelector('#vtgShipmentGlobe');globe.width(n.clientWidth||600).height(n.clientHeight||340)}},220)));
  }).catch(()=>{panel.querySelector('#vtgShipmentMap').innerHTML='<div style="padding:22px;color:#243746;font-size:12px">Interactive map library could not load on this connection. Shipment routes remain listed above.</div>'});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,150),{once:true});else setTimeout(init,150);

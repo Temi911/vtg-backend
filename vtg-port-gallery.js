@@ -37,14 +37,21 @@ async function getJSON(url,ms){
  const c=new AbortController(),t=setTimeout(()=>c.abort(),ms||9000);
  try{const r=await fetch(url,{signal:c.signal});if(!r.ok)throw new Error('http '+r.status);return await r.json();}finally{clearTimeout(t);}
 }
-const API='https://commons.wikimedia.org/w/api.php?format=json&origin=*&action=query&prop=imageinfo&iiprop=url|mime|size|extmetadata&iiurlwidth=1100&iiextmetadatafilter=Artist|LicenseShortName|LicenseUrl|ImageDescription|ObjectName';
+const API='https://commons.wikimedia.org/w/api.php?format=json&origin=*&action=query&prop=imageinfo&iiprop=url|mime|size|extmetadata&iiurlwidth=1100&iiextmetadatafilter=Artist|LicenseShortName|LicenseUrl|ImageDescription|ObjectName|Categories';
 const BAD=/\b(logo|flag|map|coat of arms|diagram|icon|seal|locator|symbol|emblem|route|chart|plan|schematic|signature|stamp|banner|poster|timetable|ticket|boarding|screenshot)\b/i;
-function toPhotos(json,nameTokens,trusted){
+/* Only pictures that actually show shipping (ports, ships, terminals, cranes…) or an airport (aircraft, runway, terminal…). */
+const SEA_OK=/\b(ports?|seaports?|harbou?rs?|terminals?|containers?|ships?|shipping|vessels?|cargo|quays?|quayside|wharf|wharves|docks?|dockyard|jetty|berths?|cranes?|gantry|freighters?|tankers?|ferr(?:y|ies)|piers?|maritime|shipyard|port authority|bulk carrier|roro|ro-ro)\b/i;
+const AIR_OK=/\b(airports?|airfield|aerodrome|aircraft|aeroplanes?|airplanes?|airliners?|planes?|runways?|apron|tarmac|terminals?|control tower|hangar|airbus|boeing|embraer|flights?|aviation|jets?|airlines?)\b/i;
+const OFF_TOPIC=/\b(portraits?|selfie|wedding|church|mosque|hotel|restaurant|food|party|football|stadium|concert|protest|election|market stall|school|students?|bride|funeral)\b/i;
+const relevant=(text,kind)=>!OFF_TOPIC.test(text)&&(kind==='A'?AIR_OK:SEA_OK).test(text);
+function toPhotos(json,nameTokens,trusted,kind){
  const pages=Object.values(json?.query?.pages||{}),out=[];
  for(const pg of pages){
   const ii=pg.imageinfo?.[0];if(!ii||!/^image\/(jpeg|png|webp)$/.test(ii.mime||''))continue;
   const title=String(pg.title||'').replace(/^File:/,'').replace(/\.[a-z]+$/i,'');
   if(BAD.test(title)||(ii.width||0)<600||(ii.height||0)<350)continue;
+  const mdx=ii.extmetadata||{};
+  if(!relevant(title+' '+String(mdx.ImageDescription?.value||'').replace(/<[^>]*>/g,' ')+' '+String(mdx.Categories?.value||'').replace(/\|/g,' '),kind))continue;
   const tl=norm(title),hits=nameTokens.filter(t=>tl.includes(t)).length;
   if(!trusted&&nameTokens.length&&!hits)continue;
   const md=ii.extmetadata||{},strip=h=>String(h||'').replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim();
@@ -55,10 +62,10 @@ function toPhotos(json,nameTokens,trusted){
 async function findPhotos(p){
  const nt=tokens(p.n),word=p.t==='A'?'airport':'port';
  const queries=[`"${p.n}" ${word}`,`${p.n} ${p.k||p.c} ${word}`];
- const calls=queries.map(q=>getJSON(API+'&generator=search&gsrnamespace=6&gsrlimit=20&gsrsearch='+encodeURIComponent(q+' filetype:bitmap')).then(j=>toPhotos(j,nt,false)).catch(()=>[]));
+ const calls=queries.map(q=>getJSON(API+'&generator=search&gsrnamespace=6&gsrlimit=20&gsrsearch='+encodeURIComponent(q+' filetype:bitmap')).then(j=>toPhotos(j,nt,false,p.t)).catch(()=>[]));
  if(Number.isFinite(p.lat)&&Number.isFinite(p.lon))calls.push(getJSON('https://commons.wikimedia.org/w/api.php?format=json&origin=*&action=query&list=geosearch&gsnamespace=6&gsradius=5000&gslimit=40&gscoord='+p.lat+'%7C'+p.lon).then(async j=>{
   const ids=(j?.query?.geosearch||[]).map(g=>g.pageid).slice(0,30);if(!ids.length)return [];
-  return toPhotos(await getJSON(API+'&pageids='+ids.join('%7C')),nt,true);
+  return toPhotos(await getJSON(API+'&pageids='+ids.join('%7C')),nt,true,p.t);
  }).catch(()=>[]));
  const all=(await Promise.all(calls)).flat(),seen=new Set(),uniq=[];
  all.sort((a,b)=>b.score-a.score).forEach(x=>{if(!seen.has(x.src)){seen.add(x.src);uniq.push(x);}});
@@ -189,13 +196,13 @@ function addToLeaflet(L,map,opts){
  opts=opts||{};const group=L.layerGroup(),renderer=L.canvas({padding:.5});
  places().forEach(p=>{
   if(opts.types&&!opts.types.includes(p.t))return;
-  const m=L.circleMarker([p.lat,p.lon],{renderer,radius:p.t==='A'?4:4.5,color:'#fff',weight:1,fillColor:p.t==='A'?'#FFB81C':'#1558D6',fillOpacity:.92});
+  const m=L.circleMarker([p.lat,p.lon],{renderer,radius:p.t==='A'?2.2:2.4,color:'#fff',weight:.6,fillColor:p.t==='A'?'#FFB81C':'#1558D6',fillOpacity:.92});
   m.bindTooltip(esc(p.n)+' · '+(p.t==='A'?'airport':'seaport')+(p.c?' · '+esc(p.c):''),{direction:'top'});
   m.on('click',()=>open(p));m.addTo(group);
  });
  group.addTo(map);return group;
 }
-function globePoints(){return places().map(p=>({lat:p.lat,lng:p.lon,name:p.n,color:p.t==='A'?'#FFB81C':'#1558D6',place:p}));}
+function globePoints(){return places().map(p=>({lat:p.lat,lng:p.lon,name:p.n,color:p.t==='A'?'#FFB81C':'#1558D6',r:.045,place:p}));}
 function search(q){q=norm(q);if(!q)return null;return places().find(p=>norm(p.n)===q||(p.code&&p.code.toLowerCase()===q))||places().find(p=>norm(p.n+' '+p.k+' '+p.c).includes(q))||null;}
 window.VTGPortGallery={open,close,resolve,search,places,addToLeaflet,globePoints,_findPhotos:findPhotos};
 })();

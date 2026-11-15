@@ -7,12 +7,14 @@ const PATH='M7 10H31L51 76L72 10H96L65 101H39Z';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function vSvg(){
  const id='vtgv'+(++n);
- return '<svg class="vtg-loader-v" viewBox="0 0 105 110" aria-hidden="true" focusable="false"><defs>'
+ return '<svg class="vtg-loader-v" viewBox="-20 -16 143 143" aria-hidden="true" focusable="false"><defs>'
   +'<pattern id="'+id+'p" width="22" height="22" patternUnits="userSpaceOnUse"><rect width="22" height="22" fill="#a20d12"/><path d="M11 2L19 11L11 20L3 11Z" fill="none" stroke="#ef9a88" stroke-width="1.7"/><path d="M11 6L15 11L11 16L7 11Z" fill="none" stroke="#f5c0a9" stroke-width="1.1"/><circle cx="11" cy="11" r="1.5" fill="#f3b49f"/><path d="M1 1L5 5M17 17L21 21M21 1L17 5M5 17L1 21" stroke="#d95545" stroke-width="1"/></pattern>'
   +'<clipPath id="'+id+'c"><path d="'+PATH+'"/></clipPath></defs>'
   +'<path class="vtg-v-ghost" d="'+PATH+'"/>'
-  +'<g clip-path="url(#'+id+'c)"><g class="vtg-v-fill"><rect width="105" height="110" fill="url(#'+id+'p)"/></g></g>'
-  +'<path class="vtg-v-outline" d="'+PATH+'"/></svg>';
+  +'<g clip-path="url(#'+id+'c)"><g class="vtg-v-fill"><rect x="0" y="0" width="105" height="110" fill="url(#'+id+'p)"/></g></g>'
+  +'<path class="vtg-v-outline" d="'+PATH+'"/>'
+  +'<circle class="vtg-v-ring-track" cx="51.5" cy="55.5" r="66"/>'
+  +'<circle class="vtg-v-ring" cx="51.5" cy="55.5" r="66" pathLength="100" transform="rotate(-90 51.5 55.5)"/></svg>';
 }
 function inline(text){return '<span class="vtg-loader-inline" data-vtg-loader role="status">'+vSvg()+'<span class="vtg-loader-text">'+esc(text)+'</span></span>';}
 let overlay=null;
