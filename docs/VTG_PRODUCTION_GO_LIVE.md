@@ -1,0 +1,94 @@
+# VTG production go-live runbook
+
+Status: **written without access to the production Supabase project (`lxrurbdzphqvkjprlfuv`).**
+Nothing below has been run or verified there. The Claude Supabase connector only sees the staging project
+(`tpstuaejpzsgjdtwzkkj`), where these migrations were applied and tested. Run the steps yourself in the
+Supabase dashboard (SQL Editor) and tick each box.
+
+The website itself deploys from `main` on Vercel. Everything here is the backend side that the site now depends on.
+
+## 0. Before you start
+- [ ] Take a backup / note the current time (Supabase → Database → Backups).
+- [ ] Do not paste database passwords or the service-role key anywhere (chat, frontend code, logs).
+
+## 1. Find out what production already has (read-only)
+Run in the SQL Editor and keep the results:
+
+```sql
+select
+  to_regclass('public.vtg_calls')                  as calls_table,
+  to_regclass('public.vtg_chat_attachments')       as chat_attachments_table,
+  to_regclass('public.vtg_ai_attachments')         as old_ai_attachments_table,
+  exists(select 1 from storage.buckets where id='vtg-chat-attachments') as chat_bucket,
+  exists(select 1 from storage.buckets where id='vtg-ai-attachments')   as ai_bucket,
+  exists(select 1 from information_schema.columns
+         where table_schema='public' and table_name='profiles' and column_name='onboarding_completed_at') as onboarding_col,
+  exists(select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+         where n.nspname='public' and p.proname='vtg_complete_google_profile') as google_rpc,
+  exists(select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+         where n.nspname='public' and p.proname='vtg_open_conversation') as chat_rpc;
+```
+
+## 2. Migrations, in this order (files in `supabase/migrations/`)
+| # | File | Run it when |
+|---|------|-------------|
+| 1 | `20261114000000_vtg_chat_and_calls.sql` | `chat_rpc` or `calls_table` is empty/false. Largely idempotent. |
+| 2 | `20261114101500_revert_vtg_chat_attachments.sql` | **Only** if `old_ai_attachments_table` or an old `chat_attachments_table` already exists from the earlier attachment attempt. It drops those tables and old storage policies. Skip it on a clean database. |
+| 3 | `20261114120000_vtg_chat_attachments.sql` | `chat_attachments_table` is empty or `chat_bucket`/`ai_bucket` is false (after step 2 if that was needed). |
+| 4 | `20261114200000_vtg_google_signup_profile.sql` | `google_rpc` is false. Adds `profiles.onboarding_completed_at` (existing rows backfilled) and `vtg_complete_google_profile`. |
+
+Open each file, read it, paste it into the SQL Editor and run it. Re-run the query in section 1 afterwards; all
+values for the features you want should now be non-null / true.
+
+Quick safety checks after step 4 (read-only):
+```sql
+select p.proname, p.prosecdef, p.proconfig
+from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+where n.nspname='public' and p.proname='vtg_complete_google_profile';
+-- expect prosecdef = true and proconfig containing search_path=""
+select has_function_privilege('anon','public.vtg_complete_google_profile(jsonb)','execute') as anon_can_run; -- expect false
+```
+
+## 3. Google sign-in (this is the cause of "provider is not enabled")
+- [ ] Google Cloud Console → APIs & Services → Credentials → Create OAuth client ID → *Web application*.
+- [ ] Authorized redirect URI: `https://lxrurbdzphqvkjprlfuv.supabase.co/auth/v1/callback`
+- [ ] Supabase → Authentication → Sign In / Providers → Google → enable, paste Client ID and Client Secret (secret stays in Supabase only).
+- [ ] Supabase → Authentication → URL Configuration: Site URL = your live domain; Redirect URLs include `https://<your-domain>/auth-callback.html`.
+- [ ] Test: Continue with Google on `/signin.html`, then on each sign-up page (buyer, supplier, bank). A new Google user lands on `/complete-profile.html`; suppliers/banks end on `/verification.html`.
+
+## 4. Edge functions
+Deploy from the repo with the Supabase CLI (`supabase functions deploy <name> --project-ref lxrurbdzphqvkjprlfuv`) or from the dashboard.
+`supabase/config.toml` sets `verify_jwt`: `vtg-email` = true; the other functions listed there = false (they check the caller themselves).
+Functions in the repo: vtg-account-support, vtg-admin-roles, vtg-ai-assistant, vtg-bank-trade-workspace, vtg-email,
+vtg-finance-inspections, vtg-inspection-payments, vtg-inspection-workflow, vtg-live-tracking, vtg-market-intelligence,
+vtg-notifications, vtg-trade-operations, vtg-verification, vtg-wallet, workforce-invitations.
+- [ ] Deploy all of them (the AI assistant, live tracking and email matter most for the buyer dashboard).
+- [ ] Dashboard → Edge Functions: confirm each shows as active.
+
+## 5. Secrets (Supabase → Edge Functions → Secrets; names only, set the values yourself)
+| Secret | Needed for |
+|---|---|
+| `SUPABASE_URL`, `SUPABASE_ANON_KEY` (or `SUPABASE_PUBLISHABLE_KEY`), `SUPABASE_SERVICE_ROLE_KEY` | Normally injected by Supabase automatically. Never copy the service-role key into frontend code. |
+| `VTG_APP_URL` / `APP_SITE_URL` | Links inside emails (your live site URL). |
+| `RESEND_API_KEY`, `VTG_EMAIL_FROM` | Receipts, onboarding and notification emails. |
+| `VTG_AI_API_KEY` (+ optional `VTG_AI_MODEL`, `VTG_AI_BASE_URL`) or `GEMINI_API_KEY` | AI assistant. Gemini is also required for video analysis. Other supported providers: `GROQ_API_KEY`, `OPENROUTER_API_KEY`, `DEEPSEEK_API_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`/`VTG_OPENAI_API_KEY`. |
+| `TAVILY_API_KEY` | AI assistant live web search. |
+| Vizion / Tracking.one keys and path/header settings | Live container tracking (see `supabase/functions/vtg-live-tracking`). |
+| Paystack keys | Wallet / inspection payments (see `vtg-wallet`, `vtg-inspection-payments`). |
+
+- [ ] Set the secrets you actually use; leave out providers you do not use.
+
+## 6. Calls (voice/video in chat)
+Calls use STUN only, which fails behind many mobile and corporate networks. Add a TURN server (e.g. a managed TURN
+service) before relying on calls in production.
+
+## 7. End-to-end check, one account per role
+- [ ] Buyer: sign in, open dashboard (white logo loader, no black screen), AI assistant answers about your own orders, attach a PDF and an image in AI chat and in a supplier chat, shipment map shows only your shipments with a moving ship.
+- [ ] Supplier: same checks; Google sign-up of a supplier outside China/South Korea is refused.
+- [ ] Bank: same checks; Google bank sign-up creates a pending application, not a bank account.
+- [ ] Click a port and an airport on the Trade Atlas: it zooms in, then shows details and photos.
+- [ ] Confirm no secrets appear in browser dev tools (Network tab) other than the public publishable key.
+
+## Rollback notes
+Take the backup first. Migrations 1, 3 and 4 only add objects; migration 2 drops attachment tables, so run it only if
+those tables hold nothing you need.
