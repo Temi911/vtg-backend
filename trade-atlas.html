@@ -54,7 +54,7 @@ html[data-theme="dark"] .searchRow input{background:#091219;color:var(--text);bo
 </style>
 <link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
 <link rel="stylesheet" href="/vtg-atlas.css?v=20261030-1">
-<link rel="stylesheet" href="/vtg-type.css"><link rel="stylesheet" href="/vtg-loader.css?v=20261115-ring-1"><script src="/vtg-loader.js?v=20261115-ring-1" defer></script></head>
+<link rel="stylesheet" href="/vtg-type.css"><link rel="stylesheet" href="/vtg-loader.css?v=20261115-logo-1"><script src="/vtg-loader.js?v=20261115-logo-1" defer></script></head>
 <body>
 <div id="vsHeader" data-active="atlas"></div>
 <script src="/vtg-shell.js?v=20261030-1"></script>
@@ -84,7 +84,7 @@ html[data-theme="dark"] .searchRow input{background:#091219;color:var(--text);bo
 </main>
 <div id="vsFooter"></div>
 
-<script src="/vtg-ports-data.js?v=20261115-ports-2"></script><script src="/vtg-port-gallery.js?v=20261115-ports-2"></script>
+<script src="/vtg-ports-data.js?v=20261115-ports-3"></script><script src="/vtg-port-gallery.js?v=20261115-ports-3"></script>
 <script src="https://unpkg.com/globe.gl" defer></script>
 <script src="https://unpkg.com/lucide@latest" defer></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -176,8 +176,8 @@ function stripHTML(value){const node=document.createElement('div');node.innerHTM
 function findRealPhoto(h){if(photoCache.has(h.id))return photoCache.get(h.id);const promise=new Promise(resolve=>{photoQueue=photoQueue.then(async()=>{try{const kind=h.type==='Airport'?'airport':'port';const queries=[h.name+' '+h.city+' '+kind,h.photoQuery,h.name+' '+h.country+' '+kind,h.city+' '+h.country+' '+kind,h.name+' terminal '+h.country,h.photoQuery+' port authority',h.name+' aerial photograph',h.name+''];const seen=new Set();for(const query of queries){const url='https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch='+encodeURIComponent(query)+'&gsrnamespace=6&gsrlimit=30&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=1200&format=json&origin=*';const response=await fetch(url);if(!response.ok)continue;const json=await response.json();const pages=Object.values((json.query&&json.query.pages)||{});const generic=['port','airport','international','terminal','china','africa','south','north','east','west','the','and','for','city','aerial','container','cargo','harbor','harbour','seaport','dock','terminal','island','complex','international'];const nameTokens=h.name.toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(w=>w.length>2&&!generic.includes(w));const placeTokens=(h.city+' '+h.country).toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(w=>w.length>2&&!generic.includes(w));const typeTokens=h.type==='Airport'?['airport','airfield','aviation']:['port','harbor','harbour','seaport','dock','terminal'];const ranked=pages.filter(p=>p.imageinfo&&p.imageinfo[0]&&p.imageinfo[0].thumburl&&!seen.has(p.pageid)).map(p=>{seen.add(p.pageid);const info=p.imageinfo[0],meta=info.extmetadata||{};const title=(p.title||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ');const description=stripHTML(meta.ImageDescription&&meta.ImageDescription.value||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ');const text=title+' '+description;const nameMatches=nameTokens.filter(t=>text.includes(t));const placeMatches=placeTokens.filter(t=>text.includes(t));const hasType=typeTokens.some(t=>text.includes(t));const distinctive=nameTokens.filter(t=>t.length>=4);const hasDistinctive=distinctive.length?distinctive.some(t=>text.includes(t)):nameMatches.length>0;return{page:p,score:nameMatches.length*4+placeMatches.length*2+(hasType?2:0)+(title.includes(h.code.toLowerCase())?5:0),hasPlace:hasDistinctive&&(placeMatches.length>0||nameMatches.length>=2),hasType};}).filter(x=>x.hasPlace&&x.hasType).sort((a,b)=>b.score-a.score);const best=ranked[0];if(best){const info=best.page.imageinfo[0],meta=info.extmetadata||{};resolve({url:info.thumburl,source:info.descriptionurl||'https://commons.wikimedia.org/wiki/'+encodeURIComponent(best.page.title.replaceAll(' ','_')),credit:stripHTML((meta.Artist&&meta.Artist.value)||(meta.Credit&&meta.Credit.value)||'Wikimedia Commons'),title:best.page.title});return;}}}catch(e){console.warn('Atlas photo lookup failed for '+h.name,e);}resolve(null);}).catch(()=>resolve(null));});photoCache.set(h.id,promise);return promise;}
 const showPhotoResult=(h,result)=>{const img=document.getElementById('selectedHubPhoto'),status=document.getElementById('selectedHubPhotoStatus');if(result){h.imageUrl=result.url;h.photoSource=result.source;img.src=result.url;img.hidden=false;status.style.display='none';let credit=document.getElementById('selectedHubPhotoCredit');if(!credit){credit=document.createElement('a');credit.id='selectedHubPhotoCredit';credit.className='hubMapLink';credit.target='_blank';credit.rel='noopener';img.insertAdjacentElement('afterend',credit);}credit.href=result.source;credit.textContent='View photo source ↗';credit.title=result.title;}else{img.hidden=true;status.style.display='flex';status.textContent='No verified image matching this facility was found. We are avoiding unrelated stock photos.';}};
 let atlasMap=null;const atlasMapMarkers=new Map();let activeAtlasHubId=null;
-function openHubGallery(h){if(!window.VTGPortGallery)return;try{window.VTGPortGallery.open({name:h.name,lat:h.lat,lng:h.lng,type:h.type,country:h.country,city:String(h.city||'').replace(/,\s*[^,]*$/,''),code:h.code,role:h.role});}catch(_){}}
-function selectAtlasHub(h,source){showHub(h);findRealPhoto(h).then(result=>showPhotoResult(h,result));if(source==='globe'&&atlasMap){atlasMap.flyTo([h.lat,h.lng],Math.max(6,atlasMap.getZoom()),{duration:1.1});const marker=atlasMapMarkers.get(h.id);if(marker){if(activeAtlasHubId&&atlasMapMarkers.has(activeAtlasHubId)){const previous=atlasMapMarkers.get(activeAtlasHubId),previousHub=hubs.find(x=>x.id===activeAtlasHubId);previous.setStyle({radius:previousHub&&previousHub.type==='Sea port'?3.5:3,weight:1.2});}marker.setStyle({radius:4,weight:1.8});marker.openPopup();activeAtlasHubId=h.id;}}else if(source==='map'&&atlasMap){if(activeAtlasHubId&&atlasMapMarkers.has(activeAtlasHubId)){const previous=atlasMapMarkers.get(activeAtlasHubId),previousHub=hubs.find(x=>x.id===activeAtlasHubId);previous.setStyle({radius:previousHub&&previousHub.type==='Sea port'?3.5:3,weight:1.2});}const marker=atlasMapMarkers.get(h.id);if(marker){marker.setStyle({radius:5,weight:2.5});activeAtlasHubId=h.id;}}}
+function openHubGallery(h,ctx){if(!window.VTGPortGallery)return;try{const q={name:h.name,lat:h.lat,lng:h.lng,type:h.type,country:h.country,city:String(h.city||'').replace(/,\s*[^,]*$/,''),code:h.code,role:h.role};if(window.VTGPortGallery.zoomOpen)window.VTGPortGallery.zoomOpen(q,ctx);else window.VTGPortGallery.open(q);}catch(_){}}
+function selectAtlasHub(h,source){showHub(h);findRealPhoto(h).then(result=>showPhotoResult(h,result));if(source==='globe'&&atlasMap){atlasMap.flyTo([h.lat,h.lng],Math.max(10,atlasMap.getZoom()),{duration:1.1});const marker=atlasMapMarkers.get(h.id);if(marker){if(activeAtlasHubId&&atlasMapMarkers.has(activeAtlasHubId)){const previous=atlasMapMarkers.get(activeAtlasHubId),previousHub=hubs.find(x=>x.id===activeAtlasHubId);previous.setStyle({radius:previousHub&&previousHub.type==='Sea port'?3.5:3,weight:1.2});}marker.setStyle({radius:4,weight:1.8});marker.openPopup();activeAtlasHubId=h.id;}}else if(source==='map'&&atlasMap){if(activeAtlasHubId&&atlasMapMarkers.has(activeAtlasHubId)){const previous=atlasMapMarkers.get(activeAtlasHubId),previousHub=hubs.find(x=>x.id===activeAtlasHubId);previous.setStyle({radius:previousHub&&previousHub.type==='Sea port'?3.5:3,weight:1.2});}const marker=atlasMapMarkers.get(h.id);if(marker){marker.setStyle({radius:5,weight:2.5});activeAtlasHubId=h.id;}}}
 function init(){
  document.body.classList.add('vtg-atlas-page');
  // No facility names are rendered into a directory; selection happens only on globe/map markers.
@@ -195,7 +195,7 @@ function init(){
     .pointLabel(()=>'')
     .arcsData(arcs).arcStartLat('startLat').arcStartLng('startLng').arcEndLat('endLat').arcEndLng('endLng')
     .arcColor('color').arcDashLength(.55).arcDashGap(2.2).arcDashAnimateTime(2800).arcStroke(.55)
-    .onPointClick(d=>{if(d.place){window.VTGPortGallery.open(d.place);}else{selectAtlasHub(d,'globe');openHubGallery(d);}globe.pointOfView({lat:d.lat,lng:d.lng,altitude:1.15},900);});
+    .onPointClick(d=>{if(d.place){window.VTGPortGallery.zoomOpen(d.place,{globe,map:atlasMap});}else{selectAtlasHub(d,'globe');openHubGallery(d,{globe,map:atlasMap});}});
    globe.width(el.clientWidth).height(el.clientHeight);
    globe.pointOfView({lat:18,lng:55,altitude:2.25},0);
    window.addEventListener('resize',()=>globe&&globe.width(el.clientWidth).height(el.clientHeight));
@@ -272,7 +272,7 @@ function init(){
      if(selected){selectAtlasHub(selected,'map');const panel=document.getElementById('selectedHub');if(panel)panel.scrollIntoView({behavior:'smooth',block:'center'});}
     });
    });
-   marker.on('click',()=>openHubGallery(h));
+   marker.on('click',()=>openHubGallery(h,{map:atlasMap}));
    atlasMapMarkers.set(h.id,marker);
   });
   if(window.VTGPortGallery)window.VTGPortGallery.addToLeaflet(L,map);

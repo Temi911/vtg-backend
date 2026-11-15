@@ -168,16 +168,25 @@
         async signInWithGoogle(role) {
           const wanted = ['buyer', 'supplier', 'bank'].includes(role) ? role : 'buyer';
           try { sessionStorage.setItem('vtg-google-intent', JSON.stringify({ role: wanted, at: Date.now() })); } catch (_) {}
-          const { error } = await client.auth.signInWithOAuth({
+          const notOn = 'Google sign-in is not switched on for this VTG site yet. Please use your email and password for now. (Site owner: enable the Google provider in Supabase → Authentication → Sign In / Providers.)';
+          const { data, error } = await client.auth.signInWithOAuth({
             provider: 'google',
-            options: { redirectTo: location.origin + '/auth-callback.html', queryParams: { prompt: 'select_account' } }
+            options: { redirectTo: location.origin + '/auth-callback.html', queryParams: { prompt: 'select_account' }, skipBrowserRedirect: true }
           });
-          if (error) {
-            const text = String(error.message || '');
-            throw new Error(/provider.*(not|disabled)|unsupported/i.test(text)
-              ? 'Google sign-in is not switched on for this VTG site yet. Please use your email and password, or contact VTG support.'
-              : text || 'Google sign-in could not start. Please try again.');
+          if (error || !data || !data.url) {
+            const text = String((error && error.message) || '');
+            throw new Error(/provider.*(not|disabled)|unsupported/i.test(text) ? notOn : text || 'Google sign-in could not start. Please try again.');
           }
+          // Ask Supabase first, so a switched-off provider shows a clear message instead of a raw JSON page.
+          try {
+            const probe = await fetch(data.url, { redirect: 'manual' });
+            if (probe.type !== 'opaqueredirect' && probe.status >= 400) {
+              let text = '';
+              try { text = JSON.stringify(await probe.clone().json()); } catch (_) {}
+              throw Object.assign(new Error(/provider.*(not|disabled)|unsupported/i.test(text) ? notOn : 'Google sign-in could not start (' + probe.status + '). Please try again or use your email and password.'), { vtgFinal: true });
+            }
+          } catch (e) { if (e && e.vtgFinal) throw e; /* network/CORS: just continue to Google */ }
+          location.assign(data.url);
         },
         googleIntent() {
           try {

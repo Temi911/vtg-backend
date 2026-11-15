@@ -101,7 +101,7 @@ async function init(){
  list.innerHTML=routes.length?routes.map((r,i)=>'<button type="button" class="saItem" data-route="'+i+'" aria-pressed="'+(i===0?'true':'false')+'"><b>'+esc(r.goods)+' · '+esc(r.ref)+'</b><small>'+esc(r.from.name)+' → '+esc(r.to.name)+'</small><small>Status: '+esc(r.status)+' · Select to focus both views</small>'+(r.carrier?'<small>Carrier: '+esc(r.carrier)+'</small>':'')+'</button>').join(''):'<div class="saEmpty"><strong>No specific route is available yet.</strong><br>Record a shipment with a recognised origin port/city, destination port/city and a movement status. Country-only entries and unrelated sample corridors are intentionally excluded.</div>';
  let map=null,mapRoutes=[],shipMarker=null,selected=-1,globe=null,liveVesselMarker=null,liveVesselPosition=null,globePoints=[];
  const shipIcon=()=>window.L.divIcon({className:'vtgShipMarker',html:'<div class="vtgShipFlip" style="width:22px;height:13px">'+SHIP_SVG+'</div>',iconSize:[22,13],iconAnchor:[11,7]});
- const lanes=routes.map(buildLane);const openPlace=pl=>{if(window.VTGPortGallery){try{window.VTGPortGallery.open({name:pl.name,lat:pl.lat,lng:pl.lng});}catch(_){}}};let globeShips=[],leafShips=[],lastTick=0;
+ const lanes=routes.map(buildLane);const openPlace=pl=>{if(window.VTGPortGallery){try{window.VTGPortGallery.zoomOpen({name:pl.name,lat:pl.lat,lng:pl.lng},{globe,map});}catch(_){}}};let globeShips=[],leafShips=[],lastTick=0;
  function applyLiveVesselPosition(p){
   const lat=Number(p?.latitude),lng=Number(p?.longitude);
   if(!Number.isFinite(lat)||lat < -90||lat > 90||!Number.isFinite(lng)||lng < -180||lng > 180)return;
@@ -162,7 +162,7 @@ async function init(){
     .pointsData(points).pointLat('lat').pointLng('lng').pointColor('color').pointAltitude(.012).pointRadius(.05).pointLabel('name')
     .pathsData(paths).pathPoints('pts').pathPointLat(q=>q[0]).pathPointLng(q=>q[1]).pathPointAlt(.004).pathColor(()=>['#64d9b0','#f06a60']).pathStroke(.5).pathDashLength(.3).pathDashGap(.12).pathDashAnimateTime(9000).pathLabel('label')
     .htmlLat('lat').htmlLng('lng').htmlAltitude(.012).htmlElement(d=>d.el).htmlTransitionDuration(0)
-    .onPointClick(p=>{if(p.place&&window.VTGPortGallery){window.VTGPortGallery.open(p.place);}else{if(Number.isInteger(p.routeIndex))focus(p.routeIndex);if(window.VTGPortGallery){try{window.VTGPortGallery.open({name:p.name,lat:p.lat,lng:p.lng});}catch(_){}}}globe.pointOfView({lat:p.lat,lng:p.lng,altitude:1.25},700)});
+    .onPointClick(p=>{if(Number.isInteger(p.routeIndex))selected=p.routeIndex;if(p.place&&window.VTGPortGallery){window.VTGPortGallery.zoomOpen(p.place,{globe,map});}else if(window.VTGPortGallery){try{window.VTGPortGallery.zoomOpen({name:p.name,lat:p.lat,lng:p.lng},{globe,map});}catch(_){}}})
    globe.width(node.clientWidth||600).height(node.clientHeight||340).pointOfView({lat:15,lng:55,altitude:2.2},0);
    const dayTexture='https://unpkg.com/three-globe/example/img/earth-day.jpg';
    const nightTexture='https://unpkg.com/three-globe/example/img/earth-night.jpg';

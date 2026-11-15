@@ -11,29 +11,25 @@
 
   var root=document.documentElement;
   root.classList.add('vtg-agreement-checking');
-  /* White screen with the VTG "V"; a thin ring draws a full circle around it, then its tail joins up. */
+  /* White screen with the complete VTG logo; a thin red line circles it until the check finishes. */
   var PATH='M7 10H31L51 76L72 10H96L65 101H39Z';
+  var PAT='<pattern id="ID" width="22" height="22" patternUnits="userSpaceOnUse"><rect width="22" height="22" fill="#a20d12"/><path d="M11 2L19 11L11 20L3 11Z" fill="none" stroke="#ef9a88" stroke-width="1.7"/><path d="M11 6L15 11L11 16L7 11Z" fill="none" stroke="#f5c0a9" stroke-width="1.1"/><circle cx="11" cy="11" r="1.5" fill="#f3b49f"/><path d="M1 1L5 5M17 17L21 21M21 1L17 5M5 17L1 21" stroke="#d95545" stroke-width="1"/></pattern>';
   var style=document.createElement('style');
   style.textContent='html.vtg-agreement-checking body{visibility:hidden!important}'
-    +'#vtg-guard-loader{display:none;position:fixed;inset:0;z-index:2147483647;background:#fff;align-items:center;justify-content:center;flex-direction:column;gap:16px;font:600 14px Manrope,Arial,sans-serif;color:#5b6472}'
+    +'#vtg-guard-loader{display:none;position:fixed;inset:0;z-index:2147483647;background:#fff;align-items:center;justify-content:center}'
     +'html.vtg-agreement-checking #vtg-guard-loader{display:flex}'
-    +'#vtg-guard-loader svg{width:128px;height:128px;overflow:visible}'
-    +'#vtg-guard-loader .g{fill:#f6e7e6;stroke:#ecd0cf;stroke-width:1}'
-    +'#vtg-guard-loader .o{fill:none;stroke:#b51a18;stroke-width:2.2;stroke-linejoin:round;stroke-dasharray:420;stroke-dashoffset:420;animation:vtgGDraw 1.9s ease-in-out infinite}'
-    +'#vtg-guard-loader .f{fill:#a20d12;animation:vtgGRise 1.9s ease-in-out infinite}'
-    +'#vtg-guard-loader .t{fill:none;stroke:#f1e3e2;stroke-width:1}'
-    +'#vtg-guard-loader .r{fill:none;stroke:#b51a18;stroke-width:1.8;stroke-linecap:round;stroke-dasharray:0 100;animation:vtgGRing 1.9s cubic-bezier(.45,.05,.4,.95) infinite}'
-    +'@keyframes vtgGDraw{0%{stroke-dashoffset:420}55%,100%{stroke-dashoffset:0}}'
-    +'@keyframes vtgGRise{0%{transform:translateY(104px)}65%,100%{transform:translateY(0)}}'
-    +'@keyframes vtgGRing{0%{stroke-dasharray:0 100;stroke-dashoffset:0}55%,68%{stroke-dasharray:100 100;stroke-dashoffset:0}100%{stroke-dasharray:0 100;stroke-dashoffset:-100}}'
-    +'@media (prefers-reduced-motion:reduce){#vtg-guard-loader .o,#vtg-guard-loader .r{animation:none;stroke-dashoffset:0;stroke-dasharray:100 100}#vtg-guard-loader .o{stroke-dasharray:none}#vtg-guard-loader .f{animation:none}}';
+    +'#vtg-guard-loader>svg{width:min(300px,72vw);height:auto;aspect-ratio:1;overflow:visible}'
+    +'#vtg-guard-loader .t{fill:none;stroke:#f3e6e5;stroke-width:1}'
+    +'#vtg-guard-loader .r{fill:none;stroke:#b51a18;stroke-width:2;stroke-linecap:round;stroke-dasharray:26 74;transform-box:fill-box;transform-origin:center;animation:vtgGSpin 1.15s linear infinite}'
+    +'@keyframes vtgGSpin{to{transform:rotate(360deg)}}';
   document.head.appendChild(style);
   var loader=document.createElement('div');
   loader.id='vtg-guard-loader';loader.setAttribute('role','status');loader.setAttribute('aria-label','Loading');
-  loader.innerHTML='<svg viewBox="-20 -16 143 143" aria-hidden="true"><defs><clipPath id="vtgGc"><path d="'+PATH+'"/></clipPath></defs>'
-    +'<path class="g" d="'+PATH+'"/><g clip-path="url(#vtgGc)"><rect class="f" x="0" y="0" width="105" height="110"/></g>'
-    +'<path class="o" d="'+PATH+'"/><circle class="t" cx="51.5" cy="55.5" r="66"/>'
-    +'<circle class="r" cx="51.5" cy="55.5" r="66" pathLength="100" transform="rotate(-90 51.5 55.5)"/></svg>';
+  loader.innerHTML='<svg viewBox="0 0 320 320" aria-hidden="true"><circle class="t" cx="160" cy="160" r="150"/><circle class="r" cx="160" cy="160" r="150" pathLength="100"/>'
+    +'<svg x="50" y="129.7" width="220" height="60.5" viewBox="0 0 400 110" overflow="visible"><defs>'+PAT.replace('ID','gp')+'<clipPath id="gc"><path d="'+PATH+'"/></clipPath></defs>'
+    +'<g clip-path="url(#gc)"><rect width="105" height="110" fill="url(#gp)"/></g><path d="'+PATH+'" fill="none" stroke="#b51a18" stroke-width="1"/>'
+    +'<g fill="#b51a18" font-family="Georgia,serif" font-weight="700"><text x="108" y="42" font-size="27" letter-spacing="8">INTAGE</text><text x="104" y="76" font-size="27" letter-spacing="1.8">TRADE GLOBAL</text></g>'
+    +'<text x="109" y="98" fill="#b51a18" font-family="Arial,sans-serif" font-size="8.3" letter-spacing="4.7">AFRICA TRADE PLATFORM</text></svg></svg>';
   root.appendChild(loader);
 
   function signin(){

@@ -5,15 +5,15 @@ const path=require('node:path');
 const root=path.resolve(__dirname,'..','..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 
-test('workspace guard shows a white V loader with a closing ring, not the black text screen',()=>{
+test('workspace guard shows the white full-logo loader with a circling red line, not the black text screen',()=>{
  const g=read('vtg-agreement-guard.js');
  assert.doesNotMatch(g,/Securing your VTG workspace/);
  assert.doesNotMatch(g,/#17191b/);
  assert.match(g,/background:#fff/);
  assert.match(g,/class="r"[^>]*pathLength="100"/);
- assert.match(g,/vtgGRing/);
+ assert.match(g,/vtgGSpin/);assert.match(g,/TRADE GLOBAL/);assert.match(g,/AFRICA TRADE PLATFORM/);
  const l=read('vtg-loader.js'),c=read('vtg-loader.css');
- assert.match(l,/vtg-v-ring/);assert.match(c,/@keyframes vtgVRing/);
+ assert.match(l,/vtg-v-ring/);assert.match(l,/TRADE GLOBAL/);assert.match(c,/@keyframes vtgSpin/);
  assert.match(c,/prefers-reduced-motion/);
 });
 
@@ -62,4 +62,16 @@ test('port photos must show shipping or an airport',()=>{
  assert.ok(!rel('Portrait of a smiling man in Lagos','S'));
  assert.ok(!rel('Wedding party in Ibadan','A'));
  assert.match(g,/Categories/);
+});
+
+test('selecting a place zooms the globe and map in, then opens its details',()=>{
+ const g=read('vtg-port-gallery.js');
+ assert.match(g,/function zoomOpen/);assert.match(g,/altitude:\.3/);assert.match(g,/flyTo\(\[lat,lon\],10/);
+ assert.match(read('trade-atlas.html'),/zoomOpen\(d\.place,\{globe,map:atlasMap\}\)/);
+ assert.match(read('vtg-shipment-globe.js'),/zoomOpen\(\{name:pl\.name,lat:pl\.lat,lng:pl\.lng\},\{globe,map\}\)/);
+ assert.match(g,/vtgpg:v2:/);assert.match(g,/prop=images/);
+});
+test('Google button checks the provider first and explains a switched-off provider',()=>{
+ const a=read('vtg-supabase-auth.js');
+ assert.match(a,/skipBrowserRedirect: true/);assert.match(a,/redirect: 'manual'/);assert.match(a,/not switched on/);
 });
