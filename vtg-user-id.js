@@ -8,7 +8,8 @@ css.textContent='.vtg-uid{display:inline-flex;align-items:center;gap:6px;margin-
  +'.vtg-uid button{all:unset;cursor:pointer;font-size:11px;font-weight:700;color:#1558D6;padding:0 2px}.vtg-uid button:focus-visible{outline:2px solid #1558D6;outline-offset:2px;border-radius:4px}'
  +'.vtg-uid--top{margin:0 8px 0 0}'
  +'.vtg-uid--bar{margin:0 8px 0 0;padding:4px 10px;border-color:#1558D6;font-size:12px;color:#fff}.vtg-uid--bar b{color:#fff}.vtg-uid--bar span{color:#c4d3ea}.vtg-uid--bar button{color:#8db4ff}@media(max-width:760px){.vtg-uid--bar{display:none}}'
- +'@media(max-width:760px){.vtg-uid--bar{display:none}}';
+ +'@media(max-width:760px){.vtg-uid--bar{display:none}}'
+ +'.vtg-uid--float{position:fixed;top:10px;right:14px;z-index:2147483000;margin:0;padding:4px 10px;background:#0f2447;border-color:#1558D6;color:#c4d3ea;font-size:12px;box-shadow:0 4px 14px rgba(0,0,0,.28)}.vtg-uid--float b{color:#fff}.vtg-uid--float button{color:#8db4ff}';
 document.head.appendChild(css);
 function chip(id,cls){
  const el=document.createElement('span');el.className='vtg-uid'+(cls?' '+cls:'');el.setAttribute('data-vtg-uid-chip','');el.title='Your VTG user ID. Quote it when you contact VTG support.';
@@ -39,6 +40,7 @@ function mount(id){
  document.querySelectorAll('[data-vtg-user-id]').forEach(h=>spots.push(()=>h.appendChild(chip(id))));
  spots.forEach(f=>f());
  mountBar(id,0);
+ setTimeout(()=>{const any=[...document.querySelectorAll('[data-vtg-uid-chip]')].some(c=>c.getClientRects().length);if(!any&&!document.querySelector('.vtg-uid--float'))document.body.appendChild(chip(id,'vtg-uid--float'));},1800);
 }
 async function start(){
  try{

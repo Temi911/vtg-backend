@@ -27,3 +27,13 @@ test('user ID also appears as a pill in the shared top bar, hidden on phones',()
   assert.match(js,/vtg-uid--bar/);
   assert.match(js,/@media\(max-width:760px\)\{\.vtg-uid--bar\{display:none\}\}/);
 });
+test('staff dashboards load the user ID script and have a floating fallback',()=>{
+  const fs=require('fs'),path=require('path'),assert=require('node:assert/strict');
+  const root=path.join(__dirname,'..','..');
+  for(const f of ['workforce-dashboard.html','agent-dashboard.html','agent-network-dashboard.html','admin-dashboard-preview.html','vtg-ai-dashboard.html']){
+    assert.match(fs.readFileSync(path.join(root,f),'utf8'),/vtg-user-id\.js/,f);
+  }
+  const js=fs.readFileSync(path.join(root,'vtg-user-id.js'),'utf8');
+  assert.match(js,/vtg-uid--float/);
+  assert.match(js,/getClientRects\(\)\.length/);
+});
