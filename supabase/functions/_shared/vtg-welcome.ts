@@ -66,7 +66,17 @@ export function buildWelcomeEmail(input: WelcomeInput) {
     "",
     "Security reminder: VTG will never ask for your password, one-time codes or card details by email. If you did not open this account, please contact VTG support straight away.",
   ];
+  const rich = {
+    greeting: "Dear " + name + ",",
+    intro: "Welcome to Vintage Trade Global. Your " + label.toLowerCase() + " account is now open and ready to use.",
+    detailsTitle: "Your account details",
+    details: [["Account type", label] as [string, string], ...(input.email ? [["Registered email", input.email] as [string, string]] : []), ...(date ? [["Account opened", date] as [string, string]] : [])],
+    stepsTitle: "Getting started",
+    steps,
+    note: "Security reminder: VTG will never ask for your password, one-time codes or card details by email. If you did not open this account, please contact VTG support straight away.",
+  };
   return {
+    rich,
     subject: input.userId ? "Welcome to VTG — your account is open (" + input.userId + ")" : "Welcome to VTG — your account is open",
     heading: "Your VTG account is open",
     body: lines.join("\n"),

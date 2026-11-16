@@ -22,7 +22,21 @@ test('works on older databases without a user ID, and for unknown roles',()=>{
 test('e-mail function and approval flow use it; highlight is escaped in HTML',()=>{
  const e=read('supabase/functions/vtg-email/index.ts');
  assert.match(e,/buildWelcomeEmail/);assert.match(e,/select\("vtg_user_id"\)/);assert.match(e,/highlight,/);
- assert.match(e,/escapeHtml\(input\.highlight\.value\)/);
- assert.match(read('supabase/functions/_shared/vtg-email.ts'),/escapeHtml\(input\.highlight\.value\)/);
+ assert.match(e,/renderVtgEmail\(/);assert.match(read('supabase/functions/_shared/vtg-email.ts'),/renderVtgEmail\(/);
+ assert.match(read('supabase/functions/_shared/vtg-email-template.ts'),/esc\(input\.highlight\.value\)/);
  const a=read('supabase/functions/vtg-admin-roles/index.ts');assert.match(a,/vtg_user_id/);assert.match(a,/highlight: approved/);
+});
+
+test('branded template: logo, ID card, steps, escaped content, button limited to the app URL',()=>{
+ const tpl=stripTypeScriptTypes(read('supabase/functions/_shared/vtg-email-template.ts')).replace(/export /g,'');
+ const t=new Function(tpl+';return {renderVtgEmail};')();
+ const w=api.buildWelcomeEmail({role:'buyer',fullName:'<b>Eve</b>',email:'e@x.com',userId:'VTG-100001'});
+ const html=t.renderVtgEmail({heading:w.heading,body:w.body,rich:w.rich,highlight:w.highlight,ctaLabel:'Open',ctaUrl:'https://app.example/',appUrl:'https://app.example'});
+ assert.match(html,/https:\/\/app\.example\/assets\/email\/vtg-logo-email\.png/);
+ assert.match(html,/https:\/\/app\.example\/assets\/email\/vtg-logo-email-light\.png/);
+ assert.match(html,/VTG-100001/);assert.match(html,/Getting started/i);assert.match(html,/viewport/);
+ assert.doesNotMatch(html,/<b>Eve<\/b>/);assert.match(html,/&lt;b&gt;Eve&lt;\/b&gt;/);
+ const evil=t.renderVtgEmail({heading:'x',body:'y',ctaLabel:'Go',ctaUrl:'https://evil.example/',appUrl:'https://app.example'});
+ assert.doesNotMatch(evil,/evil\.example/);
+ for(const f of ['vtg-logo-email.png','vtg-logo-email-light.png'])assert.ok(fs.statSync(path.join(root,'assets/email',f)).size>5000,f);
 });
