@@ -1,3 +1,4 @@
+import { renderVtgEmail, type RichContent } from "../_shared/vtg-email-template.ts";
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { buildWelcomeEmail, userIdSentence } from "../_shared/vtg-welcome.ts";
@@ -15,6 +16,7 @@ type VtgEmailInput = {
   ctaUrl?: string;
   idempotencyKey?: string;
   highlight?: { label: string; value: string };
+  rich?: RichContent;
 };
 
 async function sendVtgEmail(input: VtgEmailInput) {
@@ -24,16 +26,7 @@ async function sendVtgEmail(input: VtgEmailInput) {
   if (!apiKey || !from) throw new Error("VTG email service is not configured. Set RESEND_API_KEY and VTG_EMAIL_FROM.");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.to)) throw new Error("A valid recipient email is required.");
 
-  const heading = escapeHtml(input.heading);
-  const body = escapeHtml(input.body).replace(/\n/g, "<br>");
-  const ctaUrl = input.ctaUrl && input.ctaUrl.startsWith(appUrl + "/") ? input.ctaUrl : "";
-  const cta = ctaUrl && input.ctaLabel
-    ? `<p style="margin:28px 0 0"><a href="${escapeHtml(ctaUrl)}" style="display:inline-block;background:#702A30;color:#fff;text-decoration:none;padding:12px 18px;font-weight:700;font-size:13px">${escapeHtml(input.ctaLabel)}</a></p>`
-    : "";
-  const highlight = input.highlight && input.highlight.value
-    ? `<div style="margin:22px 0 4px;padding:16px 18px;background:#f7f3ea;border-left:4px solid #702A30"><div style="font-size:11px;letter-spacing:2px;color:#702A30;font-weight:700">${escapeHtml(input.highlight.label.toUpperCase())}</div><div style="font-size:26px;font-weight:700;letter-spacing:2px;color:#17191b;margin-top:6px">${escapeHtml(input.highlight.value)}</div></div>`
-    : "";
-  const html = `<!doctype html><html><body style="margin:0;background:#f3efe6;color:#17191b;font-family:Arial,sans-serif"><div style="max-width:620px;margin:32px auto;padding:36px 30px;background:#fff"><p style="margin:0 0 26px;color:#702A30;font-size:11px;letter-spacing:3px;font-weight:700">VTG — THE PRIVATE TRADE HOUSE</p><h1 style="font-size:24px;line-height:1.25;margin:0 0 18px">${heading}</h1><p style="font-size:15px;line-height:1.7;color:#454545">${body}</p>${highlight}${cta}<hr style="border:0;border-top:1px solid #e8e2d8;margin:34px 0 18px"><p style="font-size:11px;line-height:1.6;color:#777">This is an automated VTG account notification. For account-specific details, sign in to your VTG workspace. Please do not reply with passwords or payment credentials.</p></div></body></html>`;
+  const html = renderVtgEmail({ heading: input.heading, body: input.body, rich: input.rich, highlight: input.highlight, ctaLabel: input.ctaLabel, ctaUrl: input.ctaUrl, appUrl });
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -140,8 +133,9 @@ Deno.serve(async (req: Request) => {
     let heading = "Welcome to VTG";
     let message = "Your VTG account is ready. Sign in to explore your workspace and continue your trade activities.";
     let highlight: { label: string; value: string } | undefined;
+    let rich: RichContent | undefined;
     const welcome = buildWelcomeEmail({ role: String(role || "buyer"), fullName: profile.data.full_name, email: user.email, userId: vtgUserId, openedAt: user.created_at });
-    subject = welcome.subject; heading = welcome.heading; message = welcome.body; highlight = welcome.highlight;
+    subject = welcome.subject; heading = welcome.heading; message = welcome.body; highlight = welcome.highlight; rich = welcome.rich;
     let eventKey = "onboarding:" + user.id;
     if (isPendingApplicant) {
         role = pendingApplication.data.requested_role;
@@ -151,14 +145,15 @@ Deno.serve(async (req: Request) => {
         heading = "Your application has been received";
         message = "Dear " + (profile.data.full_name || "Applicant") + ",\n\nThank you for choosing VTG — The Private Trade House. We have successfully received the " + roleLabel.toLowerCase() + " account application for " + (pendingApplication.data.organization_name || "your organisation") + ".\n\nAPPLICATION STATUS: PENDING ADMINISTRATIVE REVIEW\n\nOur team will review the organisation information and supporting details submitted with your application. This review helps us assess the account request and determine whether further information is required.\n\nWHAT HAPPENS NEXT\n1. The VTG team reviews the application and submitted information.\n2. If clarification or corrected information is needed, we will contact you using this email address.\n3. We will send a separate email when a decision has been made. If approved, the relevant account features will be enabled for your workspace.\n\nWHAT YOU NEED TO DO NOW\nNo further action is required unless the VTG team contacts you. Please monitor your inbox and check your spam or junk folder for future VTG messages. Keep your registered contact details accessible, and please do not submit another application while this one is pending.\n\nYour application remains received and pending review. Thank you for your interest in trading with VTG.\n\nVTG Account Administration\nVTG — The Private Trade House\nAfrica · China · The World";
         eventKey = "application-received:" + pendingApplication.data.id;
+        rich = undefined;
         highlight = vtgUserId ? { label: "Your VTG User ID", value: vtgUserId } : undefined;
         if (vtgUserId) message += "\n\n" + userIdSentence(vtgUserId);
     }
     const result = await deliverTrackedEmail(admin, {
       userId: user.id, to: user.email, eventType, eventKey,
       idempotencyKey: "vtg-" + eventKey,
-      subject, heading, body: message, highlight,
-      ctaLabel: "Open VTG", ctaUrl: (Deno.env.get("VTG_APP_URL") || "https://vtg-staging.vercel.app") + "/",
+      subject, heading, body: message, highlight, rich,
+      ctaLabel: isPendingApplicant ? "Open VTG" : "Open my VTG dashboard", ctaUrl: (Deno.env.get("VTG_APP_URL") || "https://vtg-staging.vercel.app") + "/",
     });
     return out({ ok: true, email: result });
   }
