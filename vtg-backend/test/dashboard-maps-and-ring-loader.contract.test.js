@@ -69,9 +69,16 @@ test('selecting a place zooms the globe and map in, then opens its details',()=>
  assert.match(g,/function zoomOpen/);assert.match(g,/altitude:\.3/);assert.match(g,/flyTo\(\[lat,lon\],10/);
  assert.match(read('trade-atlas.html'),/zoomOpen\(d\.place,\{globe,map:atlasMap\}\)/);
  assert.match(read('vtg-shipment-globe.js'),/zoomOpen\(\{name:pl\.name,lat:pl\.lat,lng:pl\.lng\},\{globe,map\}\)/);
- assert.match(g,/vtgpg:v2:/);assert.match(g,/prop=images/);
+ assert.match(g,/prop=images/);
 });
 test('Google button checks the provider first and explains a switched-off provider',()=>{
  const a=read('vtg-supabase-auth.js');
  assert.match(a,/skipBrowserRedirect: true/);assert.match(a,/redirect: 'manual'/);assert.match(a,/not switched on/);
+});
+
+test('photos also come from Openverse with credit, licence and the place name required',()=>{
+ const g=read('vtg-port-gallery.js');
+ assert.match(g,/api\.openverse\.org\/v1\/images\//);assert.match(g,/license_type=commercial/);
+ assert.match(g,/foreign_landing_url/);assert.match(g,/the place's own name must appear/);
+ assert.match(g,/vtgpg:v3:/);
 });
