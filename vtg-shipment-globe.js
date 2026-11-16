@@ -56,22 +56,22 @@ const SHIP_SVG='<svg viewBox="0 0 30 18" width="22" height="13" aria-hidden="tru
 const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const read=k=>{try{const v=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(v)?v:[]}catch(_){return[]}};
 function records(role){
- if(role==='supplier')return read('vtg-supplier-os-shipments-v2').map(x=>({ref:x.ref||x.id||'Shipment',goods:x.goods||'Goods not specified',origin:x.origin,destination:x.destination,status:x.status||'Not recorded',source:'supplier shipment'}));
- if(role==='bank')return read('vtg-bank-finance-cases-v2').filter(x=>x.source==='buyer-shared-desk'&&/departed|in transit|arrived|customs|delivered|at sea|shipped/i.test(String(x.stage||''))).map(x=>{const p=String(x.corridor||'').split(/→|↔/);return{ref:x.id,goods:x.goods||'Goods not specified',origin:p[0]||'',destination:p[1]||'',status:x.stage,source:'customer case'}});
+  if(role==='bank')return read('vtg-bank-finance-cases-v2').filter(x=>x.source==='buyer-shared-desk'&&/departed|in transit|arrived|customs|delivered|at sea|shipped/i.test(String(x.stage||''))).map(x=>{const p=String(x.corridor||'').split(/→|↔/);return{ref:x.id,goods:x.goods||'Goods not specified',origin:p[0]||'',destination:p[1]||'',status:x.stage,source:'customer case'}});
  return [];
 }
-async function buyerShipmentRecords(){
+async function buyerShipmentRecords(role){
+ role=role||'buyer';
  const auth=await window.VTG_AUTH_READY;
  const client=auth?.client||window.VTGAuth?.client||window.VTG_SUPABASE;
  if(!client)throw new Error('Secure VTG account service is unavailable. Please reload and try again.');
  const {data:sessionData,error:sessionError}=await client.auth.getSession();
  if(sessionError)throw sessionError;
  const session=sessionData?.session;
- if(!session?.user?.id)throw new Error('Sign in as a buyer to view routes linked to your recorded shipments.');
+ if(!session?.user?.id)throw new Error('Sign in as a '+role+' to view routes linked to your recorded shipments.');
  const {data:profile,error:profileError}=await client.from('profiles').select('role,is_active').eq('id',session.user.id).maybeSingle();
  if(profileError)throw profileError;
- if(profile?.role!=='buyer'||profile.is_active!==true)throw new Error('An active buyer account is required to view this shipment map.');
- const {data:orders,error:ordersError}=await client.from('trade_orders').select('id,reference,product:products(name)').eq('buyer_id',session.user.id).order('created_at',{ascending:false}).limit(200);
+ if(profile?.role!==role||profile.is_active!==true)throw new Error('An active '+role+' account is required to view this shipment map.');
+ const {data:orders,error:ordersError}=await client.from('trade_orders').select('id,reference,product:products(name)').eq(role+'_id',session.user.id).order('created_at',{ascending:false}).limit(200);
  if(ordersError)throw ordersError;
  if(!orders?.length)return [];
  const orderById=new Map(orders.map(o=>[o.id,o]));
@@ -80,7 +80,7 @@ async function buyerShipmentRecords(){
  const moving=/departed|in[ _-]?transit|arrived|customs|delivered|at[ _-]?sea|shipped|loaded|dispatched|out for delivery/i;
  return (shipments||[]).filter(s=>moving.test(String(s.status||''))).map(s=>{
   const order=orderById.get(s.order_id)||{};
-  return {ref:order.reference||s.id,shipmentId:s.id,goods:order.product?.name||'Recorded shipment',origin:s.origin_port||'',destination:s.destination_port||'',status:s.status,carrier:s.carrier||'',tracking:s.tracking_number||'',createdAt:s.created_at,source:'buyer shipment'};
+  return {ref:order.reference||s.id,shipmentId:s.id,goods:order.product?.name||'Recorded shipment',origin:s.origin_port||'',destination:s.destination_port||'',status:s.status,carrier:s.carrier||'',tracking:s.tracking_number||'',createdAt:s.created_at,source:role+' shipment'};
  });
 }
 async function init(){
@@ -93,8 +93,8 @@ async function init(){
  const list=panel.querySelector('#vtgSARoutes');
  panel.insertAdjacentHTML('beforeend','<p style="margin:0;padding:10px 20px 14px;font-size:11.5px;line-height:1.5;color:var(--muted,#8aa0b2)">Only locations on your own shipments are shown. The red-to-green line is the indicative sea lane between the recorded origin and destination and the small ship shows the direction of travel. It is not a live vessel position; live AIS positions (gold dot) appear only when a tracking feed is connected. Click an origin or destination dot for port or airport photos.</p>');
  let sourceRecords=[];
- if(role==='buyer'){
-  try{sourceRecords=await buyerShipmentRecords();}
+ if(role==='buyer'||role==='supplier'){
+  try{sourceRecords=await buyerShipmentRecords(role);}
   catch(error){list.innerHTML='<div class="saEmpty"><strong>Shipment routes could not be loaded.</strong><br>'+esc(error.message||'Please sign in and try again.')+'</div>';sourceRecords=[];}
  }else sourceRecords=records(role);
  const routes=sourceRecords.map(r=>{const from=locate(r.origin),to=locate(r.destination);return from&&to&&from.name!==to.name?{...r,from,to}:null}).filter(Boolean);
