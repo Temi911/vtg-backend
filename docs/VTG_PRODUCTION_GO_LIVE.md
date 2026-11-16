@@ -28,7 +28,9 @@ select
   exists(select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace
          where n.nspname='public' and p.proname='vtg_open_conversation') as chat_rpc,
   exists(select 1 from information_schema.columns
-         where table_schema='public' and table_name='profiles' and column_name='vtg_user_id') as user_id_col;
+         where table_schema='public' and table_name='profiles' and column_name='vtg_user_id') as user_id_col,
+  to_regclass('public.vtg_notifications') as notifications_table,
+  exists(select 1 from pg_policies where schemaname='public' and tablename='vtg_inspection_evidence') as evidence_policy;
 ```
 
 ## 2. Migrations, in this order (files in `supabase/migrations/`)
@@ -39,6 +41,7 @@ select
 | 3 | `20261114120000_vtg_chat_attachments.sql` | `chat_attachments_table` is empty or `chat_bucket`/`ai_bucket` is false (after step 2 if that was needed). |
 | 4 | `20261114200000_vtg_google_signup_profile.sql` | `google_rpc` is false. Adds `profiles.onboarding_completed_at` (existing rows backfilled) and `vtg_complete_google_profile`. |
 | 5 | `20261115120000_vtg_user_id.sql` | `user_id_col` is false. Gives every user a permanent ID like `VTG-100001` (existing users numbered in sign-up order) and shows it in the buyer, supplier and bank dashboards. Until it runs, dashboards simply show no ID. |
+| 6 | `20261116100000_vtg_notifications_and_inspection_evidence_access.sql` | `notifications_table` is null or `evidence_policy` is false. Creates the notifications table if missing (no earlier migration did) and lets buyers read the evidence of their own inspections. Idempotent. |
 
 Open each file, read it, paste it into the SQL Editor and run it. Re-run the query in section 1 afterwards; all
 values for the features you want should now be non-null / true.
