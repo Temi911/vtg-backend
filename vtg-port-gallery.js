@@ -78,6 +78,25 @@ async function findPhotos(p){
   if(!files.length)return [];
   return toPhotos(await getJSON(API+'&titles='+encodeURIComponent(files.join('|'))),nt,true,p.t,'article');
  })().catch(()=>[]));
+ /* Openverse: openly licensed photos from Flickr, museums and other sites (commercial-use licences only, credit shown). */
+ calls.push((async()=>{
+  const strict=norm(p.n).split(' ').filter(t=>t.length>2&&!/^(port|airport|international|intl|seaport|terminal|terminals|harbour|harbor|the|and|new|old|container|deep|sea)$/.test(t)),out=[],seenQ=new Set();
+  if(!strict.length)return [];
+  for(const q of [`${p.n} ${word}`,`${p.k||p.c} ${p.n}`]){
+   if(seenQ.has(q))continue;seenQ.add(q);
+   const j=await getJSON('https://api.openverse.org/v1/images/?page_size=20&license_type=commercial&category=photograph&q='+encodeURIComponent(q)).catch(()=>null);
+   for(const r of (j&&j.results)||[]){
+    const text=[r.title,(r.tags||[]).map(t=>t.name).join(' ')].join(' ');
+    if(!r.thumbnail&&!r.url)continue;if(BAD.test(String(r.title||''))||!relevant(text,p.t))continue;
+    /* not location-verified like Commons geosearch, so the place's own name must appear */
+    const tl=norm(String(r.title||'')+' '+(r.tags||[]).map(t=>t.name).join(' ')),hits=strict.filter(t=>tl.includes(t)).length;
+    if(!hits)continue;
+    if(r.width&&r.height&&(r.width<500||r.height<300))continue;
+    out.push({src:r.thumbnail||r.url,page:r.foreign_landing_url||r.url,title:String(r.title||p.n).slice(0,120),credit:String(r.creator||'Unknown author').slice(0,80)+(r.source?' via '+r.source:''),license:('CC '+String(r.license||'').toUpperCase()+' '+(r.license_version||'')).trim(),licenseUrl:r.license_url||'',score:hits*10+2});
+   }
+  }
+  return out;
+ })().catch(()=>[]));
  const all=(await Promise.all(calls)).flat(),seen=new Set(),uniq=[];
  all.sort((a,b)=>b.score-a.score).forEach(x=>{if(!seen.has(x.src)){seen.add(x.src);uniq.push(x);}});
  return uniq.slice(0,MAX_PHOTOS);
@@ -96,8 +115,8 @@ async function findSummary(p){
   return {text:pg.extract.trim(),url:pg.fullurl,title:pg.title};
  }catch(_){return null;}
 }
-function cacheGet(id){try{const v=JSON.parse(localStorage.getItem('vtgpg:v2:'+id)||'null');return v&&Date.now()-v.at<TTL?v:null;}catch(_){return null;}}
-function cachePut(id,photos,summary){try{localStorage.setItem('vtgpg:v2:'+id,JSON.stringify({at:Date.now(),photos,summary}));}catch(_){}}
+function cacheGet(id){try{const v=JSON.parse(localStorage.getItem('vtgpg:v3:'+id)||'null');return v&&Date.now()-v.at<TTL?v:null;}catch(_){return null;}}
+function cachePut(id,photos,summary){try{localStorage.setItem('vtgpg:v3:'+id,JSON.stringify({at:Date.now(),photos,summary}));}catch(_){}}
 
 /* ---- UI */
 let root=null,timer=null,state=null,lastFocus=null;
@@ -182,7 +201,7 @@ async function open(q){
  const sum=root.querySelector('[data-sum]');
  sum.innerHTML=data.summary?esc(data.summary.text)+' <a href="'+esc(safeUrl(data.summary.url))+'" target="_blank" rel="noopener">Wikipedia</a>':'No public description was found for this place.';
  const stage=root.querySelector('.vtgpg-stage'),cap=root.querySelector('.vtgpg-cap');
- if(!data.photos.length){stage.innerHTML='<div class="vtgpg-empty">No openly licensed photo of '+esc(p.n)+' was found on Wikimedia Commons. You can still search for this place on the web or the operator’s website.</div>';return;}
+ if(!data.photos.length){stage.innerHTML='<div class="vtgpg-empty">No openly licensed photo of '+esc(p.n)+' was found on Wikimedia Commons or Openverse. You can still search for this place on the web or the operator’s website.</div>';return;}
  stage.innerHTML='';
  const imgs=data.photos.map((ph,k)=>{const im=document.createElement('img');im.alt=ph.title;im.dataset.src=ph.src;im.decoding='async';im.referrerPolicy='no-referrer';if(k<2)im.src=ph.src;im.addEventListener('error',()=>{im.style.display='none';});stage.append(im);return im;});
  const ctl=document.createElement('div');ctl.className='vtgpg-ctl';
