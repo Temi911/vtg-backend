@@ -12,6 +12,7 @@ export type VtgEmailInput = {
   ctaLabel?: string;
   ctaUrl?: string;
   idempotencyKey?: string;
+  highlight?: { label: string; value: string };
 };
 
 export async function sendVtgEmail(input: VtgEmailInput) {
@@ -27,7 +28,10 @@ export async function sendVtgEmail(input: VtgEmailInput) {
   const cta = ctaUrl && input.ctaLabel
     ? `<p style="margin:28px 0 0"><a href="${escapeHtml(ctaUrl)}" style="display:inline-block;background:#702A30;color:#fff;text-decoration:none;padding:12px 18px;font-weight:700;font-size:13px">${escapeHtml(input.ctaLabel)}</a></p>`
     : "";
-  const html = `<!doctype html><html><body style="margin:0;background:#f3efe6;color:#17191b;font-family:Arial,sans-serif"><div style="max-width:620px;margin:32px auto;padding:36px 30px;background:#fff"><p style="margin:0 0 26px;color:#702A30;font-size:11px;letter-spacing:3px;font-weight:700">VTG — THE PRIVATE TRADE HOUSE</p><h1 style="font-size:24px;line-height:1.25;margin:0 0 18px">${heading}</h1><p style="font-size:15px;line-height:1.7;color:#454545">${body}</p>${cta}<hr style="border:0;border-top:1px solid #e8e2d8;margin:34px 0 18px"><p style="font-size:11px;line-height:1.6;color:#777">This is an automated VTG account notification. For account-specific details, sign in to your VTG workspace. Please do not reply with passwords or payment credentials.</p></div></body></html>`;
+  const highlight = input.highlight && input.highlight.value
+    ? `<div style="margin:22px 0 4px;padding:16px 18px;background:#f7f3ea;border-left:4px solid #702A30"><div style="font-size:11px;letter-spacing:2px;color:#702A30;font-weight:700">${escapeHtml(input.highlight.label.toUpperCase())}</div><div style="font-size:26px;font-weight:700;letter-spacing:2px;color:#17191b;margin-top:6px">${escapeHtml(input.highlight.value)}</div></div>`
+    : "";
+  const html = `<!doctype html><html><body style="margin:0;background:#f3efe6;color:#17191b;font-family:Arial,sans-serif"><div style="max-width:620px;margin:32px auto;padding:36px 30px;background:#fff"><p style="margin:0 0 26px;color:#702A30;font-size:11px;letter-spacing:3px;font-weight:700">VTG — THE PRIVATE TRADE HOUSE</p><h1 style="font-size:24px;line-height:1.25;margin:0 0 18px">${heading}</h1><p style="font-size:15px;line-height:1.7;color:#454545">${body}</p>${highlight}${cta}<hr style="border:0;border-top:1px solid #e8e2d8;margin:34px 0 18px"><p style="font-size:11px;line-height:1.6;color:#777">This is an automated VTG account notification. For account-specific details, sign in to your VTG workspace. Please do not reply with passwords or payment credentials.</p></div></body></html>`;
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -40,7 +44,7 @@ export async function sendVtgEmail(input: VtgEmailInput) {
       to: [input.to],
       subject: input.subject,
       html,
-      text: `${input.heading}\n\n${input.body}\n\nSign in to your VTG workspace: ${appUrl}`,
+      text: `${input.heading}\n\n${input.body}${input.highlight?.value ? `\n\n${input.highlight.label}: ${input.highlight.value}` : ""}\n\nSign in to your VTG workspace: ${appUrl}`,
     }),
   });
   const result = await response.json().catch(() => ({}));

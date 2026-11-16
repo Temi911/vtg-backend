@@ -61,13 +61,18 @@ Deno.serve(async (req: Request) => {
     const recipient = await admin.from("profiles").select("email,full_name")
       .eq("id", request.data.user_id).maybeSingle();
     if (recipient.error || !recipient.data?.email) throw new Error("Decision saved, but applicant email is unavailable.");
+    let vtgUserId: string | null = null;
+    try {
+      const idRow = await admin.from("profiles").select("vtg_user_id").eq("id", request.data.user_id).maybeSingle();
+      if (!idRow.error && typeof idRow.data?.vtg_user_id === "string") vtgUserId = idRow.data.vtg_user_id;
+    } catch (_) { /* optional */ }
     const approved = body.decision === "approved";
     const role = request.data.requested_role;
     const company = request.data.organization_name || "your organisation";
     const subject = approved ? "Your VTG " + role + " application is approved" : "An update on your VTG " + role + " application";
     const heading = approved ? "Your application is approved" : "Your application needs attention";
     const message = approved
-      ? "VTG has approved the " + role + " account application for " + company + ". You can now sign in to your workspace and continue the separate company-document verification process."
+      ? "VTG has approved the " + role + " account application for " + company + ". You can now sign in to your workspace and continue the separate company-document verification process." + (vtgUserId ? "\n\nYour VTG User ID is " + vtgUserId + ". It is shown in your dashboard; please quote it whenever you contact VTG support." : "")
       : "VTG has not approved the " + role + " account application for " + company + " at this time. Sign in to your account to review the decision and any notes provided by VTG.";
     const delivery = await deliverTrackedEmail(admin, {
       userId: request.data.user_id,
@@ -76,6 +81,7 @@ Deno.serve(async (req: Request) => {
       eventKey: "business-application-decision:" + request.data.id,
       idempotencyKey: "vtg-role-decision-" + request.data.id,
       subject, heading, body: message,
+      highlight: approved && vtgUserId ? { label: "Your VTG User ID", value: vtgUserId } : undefined,
       ctaLabel: "Open VTG",
       ctaUrl: (Deno.env.get("VTG_APP_URL") || "https://vtg-staging.vercel.app") + "/",
     });
