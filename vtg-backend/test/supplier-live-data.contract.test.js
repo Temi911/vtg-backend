@@ -14,3 +14,8 @@ test('supplier map reads real shipments, not localStorage',()=>{
   assert.match(globe,/eq\(role\+'_id',session\.user\.id\)/);
   assert.match(globe,/role==='buyer'\|\|role==='supplier'/);
 });
+test('bank map reads shipments on its assigned letters of credit, not localStorage',()=>{
+  assert.doesNotMatch(globe,/vtg-bank-finance-cases-v2/);
+  assert.match(globe,/from\('letters_of_credit'\)\.select\('order_id'\)\.eq\('bank_id',uid\)/);
+  assert.match(globe,/verification_status!=='verified'/);
+});

@@ -56,7 +56,6 @@ const SHIP_SVG='<svg viewBox="0 0 30 18" width="22" height="13" aria-hidden="tru
 const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const read=k=>{try{const v=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(v)?v:[]}catch(_){return[]}};
 function records(role){
-  if(role==='bank')return read('vtg-bank-finance-cases-v2').filter(x=>x.source==='buyer-shared-desk'&&/departed|in transit|arrived|customs|delivered|at sea|shipped/i.test(String(x.stage||''))).map(x=>{const p=String(x.corridor||'').split(/→|↔/);return{ref:x.id,goods:x.goods||'Goods not specified',origin:p[0]||'',destination:p[1]||'',status:x.stage,source:'customer case'}});
  return [];
 }
 async function buyerShipmentRecords(role){
@@ -83,6 +82,32 @@ async function buyerShipmentRecords(role){
   return {ref:order.reference||s.id,shipmentId:s.id,goods:order.product?.name||'Recorded shipment',origin:s.origin_port||'',destination:s.destination_port||'',status:s.status,carrier:s.carrier||'',tracking:s.tracking_number||'',createdAt:s.created_at,source:role+' shipment'};
  });
 }
+async function bankShipmentRecords(){
+ const auth=await window.VTG_AUTH_READY;
+ const client=auth?.client||window.VTGAuth?.client||window.VTG_SUPABASE;
+ if(!client)throw new Error('Secure VTG account service is unavailable. Please reload and try again.');
+ const {data:sessionData,error:sessionError}=await client.auth.getSession();
+ if(sessionError)throw sessionError;
+ const uid=sessionData?.session?.user?.id;
+ if(!uid)throw new Error('Sign in as a bank to view shipments on your assigned cases.');
+ const {data:profile,error:pe}=await client.from('profiles').select('role,is_active').eq('id',uid).maybeSingle();
+ if(pe)throw pe;
+ if(profile?.role!=='bank'||profile.is_active!==true)throw new Error('An active bank account is required to view this shipment map.');
+ const {data:bank,error:be}=await client.from('bank_profiles').select('verification_status').eq('user_id',uid).maybeSingle();
+ if(be)throw be;
+ if(bank?.verification_status!=='verified')return [];
+ const {data:lcs,error:le}=await client.from('letters_of_credit').select('order_id').eq('bank_id',uid).limit(300);
+ if(le)throw le;
+ const ids=[...new Set((lcs||[]).map(x=>x.order_id).filter(Boolean))];
+ if(!ids.length)return [];
+ const {data:orders,error:oe}=await client.from('trade_orders').select('id,reference,product:products(name)').in('id',ids);
+ if(oe)throw oe;
+ const byId=new Map((orders||[]).map(o=>[o.id,o]));
+ const {data:ships,error:se}=await client.from('shipments').select('id,order_id,origin_port,destination_port,status,carrier,tracking_number,created_at').in('order_id',ids).order('created_at',{ascending:false}).limit(300);
+ if(se)throw se;
+ const moving=/departed|in[ _-]?transit|arrived|customs|delivered|at[ _-]?sea|shipped|loaded|dispatched|out for delivery/i;
+ return (ships||[]).filter(s=>moving.test(String(s.status||''))).map(s=>{const o=byId.get(s.order_id)||{};return {ref:o.reference||s.id,shipmentId:s.id,goods:o.product?.name||'Shipment on an assigned case',origin:s.origin_port||'',destination:s.destination_port||'',status:s.status,carrier:s.carrier||'',tracking:s.tracking_number||'',createdAt:s.created_at,source:'assigned case shipment'};});
+}
 async function init(){
  const role=location.pathname.includes('supplier-dashboard')?'supplier':location.pathname.includes('bank-trade-os')?'bank':'buyer';
  const target=role==='buyer'?document.querySelector('#page-atlas'):role==='supplier'?document.querySelector('#page-logistics'):document.querySelector('#view-shipments');
@@ -93,8 +118,8 @@ async function init(){
  const list=panel.querySelector('#vtgSARoutes');
  panel.insertAdjacentHTML('beforeend','<p style="margin:0;padding:10px 20px 14px;font-size:11.5px;line-height:1.5;color:var(--muted,#8aa0b2)">Only locations on your own shipments are shown. The red-to-green line is the indicative sea lane between the recorded origin and destination and the small ship shows the direction of travel. It is not a live vessel position; live AIS positions (gold dot) appear only when a tracking feed is connected. Click an origin or destination dot for port or airport photos.</p>');
  let sourceRecords=[];
- if(role==='buyer'||role==='supplier'){
-  try{sourceRecords=await buyerShipmentRecords(role);}
+ if(role==='buyer'||role==='supplier'||role==='bank'){
+  try{sourceRecords=role==='bank'?await bankShipmentRecords():await buyerShipmentRecords(role);}
   catch(error){list.innerHTML='<div class="saEmpty"><strong>Shipment routes could not be loaded.</strong><br>'+esc(error.message||'Please sign in and try again.')+'</div>';sourceRecords=[];}
  }else sourceRecords=records(role);
  const routes=sourceRecords.map(r=>{const from=locate(r.origin),to=locate(r.destination);return from&&to&&from.name!==to.name?{...r,from,to}:null}).filter(Boolean);
