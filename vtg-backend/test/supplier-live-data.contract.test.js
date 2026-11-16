@@ -19,3 +19,7 @@ test('bank map reads shipments on its assigned letters of credit, not localStora
   assert.match(globe,/from\('letters_of_credit'\)\.select\('order_id'\)\.eq\('bank_id',uid\)/);
   assert.match(globe,/verification_status!=='verified'/);
 });
+test('supplier page does not claim records are only stored in the browser',()=>{
+  assert.doesNotMatch(html,/<small>Local entries<\/small>/);
+  assert.doesNotMatch(html,/已保存至此浏览器|이 브라우저에 저장|Enregistré dans ce navigateur|enregistrées dans ce navigateur/);
+});
