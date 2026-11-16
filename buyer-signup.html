@@ -116,6 +116,7 @@ async function beginSignup(){
   }
   if(data.session){
    const current=await auth.getCurrent();
+   try{await auth.client.functions.invoke('vtg-email',{body:{event:'onboarding'}});}catch(_){/* welcome e-mail is best effort and sent once */}
    setMessage('Your email is confirmed. Opening your VTG account…',true);
    location.href='/buyer-dashboard.html';
    return;

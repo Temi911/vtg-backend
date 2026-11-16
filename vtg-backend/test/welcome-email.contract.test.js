@@ -40,3 +40,10 @@ test('branded template: logo, ID card, steps, escaped content, button limited to
  assert.doesNotMatch(evil,/evil\.example/);
  for(const f of ['vtg-logo-email.png','vtg-logo-email-light.png'])assert.ok(fs.statSync(path.join(root,'assets/email',f)).size>5000,f);
 });
+test('buyer sign-up sends the welcome e-mail on both confirmation paths',()=>{
+  const fs=require('fs'),path=require('path'),assert=require('node:assert/strict');
+  const html=fs.readFileSync(path.join(__dirname,'..','..','buyer-signup.html'),'utf8');
+  const auth=fs.readFileSync(path.join(__dirname,'..','..','vtg-supabase-auth.js'),'utf8');
+  assert.match(html,/if\(data\.session\)\{[\s\S]*?invoke\('vtg-email',\{body:\{event:'onboarding'\}\}/);
+  assert.match(auth,/verifySignupCode[\s\S]*?invoke\('vtg-email', \{ body: \{ event: 'onboarding' \} \}/);
+});
