@@ -20,3 +20,10 @@ test('auth reads the ID tolerantly and the three dashboards display it',()=>{
  for(const f of ['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html'])assert.match(read(f),/vtg-user-id\.js/,f);
  const u=read('vtg-user-id.js');assert.match(u,/\^VTG-\\d\{6,\}\$/);assert.doesNotMatch(u,/innerHTML/);
 });
+test('user ID also appears as a pill in the shared top bar, hidden on phones',()=>{
+  const fs=require('fs'),path=require('path'),assert=require('node:assert/strict');
+  const js=fs.readFileSync(path.join(__dirname,'..','..','vtg-user-id.js'),'utf8');
+  assert.match(js,/querySelector\('\.vf-controls'\)/);
+  assert.match(js,/vtg-uid--bar/);
+  assert.match(js,/@media\(max-width:760px\)\{\.vtg-uid--bar\{display:none\}\}/);
+});

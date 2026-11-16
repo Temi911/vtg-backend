@@ -6,7 +6,9 @@ const css=document.createElement('style');
 css.textContent='.vtg-uid{display:inline-flex;align-items:center;gap:6px;margin-top:4px;padding:2px 8px;border:1px solid var(--line,rgba(127,127,127,.35));border-radius:999px;font-size:11px;line-height:1.6;color:var(--muted,inherit);background:transparent;white-space:nowrap;max-width:100%}'
  +'.vtg-uid b{font-weight:700;letter-spacing:.04em;color:var(--text,inherit)}'
  +'.vtg-uid button{all:unset;cursor:pointer;font-size:11px;font-weight:700;color:#1558D6;padding:0 2px}.vtg-uid button:focus-visible{outline:2px solid #1558D6;outline-offset:2px;border-radius:4px}'
- +'.vtg-uid--top{margin:0 8px 0 0}';
+ +'.vtg-uid--top{margin:0 8px 0 0}'
+ +'.vtg-uid--bar{margin:0 8px 0 0;padding:4px 10px;border-color:#1558D6;font-size:12px;color:#fff}.vtg-uid--bar b{color:#fff}.vtg-uid--bar span{color:#c4d3ea}.vtg-uid--bar button{color:#8db4ff}@media(max-width:760px){.vtg-uid--bar{display:none}}'
+ +'@media(max-width:760px){.vtg-uid--bar{display:none}}';
 document.head.appendChild(css);
 function chip(id,cls){
  const el=document.createElement('span');el.className='vtg-uid'+(cls?' '+cls:'');el.setAttribute('data-vtg-uid-chip','');el.title='Your VTG user ID. Quote it when you contact VTG support.';
@@ -19,6 +21,12 @@ function chip(id,cls){
  });
  el.append(lab,val,btn);return el;
 }
+function mountBar(id,tries){
+ const host=document.querySelector('.vf-controls');          // shared top bar (built by vtg-dashboard-footer.js)
+ if(!host){if(tries<30)setTimeout(()=>mountBar(id,tries+1),150);return;}
+ host.querySelectorAll('.vtg-uid--bar').forEach(n=>n.remove());
+ host.insertBefore(chip(id,'vtg-uid--bar'),host.firstChild);
+}
 function mount(id){
  document.querySelectorAll('[data-vtg-uid-chip]').forEach(n=>n.remove());
  const spots=[];
@@ -30,6 +38,7 @@ function mount(id){
  if(av&&!email&&av.parentElement)spots.push(()=>av.parentElement.insertBefore(chip(id,'vtg-uid--top'),av));
  document.querySelectorAll('[data-vtg-user-id]').forEach(h=>spots.push(()=>h.appendChild(chip(id))));
  spots.forEach(f=>f());
+ mountBar(id,0);
 }
 async function start(){
  try{
