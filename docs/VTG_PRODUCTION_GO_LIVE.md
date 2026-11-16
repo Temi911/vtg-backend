@@ -30,7 +30,8 @@ select
   exists(select 1 from information_schema.columns
          where table_schema='public' and table_name='profiles' and column_name='vtg_user_id') as user_id_col,
   to_regclass('public.vtg_notifications') as notifications_table,
-  exists(select 1 from pg_policies where schemaname='public' and tablename='vtg_inspection_evidence') as evidence_policy;
+  exists(select 1 from pg_policies where schemaname='public' and tablename='vtg_inspection_evidence') as evidence_policy,
+  to_regprocedure('public.vtg_supplier_inspections()') as supplier_inspections_fn;
 ```
 
 ## 2. Migrations, in this order (files in `supabase/migrations/`)
@@ -42,6 +43,7 @@ select
 | 4 | `20261114200000_vtg_google_signup_profile.sql` | `google_rpc` is false. Adds `profiles.onboarding_completed_at` (existing rows backfilled) and `vtg_complete_google_profile`. |
 | 5 | `20261115120000_vtg_user_id.sql` | `user_id_col` is false. Gives every user a permanent ID like `VTG-100001` (existing users numbered in sign-up order) and shows it in the buyer, supplier and bank dashboards. Until it runs, dashboards simply show no ID. |
 | 6 | `20261116100000_vtg_notifications_and_inspection_evidence_access.sql` | `notifications_table` is null or `evidence_policy` is false. Creates the notifications table if missing (no earlier migration did) and lets buyers read the evidence of their own inspections. Idempotent. |
+| 7 | `20261116130000_vtg_supplier_inspection_status.sql` | `select to_regprocedure('public.vtg_supplier_inspections()')` is null. Adds a read-only function so suppliers can see the status of inspections on their goods (no fees or findings). Without it the supplier Quality page's live panel shows "unavailable". Needs `vtg_inspection_requests` to exist. |
 
 Open each file, read it, paste it into the SQL Editor and run it. Re-run the query in section 1 afterwards; all
 values for the features you want should now be non-null / true.
@@ -91,6 +93,7 @@ service) before relying on calls in production.
 ## 7. End-to-end check, one account per role
 - [ ] Buyer: sign in, open dashboard (white logo loader, no black screen), AI assistant answers about your own orders, attach a PDF and an image in AI chat and in a supplier chat, shipment map shows only your shipments with a moving ship.
 - [ ] Supplier: same checks; Google sign-up of a supplier outside China/South Korea is refused.
+- [ ] Supplier (live data): after a buyer places an order with this supplier, the overview shows it under "Orders in progress"; an open buyer request raises "Open RFQs"; a submitted quotation raises the Analytics quotation count; once the order has a shipment with origin and destination ports, the supplier map shows only that route with the sea lane and ship; the Quality page lists any inspection on the goods; the Payments page lists any letter of credit linked to the order.
 - [ ] Bank: same checks; Google bank sign-up creates a pending application, not a bank account.
 - [ ] Click a port and an airport on the Trade Atlas: it zooms in, then shows details and photos.
 - [ ] Confirm no secrets appear in browser dev tools (Network tab) other than the public publishable key.
