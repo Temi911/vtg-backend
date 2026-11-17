@@ -444,6 +444,7 @@ async function bootSupplierWorkspace(){
   const auth=await window.VTG_AUTH_READY;
   const current=await auth.getCurrent();
   if(!current?.user){location.replace('/signin.html?role=supplier&next='+encodeURIComponent('/supplier-dashboard.html'+location.hash));return;}
+  if(current.user.pendingBusinessVerification){location.replace('/application-received.html?role=supplier');return;}
   if(current.user.role!=='supplier'||current.user.accountEnvironment!=='trade'){location.replace('/signin.html?role=supplier&next='+encodeURIComponent('/supplier-dashboard.html'+location.hash));return;}
   db=auth.client;user=current.user;
   const {data:records,error}=await db.from('supplier_workspace_records').select('record_type,payload').eq('user_id',user.id);

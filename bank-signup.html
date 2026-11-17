@@ -66,7 +66,7 @@
 </section>
 
 </main>
-<div id="vtgApplicationReceipt" class="vtg-receipt-backdrop" role="dialog" aria-modal="true" aria-labelledby="vtgReceiptTitle" aria-describedby="vtgReceiptBody"><section class="vtg-receipt"><div class="vtg-receipt-mark" aria-hidden="true">✓</div><h2 id="vtgReceiptTitle">Application received</h2><p id="vtgReceiptStatus" class="vtg-receipt-status" role="status" aria-live="polite"></p><p id="vtgReceiptBody"></p><button id="vtgReceiptContinue" type="button">Continue to VTG</button></section></div>
+<div id="vtgApplicationReceipt" class="vtg-receipt-backdrop" role="dialog" aria-modal="true" aria-labelledby="vtgReceiptTitle" aria-describedby="vtgReceiptBody"><section class="vtg-receipt"><div class="vtg-receipt-mark" aria-hidden="true">✓</div><h2 id="vtgReceiptTitle">Application received</h2><p id="vtgReceiptStatus" class="vtg-receipt-status" role="status" aria-live="polite"></p><p id="vtgReceiptBody"></p><button id="vtgReceiptContinue" type="button">Back to home</button></section></div>
 <div id="vsFooter"></div>
 <script src="/vtg-supabase-auth.js?v=20261115-uid-1"></script>
 <script>
@@ -129,10 +129,10 @@ async function showApplicationReceipt(email,role,emailDelivery){
  document.getElementById('vtgReceiptTitle').textContent='Application successfully received';
  const receiptStatus=document.getElementById('vtgReceiptStatus');receiptStatus.className='vtg-receipt-status '+(emailSent?'sent':'pending');receiptStatus.textContent=emailSent?'EMAIL CONFIRMATION SENT':'APPLICATION RECEIVED — EMAIL NOT CONFIRMED';
  document.getElementById('vtgReceiptBody').textContent=emailSent
-  ?"Thank you for choosing VTG. Your "+(role==='bank'?'bank / financial institution':'supplier / trading company')+" account application has been received and is awaiting administrative review. Our team will review your organisation details and supporting information. We have sent an email to "+email+" with the review process and next steps. Please check your inbox and spam or junk folder. No further action is required unless our team contacts you for clarification or corrected documents. We will notify you by email when a decision has been made. Your account features will be enabled after approval. Please do not submit a duplicate application while this one is pending."
-  :"Thank you for choosing VTG. Your "+(role==='bank'?'bank / financial institution':'supplier / trading company')+" account application has been received and remains pending administrative review. However, VTG could not confirm that the confirmation email was sent. Your application is still in the review queue and has not been cancelled. Please check your registered email later or contact vintageafricatrade@gmail.com for assistance. Do not submit another application while this one is pending.";
+  ?"Thank you for choosing VTG. Your "+(role==='bank'?'bank / financial institution':'supplier / trading company')+" account application has been received. We have sent a confirmation to "+email+" — please check your inbox and your spam or junk folder. Our team will now verify your credentials. Once they are verified we will email you, and your dashboard will be opened to you. Until then the dashboard stays closed. No further action is needed unless we contact you, and please do not submit a duplicate application."
+  :"Thank you for choosing VTG. Your "+(role==='bank'?'bank / financial institution':'supplier / trading company')+" account application has been received and is pending verification. We could not confirm that the confirmation email was sent, but your application has not been cancelled. Once your credentials are verified we will email you, and your dashboard will be opened to you. Please check your registered email later or contact vintageafricatrade@gmail.com. Do not submit another application.";
  overlay.classList.add('open');document.body.style.overflow='hidden';
- document.getElementById('vtgReceiptContinue').onclick=()=>{location.href='/bank-trade-os.html';};
+ document.getElementById('vtgReceiptContinue').onclick=()=>{location.href='/';};
 }
 function setMessage(text,ok){
  message.className='message'+(ok?' ok':'');

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>Application received · VTG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#f3f5f8;color:#18212b;font:15px/1.55 Manrope,system-ui,Arial,sans-serif}
+.top{background:#fff;border-bottom:1px solid #e1e6ed;padding:12px 20px}.top img{height:42px;display:block}
+main{max-width:640px;margin:0 auto;padding:30px 18px 60px}
+.card{background:#fff;border:1px solid #e1e6ed;border-radius:18px;padding:30px 26px;box-shadow:0 12px 35px #18212b0b}
+.mark{width:56px;height:56px;border-radius:50%;background:#e6f4ee;color:#177451;display:grid;place-items:center;font-size:28px;font-weight:800;margin:0 0 14px}
+h1{margin:0 0 6px;font-size:25px;line-height:1.25}
+.lead{margin:0 0 18px;color:#46546a}
+.who{background:#eef4ff;border-radius:12px;padding:12px 14px;margin:0 0 20px;font-size:14px;display:flex;flex-wrap:wrap;gap:6px 18px}
+.who span{color:#5b6677}.who b{color:#18212b;word-break:break-all}
+ol{list-style:none;margin:0 0 22px;padding:0;counter-reset:s}
+li{position:relative;padding:0 0 16px 44px;counter-increment:s}
+li:before{content:counter(s);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:#e4eefc;color:#1558D6;font-weight:800;display:grid;place-items:center;font-size:14px}
+li:not(:last-child):after{content:"";position:absolute;left:14px;top:34px;bottom:4px;width:2px;background:#e1e6ed}
+li.done:before{content:"✓";background:#177451;color:#fff}
+li b{display:block}li span{color:#5b6677;font-size:14px}
+.note{background:#fff7e0;border:1px solid #ffe3a0;border-radius:12px;padding:12px 14px;font-size:14px;color:#6b4a00;margin:0 0 22px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-block;text-align:center;padding:13px 20px;border-radius:12px;font:800 15px Manrope,sans-serif;text-decoration:none;cursor:pointer;border:1.5px solid #1558D6}
+.btn.primary{background:#1558D6;color:#fff;flex:1 1 200px}.btn.ghost{background:#fff;color:#1558D6}
+.fine{margin-top:16px;font-size:12.5px;color:#5b6677}
+</style>
+<link rel="stylesheet" href="/vtg-loader.css?v=20261115-logo-1"><script src="/vtg-loader.js?v=20261115-logo-1" defer></script>
+<script src="/vtg-supabase-auth.js?v=20261115-uid-1"></script>
+</head>
+<body>
+<div class="top"><a href="/" aria-label="VTG home"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a></div>
+<main><section class="card" aria-live="polite">
+ <div class="mark" aria-hidden="true">✓</div>
+ <h1>Application successfully received</h1>
+ <p class="lead" id="lead">Thank you for choosing VTG. Your account application is with our verification team.</p>
+ <div class="who" id="who" hidden><div><span>Account</span> <b id="whoEmail"></b></div><div id="whoIdWrap" hidden><span>VTG User ID</span> <b id="whoId"></b></div></div>
+ <ol>
+  <li class="done"><b>Application received</b><span>Your details are saved and in the VTG review queue.</span></li>
+  <li><b>Check your email</b><span>We have sent a message to your registered email. If you do not see it, check your spam or junk folder.</span></li>
+  <li><b>We verify your credentials</b><span>Our team checks your organisation and supporting information.</span></li>
+  <li><b>Approval email, then your dashboard opens</b><span>Once your credentials are verified we will email you, and your dashboard will be opened to you. Sign in with the same email and password.</span></li>
+ </ol>
+ <p class="note">Your dashboard stays closed until verification is complete. You do not need to submit another application. We will contact you only if we need clarification or corrected documents.</p>
+ <div class="row"><a class="btn primary" href="/">Back to home</a><button class="btn ghost" id="signOut" type="button" hidden>Sign out</button></div>
+ <p class="fine">Questions? Write to vintageafricatrade@gmail.com and quote your VTG User ID.</p>
+</section></main>
+<script>
+(async function(){
+ const $=id=>document.getElementById(id);
+ const want=(new URLSearchParams(location.search).get('role')||'supplier').toLowerCase();
+ const label={supplier:'supplier / trading company',bank:'bank / financial institution'};
+ $('lead').textContent='Thank you for choosing VTG. Your '+(label[want]||label.supplier)+' account application has been received and is with our verification team.';
+ try{
+  const auth=await window.VTG_AUTH_READY;
+  const cur=auth&&auth.getCurrent?await auth.getCurrent():null;
+  const u=cur&&cur.user;
+  if(!u)return; // not signed in: the static message above still applies
+  if(!u.pendingBusinessVerification){ // already approved (or not an applicant): send them where they belong
+   const dest={supplier:'/supplier-dashboard.html',bank:'/bank-trade-os.html',buyer:'/buyer-dashboard.html'}[u.role];
+   if(dest){location.replace(dest);return;}
+  }
+  $('whoEmail').textContent=u.email||'';$('who').hidden=!u.email;
+  if(u.vtgUserId){$('whoId').textContent=u.vtgUserId;$('whoIdWrap').hidden=false;$('who').hidden=false;}
+  $('signOut').hidden=false;
+  $('signOut').onclick=async()=>{try{await auth.signOut();}finally{location.href='/';}};
+ }catch(_){/* the static message is still correct */}
+})();
+</script>
+</body>
+</html>

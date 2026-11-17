@@ -138,6 +138,7 @@ let auth=null;try{auth=JSON.parse(localStorage.getItem('vtg-auth')||'null')}catc
 const token=localStorage.getItem('vtg_access_token')||auth?.accessToken;
 const isPreview=params.get('preview')==='1';
 if(!isPreview&&(!token||String(auth?.user?.role||'').toLowerCase()!=='bank')){location.replace('/signin.html?role=bank&next=%2Fbank-trade-os.html');return}
+if(!isPreview&&auth?.user?.pendingBusinessVerification){location.replace('/application-received.html?role=bank');return}
 if(isPreview){$('dataLabel').textContent='PREVIEW MODE · LOCAL SAMPLE DATA'}
 if(auth?.user){$('avatar').textContent=(auth.user.fullName||auth.user.bankName||'B').trim().slice(0,1).toUpperCase();$('globalNotice').innerHTML='<strong>Prototype / local workflow mode.</strong> The interface is open for bank-role testing, but finance records, messages, LC states and payment milestones on this page are not connected to a live bank system. Do not use it to make a financial decision.'}
 const STORE='vtg-bank-finance-cases-v2',CHECKS='vtg-bank-lc-checks-v1',NOTES='vtg-bank-local-notes-v1',PREF='vtg-bank-workspace-prefs-v1',DOCS='vtg-bank-document-review-v1',PAYMENTS='vtg-bank-payment-planning-v1',AUDIT='vtg-bank-local-audit-v1';
