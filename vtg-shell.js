@@ -123,7 +123,7 @@
     target.setAttribute('data-ready', '1');
     target.innerHTML =
       '<div class="vs-pref"><label for="vsAppearance">Appearance</label><select id="vsAppearance" aria-label="Appearance"><option value="auto">Automatic</option><option value="light">Light</option><option value="dark">Dark</option></select></div>' +
-      '<div class="vs-pref"><label for="vsLanguage">Language</label><select id="vsLanguage" aria-label="Language"><option value="en">English</option><option value="fr">Français</option><option value="zh-CN">中文</option><option value="ko">한국어</option><option value="es">Español</option><option value="ar">العربية</option></select></div>' +
+      '<div class="vs-pref"><label for="vsLanguage">Language</label><select id="vsLanguage" aria-label="Language"><option value="en">English</option><option value="fr">Français</option><option value="pt">Português</option><option value="ar">العربية</option><option value="sw">Kiswahili</option><option value="zh">中文</option><option value="ko">한국어</option><option value="es">Español</option></select></div>' +
       '<div class="vs-pref"><label for="vsVisitorTheme">Theme</label><select id="vsVisitorTheme" aria-label="Theme"><option value="trade-classic">Trade Classic</option><option value="ocean-route">Ocean Route</option><option value="graphite-port">Graphite Port</option></select></div>';
     var appearance = target.querySelector('#vsAppearance');
     var language = target.querySelector('#vsLanguage');
@@ -140,37 +140,14 @@
       try { localStorage.setItem('vtg-visitor-theme-preset', theme.value); } catch (e) {}
       document.dispatchEvent(new CustomEvent('vtg:skinchange', { detail: { skin: theme.value, audience: 'visitor' } }));
     });
-    var cookie = document.cookie.match(/(?:^|;\\s*)googtrans=([^;]+)/);
-    if (cookie) { try { var bits = decodeURIComponent(cookie[1]).split('/'); if (bits[2]) lang = bits[2]; } catch (e) {} }
-    language.value = lang === 'zh' ? 'zh-CN' : lang;
+    function syncLang() { try { language.value = window.VTGLang ? window.VTGLang.current() : (lang === 'zh-CN' ? 'zh' : lang); } catch (e) {} }
+    syncLang();
     language.addEventListener('change', function () {
-      var selected = language.value;
-      try { localStorage.setItem('vtg-language', selected === 'zh-CN' ? 'zh' : selected); } catch (e) {}
-      if (selected === 'en') {
-        document.cookie = 'googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
-        document.cookie = 'googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=' + location.hostname;
-      } else {
-        var value = '/en/' + selected;
-        document.cookie = 'googtrans=' + value + ';path=/;max-age=31536000;SameSite=Lax';
-        document.cookie = 'googtrans=' + value + ';path=/;domain=' + location.hostname + ';max-age=31536000;SameSite=Lax';
-      }
+      if (window.VTGLang) { window.VTGLang.set(language.value); return; }
+      try { localStorage.setItem('vtg-language', language.value); } catch (e) {}
       location.reload();
     });
-    if (!document.getElementById('google_translate_element')) {
-      var hidden = document.createElement('div'); hidden.id = 'google_translate_element'; hidden.setAttribute('aria-hidden', 'true');
-      hidden.style.cssText = 'position:absolute!important;left:-9999px!important;top:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important';
-      document.body.appendChild(hidden);
-    }
-    if (!window.googleTranslateElementInit) {
-      window.googleTranslateElementInit = function () {
-        if (window.google && google.translate && document.getElementById('google_translate_element')) {
-          new google.translate.TranslateElement({ pageLanguage: 'en', includedLanguages: 'en,fr,zh-CN,ko,es,ar', autoDisplay: false }, 'google_translate_element');
-        }
-      };
-      var script = document.createElement('script');
-      script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-      script.async = true; document.head.appendChild(script);
-    }
+    document.addEventListener('vtg:languagechange', syncLang);
   }
 
   apply(resolve(stored()));

@@ -106,12 +106,16 @@
     if(window.VTG_AUTH_READY){Promise.resolve(window.VTG_AUTH_READY).then(cb).catch(function(){});return;}
     if((tries||0)<40)setTimeout(function(){whenAuth(cb,(tries||0)+1)},200);
   }
+  var UNSAVED='vtg-language-unsaved';
   function saveToAccount(lang){
+    store(UNSAVED,'1');   // stays set until the account actually has it (e.g. picked while signed out)
     whenAuth(function(a){
       if(!a||!a.client||!a.getCurrent)return;
       return a.getCurrent().then(function(c){
         var id=c&&c.user&&c.user.id;if(!id)return;
-        return a.client.from('profiles').update({preferred_language:lang}).eq('id',id);
+        return a.client.from('profiles').update({preferred_language:lang}).eq('id',id).then(function(r){
+          if(!r||!r.error)try{localStorage.removeItem(UNSAVED)}catch(_){}
+        });
       });
     });
   }
@@ -131,7 +135,30 @@
       return a.getCurrent().then(function(c){
         var acc=c&&c.user&&c.user.preferredLanguage;if(!acc)return;
         var n=norm(acc);
+        // a choice made on this device that never reached the account (picked while signed out) wins and is saved now
+        if(load(UNSAVED)==='1'&&load(KEY)&&norm(load(KEY))!==n){saveToAccount(norm(load(KEY)));return;}
+        try{localStorage.removeItem(UNSAVED)}catch(_){}
         if(load(ACC)!==n){store(ACC,n);store(KEY,n);store('vtg-supplier-os-language',n);engine(n);announce(n);}
+      });
+    });
+  }
+
+  // Sign-up / profile forms: choosing the preferred language switches the whole page straight away,
+  // and the form starts on the language the visitor already picked on the site.
+  var FORM_SEL='#preferredLanguage,#preferred_language,select[name="preferredLanguage"],select[name="preferred_language"]';
+  function bindForms(){
+    document.addEventListener('change',function(e){
+      var t=e.target;
+      if(t&&t.matches&&t.matches(FORM_SEL)&&!t.__vtgSetting){set(t.value);}
+    },true);
+    var cur=current();
+    Array.prototype.forEach.call(document.querySelectorAll(FORM_SEL),function(sel){
+      if(cur!=='en'&&Array.prototype.some.call(sel.options,function(o){return o.value===cur;})){sel.__vtgSetting=true;sel.value=cur;sel.__vtgSetting=false;}
+    });
+    document.addEventListener('vtg:languagechange',function(ev){
+      var l=ev.detail&&ev.detail.lang;
+      Array.prototype.forEach.call(document.querySelectorAll(FORM_SEL),function(sel){
+        if(l&&sel.value!==l&&Array.prototype.some.call(sel.options,function(o){return o.value===l;})){sel.__vtgSetting=true;sel.value=l;sel.__vtgSetting=false;}
       });
     });
   }
@@ -141,6 +168,7 @@
   css();
   function ready(){
     watch();
+    bindForms();
     var lang=current();
     engine(lang);announce(lang);
     syncAccount();
