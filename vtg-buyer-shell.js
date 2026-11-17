@@ -16,8 +16,8 @@ function esc(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;'
 function say(message){const node=$('toast');if(!node)return;node.textContent=String(message??'');node.classList.add('show');clearTimeout(window.vtgToast);window.vtgToast=setTimeout(()=>node.classList.remove('show'),2800);}
 window.t=t;window.esc=esc;window.say=say;
 function setLang(value){
- lang=dict[value]?value:'en';try{localStorage.setItem('vtg-language',lang)}catch(_){}
- document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+ lang=window.VTGLang?window.VTGLang.normalize(value):(dict[value]?value:'en');try{localStorage.setItem('vtg-language',lang)}catch(_){}   // languages without a built-in dictionary (pt, sw) fall back to English labels, and the page translator covers them
+ document.documentElement.lang=lang==='zh'?'zh-CN':lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';
  document.querySelectorAll('[data-i18n]').forEach(node=>{const key=node.dataset.i18n;if(t(key))node.textContent=t(key)});
  if($('language'))$('language').value=lang;if($('language2'))$('language2').value=lang;
  if($('crumb'))$('crumb').textContent=t(view==='overview'?'overview':view);
@@ -25,10 +25,9 @@ function setLang(value){
 }
 function chooseLanguage(value){
  const next=value==='zh-CN'?'zh':value;setLang(next);
- const code=next==='zh'?'zh-CN':next;
- const apply=()=>{const combo=document.querySelector('.goog-te-combo');if(!combo)return false;combo.value=next==='en'?'':code;combo.dispatchEvent(new Event('change',{bubbles:true}));return true;};
- if(!apply()&&next!=='en')setTimeout(()=>{apply()},600);
+ if(window.VTGLang)window.VTGLang.set(next);
 }
+document.addEventListener('vtg:languagechange',e=>{const l=e.detail&&e.detail.lang;if(l&&l!==lang)setLang(l);});
 function applyTheme(value){if(!['light','dark'].includes(value))return;document.documentElement.dataset.theme=value;document.documentElement.style.colorScheme=value;}
 function resolveBuyerTheme(){
  try{const pref=localStorage.getItem('vtg-theme-preference');if(pref==='light'||pref==='dark')return pref;if(pref==='auto')return(new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark';if(localStorage.getItem('vtg-theme-mode')==='manual')return localStorage.getItem('vtg-theme')||'light';}catch(_){}

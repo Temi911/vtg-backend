@@ -16,14 +16,14 @@ function logoInner(id){
 /* Full logo with a thin red line that keeps circling it until the page has loaded. */
 function logoSvg(){
  const id='vtgl'+(++n);
- return '<svg class="vtg-loader-v vtg-loader-full" viewBox="0 0 320 320" aria-hidden="true" focusable="false">'
+ return '<svg translate="no" class="notranslate vtg-loader-v vtg-loader-full" viewBox="0 0 320 320" aria-hidden="true" focusable="false">'
   +'<circle class="vtg-v-ring-track" cx="160" cy="160" r="150"/><circle class="vtg-v-ring" cx="160" cy="160" r="150" pathLength="100"/>'
   +'<svg x="50" y="129.7" width="220" height="60.5" viewBox="0 0 400 110" overflow="visible">'+logoInner(id)+'</svg></svg>';
 }
 /* Small version (V mark + circling line) for inline "Loading…" placeholders. */
 function vSvg(){
  const id='vtgv'+(++n);
- return '<svg class="vtg-loader-v vtg-loader-mark" viewBox="-20 -16 143 143" aria-hidden="true" focusable="false"><defs>'+PAT.replace('ID',id+'p')+'<clipPath id="'+id+'c"><path d="'+PATH+'"/></clipPath></defs>'
+ return '<svg translate="no" class="notranslate vtg-loader-v vtg-loader-mark" viewBox="-20 -16 143 143" aria-hidden="true" focusable="false"><defs>'+PAT.replace('ID',id+'p')+'<clipPath id="'+id+'c"><path d="'+PATH+'"/></clipPath></defs>'
   +'<g clip-path="url(#'+id+'c)"><rect x="0" y="0" width="105" height="110" fill="url(#'+id+'p)"/></g><path d="'+PATH+'" fill="none" stroke="#b51a18" stroke-width="1.5"/>'
   +'<circle class="vtg-v-ring-track" cx="51.5" cy="55.5" r="66"/><circle class="vtg-v-ring" cx="51.5" cy="55.5" r="66" pathLength="100"/></svg>';
 }

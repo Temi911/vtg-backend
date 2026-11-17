@@ -16,7 +16,7 @@
   var PAT='<pattern id="ID" width="22" height="22" patternUnits="userSpaceOnUse"><rect width="22" height="22" fill="#a20d12"/><path d="M11 2L19 11L11 20L3 11Z" fill="none" stroke="#ef9a88" stroke-width="1.7"/><path d="M11 6L15 11L11 16L7 11Z" fill="none" stroke="#f5c0a9" stroke-width="1.1"/><circle cx="11" cy="11" r="1.5" fill="#f3b49f"/><path d="M1 1L5 5M17 17L21 21M21 1L17 5M5 17L1 21" stroke="#d95545" stroke-width="1"/></pattern>';
   var style=document.createElement('style');
   style.textContent='html.vtg-agreement-checking body{visibility:hidden!important}'
-    +'#vtg-guard-loader{display:none;position:fixed;inset:0;z-index:2147483647;background:#fff;align-items:center;justify-content:center}'
+    +'#vtg-guard-loader{display:none;position:fixed;inset:0;z-index:2147483647;background:#fff;direction:ltr;unicode-bidi:isolate;align-items:center;justify-content:center}'
     +'html.vtg-agreement-checking #vtg-guard-loader{display:flex}'
     +'#vtg-guard-loader>svg{width:min(300px,72vw);height:auto;aspect-ratio:1;overflow:visible}'
     +'#vtg-guard-loader .t{fill:none;stroke:#f3e6e5;stroke-width:1}'
@@ -25,7 +25,7 @@
   document.head.appendChild(style);
   var loader=document.createElement('div');
   loader.id='vtg-guard-loader';loader.setAttribute('role','status');loader.setAttribute('aria-label','Loading');
-  loader.innerHTML='<svg viewBox="0 0 320 320" aria-hidden="true"><circle class="t" cx="160" cy="160" r="150"/><circle class="r" cx="160" cy="160" r="150" pathLength="100"/>'
+  loader.innerHTML='<svg translate="no" class="notranslate" viewBox="0 0 320 320" aria-hidden="true"><circle class="t" cx="160" cy="160" r="150"/><circle class="r" cx="160" cy="160" r="150" pathLength="100"/>'
     +'<svg x="50" y="129.7" width="220" height="60.5" viewBox="0 0 400 110" overflow="visible"><defs>'+PAT.replace('ID','gp')+'<clipPath id="gc"><path d="'+PATH+'"/></clipPath></defs>'
     +'<g clip-path="url(#gc)"><rect width="105" height="110" fill="url(#gp)"/></g><path d="'+PATH+'" fill="none" stroke="#b51a18" stroke-width="1"/>'
     +'<g fill="#b51a18" font-family="Georgia,serif" font-weight="700"><text x="108" y="42" font-size="27" letter-spacing="8">INTAGE</text><text x="104" y="76" font-size="27" letter-spacing="1.8">TRADE GLOBAL</text></g>'
