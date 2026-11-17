@@ -470,43 +470,17 @@
     if (!host) return;
     var wrap = document.createElement('div');
     wrap.className = 'vtg-language-wrap';
-    wrap.innerHTML = '<label for="vtgLanguagePicker">Language</label><select id="vtgLanguagePicker" aria-label="Choose language"><option value="en">English</option><option value="fr">Français</option><option value="zh-CN">中文</option><option value="ko">한국어</option><option value="es">Español</option><option value="ar">العربية</option></select>';
+    wrap.innerHTML = '<label for="vtgLanguagePicker">Language</label><select id="vtgLanguagePicker" aria-label="Choose language"><option value="en">English</option><option value="fr">Français</option><option value="pt">Português</option><option value="ar">العربية</option><option value="sw">Kiswahili</option><option value="zh">中文</option><option value="ko">한국어</option><option value="es">Español</option></select>';
     host.appendChild(wrap);
     var picker = wrap.querySelector('select');
-    var current = 'en';
-    try { current = localStorage.getItem('vtg-language') || 'en'; } catch (_) {}
-    var cookie = document.cookie.match(/(?:^|;\\s*)googtrans=([^;]+)/);
-    if (cookie) { try { var bits = decodeURIComponent(cookie[1]).split('/'); if (bits[2]) current = bits[2]; } catch (_) {} }
-    picker.value = current === 'zh' ? 'zh-CN' : current;
+    function syncPicker() { try { picker.value = window.VTGLang ? window.VTGLang.current() : 'en'; } catch (_) {} }
+    syncPicker();
     picker.addEventListener('change', function () {
-      var selected = picker.value;
-      try { localStorage.setItem('vtg-language', selected === 'zh-CN' ? 'zh' : selected); } catch (_) {}
-      if (selected === 'en') {
-        document.cookie = 'googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
-        document.cookie = 'googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=' + location.hostname;
-      } else {
-        var value = '/en/' + selected;
-        document.cookie = 'googtrans=' + value + ';path=/;max-age=31536000;SameSite=Lax';
-        document.cookie = 'googtrans=' + value + ';path=/;domain=' + location.hostname + ';max-age=31536000;SameSite=Lax';
-      }
+      if (window.VTGLang) { window.VTGLang.set(picker.value); return; }
+      try { localStorage.setItem('vtg-language', picker.value); } catch (_) {}
       location.reload();
     });
-    if (!document.getElementById('google_translate_element')) {
-      var hidden = document.createElement('div'); hidden.id = 'google_translate_element'; hidden.setAttribute('aria-hidden','true');
-      hidden.style.cssText = 'position:absolute!important;left:-9999px!important;top:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important';
-      document.body.appendChild(hidden);
-    }
-    if (!window.googleTranslateElementInit) {
-      window.googleTranslateElementInit = function () {
-        if (window.google && google.translate && document.getElementById('google_translate_element')) {
-          new google.translate.TranslateElement({pageLanguage:'en',includedLanguages:'en,fr,zh-CN,ko,es,ar',autoDisplay:false},'google_translate_element');
-        }
-      };
-      var script = document.createElement('script');
-      script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-      script.async = true;
-      document.head.appendChild(script);
-    }
+    document.addEventListener('vtg:languagechange', syncPicker);
   }
 
   function ensureThemePresets() {
@@ -664,22 +638,13 @@
       document.documentElement.setAttribute('data-vtg-skin',v);try{localStorage.setItem('vtg-visitor-theme-preset',v);}catch(_){}
       document.dispatchEvent(new CustomEvent('vtg:skinchange',{detail:{skin:v,audience:'visitor'}}));
     });
-    var language='en';try{language=localStorage.getItem('vtg-language')||'en';}catch(_){}
-    var cookie=document.cookie.match(/(?:^|;\\s*)googtrans=([^;]+)/);
-    if(cookie){try{var bits=decodeURIComponent(cookie[1]).split('/');if(bits[2])language=bits[2];}catch(_){}}
-    if(language==='zh')language='zh-CN';
-    addPref('vtgFooterLanguage','Language',[['en','English'],['fr','Français'],['zh-CN','中文'],['ko','한국어'],['es','Español'],['ar','العربية']],language,function(v){
-      try{localStorage.setItem('vtg-language',v==='zh-CN'?'zh':v);}catch(_){}
-      if(v==='en'){document.cookie='googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';document.cookie='googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain='+location.hostname;}
-      else{var g='/en/'+v;document.cookie='googtrans='+g+';path=/;max-age=31536000;SameSite=Lax';document.cookie='googtrans='+g+';path=/;domain='+location.hostname+';max-age=31536000;SameSite=Lax';}
+    var language=window.VTGLang?window.VTGLang.current():'en';
+    addPref('vtgFooterLanguage','Language',[['en','English'],['fr','Français'],['pt','Português'],['ar','العربية'],['sw','Kiswahili'],['zh','中文'],['ko','한국어'],['es','Español']],language,function(v){
+      if(window.VTGLang){window.VTGLang.set(v);return;}
+      try{localStorage.setItem('vtg-language',v);}catch(_){}
       location.reload();
     });
-    var hidden=document.getElementById('google_translate_element');
-    if(!hidden){hidden=document.createElement('div');hidden.id='google_translate_element';hidden.setAttribute('aria-hidden','true');hidden.style.cssText='position:absolute!important;left:-9999px!important;top:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important';document.body.appendChild(hidden);}
-    if(!window.googleTranslateElementInit){
-      window.googleTranslateElementInit=function(){if(window.google&&google.translate)new google.translate.TranslateElement({pageLanguage:'en',includedLanguages:'en,fr,zh-CN,ko,es,ar',autoDisplay:false},'google_translate_element');};
-      var script=document.createElement('script');script.src='https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';script.async=true;document.head.appendChild(script);
-    }
+    document.addEventListener('vtg:languagechange',function(e){var el=document.getElementById('vtgFooterLanguage');var l=e&&e.detail&&e.detail.lang;if(el&&l&&el.value!==l)el.value=l;});
   }
 
   function ensureVisitorPaletteCoverage() {

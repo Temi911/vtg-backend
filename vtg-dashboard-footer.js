@@ -25,8 +25,8 @@
   const root=document.documentElement;
   const get=(k,f='')=>{try{return localStorage.getItem(k)||f}catch(e){return f}};
   const set=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
-  const supportedLangs=['en','fr','zh','ko','es','ar'];
-  const langNames={en:'English',fr:'Français',zh:'中文',ko:'한국어',es:'Español',ar:'العربية'};
+  const supportedLangs=['en','fr','pt','ar','sw','zh','ko','es'];
+  const langNames={en:'English',fr:'Français',pt:'Português',ar:'العربية',sw:'Kiswahili',zh:'中文',ko:'한국어',es:'Español'};
   const skins=[
     ['executive','Executive'],['ocean-finance','Ocean Finance'],['emerald-trade','Emerald Trade'],
     ['copper-ledger','Copper Ledger'],['indigo-intel','Indigo Intelligence'],['crimson-ops','Crimson Operations'],
@@ -103,15 +103,16 @@
     if(!supportedLangs.includes(lang))lang='en';
     if(save){['vtg-language','vtg-admin-language','vtg-supplier-os-language','vtg-agent-language','vtg-workspace-language'].forEach(k=>set(k,lang))}
     root.lang=lang==='zh'?'zh-CN':lang;root.dir=lang==='ar'?'rtl':'ltr';
+    if(window.VTGLang)window.VTGLang.set(lang);
     const selects=['language2','languageSelect','settingsLanguage','language'];
     let applied=false;
     for(const id of selects){const el=document.getElementById(id);if(!el)continue;
-      const map={zh:['zh','zh-CN'],ar:['ar'],es:['es'],en:['en'],fr:['fr'],ko:['ko']};
+      const map={zh:['zh','zh-CN'],ar:['ar'],es:['es'],en:['en'],fr:['fr'],ko:['ko'],pt:['pt'],sw:['sw']};
       const option=[...el.options].find(o=>(map[lang]||[lang]).includes(o.value));
       if(option){el.value=option.value;el.dispatchEvent(new Event('change',{bubbles:true}));applied=true;break}
     }
     if(lang==='zh')set('vtg-language','zh');
-    say(applied?'Language preference applied to this workspace.':'Language preference saved. Full interface translation is not yet implemented on this page.');
+    say('Language changed to '+langNames[lang]+'.');
   }
   const mode=get('vtg-theme-preference',get('vtg-theme-mode',get('vtg-supplier-os-theme-mode',get('vtg-ai-theme-mode','auto'))));
   document.getElementById('vf-theme-mode').value=['auto','light','dark'].includes(mode)?mode:'auto';
@@ -123,6 +124,7 @@
   document.getElementById('vf-theme-toggle').addEventListener('click',()=>{const next=(root.dataset.theme||'light')==='dark'?'light':'dark';document.getElementById('vf-theme-mode').value=next;applyTheme(next);say('Appearance set to '+next+'.')});
   document.getElementById('vf-skin').addEventListener('change',e=>{applySkin(e.target.value);say('Workspace theme preference saved.')});
   document.getElementById('vf-language').addEventListener('change',e=>applyLanguage(e.target.value));
+  document.addEventListener('vtg:languagechange',e=>{const l=e.detail&&e.detail.lang,el=document.getElementById('vf-language');if(el&&l&&el.value!==l)el.value=l});
   ['appearance','settingsTheme'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('change',()=>{const v=el.value;if(['auto','light','dark'].includes(v)){document.getElementById('vf-theme-mode').value=v;applyTheme(v)}})});
   ['skinSelect','workspaceSkin','settingsSkin'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('change',()=>{if(skins.some(s=>s[0]===el.value)){document.getElementById('vf-skin').value=el.value;applySkin(el.value)}})});
   ['language','language2','languageSelect','settingsLanguage'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('change',()=>{const map={'zh-CN':'zh'};const v=map[el.value]||el.value;if(supportedLangs.includes(v)){document.getElementById('vf-language').value=v;['vtg-language','vtg-admin-language','vtg-supplier-os-language','vtg-workspace-language'].forEach(k=>set(k,v));root.lang=v==='zh'?'zh-CN':v;root.dir=v==='ar'?'rtl':'ltr'}})});
