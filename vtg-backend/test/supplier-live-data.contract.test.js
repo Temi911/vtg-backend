@@ -23,3 +23,10 @@ test('supplier page does not claim records are only stored in the browser',()=>{
   assert.doesNotMatch(html,/<small>Local entries<\/small>/);
   assert.doesNotMatch(html,/已保存至此浏览器|이 브라우저에 저장|Enregistré dans ce navigateur|enregistrées dans ce navigateur/);
 });
+test('supplier RFQs page lets suppliers answer real buyer quote requests',()=>{
+  assert.match(html,/id="liveQuotesRows"/);
+  assert.match(html,/id="liveQuotesNotice"/);
+  assert.match(html,/vtg-supplier-quotes-supabase\.js/);
+  const mod=fs.readFileSync(path.join(root,'vtg-supplier-quotes-supabase.js'),'utf8');
+  assert.match(mod,/update\(changes\)\.eq\('id',id\)\.eq\('supplier_id',supplierId\)\.eq\('status','requested'\)/);
+});
