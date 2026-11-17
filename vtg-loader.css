@@ -16,3 +16,5 @@
 .vtg-loader-inline .vtg-loader-mark{width:28px;height:28px;overflow:visible}
 .vtg-loader-inline .vtg-v-ring{stroke-width:4.5}.vtg-loader-inline .vtg-v-ring-track{stroke-width:2.5}
 @media (prefers-reduced-motion:reduce){.vtg-v-ring{animation-duration:3.2s}}
+
+.vtg-loader-v,.vtg-loader-inline .vtg-loader-v{direction:ltr;unicode-bidi:isolate}
