@@ -180,6 +180,7 @@ async function init(){
   if(currentUser.agreementRequired){location.replace('/signup-agreement.html?next='+encodeURIComponent(location.pathname+location.search));return;}
   verificationStatus=currentUser.businessVerificationStatus||'pending';
   if(!['supplier','bank','agent','admin'].includes(role)){location.replace(role==='buyer'?'/buyer-dashboard.html':'/');return;}
+  if(currentUser.pendingBusinessVerification&&['supplier','bank'].includes(role)){location.replace('/application-received.html?role='+encodeURIComponent(role));return;}
   if(role==='supplier'){location.replace('/supplier-dashboard.html#page-profile');return;}
   if(role==='bank'){location.replace('/bank-trade-os.html');return;}
   if(role==='buyer'){location.replace('/buyer-dashboard.html');return;}
