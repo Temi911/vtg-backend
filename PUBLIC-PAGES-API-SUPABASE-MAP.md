@@ -11,7 +11,7 @@ The public site is a Supabase-backed application with some legacy Express source
 
 **Cutover update — 18 November 2026:** The Vercel API catch-all no longer points to Railway. It now points to the active Supabase `vtg-api` Edge Function. The live `vtg-api` source has been copied into `supabase/functions/vtg-api/index.ts` so the deployed handler is tracked in GitHub.
 
-This removes Railway from Vercel API routing, but it does **not** mean every legacy endpoint has Supabase parity. The catch-all function currently implements a limited set of routes (profile, product discovery/publishing, orders, role requests, shipments, letters of credit, conversations/messages, documents and a health check). Unsupported paths return a Supabase 404 instead of silently reaching Railway. Continue migrating and testing the remaining endpoint groups before calling the backend migration complete.
+This removes Railway from Vercel API routing, but it does **not** mean every legacy endpoint has Supabase parity. The catch-all function currently implements a limited set of routes (profile, product discovery/publishing, orders, role requests, shipments, letters of credit, conversations/messages, documents, Africa Markets planning catalogue and a health check). Unsupported paths return a Supabase 404 instead of silently reaching Railway. Continue migrating and testing the remaining endpoint groups before calling the backend migration complete.
 
 ## 1. Routing truth from `vercel.json`
 
@@ -20,6 +20,11 @@ Current explicit Supabase rewrites:
 | Vercel source | Supabase destination | Notes |
 |---|---|---|
 | `/api/partnerships` | `vtg-partnerships` | Public intake; validated, rate-limited, private database persistence; email notification is best-effort |
+| `/api/africa/markets` | `vtg-api/api/africa/markets` | Explicit public planning/reference catalogue; country query returns one market |
+| `/api/market-intelligence/tools/contract` and `/tools/landed-cost/estimate` | `vtg-market-intelligence/tools/*` | Authenticated active trade-role endpoints |
+| `/api/market-intelligence/trade` | `vtg-market-intelligence/trade` | Authenticated UN Comtrade historical trade-statistics preview |
+| `/api/contact` | `vtg-contact-enquiries` | Public consent-based enquiry intake with private storage |
+| `/api/contact/admin` and `/api/contact/admin/:id` | `vtg-contact-enquiries/admin*` | Staff-admin-only inbox read and status update |
 | `/api/admin/account-support` | `vtg-account-support/admin` | Explicit Supabase route |
 | `/api/agent/:path*` | `vtg-inspection-workflow/agent/:path*` | Explicit Supabase route |
 | `/api/inspections/requests/agent` | `vtg-inspection-workflow/requests/agent` | Explicit Supabase route |
@@ -45,15 +50,16 @@ Trade Feed requests are routed to `vtg-marketplace`; unmatched API calls reach S
 | Trade Feed public read | `/api/marketplace/feed` | Supabase Edge Function `vtg-marketplace` | Public, read-only; publication-aware RLS; public author projection exposes only active feed authors |
 | Trade Feed signed-in posts/comments/reactions/follows/media | `/api/marketplace/feed/account`, `/api/marketplace/feed/:id/comments`, `/api/marketplace/feed/:id/reactions`, `/api/marketplace/users/*`, `/api/media/feed/:id` | Supabase Edge Function `vtg-marketplace` plus `vtg-trade-feed-media` Storage bucket | Implemented in Supabase; authenticated writes use caller JWT and RLS; no service-role key in the function. Runtime authenticated upload/post/comment tests still required |
 | Trade Feed news | `GET /api/market-intelligence/news`; compatibility alias `GET /api/integrations/news` | Supabase `vtg-market-intelligence/news` public GET route | Google News RSS primary with GDELT fallback; trusted-domain filtering, seven-day freshness cutoff and explicit feed timestamp caveat |
-| Africa Markets catalogue | `/api/africa/markets` | Catch-all reaches Supabase `vtg-api`; this route is not yet implemented there | Port the existing planning/reference catalogue into Supabase or return a documented not-implemented response; do not label it live market intelligence |
+| Africa Markets catalogue | `GET /api/africa/markets`; optional `?country=NG` | Explicit Supabase rewrite to `vtg-api/api/africa/markets` | Implemented and live-tested: six static planning/reference markets; summary and Nigeria lookup return 200; unknown country returns 404; `liveProviderData:false` is preserved |
 | Inspection request quote/create | `/api/inspections/quote`, `/api/inspections/requests`, `/api/inspections/mine` | Explicit Supabase rewrites to `vtg-inspection-workflow` | Route mapping is in place; authenticated request, pricing, ownership and agent workflow acceptance tests remain |
 | Inspection payment | `/api/inspections/requests/:id/payment/initialize`, `/api/inspections/payment/verify`, `/api/webhooks/paystack` | Explicit Supabase rewrites to `vtg-inspection-payments` | Route mapping is in place; live Paystack initialization, signed webhook verification, idempotency and callback acceptance still need testing |
 | Inspection agent actions | `/api/inspections/requests/agent`, `/api/inspections/requests/:id/:action`, `/api/agent/*` | Explicit Supabase rewrites | Supabase workflow function exists; test role/ownership, assignment, evidence storage and state transitions |
 | Partnership application | `POST /api/partnerships` | Supabase Edge Function `vtg-partnerships` | Private `vtg_partnership_proposals` table; honeypot, input validation and per-IP rate limit. Email uses Resend when configured; otherwise the proposal is still saved and the response says notification is unavailable. Live form/email acceptance remains to be tested |
 | Public VTG AI floating chat | `POST /api/ai/public-chat` | No matching explicit rewrite; no matching public route found in the inspected Express route mounts | Not proven connected. Existing `vtg-ai-assistant` function is for assistant chat workflows but is not automatically a public endpoint; design a safe public endpoint/rate-limit model |
 | Public market intelligence tools | `GET /api/market-intelligence/tools/contract`, `POST /api/market-intelligence/tools/landed-cost/estimate` | Explicit Supabase rewrites to `vtg-market-intelligence/tools/*` | Implemented in Edge Function v16+; authenticated active buyer, supplier, bank or admin; landed cost remains indicative and uses user-supplied rates |
+| Market trade statistics | `GET /api/market-intelligence/trade` | Explicit Supabase rewrite to `vtg-market-intelligence/trade` | Implemented; authenticated active trade roles; UN Comtrade preview is historical statistics, not a live quote |
 | Trade Atlas | Bundled port/airport reference data, map libraries and local map scripts | Mostly static reference data; map tiles/geocoding are external browser dependencies | Not a live port-operation or verified supplier-location feed; distinguish static reference locations from operational status |
-| Contact | `POST /api/contact`; staff inbox `GET /api/contact/admin` | Supabase Edge Function `vtg-contact-enquiries` | Private RLS table, consent, honeypot, hashed-IP rate limit, optional Resend notification and staff-only inbox; live form/email acceptance still required |
+| Contact | `POST /api/contact`; staff inbox `GET /api/contact/admin` | Supabase Edge Function `vtg-contact-enquiries` | Private RLS table, consent, honeypot, hashed-IP rate limit, optional Resend notification and staff-only inbox API; public page is deployed, but POST and staff inbox need authenticated acceptance tests |
 | Sourcing page | Static informational page in the inspected source | No form/API submission found in first pass | Needs a real request workflow; marketplace quote RPC can be reused only where its data model genuinely fits |
 | Product verification | Static informational page in first pass | No live lookup route found | Needs a defined verification record/provider and secure result policy before promising live verification |
 
