@@ -101,7 +101,7 @@ async function confirm(req: Request, token: string) {
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers });
   const url = new URL(req.url);
-  if (req.method === "POST" && url.pathname.endsWith("/")) return await issue(req);
+  if (req.method === "POST" && !url.pathname.endsWith("/confirm")) return await issue(req);
   if (req.method === "GET" && url.pathname.endsWith("/confirm")) return await confirm(req, url.searchParams.get("token") ?? "");
   if (req.method === "POST" && url.pathname.endsWith("/confirm")) {
     const type = req.headers.get("content-type") ?? "";
