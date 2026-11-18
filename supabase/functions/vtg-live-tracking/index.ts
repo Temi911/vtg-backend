@@ -158,7 +158,33 @@ async function main(req: Request) {
   try {
     const { user } = await buyerContext(req);
     if (action === "status") {
-      return json({ ok:true, mode:"provider-readiness", cargo:{ vizion:configured(cargoEnv("vizion")), tracking_one:configured(cargoEnv("tracking_one")) }, ais:{ vesselfinder:configured(aisEnv("vesselfinder")), marinetraffic:configured(aisEnv("marinetraffic")) }, liveDataEnabled:false, note:"Provider credentials and endpoint configuration are required before live requests can run." });
+      const cargoReady = (provider: CargoProvider) => {
+        const cfg = cargoEnv(provider);
+        return configured(cfg) && Boolean(env(cfg.pollPath));
+      };
+      const cargo = {
+        vizion: cargoReady("vizion"),
+        tracking_one: cargoReady("tracking_one"),
+      };
+      const ais = {
+        vesselfinder: configured(aisEnv("vesselfinder")),
+        marinetraffic: configured(aisEnv("marinetraffic")),
+      };
+      const liveCargoEnabled = Object.values(cargo).some(Boolean);
+      const liveAisEnabled = Object.values(ais).some(Boolean);
+      const liveDataEnabled = liveCargoEnabled || liveAisEnabled;
+      return json({
+        ok: true,
+        mode: liveDataEnabled ? "live-provider-ready" : "provider-readiness",
+        cargo,
+        ais,
+        liveCargoEnabled,
+        liveAisEnabled,
+        liveDataEnabled,
+        note: liveDataEnabled
+          ? "Only the providers marked available are configured for live requests. Each shipment and vessel still requires its own valid reference."
+          : "No complete cargo or AIS provider configuration is available. References may be saved for setup, but no live tracking request will be sent.",
+      });
     }
     if (action === "register-reference") {
       const shipmentId = str(body.shipment_id);
@@ -173,7 +199,7 @@ async function main(req: Request) {
       if(error) throw error;
       const cfg=cargoEnv(provider);
       if(mode==="sandbox") return json({ok:true,reference_id:ref.id,provider_status:"sandbox-ready",providerConfigured:false,mode:"sandbox",message:"Reference saved for sandbox validation. No external provider was contacted."});
-      if(!configured(cfg)) return json({ok:true,reference_id:ref.id,provider_status:"pending_provider",providerConfigured:false,mode:"live",message:"Reference saved. Provider API access is not configured yet; no live request was sent."});
+      if(!configured(cfg) || !env(cfg.pollPath)) return json({ok:true,reference_id:ref.id,provider_status:"pending_provider",providerConfigured:false,mode:"live",message:"Reference saved. Complete provider registration and polling endpoints are not configured; no live request was sent."});
       try {
         const url=new URL(env(cfg.path),env(cfg.base));
         const data=await providerRequest(url,cfg,"POST",{reference:value,reference_type:type,carrier_code:row.carrier_code});
