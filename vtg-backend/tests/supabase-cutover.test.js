@@ -103,7 +103,7 @@ test('Trade Feed routes and handlers use Supabase only', () => {
     assert.ok(fn.includes(fragment), 'missing Trade Feed handler: ' + fragment);
   }
   for (const table of ['vtg_trade_posts', 'vtg_trade_post_comments', 'vtg_trade_post_reactions', 'vtg_user_follows', 'vtg_trade_post_media']) assert.ok(fn.includes(table));
-  assert.match(fn, /vtg_public_trade_profiles/);
+  assert.match(fn, /from\("profiles"\)\.select\("id,full_name,role,country"\)/);
   assert.doesNotMatch(fn, /service_role|SUPABASE_SERVICE_ROLE_KEY/);
 });
 
@@ -112,9 +112,12 @@ test('Trade Feed policies enforce public-only reads and role-gated publishing', 
   const roles = readRoot('supabase/migrations/20261118092545_harden_vtg_trade_feed_post_roles.sql');
   const constraints = readRoot('supabase/migrations/20261118092753_align_vtg_trade_post_constraints.sql');
   const cleanup = readRoot('supabase/migrations/20261118092840_scope_public_trade_profiles_and_remove_duplicate_index.sql');
+  const profileRls = readRoot('supabase/migrations/20261118092959_trade_feed_profile_labels_rls_and_index_hardening.sql');
   assert.match(publicReads, /drop policy if exists "Signed-in members can read trade posts"/i);
   assert.match(publicReads, /security_barrier=true/i);
   assert.match(roles, /post_type in \('advert','product'\) and p.role in \('supplier','admin'\)/i);
   assert.match(constraints, /<= 5000/);
   assert.match(cleanup, /drop index if exists public\\.vtg_trade_post_comments_post_idx/i);
+  assert.match(profileRls, /grant select \(id,full_name,role,country\) on public\\.profiles to anon/i);
+  assert.match(profileRls, /Public can read active Trade Feed author labels/i);
 });
