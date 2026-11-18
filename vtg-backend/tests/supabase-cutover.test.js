@@ -61,3 +61,33 @@ test('notifications and shipment-event compatibility routes use authenticated Su
   assert.match(notificationFn, /eq\("user_id", user\.id\)/);
   assert.match(notificationFn, /pathMatch/);
 });
+
+test('inspection buyer lifecycle and Paystack routes are routed to Supabase Edge Functions', () => {
+  const config = JSON.parse(readRoot('vercel.json'));
+  const expected = new Map([
+    ['/api/inspections/requests/:id/payment/initialize', /vtg-inspection-payments\\/:id\\?action=initialize/],
+    ['/api/inspections/payment/verify', /vtg-inspection-payments\\?action=verify/],
+    ['/api/webhooks/paystack', /vtg-inspection-payments\\/webhook/],
+    ['/api/inspections/admin/pricing', /vtg-inspection-workflow\\/admin\\/pricing/],
+    ['/api/inspections/requests', /vtg-inspection-workflow\\/requests$/],
+    ['/api/inspections/quote', /vtg-inspection-workflow\\/quote$/],
+    ['/api/inspections/mine', /vtg-inspection-workflow\\/mine$/],
+    ['/api/inspections/pricing', /vtg-inspection-workflow\\/pricing$/],
+  ]);
+  for (const [source, pattern] of expected) {
+    const route = config.rewrites.find(x => x.source === source);
+    assert.ok(route, 'missing rewrite: ' + source);
+    assert.match(route.destination, pattern);
+  }
+});
+
+test('no API rewrite sends VTG traffic to Railway', () => {
+  const config = JSON.parse(readRoot('vercel.json'));
+  for (const route of config.rewrites.filter(x => x.source.startsWith('/api/'))) {
+    assert.match(route.destination, /lxrurbdzphqvkjprlfuv\\.supabase\\.co\\/functions\\/v1\\//);
+    assert.doesNotMatch(route.destination, /railway\\.app/i);
+  }
+  const fallback = config.rewrites.find(x => x.source === '/api/:path*');
+  assert.equal(fallback.destination, 'https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-api/api/:path*');
+});
+
