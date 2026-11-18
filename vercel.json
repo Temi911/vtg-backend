@@ -129,6 +129,14 @@
       "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-api/api/auth/me"
     },
     {
+      "source": "/api/preferences/language",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-api/api/preferences/language"
+    },
+    {
+      "source": "/api/preferences",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-api/api/preferences"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-api/api/:path*"
     },
