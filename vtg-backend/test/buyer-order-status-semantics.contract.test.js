@@ -19,7 +19,7 @@ test('buyer overview values only confirmed trade orders, not pending quote reque
 test('buyer orders distinguish pending quotation requests from confirmed purchases',()=>{
  assert.match(orders,/QUOTE REQUEST PENDING/);
  assert.match(orders,/Supplier price not agreed/);
- assert.match(orders,/Quotation request · /);
+ assert.match(orders,/Quote request · /);
  assert.match(orders,/Shipment tracking becomes relevant after the supplier quotation is accepted/);
  assert.match(html,/Trade records/);
 });
