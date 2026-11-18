@@ -1,8 +1,12 @@
 /* VTG shared language controller for the buyer, supplier and bank dashboards.
  *
  * - One list of languages (the same ones offered at sign-up).
- * - The account's preferred_language (chosen at sign-up) is applied on first load and whenever it changes.
- * - Choosing a language in a dashboard is remembered on this device and saved to the account.
+ * - Two separate scopes, each remembered on this device until the user picks another language:
+ *     website   (public pages, sign-up, sign-in...)  -> 'vtg-site-language'; changes the whole website only
+ *     dashboards (buyer, supplier, bank, staff...)   -> 'vtg-language';      changes the whole dashboard only
+ *   A choice in one scope never changes the other.
+ * - In the dashboards the account's preferred_language (chosen at sign-up) is the starting language, and
+ *   choosing a language there is saved to the account.
  * - Sets <html lang/dir> (Arabic is right-to-left) and drives the full-page translator.
  * - The logo, the loading ring and VTG IDs are never translated or mirrored.
  * Dashboards listen for the `vtg:languagechange` event to refresh their own built-in dictionaries.
@@ -14,7 +18,9 @@
     ar:{g:'ar',name:'العربية',rtl:true},sw:{g:'sw',name:'Kiswahili'},
     zh:{g:'zh-CN',name:'中文'},ko:{g:'ko',name:'한국어'},es:{g:'es',name:'Español'}
   };
-  var KEY='vtg-language',ACC='vtg-language-account';
+  var DASH_RX=/(?:^|\/)[^\/]*dashboard[^\/]*\.html$|(?:^|\/)(?:bank-trade-os|trade-os|inspection-admin|admin-os)\.html$/i;
+  var IS_DASH=DASH_RX.test(location.pathname||'');
+  var KEY=IS_DASH?'vtg-language':'vtg-site-language',ACC='vtg-language-account';
   var GOOGLE_LIST='en,fr,pt,ar,sw,zh-CN,ko,es';
   // Everything that must stay exactly as designed in every language.
   var PROTECT='.vtg-loader svg,.vtg-loader-mark,.vtg-loader-inline svg,#vtg-guard-loader svg,.vtg-header-brand,.brand img,img.logo,.vtg-uid,[data-vtg-uid-chip],#google_translate_element';
@@ -123,19 +129,22 @@
   // Called when the user picks a language in a dashboard.
   function set(value){
     var lang=norm(value);
-    store(KEY,lang);store(ACC,lang);store('vtg-supplier-os-language',lang);
-    engine(lang);announce(lang);saveToAccount(lang);
+    store(KEY,lang);
+    if(IS_DASH){store(ACC,lang);store('vtg-supplier-os-language',lang);}
+    engine(lang);announce(lang);
+    if(IS_DASH)saveToAccount(lang);     // dashboard choices are saved to the account; website choices stay on this device
     return lang;
   }
 
-  // The account's language (chosen at sign-up) wins when it differs from what this device last synced.
+  // Dashboards only: the account's language (chosen at sign-up) is the starting language.
   function syncAccount(){
+    if(!IS_DASH)return;
     whenAuth(function(a){
       if(!a||!a.getCurrent)return;
       return a.getCurrent().then(function(c){
         var acc=c&&c.user&&c.user.preferredLanguage;if(!acc)return;
         var n=norm(acc);
-        // a choice made on this device that never reached the account (picked while signed out) wins and is saved now
+        // a dashboard choice that never reached the account wins and is saved now
         if(load(UNSAVED)==='1'&&load(KEY)&&norm(load(KEY))!==n){saveToAccount(norm(load(KEY)));return;}
         try{localStorage.removeItem(UNSAVED)}catch(_){}
         if(load(ACC)!==n){store(ACC,n);store(KEY,n);store('vtg-supplier-os-language',n);engine(n);announce(n);}

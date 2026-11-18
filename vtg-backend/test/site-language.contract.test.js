@@ -34,3 +34,33 @@ test('logo and loading ring stay protected on every page that now carries the mo
   const j=read('vtg-lang.js');
   for(const s of ['.vtg-loader svg','#vtg-guard-loader svg','.vtg-header-brand'])assert.ok(j.includes(s),s);
 });
+
+test('website and dashboards keep separate saved languages',()=>{
+  const j=read('vtg-lang.js');
+  assert.ok(j.includes("'vtg-site-language'")&&j.includes("'vtg-language'"));
+  assert.match(j,/IS_DASH\?'vtg-language':'vtg-site-language'/);
+  // website choices never touch the account or the dashboard key
+  assert.match(j,/if\(IS_DASH\)\{store\(ACC,lang\)/);
+  assert.match(j,/if\(IS_DASH\)saveToAccount\(lang\)/);
+  assert.match(j,/function syncAccount\(\)\{\s*if\(!IS_DASH\)return;/);
+});
+test('dashboard pages are recognised by name',()=>{
+  const j=read('vtg-lang.js');
+  const m=j.match(/var DASH_RX=\/(.*)\/i;/);assert.ok(m);
+  const rx=new RegExp(m[1].replace(/\\\//g,'/'),'i');
+  for(const p of ['/buyer-dashboard.html','/supplier-dashboard.html','/bank-trade-os.html','/workforce-dashboard.html','/agent-network-dashboard.html','/admin-os.html'])assert.ok(rx.test(p),p);
+  for(const p of ['/frontend-v3.html','/signin.html','/buyer-signup.html','/marketplace.html','/terms.html'])assert.ok(!rx.test(p),p);
+});
+test('public controls and the home page save to the website key, not the dashboard key',()=>{
+  for(const f of ['vtg-shell.js','vtg-site-navigation.js'])assert.ok(!/setItem\('vtg-language'/.test(read(f)),f);
+  assert.ok(!read('frontend-v3.html').includes("selected==='zh-CN'?'zh':selected"));
+  assert.ok(!read('frontend-v3.html').includes('translate_a/element.js'));
+});
+test('staff dashboards use the shared module and offer all 8 languages',()=>{
+  for(const f of ['workforce-dashboard.html','agent-network-dashboard.html']){
+    const h=read(f);assert.ok(!h.includes('translate_a/element.js'),f);assert.ok(h.includes('vtg-dashboard-language')&&h.includes('Kiswahili')&&h.includes('Português'),f);
+  }
+});
+test('sign-in refresh does not overwrite a dashboard choice that has not reached the account',()=>{
+  assert.match(read('vtg-supabase-auth.js'),/vtg-language-unsaved/);
+});
