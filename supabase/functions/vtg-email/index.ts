@@ -176,8 +176,8 @@ Deno.serve(async (req: Request) => {
 
     // Issue a fresh Supabase token for the welcome email. The database stores only its SHA-256 hash.
     let preferenceUrl: string | undefined;
-    const appUrl = Deno.env.get("VTG_APP_URL")?.replace(/\/$/, "");
-    if (appUrl) {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")?.replace(/\/$/, "");
+    if (supabaseUrl) {
       const rawToken = [...crypto.getRandomValues(new Uint8Array(32))]
         .map((value) => value.toString(16).padStart(2, "0")).join("");
       const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(rawToken));
@@ -187,7 +187,7 @@ Deno.serve(async (req: Request) => {
         expires_at: new Date(Date.now() + 7 * 86400_000).toISOString(),
       });
       if (tokenError) return out({ error: "Could not prepare the email preference link." }, 500);
-      preferenceUrl = appUrl + "/api/auth/email-preferences/" + rawToken;
+      preferenceUrl = supabaseUrl + "/functions/v1/vtg-email-preferences/confirm?token=" + rawToken;
     }
 
     const result = await deliverTrackedEmail(admin, {
