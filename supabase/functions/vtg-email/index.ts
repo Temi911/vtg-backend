@@ -17,6 +17,7 @@ type VtgEmailInput = {
   idempotencyKey?: string;
   highlight?: { label: string; value: string };
   rich?: RichContent;
+  preferenceUrl?: string;
 };
 
 async function sendVtgEmail(input: VtgEmailInput) {
@@ -26,7 +27,11 @@ async function sendVtgEmail(input: VtgEmailInput) {
   if (!apiKey || !from) throw new Error("VTG email service is not configured. Set RESEND_API_KEY and VTG_EMAIL_FROM.");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.to)) throw new Error("A valid recipient email is required.");
 
-  const html = renderVtgEmail({ heading: input.heading, body: input.body, rich: input.rich, highlight: input.highlight, ctaLabel: input.ctaLabel, ctaUrl: input.ctaUrl, appUrl });
+  const baseHtml = renderVtgEmail({ heading: input.heading, body: input.body, rich: input.rich, highlight: input.highlight, ctaLabel: input.ctaLabel, ctaUrl: input.ctaUrl, appUrl });
+  const preferenceFooter = input.preferenceUrl
+    ? `<div style="max-width:600px;margin:0 auto;padding:14px 24px 24px;text-align:center;font:12px/1.6 Arial,sans-serif;color:#68717d">You can <a href="${escapeHtml(input.preferenceUrl)}" style="color:#702a30;text-decoration:underline">manage your VTG email preferences</a> at any time. Essential account, security and transaction emails are unaffected.</div>`
+    : "";
+  const html = baseHtml.replace("</body>", preferenceFooter + "</body>");
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -39,7 +44,7 @@ async function sendVtgEmail(input: VtgEmailInput) {
       to: [input.to],
       subject: input.subject,
       html,
-      text: `${input.heading}\n\n${input.body}${input.highlight?.value ? `\n\n${input.highlight.label}: ${input.highlight.value}` : ""}\n\nSign in to your VTG workspace: ${appUrl}`,
+      text: `${input.heading}\n\n${input.body}${input.highlight?.value ? `\n\n${input.highlight.label}: ${input.highlight.value}` : ""}\n\nSign in to your VTG workspace: ${appUrl}${input.preferenceUrl ? `\n\nManage your VTG email preferences: ${input.preferenceUrl}` : ""}`,
     }),
   });
   const result = await response.json().catch(() => ({}));
@@ -149,10 +154,33 @@ Deno.serve(async (req: Request) => {
         highlight = vtgUserId ? { label: "Your VTG User ID", value: vtgUserId } : undefined;
         if (vtgUserId) message += "\n\n" + userIdSentence(vtgUserId);
     }
+    // Avoid minting extra preference tokens when this idempotent onboarding email was already delivered.
+    const priorDelivery = await admin.from("vtg_email_deliveries").select("status,resend_message_id")
+      .eq("event_key", eventKey).maybeSingle();
+    if (priorDelivery.data?.status === "sent") {
+      return out({ ok: true, email: { sent: true, duplicate: true, id: priorDelivery.data.resend_message_id } });
+    }
+
+    // Issue a fresh Supabase token for the welcome email. The database stores only its SHA-256 hash.
+    let preferenceUrl: string | undefined;
+    const appUrl = Deno.env.get("VTG_APP_URL")?.replace(/\\/$/, "");
+    if (appUrl) {
+      const rawToken = [...crypto.getRandomValues(new Uint8Array(32))]
+        .map((value) => value.toString(16).padStart(2, "0")).join("");
+      const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(rawToken));
+      const tokenHash = [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, "0")).join("");
+      const { error: tokenError } = await admin.from("vtg_email_preference_tokens").insert({
+        token_hash: tokenHash, user_id: user.id,
+        expires_at: new Date(Date.now() + 7 * 86400_000).toISOString(),
+      });
+      if (tokenError) return out({ error: "Could not prepare the email preference link." }, 500);
+      preferenceUrl = appUrl + "/api/auth/email-preferences/" + rawToken;
+    }
+
     const result = await deliverTrackedEmail(admin, {
       userId: user.id, to: user.email, eventType, eventKey,
       idempotencyKey: "vtg-" + eventKey,
-      subject, heading, body: message, highlight, rich,
+      subject, heading, body: message, highlight, rich, preferenceUrl,
       ctaLabel: isPendingApplicant ? "Open VTG" : "Open my VTG dashboard", ctaUrl: (Deno.env.get("VTG_APP_URL") || "https://vtg-staging.vercel.app") + "/",
     });
     return out({ ok: true, email: result });
