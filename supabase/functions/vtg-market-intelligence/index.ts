@@ -132,11 +132,16 @@ async function loadTradeStatistics(url:URL){
 
 
 function decodeXml(value:string){
-  return value.replace(/<!\\[CDATA\\[|\\]\\]>/g,"").replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&#(\\d+);/g,(_,n)=>String.fromCodePoint(Number(n))).replace(/&#x([0-9a-f]+);/gi,(_,n)=>String.fromCodePoint(parseInt(n,16))).trim();
+  return value.replaceAll("<![CDATA[","").replaceAll("]]>","").replaceAll("&amp;","&").replaceAll("&lt;","<").replaceAll("&gt;",">").replaceAll("&quot;",'"').replaceAll("&#39;","'").replaceAll("&apos;","'").trim();
 }
 function rssTag(block:string,name:string){
-  const match=block.match(new RegExp("<"+name+"\\\\b[^>]*>([\\\\s\\\\S]*?)<\\\\/"+name+">","i"));
-  return match?decodeXml(match[1]):"";
+  const open="<"+name+">",close="</"+name+">",start=block.indexOf(open);
+  if(start<0)return "";
+  const end=block.indexOf(close,start+open.length);
+  return end<0?"":decodeXml(block.slice(start+open.length,end));
+}
+function isHttpUrl(value:string){
+  try{const url=new URL(value);return url.protocol==="http:"||url.protocol==="https:";}catch(_){return false;}
 }
 async function loadGoogleNews(){
   const query='("Africa China trade" OR "Nigeria customs" OR "Nigeria imports" OR "shipping ports" OR "freight logistics" OR "South Korea trade")';
@@ -144,19 +149,21 @@ async function loadGoogleNews(){
   const response=await fetch(url,{headers:{Accept:"application/rss+xml, application/xml, text/xml","User-Agent":"VTG-Market-Intelligence/1.0"},signal:AbortSignal.timeout(8000)});
   if(!response.ok)throw new Error("Google News RSS returned HTTP "+response.status);
   const xml=await response.text(),seen=new Set<string>();
-  const blocks=Array.from(xml.matchAll(/<item\\b[^>]*>([\\s\\S]*?)<\\/item>/gi)).map(x=>x[1]);
-  const items=blocks.map((block)=>{
-    const title=rssTag(block,"title"),url=rssTag(block,"link"),dateValue=rssTag(block,"pubDate");
-    const sourceMatch=block.match(/<source\\b[^>]*url=["']([^"']+)["'][^>]*>([\\s\\S]*?)<\\/source>/i);
+  const blocks=xml.split("<item>").slice(1).map((item)=>item.split("</item>")[0]||"");
+  const items=blocks.map((item)=>{
+    const title=rssTag(item,"title"),articleUrl=rssTag(item,"link"),dateValue=rssTag(item,"pubDate");
+    const sourceOpen=item.match(/<source[^>]*>/i)?.[0]||"";
+    const sourceUrl=sourceOpen.match(/url=["']([^"']+)["']/i)?.[1]||"";
+    const sourceText=sourceOpen?(item.split(sourceOpen)[1]||"").split("</source>")[0]||"":"";
     let domain="",source="";
-    try{domain=new URL(sourceMatch?.[1]||"").hostname.replace(/^www\\./,"").toLowerCase();}catch(_){}
-    source=sourceMatch?decodeXml(sourceMatch[2]):domain;
+    try{domain=new URL(sourceUrl).hostname.replace(/^www\./,"").toLowerCase();}catch(_){}
+    source=decodeXml(sourceText)||domain;
     const discoveredAt=dateValue&&!Number.isNaN(Date.parse(dateValue))?new Date(dateValue).toISOString():null;
     const {topic,relevance,trusted}=classify(title,domain);
-    return {title,url,domain,source:source||domain||"Publisher not identified",topic,relevance,trusted,discoveredAt,publishedAt:null,provider:"Google News RSS",summary:contextNote(topic)};
-  }).filter((a:any)=>{
-    if(!a.title||!/^https?:\\/\\//i.test(a.url)||!a.trusted||a.relevance<2||!a.discoveredAt||seen.has(a.url.split("#")[0]))return false;
-    seen.add(a.url.split("#")[0]);return true;
+    return {title,url:articleUrl,domain,source:source||domain||"Publisher not identified",topic,relevance,trusted,discoveredAt,publishedAt:null,provider:"Google News RSS",summary:contextNote(topic)};
+  }).filter((item:any)=>{
+    if(!item.title||!isHttpUrl(item.url)||!item.trusted||item.relevance<2||!item.discoveredAt||seen.has(item.url.split("#")[0]))return false;
+    seen.add(item.url.split("#")[0]);return true;
   }).sort((a:any,b:any)=>Date.parse(b.discoveredAt)-Date.parse(a.discoveredAt)).slice(0,12);
   return {items,count:items.length,provider:"Google News RSS",fetchedAt:new Date().toISOString(),timestampMeaning:"Google News RSS item date; not independently verified publisher publication time",note:"Headlines link through Google News to the named publisher. VTG has not independently verified the article's claims."};
 }
@@ -171,7 +178,7 @@ async function loadGdeltNews(){
     const parsed=parseSeenDate(a.seendate),{topic,relevance,trusted}=classify(title,domain);
     return {title,url,domain,source:domain||"Publisher not identified",topic,relevance,trusted,discoveredAt:parsed,publishedAt:null,provider:"GDELT",summary:contextNote(topic)};
   }).filter((a:any)=>{
-    if(!a.title||!/^https?:\\/\\//i.test(a.url)||!a.trusted||a.relevance<2||!a.discoveredAt||seen.has(a.url.split("#")[0]))return false;
+    if(!a.title||!isHttpUrl(a.url)||!a.trusted||a.relevance<2||!a.discoveredAt||seen.has(a.url.split("#")[0]))return false;
     seen.add(a.url.split("#")[0]);return true;
   }).sort((a:any,b:any)=>Date.parse(b.discoveredAt)-Date.parse(a.discoveredAt)).slice(0,12);
   return {items,count:items.length,provider:"GDELT",fetchedAt:new Date().toISOString(),timestampMeaning:"GDELT discovery/seen time; not the publisher's confirmed publication time",note:"Headlines are source-linked discovery results. VTG has not independently verified the article's claims."};
