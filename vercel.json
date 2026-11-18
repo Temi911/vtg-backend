@@ -41,8 +41,40 @@
       "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-notifications"
     },
     {
+      "source": "/api/inspections/requests/:id/payment/initialize",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-payments/:id?action=initialize"
+    },
+    {
+      "source": "/api/inspections/payment/verify",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-payments?action=verify"
+    },
+    {
+      "source": "/api/webhooks/paystack",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-payments/webhook"
+    },
+    {
+      "source": "/api/inspections/admin/pricing",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-workflow/admin/pricing"
+    },
+    {
+      "source": "/api/inspections/requests",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-workflow/requests"
+    },
+    {
+      "source": "/api/inspections/quote",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-workflow/quote"
+    },
+    {
+      "source": "/api/inspections/mine",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-workflow/mine"
+    },
+    {
+      "source": "/api/inspections/pricing",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-workflow/pricing"
+    },
+    {
       "source": "/api/:path*",
-      "destination": "https://vtg-backend-production-ab20.up.railway.app/api/:path*"
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-api/api/:path*"
     },
     {
       "source": "/marketplace",
