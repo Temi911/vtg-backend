@@ -17,6 +17,9 @@
   <script src="/vtg-loader.js?v=20261117-lang-1" defer></script>
   <style>
     #main{padding-bottom:52px}
+    .workforce-footer-note{display:flex;align-items:center;justify-content:space-between;gap:14px;max-width:1200px;margin:0 auto;padding:16px 24px 24px;color:var(--vs-muted);font-size:.8rem}
+    .workforce-footer-note a{color:var(--vs-blue);font-weight:800;text-decoration:none}
+    @media(max-width:600px){.workforce-footer-note{padding:14px 16px 22px;align-items:flex-start;flex-direction:column}}
     #main .workforce-hero{padding:34px max(24px,calc((100% - 1200px)/2)) 58px;background:var(--vs-bg)}
     #main .workforce-hero .hero-shell{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(340px,.95fr);gap:54px;align-items:center;max-width:1200px;margin:auto}
     #main .workforce-hero .eyebrow{margin-bottom:12px}
@@ -95,19 +98,7 @@
 </head>
 <body>
 <main id="main">
-  <header class="workforce-header">
-    <div class="wrap nav">
-      <a class="brand" href="/frontend-v3.html" aria-label="VTG home"><img src="/assets/vtg-logo.svg" alt="Vintage Trade Global"></a>
-      <div class="navActions">
-        <a href="/frontend-v3.html" class="internalOnly" style="border:0;padding:0;text-decoration:none">← Back to VTG</a>
-        <label class="themeChoice" for="themePresetSelect">Theme</label>
-        <select id="themePresetSelect" aria-label="Choose VTG theme"><option value="trade-classic">Trade Classic</option><option value="ocean-route">Ocean Route</option><option value="graphite-port">Graphite Port</option></select>
-        <label class="themeChoice" for="appearanceSelect">Appearance</label>
-        <select id="appearanceSelect" aria-label="Choose light, dark, or automatic mode"><option value="auto">Automatic</option><option value="light">Light mode</option><option value="dark">Dark mode</option></select>
-        <span class="internalOnly">Internal staff portal</span>
-      </div>
-    </div>
-  </header>
+  <div id="vsHeader"></div>
 
   <section class="workforce-hero">
     <div class="hero-shell">
@@ -163,5 +154,8 @@
     <p class="workforce-footnote">Some internal workspace features may still be undergoing backend integration. Preview-only tools are for evaluation and must not be treated as official operational records.</p>
   </section>
 </main>
+<div id="vsFooter"></div>
+<div class="workforce-footer-note"><span>Internal staff portal · Private access for authorised VTG personnel</span><a href="/frontend-v3.html">← Back to VTG</a></div>
+<script src="/vtg-shell.js?v=20261118-workforce-shell-1"></script>
 </body>
 </html>
