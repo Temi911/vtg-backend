@@ -141,16 +141,16 @@ Deno.serve(async (req: Request) => {
       location_text: locationText,
       location_lat: null,
       location_lng: null,
-      supportedLanguages: ["en", "zh", "fr", "es", "ar", "ha"],
+      supportedLanguages: ["en", "fr", "pt", "ar", "sw", "zh", "ko", "es"],
     }});
   }
 
   if (segments[0] === "preferences" && segments[1] === "language" && req.method === "PATCH") {
     const body = await req.json().catch(() => null);
     const language = body && isText(body.language) ? body.language.trim().toLowerCase() : "";
-    const supportedLanguages = ["en", "zh", "fr", "es", "ar", "ha"];
+    const supportedLanguages = ["en", "fr", "pt", "ar", "sw", "zh", "ko", "es"];
     if (!supportedLanguages.includes(language)) {
-      return respond({ error: "Choose a supported language: en, zh, fr, es, ar or ha." }, 400);
+      return respond({ error: "Choose a supported language: en, fr, pt, ar, sw, zh, ko or es." }, 400);
     }
     const { data, error } = await supabase.from("profiles")
       .update({ preferred_language: language, updated_at: new Date().toISOString() })
