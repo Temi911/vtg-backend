@@ -120,4 +120,7 @@ test('Trade Feed policies enforce public-only reads and role-gated publishing', 
   assert.match(cleanup, /drop index if exists public\\.vtg_trade_post_comments_post_idx/i);
   assert.match(profileRls, /grant select \(id,full_name,role,country\) on public\\.profiles to anon/i);
   assert.match(profileRls, /Public can read active Trade Feed author labels/i);
+  const tradeScope = readRoot('supabase/migrations/20261118093130_harden_trade_feed_trade_environment_and_rls_initplan.sql');
+  assert.match(tradeScope, /account_environment='trade'/i);
+  assert.match(tradeScope, /select auth\\.uid\\(\\)/i);
 });
