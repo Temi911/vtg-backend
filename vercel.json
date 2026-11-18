@@ -125,6 +125,10 @@
       "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-market-intelligence/trade/landed-cost"
     },
     {
+      "source": "/api/auth/me",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-api/api/auth/me"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-api/api/:path*"
     },
