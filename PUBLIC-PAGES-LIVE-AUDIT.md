@@ -13,15 +13,18 @@ The correct next step is to map each public journey to its data source and test 
 
 ## Key architecture finding
 
-The current `vercel.json` explicitly routes selected endpoints to Supabase Edge Functions:
+The current `vercel.json` routes API traffic to Supabase Edge Functions only. Dedicated rewrites cover selected workflows; all other `/api/*` requests reach `vtg-api`, which deliberately returns 404 for unsupported operations:
 
 - `/api/admin/account-support` → `vtg-account-support`
 - `/api/agent/*` → `vtg-inspection-workflow`
 - `/api/inspections/requests/agent` and `/api/inspections/requests/:id/:action` → `vtg-inspection-workflow`
 - `/api/shipment-events/:shipmentId` → `vtg-trade-operations`
 - `/api/notifications/*` → `vtg-notifications`
+- `/api/partnerships` → `vtg-partnerships`
+- `/api/contact` and `/api/contact/admin` → `vtg-contact-enquiries`
+- `/api/market-intelligence/*` news, tools and trade statistics → `vtg-market-intelligence`
 
-However, the catch-all `/api/:path*` rewrite still points to the Railway backend. Therefore any API endpoint not matched by an earlier Supabase rewrite may still depend on Railway. Do not remove that fallback until each route has been migrated and tested.
+However, the catch-all `/api/:path*` rewrite now points to the Supabase `vtg-api` Edge Function. There is no Railway fallback. The catch-all implements only a limited set of operations; unsupported paths return a Supabase 404 until their individual implementations are completed.
 
 The shared browser auth script, `vtg-supabase-auth.js`, initialises the configured Supabase project directly using its publishable key. The publishable key is expected in a browser client; service-role or secret keys must never be exposed there.
 
@@ -36,7 +39,7 @@ Status labels describe code evidence only, not a completed live browser test.
 | `sourcing-suppliers.html` | Mostly content and shared shell; no form or API call found in first pass | Primarily informational; needs a real sourcing-request journey |
 | `trade-feed.html` | Supabase-backed `/api/marketplace/*`, `/api/media/feed/:postId`, and public `/api/market-intelligence/news` | Public posts, comments, reactions, follows, media and source-linked news now route to Supabase; moderation and authenticated end-to-end actions still require acceptance tests |
 | `trade-atlas.html` | Large interactive map; local port dataset and map scripts | Map data is largely bundled/static; distinguish reference data from live port/operational status |
-| `market-intelligence.html` | Loads `vtg-market-intelligence-live.js`; sample/placeholder markers in page | Needs verification of live sources, freshness and graceful unavailable states |
+| `market-intelligence.html` | Loads `vtg-market-intelligence-live.js`; market watch cards are explicitly labelled pending/verify | News now comes from the Supabase Edge Function; verify freshness and authenticated trade-statistics/calculator workflows. FX, tariff and freight providers remain unconnected |
 | `intelligence-centre.html` | Four forms; calls auth and market-intelligence APIs; sample/demo/placeholder markers | Mixed; tools need endpoint and data-provenance audit |
 | `africa-markets.html` | Loads `/api/africa/markets`; response explicitly identifies `planning_data` and `liveProviderData:false`; includes hard-coded demand values | Planning/reference catalogue, not live market intelligence; label all values and sources clearly |
 | `vtg-ai.html` | Demo/sample markers; no direct API call in page source | Public AI journey not yet evidenced as connected |
