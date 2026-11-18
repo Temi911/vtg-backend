@@ -45,3 +45,57 @@ begin
 end; $function$;
 revoke all on function public.vtg_admin_review_role_request(uuid,text,uuid,text) from public,anon;
 grant execute on function public.vtg_admin_review_role_request(uuid,text,uuid,text) to authenticated;
+
+-- Supplier profile writes are available only to an approved, active trade supplier.
+-- Verification status itself remains protected by the existing guard trigger.
+drop policy if exists "supplier profile owner or admin insert" on public.supplier_profiles;
+create policy "active approved suppliers or admins insert supplier profile"
+on public.supplier_profiles for insert to authenticated
+with check (
+  private.vtg_is_admin()
+  or (
+    user_id=(select auth.uid()) and exists (
+      select 1 from public.profiles p where p.id=(select auth.uid())
+        and p.role='supplier'::public.vtg_account_role
+        and p.is_active=true and p.account_environment='trade'
+    )
+  )
+);
+
+drop policy if exists "supplier profile owner or admin update" on public.supplier_profiles;
+create policy "active approved suppliers or admins update supplier profile"
+on public.supplier_profiles for update to authenticated
+using (
+  private.vtg_is_admin()
+  or (
+    user_id=(select auth.uid()) and exists (
+      select 1 from public.profiles p where p.id=(select auth.uid())
+        and p.role='supplier'::public.vtg_account_role
+        and p.is_active=true and p.account_environment='trade'
+    )
+  )
+)
+with check (
+  private.vtg_is_admin()
+  or (
+    user_id=(select auth.uid()) and exists (
+      select 1 from public.profiles p where p.id=(select auth.uid())
+        and p.role='supplier'::public.vtg_account_role
+        and p.is_active=true and p.account_environment='trade'
+    )
+  )
+);
+
+drop policy if exists "supplier profile owner or admin delete" on public.supplier_profiles;
+create policy "active approved suppliers or admins delete supplier profile"
+on public.supplier_profiles for delete to authenticated
+using (
+  private.vtg_is_admin()
+  or (
+    user_id=(select auth.uid()) and exists (
+      select 1 from public.profiles p where p.id=(select auth.uid())
+        and p.role='supplier'::public.vtg_account_role
+        and p.is_active=true and p.account_environment='trade'
+    )
+  )
+);
