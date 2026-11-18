@@ -27,4 +27,7 @@ test('supplier registration records supplier intent but does not grant the role 
  assert.match(signup,/requested_role:'supplier'/);
  assert.match(signup,/verifySignupCode\(email,code\)/);
  assert.match(signup,/wait for VTG administrator approval/i);
+ assert.match(signup,/RECEIPT EMAIL NOT CONFIRMED/);
+ assert.match(signup,/Your email address has been verified, but we could not confirm delivery of the separate application receipt email/);
+ assert.match(signup,/separate company-document verification process/);
 });
