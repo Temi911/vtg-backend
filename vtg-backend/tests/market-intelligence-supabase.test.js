@@ -71,3 +71,22 @@ test('Public Market Intelligence news UI maps the Edge Function timestamp contra
   assert.match(ui, /data\.fetchedAt/);
   assert.match(ui, /data\.provider/);
 });
+
+
+test('Historical UN Comtrade statistics are cached and stale fallback is clearly labelled', () => {
+  const fn = root('supabase/functions/vtg-market-intelligence/index.ts');
+  assert.match(fn, /TRADE_STATS_CACHE_TTL_MS=6\*60\*60\*1000/);
+  assert.match(fn, /TRADE_STATS_STALE_MAX_MS=7\*24\*60\*60\*1000/);
+  assert.match(fn, /cache:\{status:"fresh"/);
+  assert.match(fn, /cache:\{status:"refreshed"/);
+  assert.match(fn, /cache:\{status:"stale"/);
+  assert.match(fn, /previously retrieved copy/);
+  assert.match(fn, /Historical trade statistics; not a live quote|historical trade statistics; not a live quote/);
+});
+
+test('Market explorer displays the source, retrieval time and cache freshness state', () => {
+  const page = root('intelligence-centre.html');
+  assert.match(page, /data\.cache\?\.status==='stale'/);
+  assert.match(page, /data\.fetchedAt/);
+  assert.match(page, /Historical statistics, not a live price/);
+});
