@@ -130,22 +130,55 @@ async function loadTradeStatistics(url:URL){
   return {source:"UN Comtrade public preview",dataType:"historical trade statistics; not a live quote",reporter:items[0]?.reporter||null,reporterCode,flow:flowCode==="M"?"Imports":"Exports",period,cmdCode,count:items.length,fetchedAt:new Date().toISOString(),items};
 }
 
-async function loadNews(){
+
+function decodeXml(value:string){
+  return value.replace(/<!\\[CDATA\\[|\\]\\]>/g,"").replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&#(\\d+);/g,(_,n)=>String.fromCodePoint(Number(n))).replace(/&#x([0-9a-f]+);/gi,(_,n)=>String.fromCodePoint(parseInt(n,16))).trim();
+}
+function rssTag(block:string,name:string){
+  const match=block.match(new RegExp("<"+name+"\\\\b[^>]*>([\\\\s\\\\S]*?)<\\\\/"+name+">","i"));
+  return match?decodeXml(match[1]):"";
+}
+async function loadGoogleNews(){
+  const query='("Africa China trade" OR "Nigeria customs" OR "Nigeria imports" OR "shipping ports" OR "freight logistics" OR "South Korea trade")';
+  const url="https://news.google.com/rss/search?q="+encodeURIComponent(query)+"&hl=en-US&gl=NG&ceid=NG:en";
+  const response=await fetch(url,{headers:{Accept:"application/rss+xml, application/xml, text/xml","User-Agent":"VTG-Market-Intelligence/1.0"},signal:AbortSignal.timeout(8000)});
+  if(!response.ok)throw new Error("Google News RSS returned HTTP "+response.status);
+  const xml=await response.text(),seen=new Set<string>();
+  const blocks=Array.from(xml.matchAll(/<item\\b[^>]*>([\\s\\S]*?)<\\/item>/gi)).map(x=>x[1]);
+  const items=blocks.map((block)=>{
+    const title=rssTag(block,"title"),url=rssTag(block,"link"),dateValue=rssTag(block,"pubDate");
+    const sourceMatch=block.match(/<source\\b[^>]*url=["']([^"']+)["'][^>]*>([\\s\\S]*?)<\\/source>/i);
+    let domain="",source="";
+    try{domain=new URL(sourceMatch?.[1]||"").hostname.replace(/^www\\./,"").toLowerCase();}catch(_){}
+    source=sourceMatch?decodeXml(sourceMatch[2]):domain;
+    const discoveredAt=dateValue&&!Number.isNaN(Date.parse(dateValue))?new Date(dateValue).toISOString():null;
+    const {topic,relevance,trusted}=classify(title,domain);
+    return {title,url,domain,source:source||domain||"Publisher not identified",topic,relevance,trusted,discoveredAt,publishedAt:null,provider:"Google News RSS",summary:contextNote(topic)};
+  }).filter((a:any)=>{
+    if(!a.title||!/^https?:\\/\\//i.test(a.url)||!a.trusted||a.relevance<2||!a.discoveredAt||seen.has(a.url.split("#")[0]))return false;
+    seen.add(a.url.split("#")[0]);return true;
+  }).sort((a:any,b:any)=>Date.parse(b.discoveredAt)-Date.parse(a.discoveredAt)).slice(0,12);
+  return {items,count:items.length,provider:"Google News RSS",fetchedAt:new Date().toISOString(),timestampMeaning:"Google News RSS item date; not independently verified publisher publication time",note:"Headlines link through Google News to the named publisher. VTG has not independently verified the article's claims."};
+}
+async function loadGdeltNews(){
   const query='("Africa China trade" OR "Nigeria customs" OR "Nigeria imports" OR "shipping ports" OR "freight logistics" OR "South Korea trade")';
   const url="https://api.gdeltproject.org/api/v2/doc/doc?query="+encodeURIComponent(query)+"&mode=ArtList&format=json&maxrecords=20&sort=DateDesc&timespan=24h";
-  const response=await fetch(url,{headers:{Accept:"application/json","User-Agent":"VTG-Market-Intelligence/1.0"},signal:AbortSignal.timeout(20000)});
-  if(!response.ok)throw new Error("News discovery source returned HTTP "+response.status);
-  const payload=await response.json();
-  const seen=new Set<string>();
+  const response=await fetch(url,{headers:{Accept:"application/json","User-Agent":"VTG-Market-Intelligence/1.0"},signal:AbortSignal.timeout(8000)});
+  if(!response.ok)throw new Error("GDELT returned HTTP "+response.status);
+  const payload=await response.json(),seen=new Set<string>();
   const items=(Array.isArray(payload.articles)?payload.articles:[]).map((a:any)=>{
     const title=clean(a.title,500),url=clean(a.url,1800),domain=clean(a.domain,255).toLowerCase();
     const parsed=parseSeenDate(a.seendate),{topic,relevance,trusted}=classify(title,domain);
     return {title,url,domain,source:domain||"Publisher not identified",topic,relevance,trusted,discoveredAt:parsed,publishedAt:null,provider:"GDELT",summary:contextNote(topic)};
   }).filter((a:any)=>{
-    if(!a.title||!/^https?:\/\//i.test(a.url)||!a.trusted||a.relevance<2||!a.discoveredAt||seen.has(a.url.split("#")[0]))return false;
+    if(!a.title||!/^https?:\\/\\//i.test(a.url)||!a.trusted||a.relevance<2||!a.discoveredAt||seen.has(a.url.split("#")[0]))return false;
     seen.add(a.url.split("#")[0]);return true;
   }).sort((a:any,b:any)=>Date.parse(b.discoveredAt)-Date.parse(a.discoveredAt)).slice(0,12);
   return {items,count:items.length,provider:"GDELT",fetchedAt:new Date().toISOString(),timestampMeaning:"GDELT discovery/seen time; not the publisher's confirmed publication time",note:"Headlines are source-linked discovery results. VTG has not independently verified the article's claims."};
+}
+async function loadNews(){
+  try{const feed=await loadGoogleNews();if(feed.items.length)return feed;}catch(error){console.error("VTG_MI_GOOGLE_RSS_ERROR",String((error as Error)?.message||error).slice(0,300));}
+  try{return await loadGdeltNews();}catch(error){console.error("VTG_MI_GDELT_ERROR",String((error as Error)?.message||error).slice(0,300));throw error;}
 }
 Deno.serve(async(req:Request)=>{
   if(req.method==="OPTIONS")return new Response("ok",{headers:cors});
