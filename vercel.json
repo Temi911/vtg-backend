@@ -105,6 +105,10 @@
       "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-market-intelligence/trade"
     },
     {
+      "source": "/api/contact/admin/:id",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-contact-enquiries/admin/:id"
+    },
+    {
       "source": "/api/contact/admin",
       "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-contact-enquiries/admin"
     },
