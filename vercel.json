@@ -93,6 +93,18 @@
       "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-market-intelligence/news"
     },
     {
+      "source": "/api/market-intelligence/tools/contract",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-market-intelligence/tools/contract"
+    },
+    {
+      "source": "/api/market-intelligence/tools/landed-cost/estimate",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-market-intelligence/tools/landed-cost/estimate"
+    },
+    {
+      "source": "/api/market-intelligence/trade",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-market-intelligence/trade"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-api/api/:path*"
     },
