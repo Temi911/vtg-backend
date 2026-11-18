@@ -72,7 +72,7 @@ country.addEventListener('change',()=>{countryCode.value=country.selectedOptions
 if(country.value)countryCode.value=country.selectedOptions[0]?.dataset.code||'';
 form.addEventListener('submit',async e=>{
 e.preventDefault();
-if(!pathway.value||!type.value){success.style.display='block';success.innerHTML='<strong>Partnership pathway missing.</strong><br>Please return to the Partnerships page and open the pathway you want to propose.';return}
+if(!pathway.value||!type.value){success.style.display='block';success.textContent='Partnership pathway missing. Please return to the Partnerships page and open the pathway you want to propose.';return}
 const data=Object.fromEntries(new FormData(form).entries()),button=form.querySelector('.btn');
 button.disabled=true;button.textContent='Submitting…';
 try{
