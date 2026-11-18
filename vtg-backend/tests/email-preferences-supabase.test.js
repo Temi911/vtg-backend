@@ -46,6 +46,7 @@ test('onboarding email carries the new Supabase preference link', () => {
   assert.match(fn, /vtg_email_preference_tokens/);
   assert.match(fn, /preferenceUrl = appUrl \+ "\/api\/auth\/email-preferences\//);
   assert.match(fn, /manage your VTG email preferences/);
+  assert.match(fn, /functions\\/v1\\/vtg-email-preferences\\/confirm/);
   assert.match(fn, /marketingEvents/);
   assert.match(fn, /MARKETING_OPT_IN_REQUIRED/);
   assert.match(fn, /A working unsubscribe link is required before sending marketing email/);
