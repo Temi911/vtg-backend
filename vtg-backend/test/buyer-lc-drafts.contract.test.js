@@ -20,7 +20,7 @@ test('buyer LC workspace loads existing buyer-owned orders from Supabase',()=>{
 test('LC preparation drafts require an existing order and persist to buyer-owned Supabase storage',()=>{
  assert.match(client,/from\('buyer_lc_request_drafts'\)\.insert/);
  assert.match(client,/order_id:x\.orderId/);
- assert.match(client,/Select an existing VTG purchase order/);
+ assert.match(client,/Select an existing confirmed purchase order/);
  assert.match(client,/has not been sent to a bank and no LC has been issued/);
  assert.match(migration,/enable row level security/i);
  assert.match(migration,/references public\.trade_orders\(id\)/i);
