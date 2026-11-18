@@ -38,10 +38,15 @@ async function load(){
     (sh.estimated_arrival?'<p style="margin:5px 0"><b>Estimated arrival:</b> '+esc(date(sh.estimated_arrival,false))+' (estimate)</p>':'')+renderEvents(ev||[])+'</div>';
    }));
    const qty=Math.max(0,Number(o.quantity)||0),unit=Math.max(0,Number(o.unit_price)||0),total=(qty*unit).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-   return '<article class="record-card"><div class="record-top"><div><strong>'+esc(o.reference||'VTG order')+'</strong><p class="small muted">'+esc(o.supplier?.full_name||'Supplier')+' · '+esc(date(o.created_at,false))+'</p>'+(o.product?.name?'<p class="small muted">'+esc(o.product.name)+'</p>':'')+'</div><span class="chip">'+esc(label(o.status||'pending').toUpperCase())+'</span></div>'+
-   '<p style="margin:8px 0"><b>Quantity:</b> '+qty.toLocaleString()+' · <b>Order value:</b> '+esc(o.currency||'USD')+' '+total+' · <b>Incoterm:</b> '+esc(o.incoterm||'Not specified')+'</p>'+
-   '<p class="small muted"><b>Order route:</b> '+esc(o.origin_port||'Origin not recorded')+' → '+esc(o.destination_port||'Destination not recorded')+'</p>'+renderMilestones(mr.data||[])+
-   (shipCards.length?shipCards.join(''):'<p class="small muted" style="margin:9px 0 0">No logistics-service shipment record is linked to this order yet. Shipment progress is not inferred from order status or trade assumptions.</p>')+'</article>';
+   const status=String(o.status||'pending').toLowerCase(),awaitingQuote=['draft','pending'].includes(status);
+   const title=status==='pending'?'Quote request · '+(o.reference||'VTG reference'):status==='draft'?'Draft order · '+(o.reference||'VTG reference'):(o.reference||'VTG order');
+   const statusLabel=status==='pending'?'QUOTE REQUEST PENDING':status==='draft'?'DRAFT — NOT CONFIRMED':label(status).toUpperCase();
+   const valueLabel=awaitingQuote?'Supplier price not agreed':esc(o.currency||'USD')+' '+total;
+   const milestoneHtml=awaitingQuote?'<p class="small muted" style="margin:9px 0 0">Order milestones begin after a supplier quotation is accepted and the trade order is confirmed.</p>':renderMilestones(mr.data||[]);
+   const shipmentHtml=shipCards.length?shipCards.join(''):awaitingQuote?'<p class="small muted" style="margin:9px 0 0">Shipment tracking becomes relevant after the supplier quotation is accepted and a shipment is recorded.</p>':'<p class="small muted" style="margin:9px 0 0">No logistics-service shipment record is linked to this order yet. Shipment progress is not inferred from order status or trade assumptions.</p>';
+   return '<article class="record-card"><div class="record-top"><div><strong>'+esc(title)+'</strong><p class="small muted">'+esc(o.supplier?.full_name||'Supplier')+' · '+esc(date(o.created_at,false))+'</p>'+(o.product?.name?'<p class="small muted">'+esc(o.product.name)+'</p>':'')+'</div><span class="chip">'+esc(statusLabel)+'</span></div>'+
+   '<p style="margin:8px 0"><b>Quantity:</b> '+qty.toLocaleString()+' · <b>'+(awaitingQuote?'Quotation status:':'Order value:')+'</b> '+valueLabel+' · <b>Incoterm:</b> '+esc(o.incoterm||'Not specified')+'</p>'+
+   '<p class="small muted"><b>Order route:</b> '+esc(o.origin_port||'Origin not recorded')+' → '+esc(o.destination_port||'Destination not recorded')+'</p>'+milestoneHtml+shipmentHtml+'</article>';
   }));
   host.innerHTML=cards.join('');
  }catch(e){host.innerHTML='<div class="empty">Could not load account-linked orders. '+esc(e.message||'Supabase request failed')+' <button class="btn" type="button" id="retrySupabaseOrders">Try again</button></div>';$('retrySupabaseOrders')?.addEventListener('click',load);}
