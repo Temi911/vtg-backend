@@ -33,7 +33,7 @@ The API catch-all is now:
 /api/:path*  →  https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-api/api/:path*
 ```
 
-Unmatched API calls now reach Supabase `vtg-api`. The function returns 404 for paths it does not implement; do not interpret the presence of the catch-all as proof that every route is migrated.
+Trade Feed requests are routed to `vtg-marketplace`; unmatched API calls reach Supabase `vtg-api`. The function returns 404 for paths it does not implement; do not interpret the presence of the catch-all as proof that every route is migrated.
 
 ## 2. Public visitor journeys and dependencies
 
@@ -41,8 +41,8 @@ Unmatched API calls now reach Supabase `vtg-api`. The function returns 404 for p
 |---|---|---|---|
 | Marketplace product catalogue | Supabase client in `marketplace.html` | Direct Supabase, not the Railway catch-all | Existing foundation; verify active/approved product filters, product images, RLS and empty state |
 | Marketplace quote request | RPC `vtg_create_trade_quote_request` | Direct Supabase RPC | Existing RPC and migration; test buyer auth, ownership, supplier visibility and resulting dashboard record |
-| Trade Feed public read | `/api/marketplace/feed` and related calls | Express route mounted at `/api/marketplace`; catch-all sends it to Railway | No corresponding public-feed Supabase route proven in current Vercel rewrites |
-| Trade Feed signed-in posts/comments/follows/media | `/api/marketplace/feed/account`, `/api/marketplace/feed/:id/comments`, `/api/marketplace/users/*`, `/api/media/feed/:id` | Railway Express routes and media upload controller | Supabase trade-feed schema exists, but public API parity and media-storage parity must be tested |
+| Trade Feed public read | `/api/marketplace/feed` | Supabase Edge Function `vtg-marketplace` | Public, read-only; publication-aware RLS; public author projection exposes only active feed authors |
+| Trade Feed signed-in posts/comments/reactions/follows/media | `/api/marketplace/feed/account`, `/api/marketplace/feed/:id/comments`, `/api/marketplace/feed/:id/reactions`, `/api/marketplace/users/*`, `/api/media/feed/:id` | Supabase Edge Function `vtg-marketplace` plus `vtg-trade-feed-media` Storage bucket | Implemented in Supabase; authenticated writes use caller JWT and RLS; no service-role key in the function. Runtime authenticated upload/post/comment tests still required |
 | Trade Feed news | `/api/market-intelligence/news`; fallback attempt `/api/integrations/news` | Express route exists for market-intelligence news; both currently fall through to Railway | Supabase `vtg-market-intelligence` function exists, but current Vercel config does not route this public URL to it |
 | Africa Markets catalogue | `/api/africa/markets` | Express route mounted at `/api/africa`; catch-all sends it to Railway | The service intentionally returns planning/reference data, not live provider data; do not label as live market intelligence |
 | Inspection request quote/create | `/api/inspections/quote`, `/api/inspections/requests` | Express routes mounted at `/api/inspections`; both fall through to Railway | Supabase `vtg-inspection-workflow` implements pricing and request creation, but these public route shapes are not currently mapped to it |
