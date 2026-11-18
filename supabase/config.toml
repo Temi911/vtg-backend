@@ -50,3 +50,6 @@ verify_jwt = false
 
 [functions.vtg-contact-enquiries]
 verify_jwt = false
+
+[functions.vtg-email-preferences]
+verify_jwt = false
