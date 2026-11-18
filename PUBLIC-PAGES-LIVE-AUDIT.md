@@ -79,7 +79,7 @@ Status labels describe code evidence only, not a completed live browser test.
 3. Contact: run a controlled POST submission, verify the returned reference, private database record, email status and staff-only inbox.
 4. Partnership application: verify durable submission, reference number, notifications and staff review queue.
 5. Authentication: verify `/signin.html`, each role-specific signup page and `/api/auth/me` using active and pending accounts.
-6. Preferences: verify authenticated preference reads and language updates; the old `/api/auth/email-preferences/:token` unsubscribe link remains unmigrated because its token belongs to the retired PostgreSQL users table and has no equivalent Supabase token record yet.
+6. Preferences: authenticated preference reads and language updates are implemented in `vtg-api`; the former `/api/auth/email-preferences/:token` link now has a Supabase replacement using private preference/token tables, SHA-256 token hashes, seven-day expiry and explicit POST confirmation. Old PostgreSQL tokens cannot be carried over and remain invalid.
 
 ### P2 — Public information and intelligence
 
@@ -106,6 +106,10 @@ A page is only marked **Live and verified** after its visitor journey is tested 
 - Mobile and desktop interactions work.
 - External data has source and last-updated metadata.
 - The exact production deployment is checked after release.
+
+## Email preference migration update — 18 November 2026
+
+The new `vtg-email-preferences` Edge Function is deployed and ACTIVE (v1). It sends a fresh, verified-account preference link through Resend, stores only a SHA-256 hash of a 256-bit random token, expires links after seven days, and requires an explicit confirmation POST. GET requests are read-only to avoid email link scanners unsubscribing users. The two supporting tables have RLS enabled and direct `anon`/`authenticated` privileges revoked. Vercel rewrites are committed ahead of the `/api/:path*` catch-all; they are not production-active until a new READY Vercel deployment includes them. Legacy tokens in the retired PostgreSQL `users` table are not compatible and are not migrated.
 
 ## Important limitations of this first pass
 
