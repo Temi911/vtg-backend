@@ -14,9 +14,9 @@ async function connect(){
  if(result.error)throw result.error;
  if(!result.data.session)throw new Error('Sign in with your supplier account to manage live catalogue products.');
  db=auth.client;user=result.data.session.user;
- const p=await db.from('profiles').select('role,is_active,full_name,country').eq('id',user.id).single();
+ const p=await db.from('profiles').select('role,is_active,account_environment,full_name,country').eq('id',user.id).single();
  if(p.error)throw p.error;
- if(p.data.role!=='supplier'||!p.data.is_active)throw new Error('An active supplier account is required to publish products.');
+ if(p.data.role!=='supplier'||p.data.account_environment!=='trade'||!p.data.is_active)throw new Error('An active VTG trade supplier account is required to publish products.');
  profile=p.data;
  const sp=await db.from('supplier_profiles').select('verification_status').eq('user_id',user.id).maybeSingle();
  if(sp.error)throw sp.error;
