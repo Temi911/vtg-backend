@@ -26,7 +26,7 @@
 <section class="enquiry" id="contactForm" aria-label="Enquiry form">
 <div class="introBox"><span class="eyebrow">Selected service</span><h2 id="formTitle">Choose a service above.</h2><p id="formIntro">Click one of the response cards to open its dedicated enquiry form.</p><div class="contactMini"><strong>General email</strong><a href="mailto:vintageafricatrade@gmail.com">vintageafricatrade@gmail.com</a></div></div>
 <form class="form vtg-form" id="enquiryForm">
-<input type="hidden" id="category" name="category">
+<input type="hidden" id="category" name="category"><div aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden"><label for="website">Leave this field empty</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
 <div class="fields">
 <div class="field"><label for="team">VTG team</label><input id="team" class="fixedValue" readonly required></div>
 <div class="field"><label for="topic">What do you need help with?</label><select id="topic" name="topic" required disabled><option value="">Choose a service card first</option></select></div>
@@ -41,8 +41,9 @@
 <div class="field full"><label for="subject">Subject</label><input id="subject" name="subject" required></div>
 <div class="field full"><label for="message">Message</label><textarea id="message" name="message" required placeholder="Tell us what you need help with..."></textarea></div>
 </div>
-<p class="formNote">The selected service and VTG team are fixed by the response card you clicked. This form prepares an email in your email application; it does not submit directly to a VTG server. If your email application does not open, contact vintageafricatrade@gmail.com.</p>
-<button class="submit" type="submit">Open email to send enquiry &rarr;</button><div class="status" id="status" aria-live="polite"></div>
+<div class="field full"><label for="consent"><input id="consent" type="checkbox" required> I agree that VTG may use the information supplied to review and respond to this enquiry.</label></div>
+<p class="formNote">Your enquiry is submitted securely to VTG and recorded for the relevant team. Do not include passwords or verification codes. The general email remains available if you need another contact route.</p>
+<button class="submit" type="submit">Submit enquiry &rarr;</button><div class="status" id="status" aria-live="polite"></div>
 </form>
 </section>
 </div>
@@ -57,9 +58,29 @@ callingCode.innerHTML='<option value="">Select calling code</option>'+countryCod
 country.addEventListener("change",()=>{const match=countryCodes.find(([n])=>n===country.value);if(match)callingCode.value=match[1];});
 function prepare(cat,scroll=true){const r=routes[cat];if(!r)return;document.getElementById("contactForm").style.display="grid";category.value=cat;team.value=r.team;topic.disabled=false;topic.required=true;topic.innerHTML='<option value="">Select the specific topic</option>'+r.topics.map(t=>'<option>'+t+'</option>').join("");formTitle.textContent=r.team;formIntro.textContent="This is the "+cat+" enquiry form. The service and VTG team are fixed by the card you selected.";if(scroll)document.getElementById("contactForm").scrollIntoView({behavior:"smooth",block:"start"});}
 document.querySelectorAll(".helpCard").forEach(card=>card.addEventListener("click",()=>prepare(card.dataset.category)));
-form.addEventListener("submit",e=>{e.preventDefault();if(!category.value||!topic.value){topic.focus();return}const d=new FormData(form),r=routes[d.get("category")];const subject=encodeURIComponent("["+r.team+"] "+d.get("subject"));const body=encodeURIComponent("VTG Team: "+r.team+"\nService: "+d.get("category")+"\nTopic: "+d.get("topic")+"\nContact type: "+d.get("contactType")+"\nName: "+d.get("name")+"\nEmail: "+d.get("email")+"\nCountry: "+d.get("country")+"\nCalling code: "+d.get("callingCode")+"\nPhone / WhatsApp: "+d.get("phone")+"\nCompany / Organization: "+(d.get("company")||"Not provided")+"\nReference: "+(d.get("reference")||"Not provided")+"\n\n"+d.get("message"));window.location.href="mailto:vintageafricatrade@gmail.com?subject="+subject+"&body="+body;document.getElementById("status").textContent="Your enquiry is prepared for "+r.team+". Your email application is opening now; send the message from your email application to complete delivery.";});
-
-
+let enquirySubmitted=false;
+const submitButton=form.querySelector('button[type="submit"]');
+form.addEventListener("input",()=>{if(enquirySubmitted){enquirySubmitted=false;submitButton.disabled=false;submitButton.textContent="Submit enquiry →";document.getElementById("status").textContent="";}});
+form.addEventListener("submit",async e=>{
+e.preventDefault();
+if(!category.value||!topic.value){topic.focus();return}
+if(!document.getElementById("consent").checked){document.getElementById("consent").focus();return}
+const d=new FormData(form),payload=Object.fromEntries(d.entries());
+payload.consent=document.getElementById("consent").checked;
+payload.website=document.getElementById("website").value;
+submitButton.disabled=true;submitButton.textContent="Submitting enquiry…";
+const status=document.getElementById("status");status.textContent="Sending your enquiry securely to VTG…";
+try{
+const response=await fetch("/api/contact",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify(payload)});
+const out=await response.json().catch(()=>({}));
+if(!response.ok)throw new Error(out?.error?.message||out?.error||"Your enquiry could not be submitted.");
+status.textContent=out.message+" Reference: "+(out.reference||"Received");
+enquirySubmitted=true;submitButton.textContent="Enquiry received";
+}catch(error){
+status.textContent=(error&&error.message?error.message:"Your enquiry could not be submitted.")+" Please try again or email vintageafricatrade@gmail.com.";
+submitButton.disabled=false;submitButton.textContent="Submit enquiry →";
+}
+});
 document.querySelectorAll(".helpCard").forEach(c=>c.addEventListener("click",()=>{document.querySelectorAll(".helpCard").forEach(x=>x.classList.toggle("is-on",x===c))}));
 </script>
 </body>
