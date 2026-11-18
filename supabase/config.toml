@@ -44,3 +44,6 @@ verify_jwt = false
 
 [functions.vtg-market-intelligence]
 verify_jwt = false
+
+[functions.vtg-partnerships]
+verify_jwt = false
