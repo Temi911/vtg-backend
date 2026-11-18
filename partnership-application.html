@@ -28,6 +28,7 @@
 <section class="panel">
 <div class="intro"><div><h2>Tell us about the opportunity.</h2><p>Your proposal will be prepared as a partnership submission with the pathway you select, so the conversation starts in the right business-development lane.</p></div><span class="lane" id="laneLabel">PARTNERSHIP INTAKE</span></div>
 <form id="partnershipForm" class="vtg-form">
+<input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px" value="">
 <div class="grid">
 <div class="field"><label for="organization">Organization / company *</label><input id="organization" name="organization" required placeholder="Your organization"></div>
 <div class="field"><label for="contact">Contact person *</label><input id="contact" name="contact" required placeholder="Full name"></div>
@@ -78,9 +79,9 @@ try{
 const res=await fetch('/api/partnerships',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
 const out=await res.json();
 if(!res.ok)throw new Error(out?.error?.message||'Submission failed');
-success.style.display='block';success.innerHTML='<strong>Proposal submitted — '+out.reference+'</strong><br>'+out.message+' The proposal has been sent to the VTG company email and will be routed to the appropriate partnership team as team addresses are configured.';
+success.style.display='block';success.textContent='Proposal submitted — '+out.reference+'. '+out.message;
 form.reset();setPathway(data.pathway);countryCode.value='';
-}catch(err){success.style.display='block';success.innerHTML='<strong>Submission could not be completed.</strong><br>'+err.message+' Please try again.'}
+}catch(err){success.style.display='block';success.textContent='Submission could not be completed. '+err.message+' Please try again.'}
 finally{button.disabled=false;button.textContent='Propose a partnership →'}
 });
 })();
