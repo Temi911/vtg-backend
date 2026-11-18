@@ -42,3 +42,11 @@ test('Landed cost remains an indicative user-input calculation and does not inve
   assert.match(fn, /not a customs valuation, binding tariff ruling/);
   assert.match(fn, /dutyRate<0\|\|dutyRate>1/);
 });
+
+test('Market Intelligence news uses a fast RSS primary source and rejects stale feed items', () => {
+  const fn = root('supabase/functions/vtg-market-intelligence/index.ts');
+  assert.ok(fn.includes('news.google.com/rss/search'));
+  assert.ok(fn.includes('when:7d'));
+  assert.ok(fn.includes('7*24*60*60*1000'));
+  assert.ok(fn.includes('loadGdeltNews'));
+});
