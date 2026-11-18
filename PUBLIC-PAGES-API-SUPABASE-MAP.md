@@ -44,16 +44,16 @@ Trade Feed requests are routed to `vtg-marketplace`; unmatched API calls reach S
 | Marketplace quote request | RPC `vtg_create_trade_quote_request` | Direct Supabase RPC | Existing RPC and migration; test buyer auth, ownership, supplier visibility and resulting dashboard record |
 | Trade Feed public read | `/api/marketplace/feed` | Supabase Edge Function `vtg-marketplace` | Public, read-only; publication-aware RLS; public author projection exposes only active feed authors |
 | Trade Feed signed-in posts/comments/reactions/follows/media | `/api/marketplace/feed/account`, `/api/marketplace/feed/:id/comments`, `/api/marketplace/feed/:id/reactions`, `/api/marketplace/users/*`, `/api/media/feed/:id` | Supabase Edge Function `vtg-marketplace` plus `vtg-trade-feed-media` Storage bucket | Implemented in Supabase; authenticated writes use caller JWT and RLS; no service-role key in the function. Runtime authenticated upload/post/comment tests still required |
-| Trade Feed news | `GET /api/market-intelligence/news`; compatibility alias `GET /api/integrations/news` | Supabase `vtg-market-intelligence/news` public GET route | GDELT-backed, source-linked discovery results; discovery timestamps are labelled as discovery time, not publisher-confirmed publication time |
-| Africa Markets catalogue | `/api/africa/markets` | Express route mounted at `/api/africa`; catch-all sends it to Railway | The service intentionally returns planning/reference data, not live provider data; do not label as live market intelligence |
+| Trade Feed news | `GET /api/market-intelligence/news`; compatibility alias `GET /api/integrations/news` | Supabase `vtg-market-intelligence/news` public GET route | Google News RSS primary with GDELT fallback; trusted-domain filtering, seven-day freshness cutoff and explicit feed timestamp caveat |
+| Africa Markets catalogue | `/api/africa/markets` | Catch-all reaches Supabase `vtg-api`; this route is not yet implemented there | Port the existing planning/reference catalogue into Supabase or return a documented not-implemented response; do not label it live market intelligence |
 | Inspection request quote/create | `/api/inspections/quote`, `/api/inspections/requests`, `/api/inspections/mine` | Explicit Supabase rewrites to `vtg-inspection-workflow` | Route mapping is in place; authenticated request, pricing, ownership and agent workflow acceptance tests remain |
 | Inspection payment | `/api/inspections/requests/:id/payment/initialize`, `/api/inspections/payment/verify`, `/api/webhooks/paystack` | Explicit Supabase rewrites to `vtg-inspection-payments` | Route mapping is in place; live Paystack initialization, signed webhook verification, idempotency and callback acceptance still need testing |
 | Inspection agent actions | `/api/inspections/requests/agent`, `/api/inspections/requests/:id/:action`, `/api/agent/*` | Explicit Supabase rewrites | Supabase workflow function exists; test role/ownership, assignment, evidence storage and state transitions |
 | Partnership application | `POST /api/partnerships` | Supabase Edge Function `vtg-partnerships` | Private `vtg_partnership_proposals` table; honeypot, input validation and per-IP rate limit. Email uses Resend when configured; otherwise the proposal is still saved and the response says notification is unavailable. Live form/email acceptance remains to be tested |
 | Public VTG AI floating chat | `POST /api/ai/public-chat` | No matching explicit rewrite; no matching public route found in the inspected Express route mounts | Not proven connected. Existing `vtg-ai-assistant` function is for assistant chat workflows but is not automatically a public endpoint; design a safe public endpoint/rate-limit model |
-| Public market intelligence tools | `/api/market-intelligence/tools/contract`, `/landed-cost/estimate` | Express endpoints are authenticated and currently fall through to Railway | Existing server routes; not yet replaced by a verified Supabase implementation |
+| Public market intelligence tools | `GET /api/market-intelligence/tools/contract`, `POST /api/market-intelligence/tools/landed-cost/estimate` | Explicit Supabase rewrites to `vtg-market-intelligence/tools/*` | Implemented in Edge Function v16+; authenticated active buyer, supplier, bank or admin; landed cost remains indicative and uses user-supplied rates |
 | Trade Atlas | Bundled port/airport reference data, map libraries and local map scripts | Mostly static reference data; map tiles/geocoding are external browser dependencies | Not a live port-operation or verified supplier-location feed; distinguish static reference locations from operational status |
-| Contact | `mailto:` URI generated in browser | No server-side API submission | Not persisted to VTG; should become a Supabase enquiry record with staff routing and a clear fallback |
+| Contact | `POST /api/contact`; staff inbox `GET /api/contact/admin` | Supabase Edge Function `vtg-contact-enquiries` | Private RLS table, consent, honeypot, hashed-IP rate limit, optional Resend notification and staff-only inbox; live form/email acceptance still required |
 | Sourcing page | Static informational page in the inspected source | No form/API submission found in first pass | Needs a real request workflow; marketplace quote RPC can be reused only where its data model genuinely fits |
 | Product verification | Static informational page in first pass | No live lookup route found | Needs a defined verification record/provider and secure result policy before promising live verification |
 
@@ -75,7 +75,7 @@ The Railway Express server mounts these public-relevant route groups:
 
 The inspection Express router currently exposes buyer quote/request/payment actions and agent/admin actions. The Supabase inspection workflow function has direct Supabase implementations for buyer pricing/request creation, buyer request listing, staff/agent queues, assignment, status updates and evidence metadata/storage. The current Vercel rewrites cover only agent/staff action URL shapes, not the full buyer request lifecycle.
 
-The Supabase market-intelligence Edge Function fetches and normalises external news sources, but the public Trade Feed still requests the legacy `/api/market-intelligence/news` path. A route mapping and response-contract comparison are required before switching it.
+The Supabase market-intelligence Edge Function now serves public news, authenticated trade-statistics retrieval, provider-contract discovery and indicative landed-cost estimates. The public Trade Feed continues to use the compatible `/api/market-intelligence/news` path.
 
 ## 4. Risk-ranked migration queue
 
@@ -99,21 +99,21 @@ This is the strongest existing public-to-Supabase path and should be the first f
 
 ### P2 — Trade Feed and public news
 
-- Compare Express `/api/market-intelligence/news` response shape with Supabase `vtg-market-intelligence`.
-- Verify source attribution, timestamps, stale/unknown handling, deduplication and failure behaviour.
+- Verify source attribution, timestamps, seven-day freshness filtering, deduplication and provider-failure behaviour on `vtg-market-intelligence/news`.
+- Verify authenticated `/trade`, `/tools/contract` and `/tools/landed-cost/estimate` using buyer, supplier, bank and admin sessions.
 - Verify the Supabase trade-feed tables, RLS, media bucket policies, moderation and signed-in post/comment/reaction/follow paths.
-- Only then move the Trade Feed URLs from Railway to Supabase-backed endpoints.
+- These routes are already mapped to Supabase; do not reintroduce Railway.
 
 ### P3 — Inspection journey
 
 - Align the public buyer quote/create routes with the Supabase workflow function.
 - Verify the payment Edge Function, Paystack initialization, callback, signed webhook verification and atomic payment confirmation.
-- Preserve the current payment route on Railway until the complete paid-request journey is proven against the live provider.
+- Keep the inspection and payment routes on their Supabase Edge Functions; complete provider test-mode and signed-webhook acceptance before treating payment workflows as production-verified.
 - Keep agent evidence uploads private and enforce inspection ownership/assignment checks.
 
 ### P4 — Partnership, contact and public AI
 
-- Partnership submissions now create durable private Supabase records. Contact is still a `mailto:` flow and needs its own persisted enquiry workflow and staff routing.
+- Partnership submissions now create durable private Supabase records. Contact enquiries now have a private Supabase intake and staff-only inbox; live submission, staff review and email-delivery acceptance remain.
 - Public AI needs a dedicated public-safe handler with rate limits, abuse controls, input limits, no provider secrets in the browser, and a clear handoff to a recorded enquiry.
 - Confirm email delivery and retry/error logging independently from database persistence.
 
@@ -128,7 +128,7 @@ This is the strongest existing public-to-Supabase path and should be the first f
 1. **Marketplace acceptance test** against production Supabase (read products, create a test quote request using a controlled test account, confirm buyer/supplier visibility, then clean up the test record safely).
 2. **Trade Feed parity review**: compare schemas, RLS, storage bucket policies and response contracts before changing rewrites.
 3. **Inspection parity review**: buyer create/quote and payments before changing the route map.
-4. **Partnership/contact persistence**: add Supabase record creation and staff inbox integration.
+4. **Partnership/contact acceptance**: submit controlled test proposals and enquiries, verify staff-only inbox visibility and email delivery status.
 5. **Public AI connection**: dedicated public function and safe usage controls.
 6. **Only after these pass**: migrate individual routes and gradually remove the Railway fallback.
 
