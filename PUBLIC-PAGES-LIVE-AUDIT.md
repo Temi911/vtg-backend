@@ -33,6 +33,10 @@ However, the catch-all `/api/:path*` rewrite now points to the Supabase `vtg-api
 
 The shared browser auth script, `vtg-supabase-auth.js`, initialises the configured Supabase project directly using its publishable key. The publishable key is expected in a browser client; service-role or secret keys must never be exposed there.
 
+## Email preference migration — 18 November 2026
+
+`vtg-email-preferences` is ACTIVE (v3). `vtg-email` is ACTIVE (v12) and now adds a fresh Supabase preference link to onboarding emails. The signup trigger stores the optional `marketing_subscribed` choice (default false); existing Auth metadata was backfilled without overwriting any existing preference. Token consumption and the opt-out update run in one database transaction through a service-role-only RPC. Both preference tables have RLS enabled and direct `anon`/`authenticated` privileges revoked. Marketing email event types are suppressed unless the recipient has explicitly opted in; transactional onboarding, security, account and trade messages remain available. The Vercel rewrites are committed but must reach a READY production deployment, and Resend delivery still needs an end-to-end test with the configured Edge Function secrets.
+
 ## First-pass page inventory
 
 Status labels describe code evidence only, not a completed live browser test.
@@ -79,7 +83,7 @@ Status labels describe code evidence only, not a completed live browser test.
 3. Contact: run a controlled POST submission, verify the returned reference, private database record, email status and staff-only inbox.
 4. Partnership application: verify durable submission, reference number, notifications and staff review queue.
 5. Authentication: verify `/signin.html`, each role-specific signup page and `/api/auth/me` using active and pending accounts.
-6. Preferences: authenticated preference reads and language updates are implemented in `vtg-api`; the former `/api/auth/email-preferences/:token` link now has a Supabase replacement using private preference/token tables, SHA-256 token hashes, seven-day expiry and explicit POST confirmation. Old PostgreSQL tokens cannot be carried over and remain invalid.
+6. Preferences: authenticated preference reads and language updates are implemented in `vtg-api`. The old `/api/auth/email-preferences/:token` route now maps to a Supabase-issued 256-bit token stored only as a SHA-256 hash, expires after seven days, and requires an explicit POST confirmation (GET is read-only). Signup consent is persisted from Supabase Auth metadata, existing Supabase metadata was backfilled without overwriting saved choices, and marketing-event sends are suppressed unless the user opted in. Old PostgreSQL tokens cannot be carried over and remain invalid. Supabase functions are deployed; Vercel production routing and real Resend delivery still require verification.
 
 ### P2 — Public information and intelligence
 
