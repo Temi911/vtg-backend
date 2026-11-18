@@ -131,9 +131,9 @@ async function loadTradeStatistics(url:URL){
 }
 
 async function loadNews(){
-  const query='("Africa China trade" OR "Nigeria customs" OR "Nigeria imports" OR "shipping ports" OR "freight logistics" OR "South Korea trade" OR "trade tariffs" OR "supply chain")';
-  const url="https://api.gdeltproject.org/api/v2/doc/doc?query="+encodeURIComponent(query)+"&mode=ArtList&format=json&maxrecords=50&sort=HybridRel&timespan=24h";
-  const response=await fetch(url,{headers:{Accept:"application/json","User-Agent":"VTG-Market-Intelligence/1.0"},signal:AbortSignal.timeout(15000)});
+  const query='("Africa China trade" OR "Nigeria customs" OR "Nigeria imports" OR "shipping ports" OR "freight logistics" OR "South Korea trade")';
+  const url="https://api.gdeltproject.org/api/v2/doc/doc?query="+encodeURIComponent(query)+"&mode=ArtList&format=json&maxrecords=20&sort=DateDesc&timespan=24h";
+  const response=await fetch(url,{headers:{Accept:"application/json","User-Agent":"VTG-Market-Intelligence/1.0"},signal:AbortSignal.timeout(20000)});
   if(!response.ok)throw new Error("News discovery source returned HTTP "+response.status);
   const payload=await response.json();
   const seen=new Set<string>();
