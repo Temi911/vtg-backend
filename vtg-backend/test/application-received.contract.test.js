@@ -12,7 +12,10 @@ test('sign-up receipts explain verification, the email, and offer Back to home',
   for(const f of ['supplier-signup.html','bank-signup.html']){
     const h=rd(f);
     assert.match(h,/Back to home/);
-    assert.match(h,/your dashboard will be opened to you/);
+    assert.match(h,/APPLICATION RECEIPT EMAIL SENT/);
+    assert.match(h,/RECEIPT EMAIL NOT CONFIRMED/);
+    assert.match(h,/If approved, your /);
+    assert.match(h,/separate company-document verification process/);
     assert.match(h,/vtgReceiptContinue'\)\.onclick=\(\)=>\{location\.href='\/';\}/,f);
     assert.doesNotMatch(h,/onclick=\(\)=>\{location\.href='\/bank-trade-os\.html';\}/,f);
   }

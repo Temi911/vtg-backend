@@ -35,7 +35,12 @@ Deno.serve(async (req: Request) => {
       .select("id,user_id,requested_role,organization_name,country,registration_reference,message,application_data,status,reviewer_id,reviewer_notes,created_at,reviewed_at,applicant:profiles!role_requests_user_id_fkey(email,full_name)")
       .order("created_at", { ascending: false }).limit(200);
     if (result.error) return send({ error: "Could not load role requests" }, 500);
-    return send({ requests: result.data ?? [] });
+    const requests = await Promise.all((result.data ?? []).map(async (request) => {
+      // Fail closed: if the Auth lookup is unavailable, administrators cannot review this applicant.
+      const applicantAuth = await admin.auth.admin.getUserById(request.user_id);
+      return { ...request, email_confirmed: Boolean(applicantAuth.data?.user?.email_confirmed_at) };
+    }));
+    return send({ requests });
   }
 
   const body = await req.json().catch(() => ({}));
