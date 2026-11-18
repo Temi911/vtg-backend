@@ -34,7 +34,7 @@ Status labels describe code evidence only, not a completed live browser test.
 | `frontend-v3.html` | Main landing page; shared interaction scripts; API calls include auth and market dashboard | Mixed: several live interactions, some API dependencies need route-by-route tracing |
 | `marketplace.html` | Supabase client; product catalogue and quote-request RPC `vtg_create_trade_quote_request` | Strong Supabase foundation; verify product visibility, RLS, empty state, quote creation and buyer handoff |
 | `sourcing-suppliers.html` | Mostly content and shared shell; no form or API call found in first pass | Primarily informational; needs a real sourcing-request journey |
-| `trade-feed.html` | Calls `/api/marketplace`, `/api/market-intelligence/news`, `/api/integrations/news`, feed and media endpoints | Mixed backend dependencies; public read, signed-in posting, media and moderation need separate tests |
+| `trade-feed.html` | Supabase-backed `/api/marketplace/*`, `/api/media/feed/:postId`, and public `/api/market-intelligence/news` | Public posts, comments, reactions, follows, media and source-linked news now route to Supabase; moderation and authenticated end-to-end actions still require acceptance tests |
 | `trade-atlas.html` | Large interactive map; local port dataset and map scripts | Map data is largely bundled/static; distinguish reference data from live port/operational status |
 | `market-intelligence.html` | Loads `vtg-market-intelligence-live.js`; sample/placeholder markers in page | Needs verification of live sources, freshness and graceful unavailable states |
 | `intelligence-centre.html` | Four forms; calls auth and market-intelligence APIs; sample/demo/placeholder markers | Mixed; tools need endpoint and data-provenance audit |
