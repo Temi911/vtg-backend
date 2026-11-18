@@ -30,7 +30,15 @@ test('preferences API is authenticated and scoped to the signed-in profile', () 
   assert.ok(api.includes('Choose a supported language'));
 });
 
-test('legacy unsubscribe token route is not silently claimed as migrated', () => {
+test('email preference token routes target the Supabase preference function', () => {
   const config = JSON.parse(root('vercel.json'));
-  assert.ok(!config.rewrites.some((route) => route.source === '/api/auth/email-preferences/:token'));
+  const routes = config.rewrites;
+  const issue = routes.findIndex((route) => route.source === '/api/auth/email-preferences');
+  const confirm = routes.findIndex((route) => route.source === '/api/auth/email-preferences/confirm');
+  const token = routes.findIndex((route) => route.source === '/api/auth/email-preferences/:token');
+  const fallback = routes.findIndex((route) => route.source === '/api/:path*');
+  assert.ok(issue >= 0 && confirm >= 0 && token >= 0);
+  assert.ok(issue < fallback && confirm < fallback && token < fallback);
+  assert.ok(routes[confirm].destination.includes('/functions/v1/vtg-email-preferences/confirm'));
+  assert.ok(routes[token].destination.includes('/functions/v1/vtg-email-preferences/confirm'));
 });
