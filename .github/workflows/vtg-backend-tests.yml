@@ -79,6 +79,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Install PostgreSQL client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Prepare Supabase roles for private partnership migration
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "create role anon; create role authenticated; create role service_role;"
+      - name: Apply the private partnership proposal migration
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20261118094818_create_vtg_partnership_proposals.sql
       - name: Build the isolated Supabase schema contract
         run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/fixtures/vtg_trade_workflow_hardening_prerequisites.sql
       - name: Apply the VTG workflow-hardening migration
@@ -105,3 +109,4 @@ jobs:
           deno check supabase/functions/vtg-wallet/index.ts
           deno check supabase/functions/vtg-marketplace/index.ts
           deno check supabase/functions/vtg-market-intelligence/index.ts
+          deno check supabase/functions/vtg-partnerships/index.ts
