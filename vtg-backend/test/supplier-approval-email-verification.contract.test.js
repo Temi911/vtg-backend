@@ -19,12 +19,12 @@ test('supplier and bank role decisions require verified email at database level'
 test('administrator queue marks unverified applicants and locks decisions',()=>{
  assert.match(edge,/admin\.auth\.admin\.getUserById/);
  assert.match(edge,/email_confirmed:/);
- assert.match(adminPage,/r\.email_confirmed===true/);
+ assert.match(adminPage,/r\.email_confirmed\?/);
  assert.match(adminPage,/disabled/);
  assert.match(adminPage,/Email confirmation required before this application can be reviewed/);
 });
 test('supplier registration records supplier intent but does not grant the role at signup',()=>{
  assert.match(signup,/requested_role:'supplier'/);
  assert.match(signup,/verifySignupCode\(email,code\)/);
- assert.match(signup,/awaiting VTG administrator approval/i);
+ assert.match(signup,/wait for VTG administrator approval/i);
 });
