@@ -4,7 +4,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 const cors = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Content-Type": "application/json",
 };
 const reply = (body: unknown, status = 200) =>
@@ -87,6 +87,12 @@ async function loadNews(){
 }
 Deno.serve(async(req:Request)=>{
   if(req.method==="OPTIONS")return new Response("ok",{headers:cors});
+  const pathParts=new URL(req.url).pathname.split("/").filter(Boolean);
+  const routePath=pathParts.slice(pathParts.indexOf("vtg-market-intelligence")+1).join("/");
+  if(req.method==="GET" && routePath==="news"){
+    try{return reply({ok:true,...await loadNews()});}
+    catch(error){return reply({ok:false,error:"Trade news discovery is temporarily unavailable.",items:[],count:0,fetchedAt:new Date().toISOString()},503);}
+  }
   if(req.method!=="POST")return reply({error:"Method not allowed"},405);
   try{
     await getBuyer(req);
