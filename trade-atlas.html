@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#101820">
 <title>Trade Atlas | Vintage Trade Global</title>
 <meta name="description" content="Explore public trade corridors, ports and logistics hubs across Africa and Asia with the VTG Trade Atlas. Private shipment details remain in authorized workspaces.">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -85,9 +85,11 @@ html[data-theme="dark"] .searchRow input{background:#091219;color:var(--text);bo
 <div id="vsFooter"></div>
 
 <script src="/vtg-ports-data.js?v=20261115-ports-4"></script><script src="/vtg-port-gallery.js?v=20261115-ports-4"></script>
-<script src="https://unpkg.com/globe.gl" defer></script>
+<script src="/vendor/globe/globe.gl.min.js" defer></script>
+<script src="/vtg-space.js?v=20261118-space-1" defer></script>
+<script src="/vtg-map-core.js?v=20261118-map-1" defer></script>
 <script src="https://unpkg.com/lucide@latest" defer></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="/vendor/leaflet/leaflet.js" defer></script>
 <script>
 (function(){
 'use strict';
@@ -188,9 +190,7 @@ function init(){
  if(window.Globe){
   try{
    globe=window.Globe()(el)
-    .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
-    .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
-    .showAtmosphere(true).atmosphereColor('#55bfe8').atmosphereAltitude(.18)
+    .showAtmosphere(true)
     .pointsData(hubs.concat(window.VTGPortGallery?window.VTGPortGallery.globePoints():[])).pointLat('lat').pointLng('lng').pointColor('color').pointAltitude(.018).pointRadius(d=>d.r||(d.type==='Sea port' ? .06 : .05))
     .pointLabel(()=>'')
     .arcsData(arcs).arcStartLat('startLat').arcStartLng('startLng').arcEndLat('endLat').arcEndLng('endLng')
@@ -203,60 +203,25 @@ function init(){
    document.getElementById('zoomOut').addEventListener('click',()=>{const p=globe.pointOfView();globe.pointOfView({lat:p.lat,lng:p.lng,altitude:Math.min(4,p.altitude*1.28)},450)});
    document.getElementById('resetGlobe').addEventListener('click',()=>globe.pointOfView({lat:18,lng:55,altitude:2.25},800));
    const controls=globe.controls();if(controls){controls.autoRotate=true;controls.autoRotateSpeed=.28;controls.enableDamping=true;}
-   const dayTexture='https://unpkg.com/three-globe/example/img/earth-day.jpg';
-   const nightTexture='https://unpkg.com/three-globe/example/img/earth-night.jpg';
-    const applyGlobeAppearance=()=>{const theme=document.documentElement.getAttribute('data-theme')||'dark';globe.globeImageUrl(theme==='light'?dayTexture:nightTexture);globe.backgroundImageUrl(theme==='light'?'':'https://unpkg.com/three-globe/example/img/night-sky.png');globe.backgroundColor(theme==='light'?'#edf4f8':'#071321');el.style.background=theme==='light'?'radial-gradient(ellipse at center,#edf4f8 0%,#cbdde8 72%)':'radial-gradient(ellipse at center,#15364b 0%,#071321 70%)';};
-   applyGlobeAppearance();
-    document.addEventListener('vtg:themechange',applyGlobeAppearance);
-     new MutationObserver(applyGlobeAppearance).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
-    window.setInterval(applyGlobeAppearance,60000);
+   window.VTGSpace.attach(globe,el);
   }catch(e){console.error('VTG Trade Atlas globe failed to initialize:',e);document.getElementById('globeFallback').style.display='flex';}
  }else{console.error('VTG Trade Atlas globe library did not load.');document.getElementById('globeFallback').style.display='flex';}
  const initializeAtlasMap=()=>{
   const mapNode=document.getElementById('locationMap');
   if(!mapNode)return false;
   if(!window.L){
-   mapNode.innerHTML='<div style="height:100%;min-height:300px;display:grid;place-items:center;padding:24px;text-align:center;color:#233746;background:#eef4f6"><div><strong>Connecting to the interactive map…</strong><p style="margin:8px 0 0">Trying an alternate map-library source. A network that blocks map services may still prevent tiles from loading.</p></div></div>';
-   console.error('VTG Trade Atlas: primary Leaflet source did not load; trying the alternate CDN.');
+   mapNode.innerHTML='<div style="height:100%;min-height:300px;display:grid;place-items:center;padding:24px;text-align:center;color:#233746;background:#eef4f6"><div><strong>Loading the interactive map…</strong></div></div>';
    if(!mapNode.dataset.vtgLeafletFallback){
     mapNode.dataset.vtgLeafletFallback='loading';
-    const fallbackCss=document.createElement('link');
-    fallbackCss.rel='stylesheet';
-    fallbackCss.href='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css';
-    fallbackCss.crossOrigin='anonymous';
-    document.head.appendChild(fallbackCss);
-    const fallbackScript=document.createElement('script');
-    fallbackScript.src='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js';
-    fallbackScript.crossOrigin='anonymous';
-    fallbackScript.onload=()=>{mapNode.dataset.vtgLeafletFallback='loaded';try{initializeAtlasMap();}catch(error){console.error('VTG Atlas alternate map initialization failed:',error);}};
-    fallbackScript.onerror=()=>{mapNode.dataset.vtgLeafletFallback='failed';mapNode.innerHTML='<div style="min-height:300px;display:grid;place-items:center;padding:24px;text-align:center;color:#233746;background:#eef4f6"><div><strong>Interactive map service is unavailable on this connection.</strong><p style="margin:8px 0 0">Please check your connection and reload. The map uses public map services and does not require a VTG account.</p></div></div>';};
-    document.head.appendChild(fallbackScript);
+    const boot=()=>window.VTGMap.ensureLeaflet().then(()=>{mapNode.dataset.vtgLeafletFallback='loaded';initializeAtlasMap();}).catch(error=>{mapNode.dataset.vtgLeafletFallback='failed';console.error('VTG Atlas map library failed:',error);mapNode.innerHTML='<div style="min-height:300px;display:grid;place-items:center;padding:24px;text-align:center;color:#233746;background:#eef4f6"><div><strong>The map could not start.</strong><p style="margin:8px 0 0">Please reload the page.</p></div></div>';});
+    if(window.VTGMap)boot();else{const t=document.createElement('script');t.src='/vtg-map-core.js?v=20261118-map-1';t.onload=boot;document.head.appendChild(t);}
    }
    return false;
   }
   mapNode.innerHTML='';
-  mapNode.style.background='#eaf0f4';
   const map=L.map(mapNode,{worldCopyJump:true,zoomControl:true,scrollWheelZoom:true,minZoom:2,maxZoom:18,preferCanvas:true}).setView([17,38],2);
   atlasMap=map;
-  const mapStatus=document.createElement('div');
-  mapStatus.style.cssText='position:absolute;z-index:1000;top:10px;left:50%;transform:translateX(-50%);max-width:90%;padding:8px 12px;border-radius:9px;background:#fff;color:#243746;border:1px solid #ccd8df;box-shadow:0 2px 10px #0002;font:600 12px Manrope,Arial,sans-serif;display:none';
-  mapNode.appendChild(mapStatus);
-  let loadedTiles=0,failedTiles=0,fallbackStarted=false;
-  const watchTiles=layer=>{
-   layer.on('tileload',()=>{loadedTiles++;mapStatus.style.display='none';});
-   layer.on('tileerror',()=>{
-    failedTiles++;
-    if(!loadedTiles&&failedTiles>=4&&!fallbackStarted){
-     fallbackStarted=true;
-     mapStatus.innerHTML='Map tiles are unavailable on this connection. <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">Open OpenStreetMap</a> or reload to retry.';mapStatus.style.display='block';
-    }
-   });
-  };
-  const baseTiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
-   attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
-   maxZoom:19,tileSize:256,crossOrigin:true
-  }).addTo(map);
-  watchTiles(baseTiles);
+  window.VTGMap.basemap(L,map);
   const hubIcon=(hub)=>L.divIcon({
    className:'vtg-atlas-marker-wrap',
    html:'<span style="display:block;width:6px;height:6px;border-radius:50%;background:'+(hub.type==='Airport'?'#c88a18':'#c83232')+';border:1.5px solid #fff;box-shadow:0 1px 7px #12212b99"></span>',

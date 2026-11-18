@@ -57,16 +57,11 @@
       document.head.appendChild(script);
     });
   }
-  async function ensureLeaflet(){
-    if(window.L)return;
-    try{
-      await loadLeafletCss('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
-      await loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js','data-vtg-leaflet-primary');
-    }catch(_){
-      await loadLeafletCss('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css');
-      await loadScript('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js','data-vtg-leaflet-fallback');
-    }
+  function loadCore(){
+    if(window.VTGMap)return Promise.resolve();
+    return new Promise(function(res,rej){var s=document.createElement('script');s.src='/vtg-map-core.js?v=20261118-map-1';s.onload=function(){window.VTGMap?res():rej(Error('map core'))};s.onerror=function(){rej(Error('map core'))};document.head.appendChild(s)});
   }
+  function ensureLeaflet(){return loadCore().then(function(){return window.VTGMap.ensureLeaflet()});}
   async function open(){
     const drawer=document.getElementById('mapDrawer');if(!drawer)return;
     if(window.VTGWorkspaceAtlas?.map){try{window.VTGWorkspaceAtlas.map.remove();}catch(_){}window.VTGWorkspaceAtlas=null;}
@@ -82,9 +77,7 @@
       if(!window.L)throw Error('Leaflet library unavailable');
       const map=L.map(mapNode,{worldCopyJump:true,zoomControl:false,scrollWheelZoom:true,minZoom:2,maxZoom:18,preferCanvas:true}).setView([17,38],2);
       const layerGroups={countries:L.layerGroup().addTo(map),ports:L.layerGroup().addTo(map),hubs:L.layerGroup().addTo(map),routes:L.layerGroup().addTo(map)};
-      let loadedTiles=0,failedTiles=0;
-      const watchTiles=layer=>{layer.on('tileload',()=>{loadedTiles++;status.style.display='none';});layer.on('tileerror',()=>{failedTiles++;if(!loadedTiles&&failedTiles>=4){status.innerHTML='Map tiles are unavailable on this connection. <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener" style="color:#fff;text-decoration:underline">Open OpenStreetMap</a> or reload to retry.';status.style.display='block';}});};
-      const base=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'}).addTo(map);watchTiles(base);
+      const basemap=window.VTGMap.basemap(L,map);
       const colors={countries:'#078c91',ports:'#e46b42',hubs:'#7754cf'};
       const addPoints=(items,key,type)=>{(items||[]).forEach(p=>{if(!Number.isFinite(+p.lat)||!Number.isFinite(+p.lon))return;const marker=L.circleMarker([+p.lat,+p.lon],{radius:key==='countries'?1.8:key==='ports'?2.6:key==='hubs'?2.8:2.6,color:'#fff',weight:1,fillColor:colors[key],fillOpacity:.95});marker.bindPopup('<div class="vtgLeafletPopup"><strong>'+esc(p.name)+'</strong><small>'+esc(p.country||'Trade market')+' · '+esc(type)+'</small><p style="margin:7px 0 0;color:#526b79">Coordinates: '+(+p.lat).toFixed(4)+', '+(+p.lon).toFixed(4)+'</p></div>');marker.addTo(layerGroups[key]);marker.on('click',()=>{if(key!=='countries'&&window.VTGPortGallery){try{window.VTGPortGallery.open({name:p.name,lat:+p.lat,lon:+p.lon,country:p.country,type:type});}catch(_){}}status.textContent=p.name+(p.country?' · '+p.country:'')+' — '+type;status.style.display='block';});});};
       if(window.VTGPortGallery)window.VTGPortGallery.addToLeaflet(L,map);addPoints(D.countries,'countries','country / market');addPoints(D.ports,'ports','port / terminal');addPoints(D.hubs,'hubs','trade hub');
@@ -103,7 +96,7 @@
       window.setTimeout(()=>map.invalidateSize({pan:false}),160);
       window.addEventListener('resize',()=>map.invalidateSize({pan:false}),{passive:true});
       drawer.addEventListener('transitionend',()=>map.invalidateSize({pan:false}),{once:true});
-    }catch(error){console.error('VTG workspace Atlas could not start:',error);status.textContent='Map setup failed on this connection. Check your internet connection and reload; the Atlas requires a public map library and tile service.';status.style.display='block';}
+    }catch(error){console.error('VTG workspace Atlas could not start:',error);status.textContent='The map could not start. Please reload the page; if it keeps happening, contact VTG support.';status.style.display='block';}
   }
   document.addEventListener('click',event=>{
     const trigger=event.target?.closest?.('#atlasHeaderBtn, #mapBtn, [data-vtg-open-atlas]');

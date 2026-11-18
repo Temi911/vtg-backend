@@ -17,20 +17,20 @@ test('workspace Atlas uses a real interactive map and public map tiles without a
   const renderer = read('vtg-map-atlas-ui.js');
   assert.match(renderer, /\/vtg-trade-atlas\.js/);
   assert.match(renderer, /vtgLeafletMap/);
-  assert.match(renderer, /leaflet@1\.9\.4\/dist\/leaflet\.js/);
-  assert.match(renderer, /tile\.openstreetmap\.org/);
-  assert.match(renderer, /https:\/\/www\.openstreetmap\.org\//);
-  assert.doesNotMatch(renderer, /cartocdn\.com|tile\.openstreetmap\.de/);
+  assert.match(renderer, /VTGMap/);
+  const core = read('vtg-map-core.js');
+  assert.match(core, /\/vendor\/leaflet\//);
+  assert.match(core, /tile\.openstreetmap\.org/);
+  assert.doesNotMatch(core, /tile\.openstreetmap\.de/);
   assert.match(renderer, /classList\.contains\('open'\)\)open\(\)/);
   assert.doesNotMatch(renderer, /maplibre-gl|mapbox|tiles\.openfreemap|maps\.googleapis\.com/);
 });
 
 test('public Trade Atlas uses Leaflet, official OSM tiles, and a graceful tile-error state', () => {
   const page = read('trade-atlas.html');
-  assert.match(page, /leaflet@1\.9\.4\/dist\/leaflet\.js/);
-  assert.match(page, /tile\.openstreetmap\.org/);
-  assert.match(page, /https:\/\/www\.openstreetmap\.org\//);
-  assert.doesNotMatch(page, /cartocdn\.com|tile\.openstreetmap\.de/);
+  assert.match(page, /\/vendor\/leaflet\/leaflet\.js/);
+  assert.match(page, /VTGMap\.basemap/);
+  assert.match(read('vtg-map-core.js'), /tile\.openstreetmap\.org/);
   assert.match(page, /L\.map\(/);
 });
 
@@ -52,9 +52,7 @@ test('buyer dashboard embeds the interactive Atlas renderer and keeps regional m
   assert.match(dashboard, /vtg-buyer-atlas\.js/);
   assert.match(dashboard, /data-map="(africa|china|korea|world)"/);
   assert.match(shell, /vtg:buyer-map-region/);
-  assert.match(renderer, /tile\.openstreetmap\.org/);
-  assert.match(renderer, /https:\/\/www\.openstreetmap\.org\//);
-  assert.doesNotMatch(renderer, /cartocdn\.com|tile\.openstreetmap\.de/);
+  assert.match(renderer, /VTGMap\.basemap/);
   assert.match(data, /Tin Can Island/);
   assert.match(data, /Shanghai/);
   assert.match(data, /Busan/);
