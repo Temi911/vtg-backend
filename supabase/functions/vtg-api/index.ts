@@ -129,9 +129,9 @@ Deno.serve(async (req: Request) => {
     return respond({ products: productsResult.count ?? 0, orders: ordersResult.count ?? 0, shipments: shipmentsResult.count ?? 0 });
   }
 
-  if (segments[0] === "me" && req.method === "GET") {
+  if ((segments[0] === "me" || (segments[0] === "auth" && segments[1] === "me")) && req.method === "GET") {
     const { data, error } = await supabase.from("profiles")
-      .select("id,email,full_name,phone,role,preferred_language,country,city,is_active,created_at")
+      .select("id,email,full_name,phone,role,account_environment,preferred_language,country,city,is_active,created_at")
       .eq("id", user.id).maybeSingle();
     if (error) return respond({ error: "Could not load profile." }, 500);
     return respond({ user: data });
