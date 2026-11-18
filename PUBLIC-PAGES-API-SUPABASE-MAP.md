@@ -11,7 +11,7 @@ The public site is a Supabase-backed application with some legacy Express source
 
 **Cutover update — 18 November 2026:** The Vercel API catch-all no longer points to Railway. It now points to the active Supabase `vtg-api` Edge Function. The live `vtg-api` source has been copied into `supabase/functions/vtg-api/index.ts` so the deployed handler is tracked in GitHub.
 
-This removes Railway from Vercel API routing, but it does **not** mean every legacy endpoint has Supabase parity. The catch-all function currently implements a limited set of routes (profile, product discovery/publishing, orders, role requests, shipments, letters of credit, conversations/messages, documents, Africa Markets planning catalogue and a health check). Unsupported paths return a Supabase 404 instead of silently reaching Railway. Continue migrating and testing the remaining endpoint groups before calling the backend migration complete.
+This removes Railway from Vercel API routing, but it does **not** mean every legacy endpoint has Supabase parity. The catch-all function currently implements a limited set of routes (profile and `/auth/me` compatibility, product discovery/publishing, orders, role requests, shipments, letters of credit, conversations/messages, documents, Africa Markets planning catalogue and a health check). Unsupported paths return a Supabase 404 instead of silently reaching Railway. Continue migrating and testing the remaining endpoint groups before calling the backend migration complete.
 
 ## 1. Routing truth from `vercel.json`
 
@@ -25,6 +25,8 @@ Current explicit Supabase rewrites:
 | `/api/market-intelligence/trade` | `vtg-market-intelligence/trade` | Authenticated UN Comtrade historical trade-statistics preview |
 | `/api/contact` | `vtg-contact-enquiries` | Public consent-based enquiry intake with private storage |
 | `/api/contact/admin` and `/api/contact/admin/:id` | `vtg-contact-enquiries/admin*` | Staff-admin-only inbox read and status update |
+| `/api/auth/me` | `vtg-api/api/auth/me` | Authenticated Supabase profile lookup compatibility route |
+| `/api/trade/landed-cost` | `vtg-market-intelligence/trade/landed-cost` | Public, bounded Nigeria-only illustrative calculator compatibility route; no tariff lookup or provider call |
 | `/api/admin/account-support` | `vtg-account-support/admin` | Explicit Supabase route |
 | `/api/agent/:path*` | `vtg-inspection-workflow/agent/:path*` | Explicit Supabase route |
 | `/api/inspections/requests/agent` | `vtg-inspection-workflow/requests/agent` | Explicit Supabase route |
@@ -81,7 +83,7 @@ The Railway Express server mounts these public-relevant route groups:
 
 The inspection Express router currently exposes buyer quote/request/payment actions and agent/admin actions. The Supabase inspection workflow function has direct Supabase implementations for buyer pricing/request creation, buyer request listing, staff/agent queues, assignment, status updates and evidence metadata/storage. The current Vercel rewrites cover only agent/staff action URL shapes, not the full buyer request lifecycle.
 
-The Supabase market-intelligence Edge Function now serves public news, authenticated trade-statistics retrieval, provider-contract discovery and indicative landed-cost estimates. The public Trade Feed continues to use the compatible `/api/market-intelligence/news` path.
+The Supabase market-intelligence Edge Function now serves public news, authenticated trade-statistics retrieval, provider-contract discovery and indicative landed-cost estimates. The public Trade Feed and landing-page Market Intelligence panels now use the compatible `/api/market-intelligence/news` path. The legacy public `/api/trade/landed-cost` calculator path is preserved as a Supabase compatibility route and remains Nigeria-only.
 
 ## 4. Risk-ranked migration queue
 
@@ -119,7 +121,7 @@ This is the strongest existing public-to-Supabase path and should be the first f
 
 ### P4 — Partnership, contact and public AI
 
-- Partnership submissions now create durable private Supabase records. Contact enquiries now have a private Supabase intake and staff-only inbox; live submission, staff review and email-delivery acceptance remain.
+- Partnership submissions now create durable private Supabase records. Contact enquiries now have a private Supabase intake and staff-only inbox API; live submission, staff review and email-delivery acceptance remain. Landing-page sign-in/sign-up controls now redirect to the dedicated Supabase Auth pages instead of calling legacy `/api/auth/login` and `/api/auth/signup` endpoints.
 - Public AI needs a dedicated public-safe handler with rate limits, abuse controls, input limits, no provider secrets in the browser, and a clear handoff to a recorded enquiry.
 - Confirm email delivery and retry/error logging independently from database persistence.
 
