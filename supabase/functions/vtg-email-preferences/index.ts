@@ -50,14 +50,14 @@ async function issue(req: Request) {
   });
   if (insertError) return json({ error: "Could not create a preference link." }, 500);
 
-  const appUrl = Deno.env.get("VTG_APP_URL")?.replace(/\/$/, "");
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")?.replace(/\/$/, "");
   const apiKey = Deno.env.get("RESEND_API_KEY");
   const from = Deno.env.get("VTG_EMAIL_FROM");
-  if (!appUrl || !apiKey || !from) {
+  if (!supabaseUrl || !apiKey || !from) {
     await admin.from("vtg_email_preference_tokens").delete().eq("token_hash", tokenHash);
     return json({ error: "Email delivery is not configured for preference links." }, 503);
   }
-  const link = appUrl + "/api/auth/email-preferences/" + raw;
+  const link = supabaseUrl + "/functions/v1/vtg-email-preferences/confirm?token=" + raw;
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: "Bearer " + apiKey, "Content-Type": "application/json" },
@@ -85,7 +85,8 @@ async function confirm(req: Request, token: string) {
     return html(page("Link unavailable", "This preference link is invalid, expired or has already been used."), 404);
   }
   if (req.method === "GET") {
-    const form = `<form method="post" action="/api/auth/email-preferences/confirm"><input type="hidden" name="token" value="${token}"><button style="border:0;background:#702a30;color:white;padding:14px 22px;font-weight:bold;cursor:pointer">Confirm unsubscribe</button></form>`;
+    const actionUrl = (Deno.env.get("SUPABASE_URL") ?? "") + "/functions/v1/vtg-email-preferences/confirm";
+    const form = `<form method="post" action="${escapeHtml(actionUrl)}"><input type="hidden" name="token" value="${token}"><button style="border:0;background:#702a30;color:white;padding:14px 22px;font-weight:bold;cursor:pointer">Confirm unsubscribe</button></form>`;
     return html(page("Confirm your preference", "If you continue, VTG trade and marketing updates will be switched off for your account. Opening this link alone does not change your preference.", form));
   }
   const { data: consumed, error: consumeError } = await admin.rpc("vtg_consume_email_preference_token", {
