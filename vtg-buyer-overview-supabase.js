@@ -5,7 +5,7 @@ const money=(value,currency)=>new Intl.NumberFormat('en-US',{style:'currency',cu
 function set(id,value){const el=$(id);if(el)el.textContent=value}
 function renderActivity(orders,requests){
  const root=$('activity');if(!root)return;
- const entries=[...(orders||[]).map(row=>{const status=String(row.status||'pending').toLowerCase(),awaiting=['draft','pending'].includes(status);return {title:(awaiting?'Quotation request · ':'Order · ')+status.replace(/_/g,' '),detail:awaiting?'Awaiting supplier quotation':'Confirmed trade order',date:row.created_at}}),...(requests||[]).map(row=>({title:'Sourcing request · '+String(row.product||'Request'),detail:'Request status: '+String(row.status||'submitted').replace(/_/g,' '),date:row.created_at}))].sort((a,b)=>new Date(b.date||0)-new Date(a.date||0)).slice(0,5);
+ const entries=[...(orders||[]).map(row=>{const status=String(row.status||'pending').toLowerCase(),title=status==='pending'?'Quotation request · ':status==='draft'?'Draft order · ':'Order · ',detail=status==='pending'?'Awaiting supplier quotation':status==='draft'?'Not yet confirmed':'Confirmed trade order';return {title:title+status.replace(/_/g,' '),detail,date:row.created_at}}),...(requests||[]).map(row=>({title:'Sourcing request · '+String(row.product||'Request'),detail:'Request status: '+String(row.status||'submitted').replace(/_/g,' '),date:row.created_at}))].sort((a,b)=>new Date(b.date||0)-new Date(a.date||0)).slice(0,5);
  root.replaceChildren();
  if(!entries.length){const item=document.createElement('div'),title=document.createElement('strong'),detail=document.createElement('p');title.textContent='No account activity yet';detail.textContent='Your real sourcing requests and orders will appear here when recorded.';item.append(title,detail);root.append(item);return;}
  entries.forEach(entry=>{const item=document.createElement('div'),title=document.createElement('strong'),detail=document.createElement('p');title.textContent=entry.title;const date=entry.date?new Date(entry.date).toLocaleString():'Date not recorded';detail.textContent=entry.detail+' · '+date;item.append(title,detail);root.append(item);});
@@ -43,25 +43,26 @@ async function load(){
  const requestCount=requestsResult.count||requestRows.length;
  const confirmedStatuses=new Set(['confirmed','processing','shipped','in_transit','arrived','customs','delivered','disputed']);
  const confirmedOrders=orders.filter(o=>confirmedStatuses.has(String(o.status||'').toLowerCase()));
- const pendingQuoteOrders=orders.filter(o=>['draft','pending'].includes(String(o.status||'').toLowerCase()));
+ const pendingQuoteOrders=orders.filter(o=>String(o.status||'').toLowerCase()==='pending');
+ const draftOrders=orders.filter(o=>String(o.status||'').toLowerCase()==='draft');
  const total=requestCount+orders.length;
  const completed=confirmedOrders.filter(o=>['delivered','closed'].includes(String(o.status||'').toLowerCase())).length;
  const currencyTotals={};
  confirmedOrders.forEach(o=>{const currency=String(o.currency||'USD').toUpperCase();currencyTotals[currency]=(currencyTotals[currency]||0)+(Number(o.quantity)||0)*(Number(o.unit_price)||0)});
  const currencies=Object.keys(currencyTotals);
  let tradeValue='—',valueNote='No confirmed trade orders yet';
- if(currencies.length===1){tradeValue=money(currencyTotals[currencies[0]],currencies[0]);valueNote='Recorded order value · '+currencies[0]}
+ if(currencies.length===1){tradeValue=money(currencyTotals[currencies[0]],currencies[0]);valueNote='Confirmed trade value · '+currencies[0]}
  else if(currencies.length>1){tradeValue='Multiple';valueNote=currencies.map(currency=>currency+' '+currencyTotals[currency].toLocaleString('en-US',{maximumFractionDigits:0})).join(' · ')}
  const cartItems=cartResult.data?.items;
  const cartLines=Array.isArray(cartItems)?cartItems.length:(cartItems&&typeof cartItems==='object'?Object.keys(cartItems).length:0);
- set('buyerMetricTransactions',String(total));set('buyerMetricTransactionsNote',requestCount+' sourcing requests · '+pendingQuoteOrders.length+' quote requests awaiting response · '+confirmedOrders.length+' confirmed orders');
+ set('buyerMetricTransactions',String(total));set('buyerMetricTransactionsNote',requestCount+' sourcing requests · '+pendingQuoteOrders.length+' quote requests awaiting response · '+draftOrders.length+' draft orders · '+confirmedOrders.length+' confirmed orders');
  set('buyerMetricValue',tradeValue);set('buyerMetricValueNote',valueNote);
  set('buyerMetricCompleted',String(completed));set('buyerMetricCompletedNote','Of '+confirmedOrders.length+' confirmed orders');
  set('statRfqs',String(rfqResult.count||0));set('statCart',String(cartLines));
  set('statFeed',String(suppliersResult.count||0));set('statVerify',String(documentsResult.count||0));
  renderActivity(orders,requestRows);
  if(total===0){set('buyerOverviewAnalyticsTitle','No recorded transactions yet');set('buyerOverviewAnalyticsText','Your buyer account is connected. Once you submit a sourcing request or confirm an order, verified activity will appear here automatically.');}
- else{set('buyerOverviewAnalyticsTitle','Your account activity is up to date');set('buyerOverviewAnalyticsText',total+' trade record(s): '+requestCount+' sourcing request(s), '+pendingQuoteOrders.length+' quotation request(s) awaiting supplier response and '+confirmedOrders.length+' confirmed order(s). Trade value includes confirmed orders only.');}
+ else{set('buyerOverviewAnalyticsTitle','Your account activity is up to date');set('buyerOverviewAnalyticsText',total+' trade record(s): '+requestCount+' sourcing request(s), '+pendingQuoteOrders.length+' quotation request(s) awaiting supplier response, '+draftOrders.length+' draft order(s) and '+confirmedOrders.length+' confirmed order(s). Trade value includes confirmed orders only.');}
 }
 function init(){
  if(!$('buyerOverviewMetrics'))return;
