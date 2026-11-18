@@ -42,7 +42,7 @@ async function listFeed(db:SupabaseClient,limit:number) {
   if(error) throw error;
   const ids=(posts??[]).map(p=>p.id), authors=[...new Set((posts??[]).map(p=>p.author_id))];
   const [profiles,media,comments,reactions]=await Promise.all([
-    authors.length?db.from("profiles").select("id,full_name,role,country").in("id",authors):Promise.resolve({data:[],error:null}),
+    authors.length?db.from("vtg_public_trade_profiles").select("id,full_name,role,country").in("id",authors):Promise.resolve({data:[],error:null}),
     ids.length?db.from("vtg_trade_post_media").select("post_id,media_type,public_url,thumbnail_url,sort_order").in("post_id",ids).order("sort_order"):Promise.resolve({data:[],error:null}),
     ids.length?db.from("vtg_trade_post_comments").select("post_id").in("post_id",ids):Promise.resolve({data:[],error:null}),
     ids.length?db.from("vtg_trade_post_reactions").select("post_id").in("post_id",ids):Promise.resolve({data:[],error:null})
@@ -82,7 +82,7 @@ Deno.serve(async(req:Request)=>{
       const {data:comments,error}=await db.from("vtg_trade_post_comments").select("id,post_id,author_id,body,created_at").eq("post_id",postId).order("created_at");
       if(error) throw error;
       const authors=[...new Set((comments??[]).map(c=>c.author_id))];
-      const {data:profiles,error:pe}=authors.length?await db.from("profiles").select("id,full_name,role").in("id",authors):{data:[],error:null};
+      const {data:profiles,error:pe}=authors.length?await db.from("vtg_public_trade_profiles").select("id,full_name,role").in("id",authors):{data:[],error:null};
       if(pe) throw pe;
       const map=new Map((profiles??[]).map(p=>[p.id,p]));
       return reply({comments:(comments??[]).map(c=>({...c,full_name:map.get(c.author_id)?.full_name??"VTG member",role:map.get(c.author_id)?.role??"buyer"}))});
