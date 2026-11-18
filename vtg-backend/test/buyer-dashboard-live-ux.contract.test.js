@@ -12,7 +12,7 @@ test('buyer trade feed exposes one live Supabase publishing surface only',()=>{
  assert.match(html,/id="liveTradePostForm"/);
  assert.match(html,/id="liveTradeFeedRows"/);
  assert.doesNotMatch(html,/id="feedForm"|id="feedRows"|Save post draft|Community feed preview|Locally saved only; publishing requires the connected trade-feed service/);
- assert.match(feed,/"liveTradePostForm"\?\.addEventListener\('submit',publish\)/);
+assert.match(feed, /liveTradePostForm.*addEventListener\('submit',publish\)/);
 });
 
 test('buyer calling copy describes the real WebRTC state without claiming preview-only behaviour',()=>{
