@@ -135,5 +135,7 @@ test('Trade Feed news routes are public Supabase reads, not Railway fallbacks', 
   const fn = readRoot('supabase/functions/vtg-market-intelligence/index.ts');
   assert.ok(fn.includes('req.method==="GET" && routePath==="news"'));
   assert.ok(fn.includes('loadNews()'));
+  const configText = readRoot('supabase/config.toml');
+  assert.match(configText, /\[functions\.vtg-market-intelligence\][\s\S]*?verify_jwt = false/);
   assert.doesNotMatch(fn, /SUPABASE_SERVICE_ROLE_KEY|service_role/i);
 });
