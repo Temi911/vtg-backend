@@ -26,7 +26,7 @@ test('public contact enquiries route to the private Supabase intake function', (
 test('contact enquiry storage is private and protected', () => {
   const migration = root('supabase/migrations/20261118100336_create_vtg_contact_enquiries.sql');
   const fn = root('supabase/functions/vtg-contact-enquiries/index.ts');
-  assert.ok(migration.includes('ENABLE ROW LEVEL SECURITY'));
+  assert.match(migration, /enable row level security/i);
   assert.ok(migration.includes('REVOKE ALL ON TABLE public.vtg_contact_enquiries FROM public, anon, authenticated'));
   assert.ok(migration.includes('GRANT ALL ON TABLE public.vtg_contact_enquiries TO service_role'));
   for (const part of ['vtg_contact_enquiries','source_ip_hash','crypto.subtle.digest','RESEND_API_KEY','website','ADMIN_FORBIDDEN']) {
