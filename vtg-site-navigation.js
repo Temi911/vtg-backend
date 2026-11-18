@@ -477,7 +477,7 @@
     syncPicker();
     picker.addEventListener('change', function () {
       if (window.VTGLang) { window.VTGLang.set(picker.value); return; }
-      try { localStorage.setItem('vtg-language', picker.value); } catch (_) {}
+      try { localStorage.setItem('vtg-site-language', picker.value); } catch (_) {}
       location.reload();
     });
     document.addEventListener('vtg:languagechange', syncPicker);
@@ -641,7 +641,7 @@
     var language=window.VTGLang?window.VTGLang.current():'en';
     addPref('vtgFooterLanguage','Language',[['en','English'],['fr','Français'],['pt','Português'],['ar','العربية'],['sw','Kiswahili'],['zh','中文'],['ko','한국어'],['es','Español']],language,function(v){
       if(window.VTGLang){window.VTGLang.set(v);return;}
-      try{localStorage.setItem('vtg-language',v);}catch(_){}
+      try{localStorage.setItem('vtg-site-language',v);}catch(_){}
       location.reload();
     });
     document.addEventListener('vtg:languagechange',function(e){var el=document.getElementById('vtgFooterLanguage');var l=e&&e.detail&&e.detail.lang;if(el&&l&&el.value!==l)el.value=l;});

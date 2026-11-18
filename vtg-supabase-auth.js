@@ -96,7 +96,10 @@
         localStorage.setItem('vtg-auth', JSON.stringify({
           user, accessToken: session.access_token, refreshToken: session.refresh_token || null
         }));
-        localStorage.setItem('vtg-language', user.preferredLanguage || 'en');
+        // keep a dashboard language choice that has not reached the account yet (vtg-lang.js clears the flag once saved)
+        if (!(localStorage.getItem('vtg-language-unsaved') === '1' && localStorage.getItem('vtg-language'))) {
+          localStorage.setItem('vtg-language', user.preferredLanguage || 'en');
+        }
         localStorage.setItem('vtg-country', user.country || '');
       }
 

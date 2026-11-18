@@ -132,7 +132,7 @@
     appearance.value = ['auto','light','dark'].indexOf(pref) >= 0 ? pref : 'auto';
     appearance.addEventListener('change', function () { setPreference(appearance.value); });
     var skin = 'trade-classic', lang = 'en';
-    try { skin = localStorage.getItem('vtg-visitor-theme-preset') || skin; lang = localStorage.getItem('vtg-language') || lang; } catch (e) {}
+    try { skin = localStorage.getItem('vtg-visitor-theme-preset') || skin; lang = localStorage.getItem('vtg-site-language') || lang; } catch (e) {}
     if (skin === 'ocean-route' || skin === 'graphite-port') theme.value = skin;
     root.setAttribute('data-vtg-skin', theme.value);
     theme.addEventListener('change', function () {
@@ -144,7 +144,7 @@
     syncLang();
     language.addEventListener('change', function () {
       if (window.VTGLang) { window.VTGLang.set(language.value); return; }
-      try { localStorage.setItem('vtg-language', language.value); } catch (e) {}
+      try { localStorage.setItem('vtg-site-language', language.value); } catch (e) {}
       location.reload();
     });
     document.addEventListener('vtg:languagechange', syncLang);
