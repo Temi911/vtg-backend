@@ -104,3 +104,4 @@ jobs:
           deno check supabase/functions/vtg-live-tracking/index.ts
           deno check supabase/functions/vtg-wallet/index.ts
           deno check supabase/functions/vtg-marketplace/index.ts
+          deno check supabase/functions/vtg-market-intelligence/index.ts
