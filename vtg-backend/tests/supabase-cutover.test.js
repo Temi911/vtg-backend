@@ -139,3 +139,24 @@ test('Trade Feed news routes are public Supabase reads, not Railway fallbacks', 
   assert.match(configText, /\[functions\.vtg-market-intelligence\][\s\S]*?verify_jwt = false/);
   assert.doesNotMatch(fn, /SUPABASE_SERVICE_ROLE_KEY|service_role/i);
 });
+
+
+test('public partnership intake persists privately through the Supabase function', () => {
+  const config = JSON.parse(readRoot('vercel.json'));
+  const route = config.rewrites.find(x => x.source === '/api/partnerships');
+  assert.ok(route, 'missing partnership intake rewrite');
+  assert.ok(route.destination.includes('functions/v1/vtg-partnerships'));
+  const fn = readRoot('supabase/functions/vtg-partnerships/index.ts');
+  for (const fragment of ['vtg_partnership_proposals', 'SUPABASE_SERVICE_ROLE_KEY', 'RATE_LIMITED', 'crypto.subtle.digest', 'RESEND_API_KEY', 'website']) {
+    assert.ok(fn.includes(fragment), 'missing partnership protection or persistence: ' + fragment);
+  }
+  const migration = readRoot('supabase/migrations/20261118094818_create_vtg_partnership_proposals.sql');
+  assert.match(migration, /ENABLE ROW LEVEL SECURITY/i);
+  assert.match(migration, /REVOKE ALL ON TABLE public\.vtg_partnership_proposals FROM anon, authenticated/i);
+  assert.match(migration, /GRANT ALL ON TABLE public\.vtg_partnership_proposals TO service_role/i);
+  const page = readRoot('partnership-application.html');
+  assert.match(page, /fetch\('\/api\/partnerships'/);
+  assert.match(page, /name="website"/);
+  assert.doesNotMatch(page, /success\.innerHTML/);
+  assert.match(readRoot('supabase/config.toml'), /\[functions\.vtg-partnerships\][\s\S]*?verify_jwt = false/);
+});
