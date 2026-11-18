@@ -7,7 +7,7 @@
 
 ## Executive finding
 
-The public site is a hybrid application. Marketplace quote requests already use Supabase directly from the browser. Several other visitor journeys call Express APIs that are still served by the Railway fallback. There are also Supabase Edge Functions that appear to implement part of the same domain, but they are not automatically active just because the functions exist: the relevant public route must be explicitly rewritten to them, or the frontend must call the function safely.
+The public site is a Supabase-backed application with some legacy Express source still present in the repository. Marketplace quote requests use Supabase directly from the browser, and the Vercel API catch-all routes to the Supabase `vtg-api` Edge Function. Each dedicated Edge Function still needs an explicit rewrite before its route is considered migrated.
 
 **Cutover update — 18 November 2026:** The Vercel API catch-all no longer points to Railway. It now points to the active Supabase `vtg-api` Edge Function. The live `vtg-api` source has been copied into `supabase/functions/vtg-api/index.ts` so the deployed handler is tracked in GitHub.
 
@@ -19,6 +19,7 @@ Current explicit Supabase rewrites:
 
 | Vercel source | Supabase destination | Notes |
 |---|---|---|
+| `/api/partnerships` | `vtg-partnerships` | Public intake; validated, rate-limited, private database persistence; email notification is best-effort |
 | `/api/admin/account-support` | `vtg-account-support/admin` | Explicit Supabase route |
 | `/api/agent/:path*` | `vtg-inspection-workflow/agent/:path*` | Explicit Supabase route |
 | `/api/inspections/requests/agent` | `vtg-inspection-workflow/requests/agent` | Explicit Supabase route |
@@ -48,7 +49,7 @@ Trade Feed requests are routed to `vtg-marketplace`; unmatched API calls reach S
 | Inspection request quote/create | `/api/inspections/quote`, `/api/inspections/requests`, `/api/inspections/mine` | Explicit Supabase rewrites to `vtg-inspection-workflow` | Route mapping is in place; authenticated request, pricing, ownership and agent workflow acceptance tests remain |
 | Inspection payment | `/api/inspections/requests/:id/payment/initialize`, `/api/inspections/payment/verify`, `/api/webhooks/paystack` | Explicit Supabase rewrites to `vtg-inspection-payments` | Route mapping is in place; live Paystack initialization, signed webhook verification, idempotency and callback acceptance still need testing |
 | Inspection agent actions | `/api/inspections/requests/agent`, `/api/inspections/requests/:id/:action`, `/api/agent/*` | Explicit Supabase rewrites | Supabase workflow function exists; test role/ownership, assignment, evidence storage and state transitions |
-| Partnership application | `POST /api/partnerships` | Express route mounted at `/api/partnerships`; currently Railway fallback | No Supabase Edge Function or direct Supabase submission path proven in this audit |
+| Partnership application | `POST /api/partnerships` | Supabase Edge Function `vtg-partnerships` | Private `vtg_partnership_proposals` table; honeypot, input validation and per-IP rate limit. Email uses Resend when configured; otherwise the proposal is still saved and the response says notification is unavailable. Live form/email acceptance remains to be tested |
 | Public VTG AI floating chat | `POST /api/ai/public-chat` | No matching explicit rewrite; no matching public route found in the inspected Express route mounts | Not proven connected. Existing `vtg-ai-assistant` function is for assistant chat workflows but is not automatically a public endpoint; design a safe public endpoint/rate-limit model |
 | Public market intelligence tools | `/api/market-intelligence/tools/contract`, `/landed-cost/estimate` | Express endpoints are authenticated and currently fall through to Railway | Existing server routes; not yet replaced by a verified Supabase implementation |
 | Trade Atlas | Bundled port/airport reference data, map libraries and local map scripts | Mostly static reference data; map tiles/geocoding are external browser dependencies | Not a live port-operation or verified supplier-location feed; distinguish static reference locations from operational status |
@@ -112,7 +113,7 @@ This is the strongest existing public-to-Supabase path and should be the first f
 
 ### P4 — Partnership, contact and public AI
 
-- Create durable Supabase enquiry/partnership records and staff inbox routing.
+- Partnership submissions now create durable private Supabase records. Contact is still a `mailto:` flow and needs its own persisted enquiry workflow and staff routing.
 - Public AI needs a dedicated public-safe handler with rate limits, abuse controls, input limits, no provider secrets in the browser, and a clear handoff to a recorded enquiry.
 - Confirm email delivery and retry/error logging independently from database persistence.
 
