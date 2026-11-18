@@ -144,7 +144,7 @@ function isHttpUrl(value:string){
   try{const url=new URL(value);return url.protocol==="http:"||url.protocol==="https:";}catch(_){return false;}
 }
 async function loadGoogleNews(){
-  const query='("Africa China trade" OR "Nigeria customs" OR "Nigeria imports" OR "shipping ports" OR "freight logistics" OR "South Korea trade")';
+  const query='("Africa China trade" OR "Nigeria customs" OR "Nigeria imports" OR "shipping ports" OR "freight logistics" OR "South Korea trade") when:7d';
   const url="https://news.google.com/rss/search?q="+encodeURIComponent(query)+"&hl=en-US&gl=NG&ceid=NG:en";
   const response=await fetch(url,{headers:{Accept:"application/rss+xml, application/xml, text/xml","User-Agent":"VTG-Market-Intelligence/1.0"},signal:AbortSignal.timeout(8000)});
   if(!response.ok)throw new Error("Google News RSS returned HTTP "+response.status);
@@ -162,7 +162,7 @@ async function loadGoogleNews(){
     const {topic,relevance,trusted}=classify(title,domain);
     return {title,url:articleUrl,domain,source:source||domain||"Publisher not identified",topic,relevance,trusted,discoveredAt,publishedAt:null,provider:"Google News RSS",summary:contextNote(topic)};
   }).filter((item:any)=>{
-    if(!item.title||!isHttpUrl(item.url)||!item.trusted||item.relevance<2||!item.discoveredAt||seen.has(item.url.split("#")[0]))return false;
+    if(!item.title||!isHttpUrl(item.url)||!item.trusted||item.relevance<2||!item.discoveredAt||Date.parse(item.discoveredAt)>Date.now()+5*60*1000||Date.now()-Date.parse(item.discoveredAt)>7*24*60*60*1000||seen.has(item.url.split("#")[0]))return false;
     seen.add(item.url.split("#")[0]);return true;
   }).sort((a:any,b:any)=>Date.parse(b.discoveredAt)-Date.parse(a.discoveredAt)).slice(0,12);
   return {items,count:items.length,provider:"Google News RSS",fetchedAt:new Date().toISOString(),timestampMeaning:"Google News RSS item date; not independently verified publisher publication time",note:"Headlines link through Google News to the named publisher. VTG has not independently verified the article's claims."};
