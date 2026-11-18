@@ -153,7 +153,7 @@ Deno.serve(async(req:Request)=>{
   const routePath=pathParts.slice(pathParts.indexOf("vtg-market-intelligence")+1).join("/");
   if(req.method==="GET" && routePath==="news"){
     try{return reply({ok:true,...await loadNews()});}
-    catch(error){return reply({ok:false,error:"Trade news discovery is temporarily unavailable.",items:[],count:0,fetchedAt:new Date().toISOString()},503);}
+    catch(error){console.error("VTG_MI_NEWS_UPSTREAM_ERROR",String((error as Error)?.message||error).slice(0,500));return reply({ok:false,error:"Trade news discovery is temporarily unavailable.",items:[],count:0,fetchedAt:new Date().toISOString()},503);}
   }
 
   if(req.method==="GET" && routePath==="tools/contract"){
