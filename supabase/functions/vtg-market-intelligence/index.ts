@@ -108,6 +108,11 @@ function landedCostEstimate(input:any){
     assumptions:[...assumptions,"Duty and VAT rates are treated as supplied inputs; this calculator does not determine legally applicable tariff rates.","Does not include charges not entered by the user, such as port, inspection, agency, bank, storage, demurrage or inland delivery fees."],
     limitations:["Indicative planning estimate only; not a customs valuation, binding tariff ruling, tax advice, freight offer or payment instruction.","Confirm the HS classification, customs valuation basis, exemptions, levies, VAT base and applicable rates with the relevant customs authority or licensed clearing agent."]};
 }
+type TradeStatisticsCacheEntry={cachedAt:number;value:any};
+const tradeStatisticsCache=new Map<string,TradeStatisticsCacheEntry>();
+const TRADE_STATS_CACHE_TTL_MS=6*60*60*1000;
+const TRADE_STATS_STALE_MAX_MS=7*24*60*60*1000;
+
 async function loadTradeStatistics(url:URL){
   const reporterCode=String(url.searchParams.get("reporterCode")||"");
   const flowCode=String(url.searchParams.get("flowCode")||"M").toUpperCase();
@@ -118,16 +123,32 @@ async function loadTradeStatistics(url:URL){
   if(!["M","X"].includes(flowCode))throw new Error("INVALID_FLOW");
   if(!/^\\d{4}$/.test(period)||Number(period)<2010||Number(period)>currentYear)throw new Error("INVALID_PERIOD");
   if(!/^\\d{2,6}$/.test(cmdCode))throw new Error("INVALID_HS_CODE");
-  const upstreamUrl=new URL("https://comtradeapi.un.org/public/v1/preview/C/A/HS");
-  for(const [key,value] of Object.entries({period,reporterCode,cmdCode,flowCode,partnerCode:"0",partner2Code:"0",motCode:"0",aggregateBy:"6",breakdownMode:"classic",includeDesc:"true"}))upstreamUrl.searchParams.set(key,value);
-  const upstream=await fetch(upstreamUrl,{headers:{Accept:"application/json","User-Agent":"VTG-Market-Intelligence/1.0"},signal:AbortSignal.timeout(18000)});
-  if(!upstream.ok)throw new Error(upstream.status===429?"PROVIDER_RATE_LIMITED":"PROVIDER_UNAVAILABLE");
-  const payload=await upstream.json(),records=Array.isArray(payload.data)?payload.data:[];
-  const items=records.slice(0,100).map((row:any)=>{
-    const value=Number(row.primaryValue),valid=Number.isFinite(value);
-    return {reporterCode:row.reporterCode,reporter:row.reporterDesc||null,partnerCode:row.partnerCode,partnerDesc:row.partnerDesc||"World",period:row.period||period,flowCode:row.flowCode||flowCode,flowDesc:row.flowDesc||(flowCode==="M"?"Imports":"Exports"),cmdCode:row.cmdCode||cmdCode,cmdDesc:row.cmdDesc||null,tradeValue:valid?value:null,tradeValueFormatted:valid?new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(value):"Value unavailable",netWgt:row.netWgt==null?null:Number(row.netWgt),qty:row.qty==null?null:Number(row.qty),qtyUnitAbbr:row.qtyUnitAbbr||null};
-  });
-  return {source:"UN Comtrade public preview",dataType:"historical trade statistics; not a live quote",reporter:items[0]?.reporter||null,reporterCode,flow:flowCode==="M"?"Imports":"Exports",period,cmdCode,count:items.length,fetchedAt:new Date().toISOString(),items};
+  const cacheKey=[reporterCode,flowCode,period,cmdCode].join(":");
+  const now=Date.now(),cached=tradeStatisticsCache.get(cacheKey);
+  if(cached&&now-cached.cachedAt<TRADE_STATS_CACHE_TTL_MS){
+    return {...cached.value,cache:{status:"fresh",ageSeconds:Math.floor((now-cached.cachedAt)/1000),ttlSeconds:Math.floor((TRADE_STATS_CACHE_TTL_MS-(now-cached.cachedAt))/1000)}};
+  }
+  try{
+    const upstreamUrl=new URL("https://comtradeapi.un.org/public/v1/preview/C/A/HS");
+    for(const [key,value] of Object.entries({period,reporterCode,cmdCode,flowCode,partnerCode:"0",partner2Code:"0",motCode:"0",aggregateBy:"6",breakdownMode:"classic",includeDesc:"true"}))upstreamUrl.searchParams.set(key,value);
+    const upstream=await fetch(upstreamUrl,{headers:{Accept:"application/json","User-Agent":"VTG-Market-Intelligence/1.0"},signal:AbortSignal.timeout(18000)});
+    if(!upstream.ok)throw new Error(upstream.status===429?"PROVIDER_RATE_LIMITED":"PROVIDER_UNAVAILABLE");
+    const payload=await upstream.json();
+    if(payload?.error||payload?.validation?.length)throw new Error("PROVIDER_UNAVAILABLE");
+    const records=Array.isArray(payload.data)?payload.data:[];
+    const items=records.slice(0,100).map((row:any)=>{
+      const value=Number(row.primaryValue),valid=Number.isFinite(value);
+      return {reporterCode:row.reporterCode,reporter:row.reporterDesc||null,partnerCode:row.partnerCode,partnerDesc:row.partnerDesc||"World",period:row.period||period,flowCode:row.flowCode||flowCode,flowDesc:row.flowDesc||(flowCode==="M"?"Imports":"Exports"),cmdCode:row.cmdCode||cmdCode,cmdDesc:row.cmdDesc||null,tradeValue:valid?value:null,tradeValueFormatted:valid?new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(value):"Value unavailable",netWgt:row.netWgt==null?null:Number(row.netWgt),qty:row.qty==null?null:Number(row.qty),qtyUnitAbbr:row.qtyUnitAbbr||null};
+    });
+    const result={source:"UN Comtrade public preview",dataType:"historical trade statistics; not a live quote",reporter:items[0]?.reporter||null,reporterCode,flow:flowCode==="M"?"Imports":"Exports",period,cmdCode,count:items.length,fetchedAt:new Date().toISOString(),timestampMeaning:"VTG retrieval time; the reporting period is the year selected above",coverageNote:"A returned result may be incomplete, revised or delayed. No returned records do not prove that no trade occurred.",items};
+    tradeStatisticsCache.set(cacheKey,{cachedAt:now,value:result});
+    return {...result,cache:{status:"refreshed",ageSeconds:0,ttlSeconds:Math.floor(TRADE_STATS_CACHE_TTL_MS/1000)}};
+  }catch(error){
+    if(cached&&now-cached.cachedAt<TRADE_STATS_STALE_MAX_MS){
+      return {...cached.value,cache:{status:"stale",ageSeconds:Math.floor((now-cached.cachedAt)/1000),warning:"The provider could not refresh this result. Showing a previously retrieved copy; verify against UN Comtrade before relying on it."}};
+    }
+    throw error;
+  }
 }
 
 
