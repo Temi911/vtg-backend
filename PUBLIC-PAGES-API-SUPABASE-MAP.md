@@ -27,7 +27,7 @@ Current explicit Supabase rewrites:
 | `/api/contact/admin` and `/api/contact/admin/:id` | `vtg-contact-enquiries/admin*` | Staff-admin-only inbox read and status update |
 | `/api/auth/me` | `vtg-api/api/auth/me` | Authenticated Supabase profile lookup compatibility route |
 | `GET /api/preferences` | `vtg-api/api/preferences` | Authenticated profile preference read |
-| `PATCH /api/preferences/language` | `vtg-api/api/preferences/language` | Authenticated preferred-language update; validates supported legacy language codes |
+| `PATCH /api/preferences/language` | `vtg-api/api/preferences/language` | Authenticated preferred-language update; validates all eight current VTG dashboard languages |
 | `/api/trade/landed-cost` | `vtg-market-intelligence/trade/landed-cost` | Public, bounded Nigeria-only illustrative calculator compatibility route; no tariff lookup or provider call |
 | `/api/admin/account-support` | `vtg-account-support/admin` | Explicit Supabase route |
 | `/api/agent/:path*` | `vtg-inspection-workflow/agent/:path*` | Explicit Supabase route |
