@@ -58,6 +58,9 @@ async function deliverTrackedEmail(
  ) {
   // Marketing broadcasts are opt-in only. Onboarding, security, account and trade-transaction mail remain transactional.
   const marketingEvents = new Set(["marketing", "marketing_campaign", "newsletter", "trade_update", "market_intelligence_digest"]);
+  if (marketingEvents.has(input.eventType) && !input.preferenceUrl) {
+    throw new Error("A working unsubscribe link is required before sending marketing email.");
+  }
   if (input.userId && marketingEvents.has(input.eventType)) {
     const preference = await db.from("vtg_email_preferences").select("marketing_subscribed")
       .eq("user_id", input.userId).maybeSingle();
