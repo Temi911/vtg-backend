@@ -21,6 +21,12 @@ test('signup consent defaults off and is persisted once', () => {
   assert.match(migration, /coalesce\(new\.raw_user_meta_data->>'marketing_subscribed','false'\)/i);
 });
 
+test('existing Supabase signup consent is backfilled without overwriting choices', () => {
+  const migration = root('supabase/migrations/20261118104353_vtg_email_preferences_backfill_auth_metadata.sql');
+  assert.match(migration, /raw_user_meta_data->>'marketing_subscribed'/);
+  assert.match(migration, /on conflict \(user_id\) do nothing/i);
+});
+
 test('confirmation consumes the token and updates preference atomically', () => {
   const migration = root('supabase/migrations/20261118104103_vtg_email_preferences_consent_and_atomic_unsubscribe.sql');
   const fn = root('supabase/functions/vtg-email-preferences/index.ts');
@@ -40,6 +46,8 @@ test('onboarding email carries the new Supabase preference link', () => {
   assert.match(fn, /vtg_email_preference_tokens/);
   assert.match(fn, /preferenceUrl = appUrl \+ "\/api\/auth\/email-preferences\//);
   assert.match(fn, /manage your VTG email preferences/);
+  assert.match(fn, /marketingEvents/);
+  assert.match(fn, /MARKETING_OPT_IN_REQUIRED/);
 });
 
 test('preference endpoints route to Supabase before catch-all', () => {
