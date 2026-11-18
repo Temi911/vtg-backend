@@ -26,6 +26,8 @@ Current explicit Supabase rewrites:
 | `/api/contact` | `vtg-contact-enquiries` | Public consent-based enquiry intake with private storage |
 | `/api/contact/admin` and `/api/contact/admin/:id` | `vtg-contact-enquiries/admin*` | Staff-admin-only inbox read and status update |
 | `/api/auth/me` | `vtg-api/api/auth/me` | Authenticated Supabase profile lookup compatibility route |
+| `GET /api/preferences` | `vtg-api/api/preferences` | Authenticated profile preference read |
+| `PATCH /api/preferences/language` | `vtg-api/api/preferences/language` | Authenticated preferred-language update; validates supported legacy language codes |
 | `/api/trade/landed-cost` | `vtg-market-intelligence/trade/landed-cost` | Public, bounded Nigeria-only illustrative calculator compatibility route; no tariff lookup or provider call |
 | `/api/admin/account-support` | `vtg-account-support/admin` | Explicit Supabase route |
 | `/api/agent/:path*` | `vtg-inspection-workflow/agent/:path*` | Explicit Supabase route |
@@ -121,7 +123,7 @@ This is the strongest existing public-to-Supabase path and should be the first f
 
 ### P4 — Partnership, contact and public AI
 
-- Partnership submissions now create durable private Supabase records. Contact enquiries now have a private Supabase intake and staff-only inbox API; live submission, staff review and email-delivery acceptance remain. Landing-page sign-in/sign-up controls now redirect to the dedicated Supabase Auth pages instead of calling legacy `/api/auth/login` and `/api/auth/signup` endpoints.
+- Partnership submissions now create durable private Supabase records. Contact enquiries now have a private Supabase intake and staff-only inbox API; live submission, staff review and email-delivery acceptance remain. Landing-page sign-in/sign-up controls now redirect to the dedicated Supabase Auth pages instead of calling legacy `/api/auth/login` and `/api/auth/signup` endpoints. Account preferences GET and language PATCH are now implemented by `vtg-api` and explicitly rewritten before the catch-all.
 - Public AI needs a dedicated public-safe handler with rate limits, abuse controls, input limits, no provider secrets in the browser, and a clear handoff to a recorded enquiry.
 - Confirm email delivery and retry/error logging independently from database persistence.
 
@@ -138,7 +140,7 @@ This is the strongest existing public-to-Supabase path and should be the first f
 3. **Inspection parity review**: buyer create/quote and payments before changing the route map.
 4. **Partnership/contact acceptance**: submit controlled test proposals and enquiries, verify staff-only inbox visibility and email delivery status.
 5. **Public AI connection**: dedicated public function and safe usage controls.
-6. **Only after these pass**: migrate individual routes and gradually remove the Railway fallback.
+6. **Only after these pass**: complete production acceptance checks and retire any remaining legacy backend references; do not restore Railway.
 
 ## 6. Verification boundary
 
