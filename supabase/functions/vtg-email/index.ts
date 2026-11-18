@@ -55,7 +55,17 @@ async function sendVtgEmail(input: VtgEmailInput) {
 async function deliverTrackedEmail(
   db: any,
   input: VtgEmailInput & { userId?: string | null; eventType: string; eventKey: string },
-) {
+ ) {
+  // Marketing broadcasts are opt-in only. Onboarding, security, account and trade-transaction mail remain transactional.
+  const marketingEvents = new Set(["marketing", "marketing_campaign", "newsletter", "trade_update", "market_intelligence_digest"]);
+  if (input.userId && marketingEvents.has(input.eventType)) {
+    const preference = await db.from("vtg_email_preferences").select("marketing_subscribed")
+      .eq("user_id", input.userId).maybeSingle();
+    if (preference.error) throw new Error("Could not verify the recipient's email preference.");
+    if (preference.data?.marketing_subscribed !== true) {
+      return { sent: false, duplicate: false, suppressed: true, reason: "MARKETING_OPT_IN_REQUIRED" };
+    }
+  }
   const existing = await db.from("vtg_email_deliveries").select("status,resend_message_id")
     .eq("event_key", input.eventKey).maybeSingle();
   if (existing.data?.status === "sent") return { sent: true, duplicate: true, id: existing.data.resend_message_id };
