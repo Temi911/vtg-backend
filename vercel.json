@@ -121,6 +121,10 @@
       "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-api/api/africa/markets"
     },
     {
+      "source": "/api/trade/landed-cost",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-market-intelligence/trade/landed-cost"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-api/api/:path*"
     },
