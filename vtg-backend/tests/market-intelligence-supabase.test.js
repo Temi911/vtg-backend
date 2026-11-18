@@ -50,3 +50,24 @@ test('Market Intelligence news uses a fast RSS primary source and rejects stale 
   assert.ok(fn.includes('7*24*60*60*1000'));
   assert.ok(fn.includes('loadGdeltNews'));
 });
+
+
+test('Public Market Intelligence news endpoint is routed directly to the Supabase Edge Function', () => {
+  const config = JSON.parse(root('vercel.json'));
+  const index = config.rewrites.findIndex((route) => route.source === '/api/market-intelligence/news');
+  const fallbackIndex = config.rewrites.findIndex((route) => route.source === '/api/:path*');
+  assert.ok(index >= 0, 'missing public news rewrite');
+  assert.ok(index < fallbackIndex, 'news rewrite must precede API catch-all');
+  assert.ok(config.rewrites[index].destination.endsWith('/vtg-market-intelligence/news'));
+  const fn = root('supabase/functions/vtg-market-intelligence/index.ts');
+  assert.match(fn, /req\.method===\"GET\" && routePath===\"news\"/);
+  assert.match(fn, /publishedAt/);
+  assert.match(fn, /discoveredAt/);
+});
+
+test('Public Market Intelligence news UI maps the Edge Function timestamp contract', () => {
+  const ui = root('vtg-market-intelligence-live.js');
+  assert.match(ui, /item\.publishedAt\|\|item\.discoveredAt/);
+  assert.match(ui, /data\.fetchedAt/);
+  assert.match(ui, /data\.provider/);
+});
