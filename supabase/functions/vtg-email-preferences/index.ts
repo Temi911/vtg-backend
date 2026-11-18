@@ -88,14 +88,11 @@ async function confirm(req: Request, token: string) {
     const form = `<form method="post" action="/api/auth/email-preferences/confirm"><input type="hidden" name="token" value="${token}"><button style="border:0;background:#702a30;color:white;padding:14px 22px;font-weight:bold;cursor:pointer">Confirm unsubscribe</button></form>`;
     return html(page("Confirm your preference", "If you continue, VTG trade and marketing updates will be switched off for your account. Opening this link alone does not change your preference.", form));
   }
-  const { data: consumed, error: consumeError } = await admin.from("vtg_email_preference_tokens")
-    .update({ consumed_at: new Date().toISOString() }).eq("token_hash", tokenHash).is("consumed_at", null)
-    .gt("expires_at", new Date().toISOString()).select("user_id").maybeSingle();
-  if (consumeError || !consumed) return html(page("Link unavailable", "This preference link has expired or has already been used."), 409);
-  const { error: prefError } = await admin.from("vtg_email_preferences").upsert({
-    user_id: consumed.user_id, marketing_subscribed: false, updated_at: new Date().toISOString(),
-  }, { onConflict: "user_id" });
-  if (prefError) return html(page("Unable to update", "We could not update your preference just now. Please request a new link and try again."), 500);
+  const { data: consumed, error: consumeError } = await admin.rpc("vtg_consume_email_preference_token", {
+    p_token_hash: tokenHash,
+  });
+  if (consumeError) return html(page("Unable to update", "We could not update your preference just now. Please request a new link and try again."), 500);
+  if (consumed !== true) return html(page("Link unavailable", "This preference link has expired or has already been used."), 409);
   return html(page("Preference updated", "You have been unsubscribed from VTG trade and marketing updates. Your essential account, security and transaction emails are unaffected."));
 }
 Deno.serve(async (req: Request) => {
