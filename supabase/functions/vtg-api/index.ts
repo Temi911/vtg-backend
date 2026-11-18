@@ -129,6 +129,37 @@ Deno.serve(async (req: Request) => {
     return respond({ products: productsResult.count ?? 0, orders: ordersResult.count ?? 0, shipments: shipmentsResult.count ?? 0 });
   }
 
+  if (segments[0] === "preferences" && req.method === "GET") {
+    const { data, error } = await supabase.from("profiles")
+      .select("preferred_language,country,city")
+      .eq("id", user.id).maybeSingle();
+    if (error) return respond({ error: "Could not load account preferences." }, 500);
+    if (!data) return respond({ error: "Account profile not found." }, 404);
+    const locationText = [data.city, data.country].filter((value: unknown) => isText(value) && value.trim()).join(", ") || null;
+    return respond({ preferences: {
+      preferred_language: data.preferred_language || "en",
+      location_text: locationText,
+      location_lat: null,
+      location_lng: null,
+      supportedLanguages: ["en", "zh", "fr", "es", "ar", "ha"],
+    }});
+  }
+
+  if (segments[0] === "preferences" && segments[1] === "language" && req.method === "PATCH") {
+    const body = await req.json().catch(() => null);
+    const language = body && isText(body.language) ? body.language.trim().toLowerCase() : "";
+    const supportedLanguages = ["en", "zh", "fr", "es", "ar", "ha"];
+    if (!supportedLanguages.includes(language)) {
+      return respond({ error: "Choose a supported language: en, zh, fr, es, ar or ha." }, 400);
+    }
+    const { data, error } = await supabase.from("profiles")
+      .update({ preferred_language: language, updated_at: new Date().toISOString() })
+      .eq("id", user.id).select("preferred_language").maybeSingle();
+    if (error) return respond({ error: "Could not update account language." }, 500);
+    if (!data) return respond({ error: "Account profile not found." }, 404);
+    return respond({ language: data.preferred_language });
+  }
+
   if ((segments[0] === "me" || (segments[0] === "auth" && segments[1] === "me")) && req.method === "GET") {
     const { data, error } = await supabase.from("profiles")
       .select("id,email,full_name,phone,role,account_environment,preferred_language,country,city,is_active,created_at")
