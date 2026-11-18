@@ -9,7 +9,7 @@
 
 The public site is a Supabase-backed application with some legacy Express source still present in the repository. Marketplace quote requests use Supabase directly from the browser, and the Vercel API catch-all routes to the Supabase `vtg-api` Edge Function. Each dedicated Edge Function still needs an explicit rewrite before its route is considered migrated.
 
-**Cutover update — 18 November 2026:** The Vercel API catch-all no longer points to Railway. It now points to the active Supabase `vtg-api` Edge Function. The live `vtg-api` source has been copied into `supabase/functions/vtg-api/index.ts` so the deployed handler is tracked in GitHub. The function is now deployed at v21, including account preference reads and language updates.
+**Cutover update — 18 November 2026:** The Vercel API catch-all no longer points to Railway. It now points to the active Supabase `vtg-api` Edge Function. The live `vtg-api` source has been copied into `supabase/functions/vtg-api/index.ts` so the deployed handler is tracked in GitHub. The function is now deployed at v21, including account preference reads and language updates. The legacy email unsubscribe route has also been replaced with a Supabase `vtg-email-preferences` function (v1) and private token/preference tables.
 
 This removes Railway from Vercel API routing, but it does **not** mean every legacy endpoint has Supabase parity. The catch-all function currently implements a limited set of routes (profile and `/auth/me` compatibility, product discovery/publishing, orders, role requests, shipments, letters of credit, conversations/messages, documents, Africa Markets planning catalogue and a health check). Unsupported paths return a Supabase 404 instead of silently reaching Railway. Continue migrating and testing the remaining endpoint groups before calling the backend migration complete.
 
@@ -28,6 +28,8 @@ Current explicit Supabase rewrites:
 | `/api/auth/me` | `vtg-api/api/auth/me` | Authenticated Supabase profile lookup compatibility route |
 | `GET /api/preferences` | `vtg-api/api/preferences` | Authenticated profile preference read |
 | `PATCH /api/preferences/language` | `vtg-api/api/preferences/language` | Authenticated preferred-language update; validates all eight current VTG dashboard languages |
+| `POST /api/auth/email-preferences` | `vtg-email-preferences` | Authenticated request sends a fresh seven-day, single-use preference link via Resend |
+| `GET /api/auth/email-preferences/:token` and `POST /api/auth/email-preferences/confirm` | `vtg-email-preferences/confirm` | GET is non-mutating; explicit POST confirms unsubscribe; old PostgreSQL tokens are not compatible |
 | `/api/trade/landed-cost` | `vtg-market-intelligence/trade/landed-cost` | Public, bounded Nigeria-only illustrative calculator compatibility route; no tariff lookup or provider call |
 | `/api/admin/account-support` | `vtg-account-support/admin` | Explicit Supabase route |
 | `/api/agent/:path*` | `vtg-inspection-workflow/agent/:path*` | Explicit Supabase route |
@@ -123,7 +125,7 @@ This is the strongest existing public-to-Supabase path and should be the first f
 
 ### P4 — Partnership, contact and public AI
 
-- Partnership submissions now create durable private Supabase records. Contact enquiries now have a private Supabase intake and staff-only inbox API; live submission, staff review and email-delivery acceptance remain. Landing-page sign-in/sign-up controls now redirect to the dedicated Supabase Auth pages instead of calling legacy `/api/auth/login` and `/api/auth/signup` endpoints. Account preferences GET and language PATCH are now implemented by `vtg-api` and explicitly rewritten before the catch-all.
+- Partnership submissions now create durable private Supabase records. Contact enquiries now have a private Supabase intake and staff-only inbox API; live submission, staff review and email-delivery acceptance remain. Landing-page sign-in/sign-up controls now redirect to the dedicated Supabase Auth pages instead of calling legacy `/api/auth/login` and `/api/auth/signup` endpoints. Account preferences GET and language PATCH are now implemented by `vtg-api` and explicitly rewritten before the catch-all. Email unsubscribe now has a Supabase-native flow: private preference/token tables, 256-bit random tokens stored only as SHA-256 hashes, seven-day expiry, one-time confirmation, verified-account issuance through Resend, and no mutation on GET. Old PostgreSQL unsubscribe tokens are not migrated.
 - Public AI needs a dedicated public-safe handler with rate limits, abuse controls, input limits, no provider secrets in the browser, and a clear handoff to a recorded enquiry.
 - Confirm email delivery and retry/error logging independently from database persistence.
 
@@ -144,4 +146,4 @@ This is the strongest existing public-to-Supabase path and should be the first f
 
 ## 6. Verification boundary
 
-This document is based on source inspection of the repository, Vercel rewrite configuration, Express route mounts, and deployed Supabase function implementations. The latest observed READY Vercel production deployment is commit `b05a73d6778a1a3413661ed32cd0cfaf10d914be`; it predates the account-preferences rewrite commits. Vercel reports `build-rate-limit` for the newer `main` commits, so the new Vercel rewrites are committed but not yet present in the latest READY production deployment. Supabase `vtg-api` v21 itself is active. This confirms function deployment, not successful authenticated API calls. It does not claim that payment transactions, emails, media uploads, dashboard visibility or all API route contracts have passed live acceptance tests.
+This document is based on source inspection of the repository, Vercel rewrite configuration, Express route mounts, and deployed Supabase function implementations. The latest observed READY Vercel production deployment is commit `b05a73d6778a1a3413661ed32cd0cfaf10d914be`; it predates the account-preferences rewrite commits. Vercel reports `build-rate-limit` for the newer `main` commits, so the new Vercel rewrites (including email preferences) are committed but not yet present in the latest READY production deployment. Supabase `vtg-api` v21 itself is active. This confirms function deployment, not successful authenticated API calls. It does not claim that payment transactions, emails, media uploads, dashboard visibility or all API route contracts have passed live acceptance tests.
