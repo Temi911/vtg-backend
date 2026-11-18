@@ -7,7 +7,7 @@
 
 ## Executive summary
 
-The public website is not a single uniform implementation. Some pages already use Supabase directly, some call backend `/api/*` routes that still fall through to Railway, some are primarily static information pages, and some contain sample/demo content or hard-coded market data.
+The public website is not a single uniform implementation. Some pages already use Supabase directly, some call backend `/api/*` routes that now reach Supabase but still need individual acceptance tests, some are primarily static information pages, and some contain sample/demo content or hard-coded market data.
 
 The correct next step is to map each public journey to its data source and test it in the browser before replacing or rewriting anything. Preserve the approved design and existing working functionality.
 
@@ -21,7 +21,9 @@ The current `vercel.json` routes API traffic to Supabase Edge Functions only. De
 - `/api/shipment-events/:shipmentId` → `vtg-trade-operations`
 - `/api/notifications/*` → `vtg-notifications`
 - `/api/partnerships` → `vtg-partnerships`
-- `/api/contact` and `/api/contact/admin` → `vtg-contact-enquiries`
+- `/api/contact` and `/api/contact/admin*` → `vtg-contact-enquiries`
+- `/api/africa/markets` → `vtg-api` (planning/reference catalogue)
+- `/api/market-intelligence/news`, tools and trade statistics → `vtg-market-intelligence`
 - `/api/market-intelligence/*` news, tools and trade statistics → `vtg-market-intelligence`
 
 However, the catch-all `/api/:path*` rewrite now points to the Supabase `vtg-api` Edge Function. There is no Railway fallback. The catch-all implements only a limited set of operations; unsupported paths return a Supabase 404 until their individual implementations are completed.
@@ -41,17 +43,17 @@ Status labels describe code evidence only, not a completed live browser test.
 | `trade-atlas.html` | Large interactive map; local port dataset and map scripts | Map data is largely bundled/static; distinguish reference data from live port/operational status |
 | `market-intelligence.html` | Loads `vtg-market-intelligence-live.js`; market watch cards are explicitly labelled pending/verify | News now comes from the Supabase Edge Function; verify freshness and authenticated trade-statistics/calculator workflows. FX, tariff and freight providers remain unconnected |
 | `intelligence-centre.html` | Four forms; calls auth and market-intelligence APIs; sample/demo/placeholder markers | Mixed; tools need endpoint and data-provenance audit |
-| `africa-markets.html` | Loads `/api/africa/markets`; response explicitly identifies `planning_data` and `liveProviderData:false`; includes hard-coded demand values | Planning/reference catalogue, not live market intelligence; label all values and sources clearly |
+| `africa-markets.html` | Loads `/api/africa/markets`; explicit Supabase `vtg-api` route returns `planning_data` and `liveProviderData:false` | Catalogue endpoint live-tested: six planning markets, Nigeria lookup and unknown-country 404; hard-coded demand figures remain separate page content and must not be described as live data |
 | `vtg-ai.html` | Demo/sample markers; no direct API call in page source | Public AI journey not yet evidenced as connected |
-| `contact.html` | Form prepares a `mailto:` message | Not a server-submitted enquiry; delivery depends on visitor email application |
+| `contact.html` | Posts to `/api/contact` | Supabase private enquiry storage, consent and anti-spam controls deployed; POST submission and staff review still require live acceptance tests |
 | `about-vintage.html` | Static company content and shared shell | Mostly informational; verify facts, links and controls |
 | `trade-guide.html` | Static guide with sample marker | Informational; verify claims and replace sample examples where presented as actual data |
 | `logistics-shipping.html` | Static content; no form/API found | Informational; live shipment tracking should not be implied without a connected shipment record/provider |
-| `inspection-request.html` | Calls `/api/inspections` for quote, request and payment initialisation | Functional flow exists in code, but route currently appears subject to Railway catch-all unless another route is added; verify end-to-end before describing as live |
+| `inspection-request.html` | Calls `/api/inspections` for quote, request and payment initialisation | Dedicated Supabase inspection workflow/payment rewrites exist; verify authenticated buyer request, payment provider and webhook end-to-end before describing the complete journey as live |
 | `product-verification.html` | Static content; no form/API found | No live verification lookup evidenced |
 | `network.html` | Lightweight navigation/redirect page | Verify destinations and role routing |
 | `partnerships.html` | Static pathway page | Verify pathway links and application handoff |
-| `partnership-application.html` | Posts form to `/api/partnerships` | Likely Railway-dependent via catch-all; verify persistence, email routing and staff review |
+| `partnership-application.html` | Posts form to `/api/partnerships` | Supabase `vtg-partnerships` private persistence and validation deployed; verify form submission, email status and staff review |
 | `finance-payments.html` | Not yet deeply inspected | Requires a separate payment-provider, legal and security review |
 | `account-help.html` | Not yet deeply inspected | Requires auth/support journey review |
 | `signin.html`, `signup.html`, role signup pages | Auth entry points | Must be tested against Supabase Auth, role assignment, verification, redirects and pending approval |
@@ -63,15 +65,15 @@ Status labels describe code evidence only, not a completed live browser test.
 
 1. Enumerate every `/api/*` endpoint used by public pages and shared scripts.
 2. Match each endpoint against `vercel.json` rewrites and Supabase Edge Functions.
-3. Identify which endpoints still reach Railway.
+3. Identify unsupported endpoints that currently return 404 from the Supabase catch-all.
 4. Check the relevant Supabase tables, RPCs, Edge Functions and RLS policies.
-5. Keep Railway fallback active until all affected flows pass production tests.
+5. Keep all API traffic on Supabase; do not restore a Railway fallback.
 
 ### P1 — Complete the first visitor-to-trade journey
 
 1. Marketplace: approved supplier products → product detail → buyer sign-in → quote request → supplier opportunity → buyer-visible request status.
 2. Sourcing: public request form → Supabase record → staff assignment → supplier matching → buyer update.
-3. Contact: replace mail-client-only delivery with a recorded enquiry and clear confirmation, while retaining a fallback contact option.
+3. Contact: run a controlled POST submission, verify the returned reference, private database record, email status and staff-only inbox.
 4. Partnership application: verify durable submission, reference number, notifications and staff review queue.
 
 ### P2 — Public information and intelligence
@@ -102,4 +104,4 @@ A page is only marked **Live and verified** after its visitor journey is tested 
 
 ## Important limitations of this first pass
 
-This report is based on repository source inspection. It does **not** claim that the pages, Supabase policies, Edge Functions, Railway endpoints, payment provider, email delivery or third-party data sources have passed runtime tests. Several pages still need deeper inspection. No application code or backend configuration was changed as part of this audit.
+This report combines repository source inspection with limited runtime checks of deployed Supabase endpoints. It does **not** claim that all pages, authenticated workflows, payment provider, email delivery or third-party data sources have passed full acceptance tests. Several route groups still need deeper inspection. All API traffic remains on Supabase; unsupported routes must be migrated rather than sent to Railway.
