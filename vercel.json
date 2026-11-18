@@ -73,6 +73,14 @@
       "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-inspection-workflow/pricing"
     },
     {
+      "source": "/api/marketplace/:path*",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-marketplace/:path*"
+    },
+    {
+      "source": "/api/media/feed/:postId",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-marketplace/media/feed/:postId"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-api/api/:path*"
     },
