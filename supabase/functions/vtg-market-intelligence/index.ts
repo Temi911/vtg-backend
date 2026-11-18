@@ -68,6 +68,68 @@ async function getBuyer(req:Request){
   if(profile.error||profile.data?.role!=="buyer"||profile.data?.is_active!==true)throw new Error("BUYER_REQUIRED");
   return who.data.user;
 }
+
+async function getTradeUser(req:Request){
+  const url=Deno.env.get("SUPABASE_URL"),key=Deno.env.get("SUPABASE_ANON_KEY")??Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
+  const auth=req.headers.get("Authorization")??"",token=auth.startsWith("Bearer ")?auth.slice(7):"";
+  if(!url||!key||!token)throw new Error("AUTH_REQUIRED");
+  const db=createClient(url,key,{global:{headers:{Authorization:"Bearer "+token}},auth:{persistSession:false,autoRefreshToken:false}});
+  const who=await db.auth.getUser(token);
+  if(who.error||!who.data.user)throw new Error("AUTH_INVALID");
+  const profile=await db.from("profiles").select("role,is_active").eq("id",who.data.user.id).maybeSingle();
+  if(profile.error||profile.data?.is_active!==true||!["buyer","supplier","bank","admin"].includes(profile.data?.role))throw new Error("TRADE_ROLE_REQUIRED");
+  return {user:who.data.user,role:profile.data.role};
+}
+function authError(error:unknown){
+  const code=(error as Error)?.message;
+  const status=code==="AUTH_REQUIRED"||code==="AUTH_INVALID"?401:code==="TRADE_ROLE_REQUIRED"||code==="BUYER_REQUIRED"?403:500;
+  return reply({error:status===401?"A valid signed-in session is required.":status===403?"An active buyer, supplier, bank or admin account is required.":"Market intelligence request could not be completed."},status);
+}
+function landedCostEstimate(input:any){
+  const currency=String(input?.currency??"").trim().toUpperCase();
+  const goodsValue=Number(input?.goodsValue);
+  const freight=input?.freight===undefined?0:Number(input.freight);
+  const insurance=input?.insurance===undefined?0:Number(input.insurance);
+  const dutyRate=Number(input?.dutyRate);
+  const vatRate=input?.vatRate===undefined?0:Number(input.vatRate);
+  const vatBasis=input?.vatBasis===undefined?"cif_plus_duty":String(input.vatBasis);
+  const otherCharges=input?.otherCharges===undefined?0:Number(input.otherCharges);
+  const assumptions=Array.isArray(input?.assumptions)?input.assumptions: [];
+  const amounts=[goodsValue,freight,insurance,otherCharges];
+  if(!/^[A-Z]{3}$/.test(currency)||amounts.some(v=>!Number.isFinite(v)||v<0)||!Number.isFinite(dutyRate)||dutyRate<0||dutyRate>1||!Number.isFinite(vatRate)||vatRate<0||vatRate>1||!["cif","cif_plus_duty"].includes(vatBasis)||assumptions.length>30||assumptions.some((v:any)=>typeof v!=="string"||!v.trim()||v.length>500)){
+    throw new Error("INVALID_ESTIMATE");
+  }
+  const round=(v:number)=>Math.round((v+Number.EPSILON)*100)/100;
+  const cif=round(goodsValue+freight+insurance),duty=round(cif*dutyRate);
+  const vatBase=vatBasis==="cif"?cif:cif+duty,vat=round(vatBase*vatRate);
+  return {schemaVersion:"1.0",kind:"landed_cost",status:"indicative",currency,
+    components:{goods:round(goodsValue),freight:round(freight),insurance:round(insurance),cif,duty,vat,otherCharges:round(otherCharges)},
+    rates:{dutyRate,vatRate,vatBasis},estimatedTotal:round(cif+duty+vat+otherCharges),source:null,
+    assumptions:[...assumptions,"Duty and VAT rates are treated as supplied inputs; this calculator does not determine legally applicable tariff rates.","Does not include charges not entered by the user, such as port, inspection, agency, bank, storage, demurrage or inland delivery fees."],
+    limitations:["Indicative planning estimate only; not a customs valuation, binding tariff ruling, tax advice, freight offer or payment instruction.","Confirm the HS classification, customs valuation basis, exemptions, levies, VAT base and applicable rates with the relevant customs authority or licensed clearing agent."]};
+}
+async function loadTradeStatistics(url:URL){
+  const reporterCode=String(url.searchParams.get("reporterCode")||"");
+  const flowCode=String(url.searchParams.get("flowCode")||"M").toUpperCase();
+  const currentYear=new Date().getUTCFullYear();
+  const period=String(url.searchParams.get("period")||String(currentYear-2));
+  const cmdCode=String(url.searchParams.get("cmdCode")||"");
+  if(!/^\\d{2,3}$/.test(reporterCode))throw new Error("INVALID_REPORTER");
+  if(!["M","X"].includes(flowCode))throw new Error("INVALID_FLOW");
+  if(!/^\\d{4}$/.test(period)||Number(period)<2010||Number(period)>currentYear)throw new Error("INVALID_PERIOD");
+  if(!/^\\d{2,6}$/.test(cmdCode))throw new Error("INVALID_HS_CODE");
+  const upstreamUrl=new URL("https://comtradeapi.un.org/public/v1/preview/C/A/HS");
+  for(const [key,value] of Object.entries({period,reporterCode,cmdCode,flowCode,partnerCode:"0",partner2Code:"0",motCode:"0",aggregateBy:"6",breakdownMode:"classic",includeDesc:"true"}))upstreamUrl.searchParams.set(key,value);
+  const upstream=await fetch(upstreamUrl,{headers:{Accept:"application/json","User-Agent":"VTG-Market-Intelligence/1.0"},signal:AbortSignal.timeout(18000)});
+  if(!upstream.ok)throw new Error(upstream.status===429?"PROVIDER_RATE_LIMITED":"PROVIDER_UNAVAILABLE");
+  const payload=await upstream.json(),records=Array.isArray(payload.data)?payload.data:[];
+  const items=records.slice(0,100).map((row:any)=>{
+    const value=Number(row.primaryValue),valid=Number.isFinite(value);
+    return {reporterCode:row.reporterCode,reporter:row.reporterDesc||null,partnerCode:row.partnerCode,partnerDesc:row.partnerDesc||"World",period:row.period||period,flowCode:row.flowCode||flowCode,flowDesc:row.flowDesc||(flowCode==="M"?"Imports":"Exports"),cmdCode:row.cmdCode||cmdCode,cmdDesc:row.cmdDesc||null,tradeValue:valid?value:null,tradeValueFormatted:valid?new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(value):"Value unavailable",netWgt:row.netWgt==null?null:Number(row.netWgt),qty:row.qty==null?null:Number(row.qty),qtyUnitAbbr:row.qtyUnitAbbr||null};
+  });
+  return {source:"UN Comtrade public preview",dataType:"historical trade statistics; not a live quote",reporter:items[0]?.reporter||null,reporterCode,flow:flowCode==="M"?"Imports":"Exports",period,cmdCode,count:items.length,fetchedAt:new Date().toISOString(),items};
+}
+
 async function loadNews(){
   const query='("Africa China trade" OR "Nigeria customs" OR "Nigeria imports" OR "shipping ports" OR "freight logistics" OR "South Korea trade" OR "trade tariffs" OR "supply chain")';
   const url="https://api.gdeltproject.org/api/v2/doc/doc?query="+encodeURIComponent(query)+"&mode=ArtList&format=json&maxrecords=50&sort=HybridRel&timespan=24h";
@@ -92,6 +154,34 @@ Deno.serve(async(req:Request)=>{
   if(req.method==="GET" && routePath==="news"){
     try{return reply({ok:true,...await loadNews()});}
     catch(error){return reply({ok:false,error:"Trade news discovery is temporarily unavailable.",items:[],count:0,fetchedAt:new Date().toISOString()},503);}
+  }
+
+  if(req.method==="GET" && routePath==="tools/contract"){
+    try{
+      await getTradeUser(req);
+      return reply({schemaVersion:"1.0",recordKinds:["fx_rate","tariff_rule","country_rule","freight_quote","market_signal","landed_cost"],statuses:["live","indicative","demo","unavailable"],freshness:["current","recent","stale","unknown"],provenanceRequired:["source name","authority type","retrieval timestamp for live records"],providers:{tariff:"not connected by this endpoint",freight:"not connected by this endpoint",fx:"client-side indicative exchange-rate feed; not verified by this API",tradeStatistics:"UN Comtrade public preview is available through the separate trade-statistics route; historical/statistical data, not a live quote"},note:"Contract discovery only; this response does not claim that live tariff or freight data is available."});
+    }catch(error){return authError(error);}
+  }
+  if(req.method==="POST" && routePath==="tools/landed-cost/estimate"){
+    try{
+      await getTradeUser(req);
+      const body=await req.json().catch(()=>null);
+      if(!body||typeof body!=="object"||Array.isArray(body))return reply({error:"A valid estimate payload is required."},400);
+      try{return reply({estimate:landedCostEstimate(body),generatedAt:new Date().toISOString()});}
+      catch(error){if((error as Error)?.message==="INVALID_ESTIMATE")return reply({error:"Enter a valid currency, non-negative amounts, rates between 0 and 100%, and supported VAT basis."},400);throw error;}
+    }catch(error){return authError(error);}
+  }
+  if(req.method==="GET" && routePath==="trade"){
+    try{
+      await getTradeUser(req);
+      try{return reply(await loadTradeStatistics(new URL(req.url)));}
+      catch(error){
+        const code=(error as Error)?.message;
+        const status=code==="INVALID_REPORTER"||code==="INVALID_FLOW"||code==="INVALID_PERIOD"||code==="INVALID_HS_CODE"?400:code==="PROVIDER_RATE_LIMITED"?503:code==="PROVIDER_UNAVAILABLE"?502:code==="TimeoutError"||code==="AbortError"?504:500;
+        const message=status===400?"Check the reporting market, trade flow, year and HS product code.":status===503?"The trade-statistics provider is rate-limiting requests. Please try again shortly.":status===502?"The trade-statistics provider is temporarily unavailable.":status===504?"The trade-statistics request timed out. Please try again.":"Trade statistics could not be loaded.";
+        return reply({error:message,source:"UN Comtrade public preview"},status);
+      }
+    }catch(error){return authError(error);}
   }
   if(req.method!=="POST")return reply({error:"Method not allowed"},405);
   try{
