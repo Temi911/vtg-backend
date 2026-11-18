@@ -81,6 +81,14 @@
       "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-marketplace/media/feed/:postId"
     },
     {
+      "source": "/api/market-intelligence/news",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-market-intelligence/news"
+    },
+    {
+      "source": "/api/integrations/news",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-market-intelligence/news"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-api/api/:path*"
     },
