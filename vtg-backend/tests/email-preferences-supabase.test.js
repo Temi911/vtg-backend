@@ -11,6 +11,7 @@ test('unsubscribe tokens are random, hashed, private and time limited', () => {
   assert.match(sql, /revoke all .* from anon, authenticated/i);
   assert.match(fn, /crypto\.subtle\.digest\("SHA-256"/);
   assert.match(fn, /crypto\.getRandomValues/);
+  assert.match(fn, /Referrer-Policy.*no-referrer/);
   assert.match(fn, /7 \* 86400_000/);
 });
 
