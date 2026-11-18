@@ -29,7 +29,7 @@ Current explicit Supabase rewrites:
 | `GET /api/preferences` | `vtg-api/api/preferences` | Authenticated profile preference read |
 | `PATCH /api/preferences/language` | `vtg-api/api/preferences/language` | Authenticated preferred-language update; validates all eight current VTG dashboard languages |
 | `POST /api/auth/email-preferences` | `vtg-email-preferences` | Authenticated request sends a fresh seven-day, single-use preference link via Resend |
-| `GET /api/auth/email-preferences/:token` and `POST /api/auth/email-preferences/confirm` | `vtg-email-preferences/confirm` | GET is non-mutating; explicit POST confirms unsubscribe; old PostgreSQL tokens are not compatible |
+| `GET /api/auth/email-preferences/:token` and `POST /api/auth/email-preferences/confirm` | `vtg-email-preferences/confirm` | SHA-256-hashed 256-bit token, seven-day expiry, explicit POST; atomic consume + opt-out RPC; legacy PostgreSQL tokens are invalid |
 | `/api/trade/landed-cost` | `vtg-market-intelligence/trade/landed-cost` | Public, bounded Nigeria-only illustrative calculator compatibility route; no tariff lookup or provider call |
 | `/api/admin/account-support` | `vtg-account-support/admin` | Explicit Supabase route |
 | `/api/agent/:path*` | `vtg-inspection-workflow/agent/:path*` | Explicit Supabase route |
@@ -125,7 +125,7 @@ This is the strongest existing public-to-Supabase path and should be the first f
 
 ### P4 — Partnership, contact and public AI
 
-- Partnership submissions now create durable private Supabase records. Contact enquiries now have a private Supabase intake and staff-only inbox API; live submission, staff review and email-delivery acceptance remain. Landing-page sign-in/sign-up controls now redirect to the dedicated Supabase Auth pages instead of calling legacy `/api/auth/login` and `/api/auth/signup` endpoints. Account preferences GET and language PATCH are now implemented by `vtg-api` and explicitly rewritten before the catch-all. Email unsubscribe now has a Supabase-native flow: private preference/token tables, 256-bit random tokens stored only as SHA-256 hashes, seven-day expiry, one-time confirmation, verified-account issuance through Resend, and no mutation on GET. Old PostgreSQL unsubscribe tokens are not migrated.
+- Partnership submissions now create durable private Supabase records. Contact enquiries now have a private Supabase intake and staff-only inbox API; live submission, staff review and email-delivery acceptance remain. Landing-page sign-in/sign-up controls now redirect to the dedicated Supabase Auth pages instead of calling legacy `/api/auth/login` and `/api/auth/signup` endpoints. Account preferences GET and language PATCH are now implemented by `vtg-api` and explicitly rewritten before the catch-all. Email unsubscribe now has a Supabase-native flow: private preference/token tables, 256-bit random tokens stored only as SHA-256 hashes, seven-day expiry, one-time confirmation, verified-account issuance through Resend, signup-consent persistence/backfill, and an atomic service-role-only consume-and-opt-out RPC. Onboarding emails now carry fresh Supabase preference links; marketing sends require opt-in. GET never mutates preference state. Old PostgreSQL unsubscribe tokens are not migrated.
 - Public AI needs a dedicated public-safe handler with rate limits, abuse controls, input limits, no provider secrets in the browser, and a clear handoff to a recorded enquiry.
 - Confirm email delivery and retry/error logging independently from database persistence.
 
