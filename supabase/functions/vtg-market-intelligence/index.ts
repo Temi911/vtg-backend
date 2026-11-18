@@ -187,6 +187,15 @@ async function loadNews(){
   try{const feed=await loadGoogleNews();if(feed.items.length)return feed;}catch(error){console.error("VTG_MI_GOOGLE_RSS_ERROR",String((error as Error)?.message||error).slice(0,300));}
   try{return await loadGdeltNews();}catch(error){console.error("VTG_MI_GDELT_ERROR",String((error as Error)?.message||error).slice(0,300));throw error;}
 }
+const publicEstimateBuckets=new Map<string,{start:number,count:number}>();
+function allowPublicEstimate(req:Request){
+  const ip=req.headers.get("cf-connecting-ip")||req.headers.get("x-real-ip")||req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()||"unknown";
+  const now=Date.now(),current=publicEstimateBuckets.get(ip);
+  if(!current||now-current.start>=60_000){publicEstimateBuckets.set(ip,{start:now,count:1});return true;}
+  if(current.count>=30)return false;
+  current.count+=1;return true;
+}
+
 Deno.serve(async(req:Request)=>{
   if(req.method==="OPTIONS")return new Response("ok",{headers:cors});
   const pathParts=new URL(req.url).pathname.split("/").filter(Boolean);
@@ -194,6 +203,34 @@ Deno.serve(async(req:Request)=>{
   if(req.method==="GET" && routePath==="news"){
     try{return reply({ok:true,...await loadNews()});}
     catch(error){console.error("VTG_MI_NEWS_UPSTREAM_ERROR",String((error as Error)?.message||error).slice(0,500));return reply({ok:false,error:"Trade news discovery is temporarily unavailable.",items:[],count:0,fetchedAt:new Date().toISOString()},503);}
+  }
+
+  if(req.method==="POST" && routePath==="trade/landed-cost"){
+    if(!allowPublicEstimate(req))return reply({error:"Too many calculator requests. Please try again shortly."},429);
+    const body=await req.json().catch(()=>null);
+    if(!body||typeof body!=="object"||Array.isArray(body))return reply({error:"A valid landed-cost request is required."},400);
+    const quantity=Number(body.quantity),unitPrice=Number(body.unitPrice),currency=String(body.currency||"USD").trim().toUpperCase();
+    const freight=body.freight===undefined?0:Number(body.freight),insurance=body.insurance===undefined?0:Number(body.insurance);
+    const dutyRate=body.dutyRate===undefined?0.2:Number(body.dutyRate),vatRate=body.vatRate===undefined?0.075:Number(body.vatRate);
+    const otherLevies=body.otherLevies===undefined?0:Number(body.otherLevies),portCharges=body.portCharges===undefined?0:Number(body.portCharges);
+    const clearingFee=body.clearingFee===undefined?0:Number(body.clearingFee),inlandTransport=body.inlandTransport===undefined?0:Number(body.inlandTransport);
+    const amounts=[unitPrice,freight,insurance,otherLevies,portCharges,clearingFee,inlandTransport];
+    if(!Number.isFinite(quantity)||quantity<=0||quantity>100_000_000||amounts.some(v=>!Number.isFinite(v)||v<0||v>1_000_000_000_000)||
+       !/^[A-Z]{3}$/.test(currency)||!Number.isFinite(dutyRate)||dutyRate<0||dutyRate>1||!Number.isFinite(vatRate)||vatRate<0||vatRate>1){
+      return reply({error:"Enter a valid quantity, currency, non-negative charges and duty/VAT rates between 0 and 100%."},400);
+    }
+    const country=String(body.country||body.destination||"Nigeria").trim().toUpperCase();
+    if(country!=="NG"&&country!=="NIGERIA"){
+      return reply({supported:false,message:"A country-specific statutory calculator is not enabled for this destination yet. Do not invent government rates; use an authoritative customs source.",generatedAt:new Date().toISOString()});
+    }
+    const productValue=unitPrice*quantity,cif=productValue+freight+insurance,duty=cif*dutyRate,vat=(cif+duty)*vatRate;
+    const localCharges=otherLevies+portCharges+clearingFee+inlandTransport;
+    const landedBeforeLocalCharges=cif+duty+vat;
+    return reply({supported:true,country:"Nigeria",currency,quantity,productValue,freight,insurance,cif,dutyRate,duty,vatRate,vat,
+      customsTaxes:duty+vat,landedBeforeLocalCharges,otherLevies,portCharges,clearingFee,inlandTransport,localCharges,
+      estimatedTotalLandedCost:landedBeforeLocalCharges+localCharges,
+      methodology:"Illustrative calculation. Final classification, customs valuation and statutory assessment remain subject to the competent customs authority.",
+      source:"Duty and VAT rates are user-supplied assumptions; no official tariff lookup is performed.",generatedAt:new Date().toISOString()});
   }
 
   if(req.method==="GET" && routePath==="tools/contract"){
