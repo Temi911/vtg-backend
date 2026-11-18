@@ -41,17 +41,16 @@ test('GET confirmation is non-mutating and explicit POST is required', () => {
   assert.match(fn, /if \(req\.method === "POST" && url\.pathname\.endsWith\("\/confirm"\)\)/);
 });
 
-test('onboarding email carries the new Supabase preference link', () => {
+test('onboarding email carries a direct Supabase preference link and gates marketing sends', () => {
   const fn = root('supabase/functions/vtg-email/index.ts');
-  assert.match(fn, /vtg_email_preference_tokens/);
-  assert.match(fn, /preferenceUrl = appUrl \+ "\/api\/auth\/email-preferences\//);
-  assert.match(fn, /manage your VTG email preferences/);
-  assert.match(fn, /functions\\/v1\\/vtg-email-preferences\\/confirm/);
-  assert.match(fn, /marketingEvents/);
-  assert.match(fn, /MARKETING_OPT_IN_REQUIRED/);
-  assert.match(fn, /A working unsubscribe link is required before sending marketing email/);
+  const preferences = root('supabase/functions/vtg-email-preferences/index.ts');
+  assert.ok(fn.includes('vtg_email_preference_tokens'));
+  assert.ok(fn.includes('preferenceUrl = supabaseUrl + "/functions/v1/vtg-email-preferences/confirm?token="'));
+  assert.ok(fn.includes('manage your VTG email preferences'));
+  assert.ok(fn.includes('MARKETING_OPT_IN_REQUIRED'));
+  assert.ok(fn.includes('A working unsubscribe link is required before sending marketing email'));
+  assert.ok(preferences.includes('actionUrl = (Deno.env.get("SUPABASE_URL") ?? "") + "/functions/v1/vtg-email-preferences/confirm"'));
 });
-
 test('preference endpoints route to Supabase before catch-all', () => {
   const config = JSON.parse(root('vercel.json'));
   const routes = config.rewrites;
