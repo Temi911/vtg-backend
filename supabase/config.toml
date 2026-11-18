@@ -47,3 +47,6 @@ verify_jwt = false
 
 [functions.vtg-partnerships]
 verify_jwt = false
+
+[functions.vtg-contact-enquiries]
+verify_jwt = false
