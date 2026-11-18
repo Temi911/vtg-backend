@@ -35,3 +35,6 @@ verify_jwt = false
 
 [functions.vtg-bank-trade-workspace]
 verify_jwt = false
+
+[functions.vtg-api]
+verify_jwt = false
