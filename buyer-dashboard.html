@@ -484,7 +484,7 @@ html[data-theme="dark"] .sidebar .count{background:#34404b;color:#f5f7f9}
   <div class="vtg-premium-grid">
     <section class="vtg-premium-card"><div class="vtg-lux-heading"><span class="vtg-lux-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19H21"/><path d="M8 16v-4M13 16V7M18 16v-7"/></svg></span><div><span class="vtg-card-kicker">Buyer intelligence</span><h2 style="margin-top:5px">Monthly transaction overview</h2></div></div>
       <p>Live summary of sourcing requests and orders recorded against your signed-in buyer account.</p>
-      <div class="vtg-kpi-row" id="buyerOverviewMetrics" aria-live="polite"><div class="vtg-kpi"><span>Recorded transactions</span><b id="buyerMetricTransactions">Loading…</b><span id="buyerMetricTransactionsNote">Checking your account records</span></div><div class="vtg-kpi"><span>Trade value</span><b id="buyerMetricValue">Loading…</b><span id="buyerMetricValueNote">Recorded order value</span></div><div class="vtg-kpi"><span>Completed orders</span><b id="buyerMetricCompleted">Loading…</b><span id="buyerMetricCompletedNote">Verified order status</span></div></div>
+      <div class="vtg-kpi-row" id="buyerOverviewMetrics" aria-live="polite"><div class="vtg-kpi"><span>Trade records</span><b id="buyerMetricTransactions">Loading…</b><span id="buyerMetricTransactionsNote">Checking your account records</span></div><div class="vtg-kpi"><span>Confirmed trade value</span><b id="buyerMetricValue">Loading…</b><span id="buyerMetricValueNote">No confirmed trade value yet</span></div><div class="vtg-kpi"><span>Completed orders</span><b id="buyerMetricCompleted">Loading…</b><span id="buyerMetricCompletedNote">Verified order status</span></div></div>
       <div class="vtg-chart-empty" id="buyerOverviewAnalytics" role="status"><span class="vtg-chart-empty-mark" aria-hidden="true">—</span><strong id="buyerOverviewAnalyticsTitle">Loading account activity</strong><p id="buyerOverviewAnalyticsText">Retrieving verified sourcing requests and orders for your signed-in buyer account. No sample figures are shown.</p></div>
     </section>
     <section class="vtg-premium-card"><div class="vtg-lux-heading"><span class="vtg-lux-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V21H7z"/><path d="M14 3.5V8h4M10 12h5M10 16h5"/></svg></span><div><span class="vtg-card-kicker">Document control</span><h2 style="margin-top:5px">Approval status</h2></div></div><p>Know what is approved, pending review, or still being prepared.</p>
@@ -550,12 +550,12 @@ html[data-theme="dark"] .sidebar .count{background:#34404b;color:#f5f7f9}
 
 <!-- VTG buyer workspace: Supabase-backed account workflows -->
 
-<script src="/vtg-buyer-overview-supabase.js?v=20261105-live-overview-2"></script>
+<script src="/vtg-buyer-overview-supabase.js?v=20261118-order-status-1"></script>
 <script src="/vtg-buyer-market-intelligence-supabase.js?v=20261105-market-intel-1"></script><script src="/vtg-buyer-profile-supabase.js?v=20261105-live-profile-1"></script>
 <script src="/vtg-buyer-quotes-supabase.js?v=20261105-quotes-1"></script>
 
 <script src="/vtg-buyer-requests-list-supabase.js?v=20261105-requests-live-1"></script>
-<script src="/vtg-buyer-orders-supabase.js?v=20261105-orders-live-2"></script>
+<script src="/vtg-buyer-orders-supabase.js?v=20261118-order-status-1"></script>
 <script src="/vtg-buyer-inspection-request.js?v=20261112-1"></script>
 <script src="/vtg-buyer-inspections-supabase.js?v=20261105-inspections-live-2"></script>
 <script src="/vtg-buyer-documents-supabase.js?v=20261105-documents-live-3"></script>
@@ -567,7 +567,7 @@ html[data-theme="dark"] .sidebar .count{background:#34404b;color:#f5f7f9}
 <script src="/vtg-buyer-landed-cost-supabase.js?v=20261105-landed-cost-2"></script>
 <script src="/vtg-buyer-live-tracking.js?v=20261116-1" defer></script>
 <script src="/vtg-buyer-finance-supabase.js?v=20261105-fx-notes-2"></script>
-<script src="/vtg-buyer-lc-drafts-supabase.js?v=20261105-lc-drafts-2"></script>
+<script src="/vtg-buyer-lc-drafts-supabase.js?v=20261118-confirmed-order-only-1"></script>
 
 <script src="/vtg-buyer-request-supabase.js?v=20261105-request-1"></script>
 <script src="/vtg-buyer-marketplace-supabase.js?v=20261105-marketplace-live-1"></script>
