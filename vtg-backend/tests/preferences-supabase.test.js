@@ -26,7 +26,7 @@ test('preferences API is authenticated and scoped to the signed-in profile', () 
   assert.ok(auth >= 0 && get > auth && patch > get);
   assert.ok(api.includes('.eq("id", user.id).maybeSingle()'));
   assert.ok(api.includes('.eq("id", user.id).select("preferred_language")'));
-  for (const language of ['"en"', '"zh"', '"fr"', '"es"', '"ar"', '"ha"']) assert.ok(api.includes(language));
+  for (const language of ['"en"', '"fr"', '"pt"', '"ar"', '"sw"', '"zh"', '"ko"', '"es"']) assert.ok(api.includes(language));
   assert.ok(api.includes('Choose a supported language'));
 });
 
