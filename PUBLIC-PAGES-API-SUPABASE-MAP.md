@@ -9,7 +9,9 @@
 
 The public site is a hybrid application. Marketplace quote requests already use Supabase directly from the browser. Several other visitor journeys call Express APIs that are still served by the Railway fallback. There are also Supabase Edge Functions that appear to implement part of the same domain, but they are not automatically active just because the functions exist: the relevant public route must be explicitly rewritten to them, or the frontend must call the function safely.
 
-**Do not remove the Railway fallback yet.** Several live journeys still depend on it, and some do not yet have proven Supabase parity.
+**Cutover update — 18 November 2026:** The Vercel API catch-all no longer points to Railway. It now points to the active Supabase `vtg-api` Edge Function. The live `vtg-api` source has been copied into `supabase/functions/vtg-api/index.ts` so the deployed handler is tracked in GitHub.
+
+This removes Railway from Vercel API routing, but it does **not** mean every legacy endpoint has Supabase parity. The catch-all function currently implements a limited set of routes (profile, product discovery/publishing, orders, role requests, shipments, letters of credit, conversations/messages, documents and a health check). Unsupported paths return a Supabase 404 instead of silently reaching Railway. Continue migrating and testing the remaining endpoint groups before calling the backend migration complete.
 
 ## 1. Routing truth from `vercel.json`
 
@@ -25,13 +27,13 @@ Current explicit Supabase rewrites:
 | `/api/notifications/:path*` | `vtg-notifications/:path*` | Explicit Supabase route |
 | `/api/notifications` | `vtg-notifications` | Explicit Supabase route |
 
-The final catch-all is still:
+The API catch-all is now:
 
-```
-/api/:path*  →  https://vtg-backend-production-ab20.up.railway.app/api/:path*
+``
+/api/:path*  →  https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-api/api/:path*
 ```
 
-This means an API call not matched by an earlier rewrite is routed to Railway. The Supabase Edge Functions for market intelligence, payments and verification do not become live public endpoints until a route or frontend integration points to them.
+Unmatched API calls now reach Supabase `vtg-api`. The function returns 404 for paths it does not implement; do not interpret the presence of the catch-all as proof that every route is migrated.
 
 ## 2. Public visitor journeys and dependencies
 
@@ -78,9 +80,10 @@ The Supabase market-intelligence Edge Function fetches and normalises external n
 
 ### P0 — Preserve existing production behaviour
 
-1. Keep Railway fallback active.
-2. Do not point a public route at a Supabase function until its request/response contract, auth requirements, role checks, error handling and RLS/storage access are verified.
-3. Confirm route precedence and avoid broad catch-all rewrites that shadow explicit Supabase routes.
+1. Keep all API traffic on Supabase; do not restore a Railway fallback.
+2. Do not treat a route as migrated until its request/response contract, auth requirements, role checks, error handling and RLS/storage access are verified.
+3. Keep specific function rewrites ahead of the `/api/:path*` catch-all.
+4. Track unsupported endpoints explicitly; they currently return 404 from `vtg-api` until their Supabase implementation is completed.
 
 ### P1 — Highest-value public journey
 
@@ -130,4 +133,4 @@ This is the strongest existing public-to-Supabase path and should be the first f
 
 ## 6. Verification boundary
 
-This document is based on source inspection of the current repository, Vercel rewrite configuration, Express route mounts, and the named Supabase function implementations. It does not claim live production requests, Supabase RLS tests, payment transactions, emails, media uploads or dashboard visibility have been successfully executed. No routes or production application code were changed in this mapping pass.
+This document is based on source inspection of the repository, Vercel rewrite configuration, Express route mounts, and deployed Supabase function implementations. The Vercel production deployment for commit `d2a345f391e40a007c6f1aeba8280c6a1ec525b8` reached READY. This confirms the deployment build, not successful authenticated API calls. It does not claim that payment transactions, emails, media uploads, dashboard visibility or all API route contracts have passed live acceptance tests.
