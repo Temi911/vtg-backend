@@ -23,6 +23,7 @@ The current `vercel.json` routes API traffic to Supabase Edge Functions only. De
 - `/api/partnerships` → `vtg-partnerships`
 - `/api/contact` and `/api/contact/admin*` → `vtg-contact-enquiries`
 - `/api/auth/me` → `vtg-api`
+- `GET /api/preferences` and `PATCH /api/preferences/language` → `vtg-api`
 - `/api/trade/landed-cost` → `vtg-market-intelligence` (Nigeria-only illustrative calculator)
 - `/api/africa/markets` → `vtg-api` (planning/reference catalogue)
 - `/api/market-intelligence/news`, tools and trade statistics → `vtg-market-intelligence`
@@ -78,6 +79,7 @@ Status labels describe code evidence only, not a completed live browser test.
 3. Contact: run a controlled POST submission, verify the returned reference, private database record, email status and staff-only inbox.
 4. Partnership application: verify durable submission, reference number, notifications and staff review queue.
 5. Authentication: verify `/signin.html`, each role-specific signup page and `/api/auth/me` using active and pending accounts.
+6. Preferences: verify authenticated preference reads and language updates; the old `/api/auth/email-preferences/:token` unsubscribe link remains unmigrated because its token belongs to the retired PostgreSQL users table and has no equivalent Supabase token record yet.
 
 ### P2 — Public information and intelligence
 
@@ -107,4 +109,4 @@ A page is only marked **Live and verified** after its visitor journey is tested 
 
 ## Important limitations of this first pass
 
-This report combines repository source inspection with limited runtime checks of deployed Supabase endpoints. It does **not** claim that all pages, authenticated workflows, payment provider, email delivery or third-party data sources have passed full acceptance tests. Several route groups still need deeper inspection. All API traffic remains on Supabase; unsupported routes must be migrated rather than sent to Railway.
+This report combines repository source inspection with limited runtime checks of deployed Supabase endpoints. It does **not** claim that all pages, authenticated workflows, payment provider, email delivery or third-party data sources have passed full acceptance tests. Several route groups still need deeper inspection. All API traffic remains on Supabase; unsupported routes must be migrated rather than sent to Railway. The legacy marketing unsubscribe token endpoint is explicitly outstanding and must not be redirected to an incompatible handler.
