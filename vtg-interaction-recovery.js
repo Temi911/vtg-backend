@@ -25,10 +25,13 @@
     const c=document.getElementById('vtgMContent');
     if(tab==='overview'){c.innerHTML='<div class="miGrid">'+[['vehicle','Vehicle Market Watch','car activity and sourcing signals'],['freight','Freight & Port Watch','shipping, ports and route signals'],['fx','FX & Trade Finance','currency and finance context'],['news','Trade News','cross-market developments'],['landed','Landed Cost Calculator','import cost estimate']].map(x=>'<article class="miCard"><h3>'+x[1]+'</h3><p>'+x[2]+'</p><button class="miBtn" data-mi="'+x[0]+'">Explore</button></article>').join('')+'</div>';return}
     if(tab==='landed'){c.innerHTML='<div class="miCard"><form id="miCostForm" class="miForm"><label>Product<input name="product" required></label><label>Destination<select name="country"><option>Nigeria</option><option>Ghana</option><option>Kenya</option><option>South Africa</option></select></label><label>Quantity<input name="quantity" type="number" min="1" value="1" required></label><label>Unit price USD<input name="unitPrice" type="number" min="0" step=".01" value="0" required></label><label>Freight USD<input name="freight" type="number" min="0" value="0"></label><label>Insurance USD<input name="insurance" type="number" min="0" value="0"></label><label>Duty %<input name="dutyRate" type="number" min="0" value="20"></label><label>VAT %<input name="vatRate" type="number" min="0" value="7.5"></label><button class="miBtn" type="submit">Calculate estimate</button><div id="miCostResult"></div></form></div>';document.getElementById('miCostForm').onsubmit=async e=>{e.preventDefault();const x=Object.fromEntries(new FormData(e.currentTarget));const p={...x,quantity:+x.quantity,unitPrice:+x.unitPrice,freight:+x.freight,insurance:+x.insurance,dutyRate:+x.dutyRate/100,vatRate:+x.vatRate/100,otherLevies:0,portCharges:0,clearingFee:0,inlandTransport:0};const o=document.getElementById('miCostResult');o.textContent='Calculating…';try{const r=await fetch('/api/trade/landed-cost',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});const d=await r.json();if(!r.ok)throw Error(d.message||'Unable to calculate');o.innerHTML='<div class="miSignal"><b>'+esc(d.currency||'USD')+' '+esc(d.estimatedTotalLandedCost||'—')+'</b><small>Illustrative estimate only.</small></div>'}catch(err){o.textContent=err.message}};return}
-    try{const r=await fetch('/api/market/dashboard',{cache:'no-store'});const d=await r.json();const news=Array.isArray(d.news)?d.news:[];const terms={vehicle:['vehicle','car','automotive','china','manufacturer'],freight:['freight','port','shipping','cargo','container','logistics'],fx:['fx','currency','finance','exchange','bank','trade']}[tab];const list=terms?news.filter(n=>terms.some(t=>String(n.title||'').toLowerCase().includes(t))).slice(0,10):news.slice(0,10);c.innerHTML='<div class="miCard">'+(list.length?list.map(n=>'<div class="miSignal"><b>'+esc(n.title||'Market signal')+'</b><small>'+esc(n.source||'VTG market feed')+'</small></div>').join(''):'<div class="miSignal"><b>No current signals available</b><small>VTG will display signals when the market feed is available.</small></div>')+'</div>'}catch{c.innerHTML='<div class="miCard"><b>Market feed temporarily unavailable</b><p>Please try again shortly.</p></div>'}
+    try{const r=await fetch('/api/market-intelligence/news?limit=20',{headers:{Accept:'application/json'},cache:'no-store'});const d=await r.json();const news=Array.isArray(d.items)?d.items:[];const terms={vehicle:['vehicle','car','automotive','china','manufacturer'],freight:['freight','port','shipping','cargo','container','logistics'],fx:['fx','currency','finance','exchange','bank','trade']}[tab];const list=terms?news.filter(n=>terms.some(t=>String(n.title||'').toLowerCase().includes(t))).slice(0,10):news.slice(0,10);c.innerHTML='<div class="miCard">'+(list.length?list.map(n=>'<div class="miSignal"><b>'+esc(n.title||'Market signal')+'</b><small>'+esc(n.source||'VTG market feed')+'</small></div>').join(''):'<div class="miSignal"><b>No current signals available</b><small>VTG will display signals when the market feed is available.</small></div>')+'</div>'}catch{c.innerHTML='<div class="miCard"><b>Market feed temporarily unavailable</b><p>Please try again shortly.</p></div>'}
   }
 
-  function rebindVerification(){const b=document.getElementById('sendCode');if(!b)return;b.onclick=async()=>{const email=document.querySelector('#authForm input[name="email"]')?.value.trim();const msg=document.getElementById('authMsg');if(!email){if(msg)msg.textContent='Enter your email first.';return}b.disabled=true;try{const r=await fetch('/api/auth/send-verification-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,preferredLanguage:document.querySelector('#authForm select[name="preferredLanguage"]')?.value||'en'})});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.message||'Could not send verification code');if(msg){msg.className='formMsg ok';msg.textContent='Verification code sent. Check your email.'}let n=45;b.textContent='Resend in 45s';const t=setInterval(()=>{n--;if(n<=0){clearInterval(t);b.disabled=false;b.textContent='Send code'}else b.textContent='Resend in '+n+'s'},1000)}catch(e){b.disabled=false;if(msg){msg.className='formMsg';msg.textContent=e.message||'Could not send verification code'}}}};window.VTGRebindVerification=rebindVerification;
+  function rebindVerification(){
+    const b=document.getElementById('sendCode');if(!b)return;
+    b.onclick=e=>{e.preventDefault();const form=document.getElementById('authForm');const role=form?.dataset?.vtgRole||localStorage.getItem('vtg-last-role')||'buyer';const path=({buyer:'/buyer-signup.html',supplier:'/supplier-signup.html',bank:'/bank-signup.html'})[role]||'/signup.html';window.location.href=path;};
+  }
 
   function closeAuth(){
     const modal=document.getElementById('authModal');
@@ -36,52 +39,11 @@
     document.body.style.overflow='';
   }
 
-  async function fallbackAuthSubmit(form){
-    const data=Object.fromEntries(new FormData(form));
-    const msg=document.getElementById('authMsg');
-    const role=form.dataset.vtgRole || localStorage.getItem('vtg-last-role') || 'buyer';
-    const mode=form.dataset.vtgMode || 'login';
-    try{
-      if(mode==='signup' && !data.verificationCode) throw new Error('Enter the email verification code first.');
-      let endpoint='/api/auth/login';
-      let payload={email:data.email,password:data.password};
-
-      if(mode==='signup'){
-        endpoint='/api/auth/signup/'+role;
-        const phoneCountry=form.querySelector('select[name="phoneCountry"]');
-        const code=phoneCountry?.selectedOptions?.[0]?.dataset?.code || '';
-        payload={
-          email:data.email,password:data.password,fullName:data.fullName,
-          phone:role==='bank'?undefined:code+' '+(data.phone||''),
-          phoneCountry:role==='bank'?undefined:data.phoneCountry,
-          verificationCode:data.verificationCode,
-          preferredLanguage:data.preferredLanguage||'en',
-          marketingSubscribed:data.marketingSubscribed==='true',
-          country:data.country,city:data.city
-        };
-        if(role==='buyer') payload.buyerType=data.buyerType;
-        if(role==='supplier') Object.assign(payload,{companyName:data.companyName,registrationNo:data.registrationNo,licenseNumber:data.licenseNumber,regulator:data.regulator});
-        if(role==='bank') Object.assign(payload,{bankName:data.bankName,institutionType:data.institutionType,regulator:data.regulator,licenseNumber:data.licenseNumber,swiftCode:data.swiftCode,branch:data.branch,officerTitle:data.officerTitle,workEmail:data.workEmail});
-      }
-
-      const r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-      const d=await r.json().catch(()=>({}));
-      if(!r.ok) throw new Error(d.message||'Request failed');
-
-      if(d.accessToken){
-        localStorage.setItem('vtg_access_token',d.accessToken);
-        localStorage.setItem('vtg-auth',JSON.stringify({user:d.user,accessToken:d.accessToken,refreshToken:d.refreshToken||null}));
-        localStorage.setItem('vtg-language',d.user?.preferredLanguage||data.preferredLanguage||'en');
-        localStorage.setItem('vtg-country',d.user?.country||data.country||'');
-      }
-      if(msg){
-        msg.className='formMsg ok';
-        msg.textContent=mode==='login'?'Signed in successfully. Opening your VTG workspace…':'Account created successfully. Please review the VTG agreement before entering your workspace…';
-      }
-      const actualRole=String(d.user?.role||role||'buyer').toLowerCase();const destination=actualRole==='buyer'?'/buyer-dashboard.html':actualRole==='supplier'?'/supplier-dashboard.html':actualRole==='bank'?'/bank-trade-os.html':actualRole==='agent'?'/agent-dashboard.html':['admin','administrator'].includes(actualRole)?'/admin-dashboard-preview.html':'/workforce-dashboard.html';setTimeout(()=>{location.href=d.agreementRequired?'/signup-agreement.html':(mode==='signup'&&(actualRole==='supplier'||actualRole==='bank'))?'/verification.html':destination},500);
-    }catch(err){
-      if(msg){msg.className='formMsg';msg.textContent=err.message||'Request failed';}
-    }
+  function fallbackAuthSubmit(form){
+    const role=form.dataset.vtgRole||localStorage.getItem('vtg-last-role')||'buyer';
+    const mode=form.dataset.vtgMode||'login';
+    const signupPath=({buyer:'/buyer-signup.html',supplier:'/supplier-signup.html',bank:'/bank-signup.html'})[role]||'/signup.html';
+    window.location.href=mode==='signup'?signupPath:'/signin.html?role='+encodeURIComponent(role);
   }
 
   function bind(){
