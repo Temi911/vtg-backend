@@ -26,7 +26,7 @@ async function activeUser(db:SupabaseClient) {
   const {data:profile,error:pe}=await db.from("profiles")
     .select("id,full_name,role,country,is_active,account_environment")
     .eq("id",user.id).maybeSingle();
-  if(pe || !profile || profile.is_active!==true) throw new Error("ACTIVE_ACCOUNT_REQUIRED");
+  if(pe || !profile || profile.is_active!==true || (profile.role!=="admin" && profile.account_environment!=="trade")) throw new Error("ACTIVE_ACCOUNT_REQUIRED");
   return {user,profile};
 }
 function errorResponse(error:unknown) {
