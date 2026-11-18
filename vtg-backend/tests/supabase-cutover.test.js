@@ -90,3 +90,28 @@ test('no API rewrite sends VTG traffic to Railway', () => {
   const fallback = config.rewrites.find(x => x.source === '/api/:path*');
   assert.equal(fallback.destination, 'https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-api/api/:path*');
 });
+
+
+test('Trade Feed routes and handlers use Supabase only', () => {
+  const config = JSON.parse(readRoot('vercel.json'));
+  const feed = config.rewrites.find(x => x.source === '/api/marketplace/:path*');
+  const media = config.rewrites.find(x => x.source === '/api/media/feed/:postId');
+  assert.match(feed.destination, /functions\/v1\/vtg-marketplace\/:path\*$/);
+  assert.match(media.destination, /functions\/v1\/vtg-marketplace\/media\/feed\/:postId$/);
+  const fn = readRoot('supabase/functions/vtg-marketplace/index.ts');
+  for (const route of ['feed/account', 'feed', 'users/following', 'feed\\\\/([0-9a-f-]+)\\\\/comments', 'reactions', 'users\\\\/([0-9a-f-]+)\\\\/follow', 'media\\\\/feed']) assert.ok(fn.includes(route), 'missing Trade Feed handler: ' + route);
+  assert.match(fn, /vtg_trade_posts/);
+  assert.match(fn, /vtg_trade_post_comments/);
+  assert.match(fn, /vtg_trade_post_reactions/);
+  assert.match(fn, /vtg_user_follows/);
+  assert.match(fn, /vtg-trade-feed-media/);
+  assert.doesNotMatch(fn, /service_role|SUPABASE_SERVICE_ROLE_KEY/);
+});
+
+test('Trade Feed public reads use a safe profile projection and publication-aware policies', () => {
+  const fn = readRoot('supabase/functions/vtg-marketplace/index.ts');
+  assert.match(fn, /vtg_public_trade_profiles/);
+  const migration = readRoot('supabase/migrations/20261118102500_harden_vtg_trade_feed_public_reads.sql');
+  assert.match(migration, /drop policy if exists "Signed-in members can read trade posts"/i);
+  assert.match(migration, /security_barrier=true/i);
+});
