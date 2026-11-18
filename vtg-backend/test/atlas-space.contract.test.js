@@ -31,3 +31,16 @@ test('globes share one space scene: stars in both modes, sunlit Earth in light m
   for(const f of ['trade-atlas.html','vtg-shipment-globe.js'])assert.ok(read(f).includes('VTGSpace.attach'),f);
   assert.ok(!read('trade-atlas.html').includes("#edf4f8")&&!read('vtg-shipment-globe.js').includes("#edf4f8"),'old white globe background removed');
 });
+
+test('Nigeria port Atlas markers expose official NPA facility references and shipping-position links',()=>{
+  const page=read('trade-atlas.html');
+  for(const item of [
+    'sourceAuthority:"Nigerian Ports Authority"',
+    'https://nigerianports.gov.ng/tincan/',
+    'https://nigerianports.gov.ng/lagos-port/',
+    'https://nigerianports.gov.ng/lekki/',
+    'https://nigerianports.gov.ng/daily-shipping-position/',
+    'Official facility profile',
+    'NPA daily shipping position'
+  ])assert.ok(page.includes(item),item);
+});
