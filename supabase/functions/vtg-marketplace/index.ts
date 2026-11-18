@@ -48,7 +48,7 @@ async function listFeed(db:SupabaseClient,limit:number) {
     ids.length?db.from("vtg_trade_post_reactions").select("post_id").in("post_id",ids):Promise.resolve({data:[],error:null})
   ]);
   for(const r of [profiles,media,comments,reactions]) if(r.error) throw r.error;
-  const profileMap=new Map((profiles.data??[]).map(p=>[p.id,p]));
+  const profileMap:Map<string,any>=new Map((profiles.data??[]).map((p:any)=>[p.id,p]));
   return (posts??[]).map(p=>{
     const author=profileMap.get(p.author_id)??{};
     const pm=(media.data??[]).filter(m=>m.post_id===p.id);
