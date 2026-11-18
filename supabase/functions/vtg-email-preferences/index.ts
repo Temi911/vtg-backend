@@ -10,7 +10,7 @@ const headers = {
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers });
 const html = (body: string, status = 200) => new Response(body, {
   status,
-  headers: { ...headers, "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
+  headers: { ...headers, "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store", "Referrer-Policy": "no-referrer", "X-Content-Type-Options": "nosniff" },
 });
 const page = (title: string, message: string, form = "") => `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><body style="margin:0;background:#f3efe6;color:#17191b;font:16px/1.6 Arial,sans-serif"><main style="max-width:560px;margin:8vh auto;padding:36px;background:#fff;border:1px solid #e5dfd3"><div style="height:4px;background:#702a30;margin:-36px -36px 28px"></div><p style="font-size:12px;letter-spacing:.18em;color:#702a30;font-weight:bold">VTG — THE PRIVATE TRADE HOUSE</p><h1 style="font: bold 30px Georgia,serif">${title}</h1><p>${message}</p>${form}<p style="font-size:12px;color:#6b7280;margin-top:28px">Essential account, security and transaction emails may still be sent.</p></main></body></html>`;
 const escapeHtml = (s: string) => s.replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c] ?? c));
