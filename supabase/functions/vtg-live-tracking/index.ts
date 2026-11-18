@@ -199,7 +199,7 @@ async function main(req: Request) {
       if(error) throw error;
       const cfg=cargoEnv(provider);
       if(mode==="sandbox") return json({ok:true,reference_id:ref.id,provider_status:"sandbox-ready",providerConfigured:false,mode:"sandbox",message:"Reference saved for sandbox validation. No external provider was contacted."});
-      if(!configured(cfg)) return json({ok:true,reference_id:ref.id,provider_status:"pending_provider",providerConfigured:false,mode:"live",message:"Reference saved. Provider API access is not configured yet; no live request was sent."});
+      if(!configured(cfg) || !env(cfg.pollPath)) return json({ok:true,reference_id:ref.id,provider_status:"pending_provider",providerConfigured:false,mode:"live",message:"Reference saved. Complete provider registration and polling endpoints are not configured; no live request was sent."});
       try {
         const url=new URL(env(cfg.path),env(cfg.base));
         const data=await providerRequest(url,cfg,"POST",{reference:value,reference_type:type,carrier_code:row.carrier_code});
