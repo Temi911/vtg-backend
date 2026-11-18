@@ -123,3 +123,17 @@ test('Trade Feed policies enforce public-only reads and role-gated publishing', 
   assert.ok(tradeScope.includes("account_environment='trade'"));
   assert.ok(tradeScope.includes('select auth.uid()'));
 });
+
+
+test('Trade Feed news routes are public Supabase reads, not Railway fallbacks', () => {
+  const config = JSON.parse(readRoot('vercel.json'));
+  for (const source of ['/api/market-intelligence/news', '/api/integrations/news']) {
+    const route = config.rewrites.find(x => x.source === source);
+    assert.ok(route, 'missing public news route: ' + source);
+    assert.ok(route.destination.includes('functions/v1/vtg-market-intelligence/news'));
+  }
+  const fn = readRoot('supabase/functions/vtg-market-intelligence/index.ts');
+  assert.ok(fn.includes('req.method==="GET" && routePath==="news"'));
+  assert.ok(fn.includes('loadNews()'));
+  assert.doesNotMatch(fn, /SUPABASE_SERVICE_ROLE_KEY|service_role/i);
+});
