@@ -13,6 +13,7 @@
     lib:'/vendor/globe/globe.gl.min.js',
     day:'/vendor/globe/earth-blue-marble.jpg',
     night:'/vendor/globe/earth-night.jpg',
+    lights:'/vendor/globe/earth-lights.png',
     sky:'/vendor/globe/night-sky.png',
     bump:'/vendor/globe/earth-topology.png'
   };
@@ -84,7 +85,7 @@
       var lights=globe.lights&&globe.lights();
       if(lights&&lights.length){
         lights.forEach(function(l){
-          if(l.isAmbientLight){l.intensity=mode==='light'?.75:1.0;if(l.color&&l.color.set)l.color.set(mode==='light'?'#a9c4ee':'#ffffff')}
+          if(l.isAmbientLight){l.intensity=mode==='light'?.75:1.15;if(l.color&&l.color.set)l.color.set(mode==='light'?'#a9c4ee':'#ffffff')}
           if(l.isDirectionalLight){
             if(l.color&&l.color.set)l.color.set(mode==='light'?'#fff0cf':'#ffffff');
             l.intensity=mode==='light'?2.3:.6;
@@ -96,11 +97,43 @@
     var mat=null;try{mat=globe.globeMaterial&&globe.globeMaterial()}catch(e){}
     if(mat){
       try{
-        if(mode==='light'){mat.bumpScale=6;mat.shininess=14;if(mat.specular&&mat.specular.set)mat.specular.set('#6aa8ff')}
-        else{mat.bumpScale=0;mat.shininess=0}
+        if(mode==='light'){
+          mat.bumpScale=6;mat.shininess=14;if(mat.specular&&mat.specular.set)mat.specular.set('#6aa8ff');
+          mat.emissiveMap=null;mat.emissiveIntensity=0;if(mat.emissive&&mat.emissive.set)mat.emissive.set('#000000');
+        }else{
+          mat.bumpScale=0;mat.shininess=0;
+        }
         mat.needsUpdate=true;
       }catch(e){}
+      if(mode==='dark')cityLights(mat);
     }
+  }
+
+  /* Dark mode: a dedicated city-lights map (warm electric light only, black elsewhere) is used as the globe's
+   * emissive layer, so towns and cities glow on the night side like real orbital photos. */
+  var lightsTex=null;
+  function cityLights(mat){
+    try{
+      if(!lightsTex&&mat.map&&mat.map.constructor){
+        var img=new Image();
+        img.onload=function(){
+          try{
+            var T=mat.map.constructor;
+            lightsTex=new T(img);
+            lightsTex.colorSpace=mat.map.colorSpace;
+            lightsTex.needsUpdate=true;
+            if(theme()==='dark')cityLights(mat);
+          }catch(e){}
+        };
+        img.src=A.lights;
+        return;
+      }
+      if(!lightsTex||theme()!=='dark')return;
+      mat.emissiveMap=lightsTex;
+      if(mat.emissive&&mat.emissive.set)mat.emissive.set('#ffffff');
+      mat.emissiveIntensity=2.6;
+      mat.needsUpdate=true;
+    }catch(e){}
   }
 
   /* One call for every globe: decorates the container, applies the look, follows theme changes. */

@@ -44,3 +44,13 @@ test('Nigeria port Atlas markers expose official NPA facility references and shi
     'NPA daily shipping position'
   ])assert.ok(page.includes(item),item);
 });
+
+test('dark mode globe uses a dedicated city-lights emissive map and light mode clears it', () => {
+  const fs = require('fs'), path = require('path');
+  const root = path.join(__dirname, '..', '..');
+  const js = fs.readFileSync(path.join(root, 'vtg-space.js'), 'utf8');
+  assert.match(js, /earth-lights\.png/);
+  assert.match(js, /emissiveMap/);
+  assert.match(js, /emissiveIntensity=0/);
+  assert.ok(fs.statSync(path.join(root, 'vendor/globe/earth-lights.png')).size > 10000);
+});
