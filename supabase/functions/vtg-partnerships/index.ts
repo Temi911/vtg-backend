@@ -76,8 +76,10 @@ Deno.serve(async (req: Request) => {
     return reply({ error: { code: "INSUFFICIENT_DETAIL", message: "Please provide a little more detail in both proposal fields." } }, 400);
   }
 
-  const forwarded = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
-    || req.headers.get("x-real-ip") || "unknown";
+  const forwarded = req.headers.get("cf-connecting-ip")
+    || req.headers.get("x-real-ip")
+    || req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+    || "unknown";
   const ipHash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(forwarded))
     .then((hash) => Array.from(new Uint8Array(hash), (x) => x.toString(16).padStart(2, "0")).join(""));
   const db = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
