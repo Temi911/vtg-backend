@@ -118,7 +118,7 @@ test('Trade Feed policies enforce public-only reads and role-gated publishing', 
   assert.ok(roles.includes("post_type in ('advert','product') and p.role in ('supplier','admin')"));
   assert.ok(constraints.includes('<= 5000'));
   assert.ok(cleanup.includes('drop index if exists public.vtg_trade_post_comments_post_idx;'));
-  assert.ok(profileRls.includes('grant select (id,full_name,role,country) on public.profiles to anon;'));
+  assert.ok(profileRls.includes('grant select (id,full_name,role,country) on public.profiles to anon,authenticated;'));
   assert.ok(profileRls.includes('Public can read active Trade Feed author labels'));
   assert.ok(tradeScope.includes("account_environment='trade'"));
   assert.ok(tradeScope.includes('select auth.uid()'));
