@@ -27,8 +27,8 @@ test('contact enquiry storage is private and protected', () => {
   const migration = root('supabase/migrations/20261118100336_create_vtg_contact_enquiries.sql');
   const fn = root('supabase/functions/vtg-contact-enquiries/index.ts');
   assert.match(migration, /enable row level security/i);
-  assert.ok(migration.includes('REVOKE ALL ON TABLE public.vtg_contact_enquiries FROM public, anon, authenticated'));
-  assert.ok(migration.includes('GRANT ALL ON TABLE public.vtg_contact_enquiries TO service_role'));
+  assert.match(migration, /revoke all on table public\.vtg_contact_enquiries from public, anon, authenticated/i);
+  assert.match(migration, /grant all on table public\.vtg_contact_enquiries to service_role/i);
   for (const part of ['vtg_contact_enquiries','source_ip_hash','crypto.subtle.digest','RESEND_API_KEY','website','ADMIN_FORBIDDEN']) {
     assert.ok(fn.includes(part), 'missing contact protection or persistence: ' + part);
   }
