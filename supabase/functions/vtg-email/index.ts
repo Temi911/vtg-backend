@@ -1,7 +1,7 @@
-import { renderVtgEmail, type RichContent } from "../_shared/vtg-email-template.ts";
+import { renderVtgEmail, type RichContent } from "./vtg-email-template.ts";
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { buildWelcomeEmail, userIdSentence } from "../_shared/vtg-welcome.ts";
+import { buildWelcomeEmail, userIdSentence } from "./vtg-welcome.ts";
 
 const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (char) => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
