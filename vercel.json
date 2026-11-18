@@ -13,6 +13,18 @@
   ],
   "rewrites": [
     {
+      "source": "/api/auth/email-preferences/confirm",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-email-preferences/confirm"
+    },
+    {
+      "source": "/api/auth/email-preferences/:token",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-email-preferences/confirm?token=:token"
+    },
+    {
+      "source": "/api/auth/email-preferences",
+      "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-email-preferences"
+    },
+    {
       "source": "/api/partnerships",
       "destination": "https://lxrurbdzphqvkjprlfuv.supabase.co/functions/v1/vtg-partnerships"
     },
