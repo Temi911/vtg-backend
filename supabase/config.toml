@@ -41,3 +41,6 @@ verify_jwt = false
 
 [functions.vtg-marketplace]
 verify_jwt = false
+
+[functions.vtg-market-intelligence]
+verify_jwt = false
