@@ -163,7 +163,7 @@ Deno.serve(async (req: Request) => {
 
     // Issue a fresh Supabase token for the welcome email. The database stores only its SHA-256 hash.
     let preferenceUrl: string | undefined;
-    const appUrl = Deno.env.get("VTG_APP_URL")?.replace(/\\/$/, "");
+    const appUrl = Deno.env.get("VTG_APP_URL")?.replace(/\/$/, "");
     if (appUrl) {
       const rawToken = [...crypto.getRandomValues(new Uint8Array(32))]
         .map((value) => value.toString(16).padStart(2, "0")).join("");
