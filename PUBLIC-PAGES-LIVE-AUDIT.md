@@ -22,6 +22,8 @@ The current `vercel.json` routes API traffic to Supabase Edge Functions only. De
 - `/api/notifications/*` → `vtg-notifications`
 - `/api/partnerships` → `vtg-partnerships`
 - `/api/contact` and `/api/contact/admin*` → `vtg-contact-enquiries`
+- `/api/auth/me` → `vtg-api`
+- `/api/trade/landed-cost` → `vtg-market-intelligence` (Nigeria-only illustrative calculator)
 - `/api/africa/markets` → `vtg-api` (planning/reference catalogue)
 - `/api/market-intelligence/news`, tools and trade statistics → `vtg-market-intelligence`
 - `/api/market-intelligence/*` news, tools and trade statistics → `vtg-market-intelligence`
@@ -75,6 +77,7 @@ Status labels describe code evidence only, not a completed live browser test.
 2. Sourcing: public request form → Supabase record → staff assignment → supplier matching → buyer update.
 3. Contact: run a controlled POST submission, verify the returned reference, private database record, email status and staff-only inbox.
 4. Partnership application: verify durable submission, reference number, notifications and staff review queue.
+5. Authentication: verify `/signin.html`, each role-specific signup page and `/api/auth/me` using active and pending accounts.
 
 ### P2 — Public information and intelligence
 
