@@ -158,7 +158,33 @@ async function main(req: Request) {
   try {
     const { user } = await buyerContext(req);
     if (action === "status") {
-      return json({ ok:true, mode:"provider-readiness", cargo:{ vizion:configured(cargoEnv("vizion")), tracking_one:configured(cargoEnv("tracking_one")) }, ais:{ vesselfinder:configured(aisEnv("vesselfinder")), marinetraffic:configured(aisEnv("marinetraffic")) }, liveDataEnabled:false, note:"Provider credentials and endpoint configuration are required before live requests can run." });
+      const cargoReady = (provider: CargoProvider) => {
+        const cfg = cargoEnv(provider);
+        return configured(cfg) && Boolean(env(cfg.pollPath));
+      };
+      const cargo = {
+        vizion: cargoReady("vizion"),
+        tracking_one: cargoReady("tracking_one"),
+      };
+      const ais = {
+        vesselfinder: configured(aisEnv("vesselfinder")),
+        marinetraffic: configured(aisEnv("marinetraffic")),
+      };
+      const liveCargoEnabled = Object.values(cargo).some(Boolean);
+      const liveAisEnabled = Object.values(ais).some(Boolean);
+      const liveDataEnabled = liveCargoEnabled || liveAisEnabled;
+      return json({
+        ok: true,
+        mode: liveDataEnabled ? "live-provider-ready" : "provider-readiness",
+        cargo,
+        ais,
+        liveCargoEnabled,
+        liveAisEnabled,
+        liveDataEnabled,
+        note: liveDataEnabled
+          ? "Only the providers marked available are configured for live requests. Each shipment and vessel still requires its own valid reference."
+          : "No complete cargo or AIS provider configuration is available. References may be saved for setup, but no live tracking request will be sent.",
+      });
     }
     if (action === "register-reference") {
       const shipmentId = str(body.shipment_id);
