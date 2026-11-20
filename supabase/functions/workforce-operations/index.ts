@@ -45,7 +45,7 @@ Deno.serve(async(req:Request)=>{
   else if(!isAdmin&&workspace!=="manager")tq=tq.eq("workspace_role",workspace);
   const {data:tasks,error:te}=await tq;if(te)return reply({error:"Could not load workforce tasks"},500);
   let hq=db.from("vtg_workforce_handoffs").select("id,task_id,from_workspace_role,to_workspace_role,initiated_by,proposed_assignee,accepted_by,status,note,created_at,decided_at").order("created_at",{ascending:false}).limit(100);
-  if(!isManager)hq=hq.or("initiated_by.eq."+caller.id+",proposed_assignee.eq."+caller.id);
+  if(!isManager)hq=hq.or("initiated_by.eq."+caller.id+",proposed_assignee.eq."+caller.id+",to_workspace_role.eq."+workspace);
   else if(!isAdmin&&workspace!=="manager")hq=hq.or("from_workspace_role.eq."+workspace+",to_workspace_role.eq."+workspace);
   const {data:handoffs,error:he}=await hq;if(he)return reply({error:"Could not load handoffs"},500);
   const rows=tasks??[],open=rows.filter(t=>!["completed","cancelled"].includes(t.status));
