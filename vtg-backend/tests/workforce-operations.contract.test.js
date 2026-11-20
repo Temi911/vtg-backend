@@ -1,6 +1,6 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
-const root=path.join(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const root=path.join(__dirname,'../..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
 test('workforce operations schema creates role-scoped tasks, handoffs and append-only activity',()=>{const s=read('supabase/migrations/20261120113000_vtg_workforce_operations.sql');for(const n of ['vtg_workforce_tasks','vtg_workforce_handoffs','vtg_workforce_activity'])assert.match(s,new RegExp('create table if not exists public\\.'+n));assert.match(s,/revoke all on public\\.vtg_workforce_tasks, public\\.vtg_workforce_handoffs, public\\.vtg_workforce_activity from anon, authenticated/i);assert.match(s,/append-only/i)});
 test('workforce API validates Supabase identity and active staff membership',()=>{const f=read('supabase/functions/workforce-operations/index.ts');assert.match(f,/auth.getUser\\(token\\)/);assert.match(f,/account_environment!==\"staff\"/);assert.match(f,/vtg_workforce_members/);assert.match(f,/Active workforce assignment required/)});
 test('task creation and reassignment require manager permissions',()=>{const f=read('supabase/functions/workforce-operations/index.ts');assert.match(f,/A manager or administrator must create and assign tasks/);assert.match(f,/Only managers can reassign tasks/);assert.match(f,/active member of the selected workspace/)});
