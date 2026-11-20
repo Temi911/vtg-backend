@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>VTG | Admin Dashboard Preview</title>
+<style>
+:root{--bg:#f3efe6;--panel:#fffdf8;--ink:#17191b;--muted:#73716b;--line:#e5dfd4;--blue:#1558d6;--gold:#b49a70;--red:#702a30}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Inter,Arial,sans-serif}.notice{background:#fff1cc;color:#5e4614;padding:10px 18px;text-align:center;font-weight:700;letter-spacing:.04em;font-size:11px}.shell{display:grid;grid-template-columns:245px 1fr;min-height:calc(100vh - 38px)}aside{background:#17191b;color:#f3efe6;padding:25px 16px}.brand{font-size:18px;font-weight:800;letter-spacing:.08em;padding:5px 12px 28px}.brand small{display:block;color:#b49a70;font-size:10px;letter-spacing:.2em;margin-top:4px}.nav{display:grid;gap:5px}.nav button{border:0;background:transparent;color:#c9c5bc;text-align:left;padding:12px;border-radius:3px;cursor:pointer;font:inherit}.nav button.active,.nav button:hover{background:#2a2d30;color:white;border-left:3px solid #b49a70}.aside-note{margin:35px 10px;color:#98958d;font-size:11px}main{padding:28px 34px;min-width:0}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:25px}.eyebrow{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.16em}.top h1{font-size:26px;margin:3px 0;font-weight:650}.preview-tag{border:1px solid var(--gold);color:#725c36;padding:7px 11px;font-size:10px;letter-spacing:.12em;font-weight:800}.intro{color:var(--muted);margin:0 0 22px}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:20px 0}.metric,.panel{background:var(--panel);border:1px solid var(--line);padding:18px}.metric span{display:block;color:var(--muted);font-size:11px}.metric strong{display:block;font-size:26px;margin:7px 0 2px;font-weight:600}.metric small{color:var(--muted);font-size:11px}.columns{display:grid;grid-template-columns:1.35fr 1fr;gap:14px}.panel h2{font-size:14px;margin:0 0 15px}.rowline{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid var(--line)}.status{font-size:10px;color:#725c36;background:#f3ead9;padding:4px 7px;white-space:nowrap}.bars{display:flex;align-items:end;gap:12px;height:125px;padding:12px 4px 0;border-bottom:1px solid var(--line)}.bar{flex:1;background:#d8c8ad;min-height:16px;position:relative}.bar:nth-child(2n){background:#9aabc9}.bar span{position:absolute;top:100%;left:0;right:0;text-align:center;color:var(--muted);font-size:10px;padding-top:6px}.section{display:none}.section.active{display:block}.table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;padding:12px 9px;border-bottom:1px solid var(--line);font-size:12px}.table th{color:var(--muted);font-weight:600}.muted{color:var(--muted)}.secure{display:inline-block;margin-top:18px;color:var(--blue);text-decoration:none;font-weight:700;font-size:12px}.secure:hover{text-decoration:underline}.footer{margin-top:25px;color:var(--muted);font-size:11px}
+@media(max-width:900px){.shell{grid-template-columns:1fr}aside{padding:15px}.brand{padding:5px 8px 15px}.nav{display:flex;overflow:auto}.nav button{white-space:nowrap}main{padding:22px 16px}.metrics{grid-template-columns:repeat(2,1fr)}.columns{grid-template-columns:1fr}}
+@media(max-width:480px){.top{align-items:flex-start;flex-direction:column}.metrics{gap:8px}.metric{padding:13px}.metric strong{font-size:21px}.table{min-width:560px}.table-wrap{overflow:auto}}
+</style>
+</head>
+<body>
+<div class="notice">DEMO PREVIEW — SAMPLE LAYOUT ONLY · NO LIVE DATA · READ-ONLY</div>
+<div class="shell">
+<aside>
+<div class="brand">VTG <small>THE PRIVATE TRADE HOUSE</small></div>
+<nav class="nav" aria-label="Preview sections">
+<button class="active" data-section="overview">Overview</button>
+<button data-section="users">User management</button>
+<button data-section="suppliers">Supplier approvals</button>
+<button data-section="operations">Trade operations</button>
+<button data-section="finance">Finance oversight</button>
+<button data-section="reports">Reports &amp; audit</button>
+<button data-section="settings">Platform settings</button>
+</nav>
+<div class="aside-note">Administrator workspace concept<br>Preview environment</div>
+</aside>
+<main>
+<div class="top"><div><div class="eyebrow">Workforce console / Preview</div><h1 id="page-title">Overview</h1></div><div class="preview-tag">PREVIEW MODE</div></div>
+<p class="intro">A visual walkthrough of the VTG administration workspace. All figures and records below are illustrative placeholders.</p>
+<section class="section active" id="overview">
+<div class="metrics">
+<div class="metric"><span>Registered accounts</span><strong>—</strong><small>Sample metric · not connected</small></div>
+<div class="metric"><span>Pending supplier reviews</span><strong>—</strong><small>Sample metric · not connected</small></div>
+<div class="metric"><span>Open trade cases</span><strong>—</strong><small>Sample metric · not connected</small></div>
+<div class="metric"><span>Platform alerts</span><strong>—</strong><small>Sample metric · not connected</small></div>
+</div>
+<div class="columns">
+<div class="panel"><h2>Platform activity · illustrative</h2><div class="bars"><div class="bar" style="height:35%"><span>Mon</span></div><div class="bar" style="height:58%"><span>Tue</span></div><div class="bar" style="height:43%"><span>Wed</span></div><div class="bar" style="height:78%"><span>Thu</span></div><div class="bar" style="height:62%"><span>Fri</span></div><div class="bar" style="height:92%"><span>Sat</span></div><div class="bar" style="height:51%"><span>Sun</span></div></div><p class="muted">Decorative chart only; it does not represent VTG activity.</p></div>
+<div class="panel"><h2>Workspace areas</h2><div class="rowline"><span>Identity &amp; access</span><span class="status">Preview</span></div><div class="rowline"><span>Supplier onboarding</span><span class="status">Preview</span></div><div class="rowline"><span>Trade oversight</span><span class="status">Preview</span></div><div class="rowline"><span>Audit &amp; reporting</span><span class="status">Preview</span></div></div>
+</div>
+</section>
+<section class="section" id="users"><div class="panel"><h2>User management</h2><p class="muted">Illustrative account directory layout. No customer records are loaded in this preview.</p><div class="table-wrap"><table class="table"><thead><tr><th>Account</th><th>Workspace</th><th>Status</th><th>Access</th></tr></thead><tbody><tr><td>Sample buyer account</td><td>Buyer</td><td>Example</td><td>Standard</td></tr><tr><td>Sample supplier account</td><td>Supplier</td><td>Example</td><td>Review</td></tr><tr><td>Sample staff account</td><td>Workforce</td><td>Example</td><td>Restricted</td></tr></tbody></table></div></div></section>
+<section class="section" id="suppliers"><div class="panel"><h2>Supplier approvals</h2><p class="muted">A review queue concept for onboarding applications and business verification.</p><div class="rowline"><span>Application review queue</span><span class="status">Illustrative</span></div><div class="rowline"><span>Email verification checks</span><span class="status">Illustrative</span></div><div class="rowline"><span>Business document review</span><span class="status">Illustrative</span></div><div class="rowline"><span>Approval decision history</span><span class="status">Illustrative</span></div></div></section>
+<section class="section" id="operations"><div class="panel"><h2>Trade operations</h2><p class="muted">Central oversight concept for sourcing requests, quotations, orders and shipment milestones.</p><div class="rowline"><span>Buyer sourcing requests</span><span class="status">No live data</span></div><div class="rowline"><span>Supplier quotations</span><span class="status">No live data</span></div><div class="rowline"><span>Confirmed orders</span><span class="status">No live data</span></div><div class="rowline"><span>Shipment milestones</span><span class="status">No live data</span></div></div></section>
+<section class="section" id="finance"><div class="panel"><h2>Finance oversight</h2><p class="muted">Administrative view concept for payment events and trade-finance workflow visibility. This preview does not connect to payment providers or bank systems.</p><div class="rowline"><span>Payment event monitoring</span><span class="status">Preview only</span></div><div class="rowline"><span>Trade finance requests</span><span class="status">Preview only</span></div><div class="rowline"><span>Reconciliation exceptions</span><span class="status">Preview only</span></div></div></section>
+<section class="section" id="reports"><div class="panel"><h2>Reports &amp; audit</h2><p class="muted">Conceptual reporting and accountability area. No audit events or downloadable reports are available in this static preview.</p><div class="rowline"><span>Administrative activity log</span><span class="status">Preview only</span></div><div class="rowline"><span>Access and role changes</span><span class="status">Preview only</span></div><div class="rowline"><span>Operational summaries</span><span class="status">Preview only</span></div></div></section>
+<section class="section" id="settings"><div class="panel"><h2>Platform settings</h2><p class="muted">A visual placeholder for controlled platform configuration. Settings cannot be changed here.</p><div class="rowline"><span>Workforce roles &amp; permissions</span><span class="status">Locked</span></div><div class="rowline"><span>Notification configuration</span><span class="status">Locked</span></div><div class="rowline"><span>Platform controls</span><span class="status">Locked</span></div></div></section>
+<a class="secure" href="/admin-signin.html?next=%2Fadmin-dashboard.html">Administrator? Open secure sign-in →</a>
+<div class="footer">VTG — The Private Trade House · Preview only. Real administrative functions remain behind authenticated staff access.</div>
+</main>
+</div>
+<script>
+document.querySelectorAll('[data-section]').forEach(function(button){button.addEventListener('click',function(){document.querySelectorAll('[data-section]').forEach(function(item){item.classList.toggle('active',item===button)});document.querySelectorAll('.section').forEach(function(panel){panel.classList.toggle('active',panel.id===button.dataset.section)});document.getElementById('page-title').textContent=button.textContent})});
+</script>
+</body>
+</html>
