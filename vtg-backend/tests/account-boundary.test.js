@@ -44,7 +44,7 @@ test('staff entry pages are noindex and independent of public navigation', () =>
 });
 
 test('staff dashboards use Supabase account and membership checks', () => {
-  const pages = ['../workforce-dashboard.html', '../admin-dashboard-preview.html', '../agent-dashboard.html', '../agent-network-dashboard.html'];
+  const pages = ['../workforce-dashboard.html', '../admin-dashboard.html', '../agent-dashboard.html', '../agent-network-dashboard.html'];
   for (const file of pages) {
     const page = read(file);
     assert.match(page, /name="robots" content="noindex/i);
@@ -53,7 +53,7 @@ test('staff dashboards use Supabase account and membership checks', () => {
   }
   assert.match(read('../workforce-dashboard.html'), /workforceMemberships/);
   assert.match(read('../agent-dashboard.html'), /workspace_role==="agent"/);
-  assert.match(read('../admin-dashboard-preview.html'), /staffInviteForm/);
+  assert.match(read('../admin-dashboard.html'), /staffInviteForm/);
 });
 
 test('staff invitations are admin-gated and acceptance is bound to a one-time token', () => {

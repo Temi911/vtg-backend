@@ -36,7 +36,7 @@
   history.replaceState({},document.title,location.pathname);
   const user=current.user,pending=Boolean(user.pendingBusinessVerification);
   if(user.accountEnvironment==='staff'){await auth.client.auth.signOut({scope:'local'});['vtg_access_token','vtg-auth'].forEach(k=>localStorage.removeItem(k));fail('Staff accounts use Workforce Access','This is a private VTG staff account. Please sign in through Workforce Access.');return;}
-  const dest=pending?'/verification.html?role='+encodeURIComponent(user.requestedRole||user.role):({buyer:'/buyer-dashboard.html',supplier:'/supplier-dashboard.html',bank:'/bank-trade-os.html',agent:'/agent-dashboard.html',admin:'/admin-dashboard-preview.html'})[user.role]||'/';
+  const dest=pending?'/verification.html?role='+encodeURIComponent(user.requestedRole||user.role):({buyer:'/buyer-dashboard.html',supplier:'/supplier-dashboard.html',bank:'/bank-trade-os.html',agent:'/agent-dashboard.html',admin:'/admin-dashboard.html'})[user.role]||'/';
   const intent=auth.googleIntent();auth.clearGoogleIntent();
   title.textContent=user.signInMethod==='google'?'Signed in with Google':'Email confirmed';copy.textContent='Opening the next step…';
   setTimeout(()=>{
