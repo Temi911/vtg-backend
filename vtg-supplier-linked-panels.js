@@ -19,8 +19,10 @@
    q.innerHTML=error?'<div class="empty">Inspection status is unavailable right now.</div>':(data&&data.length?data.map(r=>row((r.product_name||'Goods')+' · '+(r.reference||''),(r.inspection_type||'Inspection')+' · '+(r.completed_at?'Completed '+String(r.completed_at).slice(0,10):'Requested '+(r.requested_date||String(r.created_at).slice(0,10))),String(r.status||'').replace(/_/g,' '))).join(''):'<div class="empty">No inspections have been requested on your goods.</div>');
   }
   if(f){
-   const {data,error}=await c.from('letters_of_credit').select('reference,amount,currency,status,expiry_date').eq('supplier_id',s.session.user.id).order('created_at',{ascending:false}).limit(100);
-   f.innerHTML=error?'<div class="empty">Letter of credit status is unavailable right now.</div>':(data&&data.length?data.map(r=>row(r.reference||'Letter of credit',(r.currency||'')+' '+Number(r.amount||0).toLocaleString()+(r.expiry_date?' · Expires '+r.expiry_date:''),String(r.status||'').replace(/_/g,' '))).join(''):'<div class="empty">No letters of credit are linked to your orders yet.</div>');
+   const {data,error}=await c.from('letters_of_credit').select('id,reference,amount,currency,status,expiry_date').eq('supplier_id',s.session.user.id).order('created_at',{ascending:false}).limit(100);
+   let notes={};
+   if(!error&&data&&data.length){const ev=await c.from('vtg_bank_lc_review_events').select('lc_id,note,created_at').in('lc_id',data.map(r=>r.id)).order('created_at',{ascending:false});(ev.data||[]).forEach(e=>{if(e.note&&!notes[e.lc_id])notes[e.lc_id]=e.note})}
+   f.innerHTML=error?'<div class="empty">Letter of credit status is unavailable right now.</div>':(data&&data.length?data.map(r=>row(r.reference||'Letter of credit',(r.currency||'')+' '+Number(r.amount||0).toLocaleString()+(r.expiry_date?' · Expires '+r.expiry_date:'')+(notes[r.id]?' · Bank note: '+notes[r.id]:''),String(r.status||'').replace(/_/g,' '))).join(''):'<div class="empty">No letters of credit are linked to your orders yet.</div>');
   }
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
