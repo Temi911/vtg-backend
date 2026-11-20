@@ -26,16 +26,16 @@ async function connect(){
 function render(){
  if(!products.length){rows.innerHTML='<div class="empty">No live products have been added to this supplier account yet. Use “Add live product” to publish the first catalogue listing.</div>';return;}
  rows.innerHTML=products.map(p=>{
-  const live=!!p.is_active&&profile?.supplierVerificationStatus==='verified';
-  const status=!p.is_active?'INACTIVE':live?'LIVE — visible to buyers':'ACTIVE — awaiting supplier verification';
-  return '<article class="record" style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap"><div style="min-width:0;flex:1"><strong>'+esc(p.name)+'</strong><small>'+esc(p.category||'Uncategorised')+' · MOQ '+Number(p.minimum_order_quantity||1).toLocaleString()+' · '+money(p.unit_price,p.currency)+'</small>'+(p.description?'<p class="subtext">'+esc(p.description)+'</p>':'')+(p.hs_code?'<small>HS code: '+esc(p.hs_code)+'</small>':'')+(p.lead_time_days?'<small>Lead time: '+Number(p.lead_time_days)+' days</small>':'')+'</div><div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap"><span class="pill '+(live?'ready':p.is_active?'pending':'info')+'">'+status+'</span>'+(p.is_active?'<button class="btn" type="button" data-product-deactivate="'+esc(p.id)+'">Unpublish</button>':'<button class="btn" type="button" data-product-activate="'+esc(p.id)+'">Publish</button>')+'</div></article>';
+  const rs=p.review_status||'pending';const live=!!p.is_active&&rs==='approved'&&profile?.supplierVerificationStatus==='verified';
+  const status=!p.is_active?'INACTIVE':rs==='rejected'?'REJECTED — see VTG note':rs==='pending'?'IN REVIEW — VTG is checking this listing':live?'LIVE — visible to buyers':'APPROVED — awaiting supplier verification';
+  return '<article class="record" style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap"><div style="min-width:0;flex:1"><strong>'+esc(p.name)+'</strong><small>'+esc(p.category||'Uncategorised')+' · MOQ '+Number(p.minimum_order_quantity||1).toLocaleString()+' · '+money(p.unit_price,p.currency)+'</small>'+(p.description?'<p class="subtext">'+esc(p.description)+'</p>':'')+(p.review_note&&rs==='rejected'?'<p class="subtext"><strong>VTG note:</strong> '+esc(p.review_note)+' Edit the listing to send it for review again.</p>':'')+(p.hs_code?'<small>HS code: '+esc(p.hs_code)+'</small>':'')+(p.lead_time_days?'<small>Lead time: '+Number(p.lead_time_days)+' days</small>':'')+'</div><div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap"><span class="pill '+(live?'ready':p.is_active?'pending':'info')+'">'+status+'</span>'+(p.is_active?'<button class="btn" type="button" data-product-deactivate="'+esc(p.id)+'">Unpublish</button>':'<button class="btn" type="button" data-product-activate="'+esc(p.id)+'">Publish</button>')+'</div></article>';
  }).join('');
 }
 async function load(){
  rows.innerHTML='<div class="empty">Loading your live VTG products from Supabase…</div>';
  try{
   await connect();
-  const result=await db.from('products').select('id,name,category,description,unit_price,currency,minimum_order_quantity,hs_code,lead_time_days,image_urls,is_active,created_at').eq('supplier_id',user.id).order('created_at',{ascending:false}).limit(200);
+  const result=await db.from('products').select('id,name,category,description,unit_price,currency,minimum_order_quantity,hs_code,lead_time_days,image_urls,is_active,created_at,review_status,review_note').eq('supplier_id',user.id).order('created_at',{ascending:false}).limit(200);
   if(result.error)throw result.error;
   products=result.data||[];render();
   say(profile.supplierVerificationStatus==='verified'
