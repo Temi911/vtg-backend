@@ -30,7 +30,7 @@ test('user ID also appears as a pill in the shared top bar, hidden on phones',()
 test('staff dashboards load the user ID script and have a floating fallback',()=>{
   const fs=require('fs'),path=require('path'),assert=require('node:assert/strict');
   const root=path.join(__dirname,'..','..');
-  for(const f of ['workforce-dashboard.html','agent-dashboard.html','agent-network-dashboard.html','admin-dashboard-preview.html','vtg-ai-dashboard.html']){
+  for(const f of ['workforce-dashboard.html','agent-dashboard.html','agent-network-dashboard.html','admin-dashboard.html','vtg-ai-dashboard.html']){
     assert.match(fs.readFileSync(path.join(root,f),'utf8'),/vtg-user-id\.js/,f);
   }
   const js=fs.readFileSync(path.join(root,'vtg-user-id.js'),'utf8');

@@ -41,8 +41,8 @@ document.getElementById('adminForm').addEventListener('submit',async function(e)
   await auth.signInAdmin(data.get('email'),data.get('password'));
   msg.textContent='Administrator access verified. Opening the private control centre…';
   const requestedNext=new URLSearchParams(location.search).get('next');
-  let destination='/admin-dashboard-preview.html';
-  if(requestedNext){try{const target=new URL(requestedNext,location.origin);if(target.origin===location.origin&&target.pathname==='/admin-dashboard-preview.html')destination=target.pathname+target.search+target.hash}catch(_){}}
+  let destination='/admin-dashboard.html';
+  if(requestedNext){try{const target=new URL(requestedNext,location.origin);if(target.origin===location.origin&&target.pathname==='/admin-dashboard.html')destination=target.pathname+target.search+target.hash}catch(_){}}
   setTimeout(()=>location.replace(destination),400);
  }catch(err){msg.textContent=err.message||'Unable to sign in. Please try again.';if(submit)submit.disabled=false;}
 });
