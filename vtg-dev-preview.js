@@ -6,11 +6,14 @@
 (function () {
   'use strict';
   var h = location.hostname;
-  var hostOk = h === 'localhost' || h === '127.0.0.1' || h === '[::1]' || /^vtg-backended-git-dev-pr[a-z0-9-]*-olanrewajutope80-7999s-projects\.vercel\.app$/i.test(h);
+  var hostOk = h === 'localhost' || h === '127.0.0.1' || h === '[::1]' || /-olanrewajutope80-7999s-projects\.vercel\.app$/i.test(h);
   if (!hostOk) return;
   try {
-    if (new URLSearchParams(location.search).get('devpreview') === '1') sessionStorage.setItem('vtg-dev-preview', '1');
-    if (sessionStorage.getItem('vtg-dev-preview') !== '1') return;
+    var q = new URLSearchParams(location.search).get('devpreview');
+    if (q === '1') { sessionStorage.setItem('vtg-dev-preview', '1'); try { localStorage.setItem('vtg-dev-preview', '1'); } catch (e2) {} }
+    if (q === '0') { sessionStorage.removeItem('vtg-dev-preview'); try { localStorage.removeItem('vtg-dev-preview'); } catch (e3) {} return; }
+    var on = sessionStorage.getItem('vtg-dev-preview') === '1'; try { on = on || localStorage.getItem('vtg-dev-preview') === '1'; } catch (e4) {}
+    if (!on) return;
   } catch (e) { return; }
 
   var path = location.pathname;
