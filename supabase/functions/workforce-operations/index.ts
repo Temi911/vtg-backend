@@ -89,7 +89,7 @@ Deno.serve(async(req:Request)=>{
   if(handoff.proposed_assignee&&handoff.proposed_assignee!==caller.id&&!isAdmin&&!isManager)return reply({error:"This handoff is assigned to a different receiving member"},403);
   const {data:changed,error:ce}=await db.from("vtg_workforce_handoffs").update({status:decision==="accept"?"accepted":"rejected",accepted_by:caller.id,decided_at:new Date().toISOString()}).eq("id",handoff.id).eq("status","pending").select("*").single();
   if(ce)return reply({error:"Handoff has already been decided or could not be updated"},409);
-  if(decision==="accept"){const update:Record<string,unknown>={workspace_role:handoff.to_workspace_role};if(handoff.proposed_assignee)update.assigned_to=handoff.proposed_assignee;const {error:te}=await db.from("vtg_workforce_tasks").update(update).eq("id",handoff.task_id);if(te)return reply({error:"Handoff accepted but task transfer needs administrator review"},500);}
+  if(decision==="accept"){const update:Record<string,unknown>={workspace_role:handoff.to_workspace_role};update.assigned_to=handoff.proposed_assignee||null;const {error:te}=await db.from("vtg_workforce_tasks").update(update).eq("id",handoff.task_id);if(te)return reply({error:"Handoff accepted but task transfer needs administrator review"},500);}
   await log(decision==="accept"?"handoff_accepted":"handoff_rejected",handoff.task_id,handoff.id,{decision,to:handoff.to_workspace_role});return reply({handoff:changed});
  }
  return reply({error:"Route not found"},404);
