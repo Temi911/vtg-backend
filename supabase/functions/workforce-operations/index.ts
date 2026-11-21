@@ -49,7 +49,9 @@ Deno.serve(async(req:Request)=>{
   else if(!isAdmin&&workspace!=="manager")hq=hq.or("from_workspace_role.eq."+workspace+",to_workspace_role.eq."+workspace);
   const {data:handoffs,error:he}=await hq;if(he)return reply({error:"Could not load handoffs"},500);
   const rows=tasks??[],open=rows.filter(t=>!["completed","cancelled"].includes(t.status));
-  return reply({workspace,permissions:{canManage:isManager},summary:{tasks:rows.length,open:open.length,completed:rows.filter(t=>t.status==="completed").length,handoffs:(handoffs??[]).filter(h=>h.status==="pending").length,overdue:open.filter(t=>t.due_at&&new Date(t.due_at).getTime()<Date.now()).length},tasks:rows,handoffs:handoffs??[]});
+  const {data:activity,error:ae}=rows.length?await db.from("vtg_workforce_activity").select("id,task_id,handoff_id,event_type,created_at").in("task_id",rows.map(t=>t.id)).order("created_at",{ascending:false}).limit(150):{data:[],error:null};
+  if(ae)return reply({error:"Could not load workforce activity"},500);
+  return reply({workspace,permissions:{canManage:isManager},summary:{tasks:rows.length,open:open.length,completed:rows.filter(t=>t.status==="completed").length,handoffs:(handoffs??[]).filter(h=>h.status==="pending").length,overdue:open.filter(t=>t.due_at&&new Date(t.due_at).getTime()<Date.now()).length},tasks:rows,handoffs:handoffs??[],activity:activity??[]});
  }
  if(req.method==="POST"&&parts[0]==="tasks"){
   if(!isManager)return reply({error:"A manager or administrator must create and assign tasks"},403);
