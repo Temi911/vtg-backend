@@ -131,7 +131,7 @@ language sql stable security definer set search_path = '' as $$
          'Review the buyer''s verification before the bank proceeds', 'letter_of_credit', lc.id, 1
     from public.letters_of_credit lc join public.trade_orders o on o.id = lc.order_id
     join public.buyer_profiles bp on bp.user_id = lc.buyer_id
-   where lc.status::text in ('requested','under_review','documents_requested') and coalesce(bp.kyc_status,'') <> 'verified'
+   where lc.status::text in ('requested','under_review','documents_requested') and coalesce(bp.kyc_status::text,'') <> 'verified'
   union all
   select coalesce(o.reference, 'Order'), 'Order readiness', coalesce(o.origin_port,'—') || ' → ' || coalesce(o.destination_port,'—'),
          'No shipment recorded ' || extract(day from now() - o.created_at)::int || ' days after the order',
@@ -144,7 +144,7 @@ language sql stable security definer set search_path = '' as $$
          'Estimated arrival passed ' || extract(day from now() - s.estimated_arrival)::int || ' day(s) ago',
          'High', 'Confirm the carrier update with the supplier', 'shipment', s.id, 1
     from public.shipments s join public.trade_orders o on o.id = s.order_id
-   where s.estimated_arrival < now() and coalesce(s.status,'') not in ('arrived','customs','delivered')
+   where s.estimated_arrival < now() and coalesce(s.status::text,'') not in ('arrived','customs','delivered')
   union all
   select coalesce(o.reference, 'Order'), 'Documents', '—',
          d.document_type || ' waiting for review for ' || extract(day from now() - d.created_at)::int || ' days',
@@ -177,18 +177,18 @@ begin
     'accounts', coalesce((select jsonb_object_agg(role, n) from (select role::text role, count(*) n from public.profiles where is_active group by role) a), '{}'::jsonb),
     'queues', jsonb_build_object(
       'products_pending', (select count(*) from public.products where review_status = 'pending'),
-      'verification_documents_pending', (select count(*) from public.vtg_verification_documents where status = 'pending'),
-      'role_requests_pending', (select count(*) from public.role_requests where status = 'pending'),
+      'verification_documents_pending', (select count(*) from public.vtg_verification_documents where status::text = 'pending'),
+      'role_requests_pending', (select count(*) from public.role_requests where status::text = 'pending'),
       'lc_new', (select count(*) from public.letters_of_credit where status::text = 'requested'),
       'trade_documents_pending', (select count(*) from public.trade_documents where status::text = 'pending'),
       'exceptions', (select count(*) from private.vtg_admin_exception_rows()),
       'high_priority', (select count(*) from private.vtg_admin_exception_rows() where priority = 'High')),
     'orders_by_status', coalesce((select jsonb_object_agg(s, n) from (select status::text s, count(*) n from public.trade_orders group by 1) o), '{}'::jsonb),
     'lcs_by_status', coalesce((select jsonb_object_agg(s, n) from (select status::text s, count(*) n from public.letters_of_credit group by 1) l), '{}'::jsonb),
-    'shipments_active', (select count(*) from public.shipments where coalesce(status,'') not in ('arrived','customs','delivered')),
+    'shipments_active', (select count(*) from public.shipments where coalesce(status::text,'') not in ('arrived','customs','delivered')),
     'workforce', jsonb_build_object(
-      'active_members', (select count(*) from public.vtg_workforce_members where status = 'active'),
-      'pending_invitations', (select count(*) from public.vtg_workforce_invitations where status = 'pending')),
+      'active_members', (select count(*) from public.vtg_workforce_members where status::text = 'active'),
+      'pending_invitations', (select count(*) from public.vtg_workforce_invitations where status::text = 'pending')),
     'weekly', coalesce((select jsonb_agg(jsonb_build_object(
         'day', to_char(d, 'Dy'), 'date', d::date,
         'orders', (select count(*) from public.trade_orders where created_at::date = d::date),
@@ -218,12 +218,12 @@ begin
         select d.id, d.user_id, coalesce(p.full_name, p.email) as submitted_by, p.email, d.account_role, d.doc_type, d.file_name,
                d.mime_type, d.file_size_bytes, d.storage_path, d.status, d.uploaded_at, d.expires_at
           from public.vtg_verification_documents d left join public.profiles p on p.id = d.user_id
-         where d.status = 'pending' order by d.uploaded_at limit 200) x), '[]'::jsonb),
+         where d.status::text = 'pending' order by d.uploaded_at limit 200) x), '[]'::jsonb),
     'role_requests', coalesce((select jsonb_agg(to_jsonb(y) order by y.created_at) from (
         select rr.id, rr.user_id, coalesce(p.full_name, p.email) as submitted_by, rr.requested_role::text as requested_role,
                rr.organization_name, rr.country, rr.registration_reference, rr.created_at
           from public.role_requests rr left join public.profiles p on p.id = rr.user_id
-         where rr.status = 'pending' order by rr.created_at limit 100) y), '[]'::jsonb));
+         where rr.status::text = 'pending' order by rr.created_at limit 100) y), '[]'::jsonb));
 end;
 $$;
 revoke all on function public.vtg_admin_verification_queue() from public, anon;
@@ -237,20 +237,20 @@ begin
   return jsonb_build_object(
     'generated_at', now(),
     'by_status', coalesce((select jsonb_agg(to_jsonb(s)) from (
-        select status, currency, count(*) as records, coalesce(sum(amount), 0) as total
+        select status::text as status, currency, count(*) as records, coalesce(sum(amount), 0) as total
           from public.vtg_payment_intents group by status, currency order by status, currency) s), '[]'::jsonb),
     'flags', coalesce((select jsonb_agg(to_jsonb(f) order by f.age_days desc) from (
-        select pi.id, coalesce(o.reference, 'No order') as order_reference, pi.purpose, pi.amount, pi.currency, pi.status,
+        select pi.id, coalesce(o.reference, 'No order') as order_reference, pi.purpose, pi.amount, pi.currency, pi.status::text as status,
                extract(day from now() - pi.created_at)::int as age_days,
                case when pi.order_id is null then 'Payment record has no linked order'
-                    when pi.status in ('failed','cancelled','canceled') then 'Payment ' || pi.status
+                    when pi.status::text in ('failed','cancelled','canceled') then 'Payment ' || pi.status::text
                     else 'Pending for more than 3 days' end as issue
           from public.vtg_payment_intents pi left join public.trade_orders o on o.id = pi.order_id
-         where pi.order_id is null or pi.status in ('failed','cancelled','canceled')
-            or (pi.status in ('pending','requires_action','created') and pi.created_at < now() - interval '3 days')
+         where pi.order_id is null or pi.status::text in ('failed','cancelled','canceled')
+            or (pi.status::text in ('pending','requires_action','created') and pi.created_at < now() - interval '3 days')
          order by pi.created_at limit 100) f), '[]'::jsonb),
     'recent', coalesce((select jsonb_agg(to_jsonb(r) order by r.created_at desc) from (
-        select pi.id, coalesce(o.reference, 'No order') as order_reference, pi.purpose, pi.amount, pi.currency, pi.status, pi.provider, pi.created_at
+        select pi.id, coalesce(o.reference, 'No order') as order_reference, pi.purpose, pi.amount, pi.currency, pi.status::text as status, pi.provider, pi.created_at
           from public.vtg_payment_intents pi left join public.trade_orders o on o.id = pi.order_id
          order by pi.created_at desc limit 50) r), '[]'::jsonb),
     'notice', 'Read-only. VTG does not move money, approve payouts or release commissions from this dashboard.');
@@ -300,10 +300,10 @@ begin
     'administrators', (select count(*) from public.profiles where role = 'admin'::public.vtg_account_role and is_active),
     'workforce_by_role', coalesce((select jsonb_agg(to_jsonb(w)) from (
         select workspace_role, status, count(*) as members from public.vtg_workforce_members group by 1, 2 order by 1, 2) w), '[]'::jsonb),
-    'invitations_by_status', coalesce((select jsonb_object_agg(status, n) from (select status, count(*) n from public.vtg_workforce_invitations group by 1) i), '{}'::jsonb),
+    'invitations_by_status', coalesce((select jsonb_object_agg(status::text, n) from (select status, count(*) n from public.vtg_workforce_invitations group by 1) i), '{}'::jsonb),
     'products_by_review', coalesce((select jsonb_object_agg(review_status, n) from (select review_status, count(*) n from public.products group by 1) p), '{}'::jsonb),
-    'verification_by_status', coalesce((select jsonb_object_agg(status, n) from (select status, count(*) n from public.vtg_verification_documents group by 1) v), '{}'::jsonb),
-    'role_requests_by_status', coalesce((select jsonb_object_agg(status, n) from (select status, count(*) n from public.role_requests group by 1) rr), '{}'::jsonb),
+    'verification_by_status', coalesce((select jsonb_object_agg(status::text, n) from (select status, count(*) n from public.vtg_verification_documents group by 1) v), '{}'::jsonb),
+    'role_requests_by_status', coalesce((select jsonb_object_agg(status::text, n) from (select status, count(*) n from public.role_requests group by 1) rr), '{}'::jsonb),
     'audit_events_total', (select count(*) from public.audit_events));
 end;
 $$;

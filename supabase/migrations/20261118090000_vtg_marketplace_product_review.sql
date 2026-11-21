@@ -162,7 +162,9 @@ grant execute on function public.vtg_admin_product_queue(text) to authenticated;
 -- with is_verified hard-coded to true). Same columns, same order; now only approved listings are returned.
 -- Runs as its owner on purpose so visitors can see a supplier's company name, country, logo and rating without
 -- being able to read supplier_profiles.
-create or replace view public.vtg_marketplace_products
+-- an older view with a different column order may exist (create or replace cannot reorder); it has no dependents
+drop view if exists public.vtg_marketplace_products;
+create view public.vtg_marketplace_products
 with (security_invoker = false) as
 select
   p.id, p.supplier_id, p.name, p.category, p.description, p.unit_price, p.currency,
