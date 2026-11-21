@@ -86,6 +86,7 @@ Deno.serve(async(req:Request)=>{
   const decision=clean(body.decision,20);if(!["accept","reject"].includes(decision))return reply({error:"Choose accept or reject"},400);
   const {data:handoff,error}=await db.from("vtg_workforce_handoffs").select("*").eq("id",parts[1]).eq("status","pending").maybeSingle();if(error||!handoff)return reply({error:"Pending handoff not found"},404);
   if(!isAdmin&&!isManager&&!memberRoles.has(handoff.to_workspace_role))return reply({error:"Receiving workspace access required"},403);
+  if(handoff.proposed_assignee&&handoff.proposed_assignee!==caller.id&&!isAdmin&&!isManager)return reply({error:"This handoff is assigned to a different receiving member"},403);
   const {data:changed,error:ce}=await db.from("vtg_workforce_handoffs").update({status:decision==="accept"?"accepted":"rejected",accepted_by:caller.id,decided_at:new Date().toISOString()}).eq("id",handoff.id).eq("status","pending").select("*").single();
   if(ce)return reply({error:"Handoff has already been decided or could not be updated"},409);
   if(decision==="accept"){const update:Record<string,unknown>={workspace_role:handoff.to_workspace_role};if(handoff.proposed_assignee)update.assigned_to=handoff.proposed_assignee;const {error:te}=await db.from("vtg_workforce_tasks").update(update).eq("id",handoff.task_id);if(te)return reply({error:"Handoff accepted but task transfer needs administrator review"},500);}
