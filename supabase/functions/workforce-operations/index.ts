@@ -3,7 +3,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 const roles = new Set(["staff","manager","agent","logistics","compliance","support","finance","inspector","marketing"]);
 const statuses = new Set(["open","in_progress","blocked","completed","cancelled"]);
 const priorities = new Set(["low","normal","high","urgent"]);
-const cors = {"Access-Control-Allow-Origin":Deno.env.get("APP_SITE_URL")??"https://vtg-backended.vercel.app","Access-Control-Allow-Headers":"authorization, apikey, content-type, x-client-info","Access-Control-Allow-Methods":"GET, POST, PATCH, OPTIONS","Content-Type":"application/json; charset=utf-8"};
+const cors = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, apikey, content-type, x-client-info","Access-Control-Allow-Methods":"GET, POST, PATCH, OPTIONS","Content-Type":"application/json; charset=utf-8"};
 const reply=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:cors});
 const clean=(v:unknown,max=4000)=>typeof v==="string"?v.trim().slice(0,max):"";
 const makeRef=()=>"WFT-"+new Date().getUTCFullYear()+"-"+crypto.randomUUID().replaceAll("-","").slice(0,8).toUpperCase();
