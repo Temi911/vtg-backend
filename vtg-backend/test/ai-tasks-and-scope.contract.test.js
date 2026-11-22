@@ -8,7 +8,7 @@ const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const src=read('supabase/functions/vtg-ai-assistant/index.ts');
 const slice=(from,to)=>{const a=src.indexOf(from),b=src.indexOf(to,a);assert.ok(a>=0&&b>a,from);return src.slice(a,b);};
 const code=stripTypeScriptTypes(slice('// ---- agent tools: begin ----','const buckets = new Map'));
-const load=()=>new Function('crypto',code+'\nreturn {computeLandedCost,compareQuotes,validateProposal,toolDefinitions,runTool,confirmAction};')(globalThis.crypto);
+const load=()=>new Function('crypto',code+'\nreturn {computeLandedCost,compareQuotes,validateProposal,toolDefinitions,runTool,confirmAction,adviseOnQuotes,findAttention,rankProducts,documentChecklist,parseValidity};')(globalThis.crypto);
 const A=load();
 const REQ='11111111-2222-4333-8444-555555555555';
 
@@ -17,6 +17,7 @@ function fakeSupabase(rows={}){
   const writes=[];
   const chain=(table)=>{const q={_t:table};
     for(const m of ['select','eq','in','or','ilike','lte','order','limit'])q[m]=()=>q;
+    q.maybeSingle=()=>Promise.resolve({data:(rows[table]||[])[0]||null,error:null});
     q.then=(ok)=>ok({data:rows[table]||[],error:null});
     q.insert=(v)=>{writes.push({table,v});return Promise.resolve({error:null});};
     q.update=()=>{writes.push({table,update:true});return Promise.resolve({error:null});};
@@ -128,4 +129,65 @@ test('AI action cards are theme variables, not fixed colours',()=>{
   assert.match(js,/\.vtg-ai-card\{[^}]*background:var\(--panel/);
   assert.match(js,/confirm_action/);
   assert.match(js,/Nothing is saved until you confirm/);
+});
+
+const NOW=Date.parse('2026-11-22T10:00:00Z');
+test('quote advisor: flags, Incoterm mismatch, expired validity and landed cost only from supplied figures',()=>{
+  const q=[
+    {supplier_company:'A',currency:'USD',unit_price:10,quantity:100,incoterms:'FOB',lead_time:'20 days',validity:'2026-12-31',status:'submitted'},
+    {supplier_company:'B',currency:'USD',unit_price:9,quantity:100,incoterms:'CIF',lead_time:'',validity:'2026-10-01',status:'submitted'},
+    {supplier_company:'C',currency:'CNY',unit_price:70,quantity:100,incoterms:'FOB',lead_time:'30 days',validity:'30 days',status:'accepted'}];
+  const r=A.adviseOnQuotes(q,{shipping_usd:100,insurance_usd:10,duty_percent:10},NOW);
+  const a=r.per_quote.find(x=>x.supplier==='A'),b=r.per_quote.find(x=>x.supplier==='B'),c=r.per_quote.find(x=>x.supplier==='C');
+  assert.equal(a.estimated_landed_total_usd,1210);          // 1000 goods + 100 + 10 + 100 duty
+  assert.ok(b.flags.includes('quote validity has expired'));assert.ok(b.flags.includes('lead time not stated'));
+  assert.equal(c.estimated_landed_total_usd,null);assert.ok(c.flags.includes('already accepted'));assert.ok(c.flags.some(f=>/validity is not a date/.test(f)));
+  assert.ok(r.notes.some(n=>/different Incoterms/.test(n)));assert.ok(r.notes.some(n=>/different currencies/.test(n)));
+  const none=A.adviseOnQuotes(q,{},NOW);assert.equal(none.per_quote[0].estimated_landed_total_usd,null);assert.ok(none.notes.some(n=>/No shipping, insurance or duty/.test(n)));
+  const bad=A.adviseOnQuotes(q,{duty_percent:500},NOW);assert.equal(bad.per_quote[0].estimated_landed_total_usd,null);
+});
+test('delay watch: stalled orders, expiring and expired LCs, rejected and waiting documents, late shipments, idle quotes',()=>{
+  const day=n=>new Date(NOW-n*86400000).toISOString(),ahead=n=>new Date(NOW+n*86400000).toISOString();
+  const r=A.findAttention({
+    orders:[{id:'o1',reference:'ORD-1',status:'in_production',created_at:day(40)},{id:'o2',reference:'ORD-2',status:'delivered',created_at:day(90)},{id:'o3',reference:'ORD-3',status:'confirmed',created_at:day(3)}],
+    milestones:[{order_id:'o1',event_at:day(20)}],
+    lcs:[{reference:'LC-1',status:'issued',expiry_date:ahead(5)},{reference:'LC-2',status:'issued',expiry_date:day(2)},{reference:'LC-3',status:'closed',expiry_date:day(10)},{reference:'LC-4',status:'issued',expiry_date:ahead(90)}],
+    docs:[{order_id:'o1',document_type:'bill_of_lading',status:'rejected',created_at:day(1)},{order_id:'o1',document_type:'packing_list',status:'pending',created_at:day(9)}],
+    shipments:[{order_id:'o1',status:'in_transit',estimated_arrival:day(4)}],
+    quotes:[{supplier_company:'Acme',status:'submitted',created_at:day(8)},{supplier_company:'Zed',status:'submitted',created_at:day(1)}]},NOW);
+  const text=JSON.stringify(r.items);
+  assert.match(text,/ORD-1/);assert.ok(!/ORD-2|ORD-3|LC-3|LC-4|Zed/.test(text));
+  assert.equal(r.items[0].severity,'urgent');
+  assert.ok(r.items.some(i=>i.item==='LC LC-1'&&i.severity==='urgent'));assert.ok(r.items.some(i=>i.item==='LC LC-2'&&/passed/.test(i.why)));
+  assert.ok(r.items.some(i=>/bill_of_lading/.test(i.item)&&/rejected/.test(i.why)));assert.ok(r.items.some(i=>/packing_list/.test(i.item)));
+  assert.ok(r.items.some(i=>/Shipment/.test(i.item)));assert.ok(r.items.some(i=>/Acme/.test(i.item)));
+  const clean=A.findAttention({orders:[],milestones:[],lcs:[],docs:[],shipments:[],quotes:[]},NOW);assert.equal(clean.count,0);
+});
+test('sourcing helper ranks by minimum-order fit then rating, and never invents missing values',()=>{
+  const r=A.rankProducts([
+    {name:'cheap',minimum_order_quantity:500,supplier_rating:4.9,lead_time_days:10,unit_price:1},
+    {name:'fits-low-rating',minimum_order_quantity:50,supplier_rating:3.5,lead_time_days:30,unit_price:5},
+    {name:'fits-best',minimum_order_quantity:50,supplier_rating:4.6,lead_time_days:20,unit_price:6},
+    {name:'unknowns'}],100);
+  assert.deepEqual(r.map(x=>x.name),['fits-best','fits-low-rating','unknowns','cheap']);
+  assert.equal(r[3].meets_minimum_order,false);assert.equal(r[2].meets_minimum_order,null);
+  assert.ok(r[2].notes.includes('Minimum order not stated.'));
+});
+test('document checklist depends on the Incoterm and reports missing documents',()=>{
+  const r=A.documentChecklist('cif',[{document_type:'commercial_invoice',status:'approved'},{document_type:'Packing List',status:'pending'}]);
+  assert.deepEqual(r.missing,['bill of lading','certificate of origin','insurance certificate']);
+  assert.equal(r.checklist.find(c=>c.document==='packing list').status,'pending');
+  assert.ok(!A.documentChecklist('FOB',[]).missing.includes('insurance certificate'));
+});
+test('new tools are role-scoped and read-only; the document tool never claims authenticity',async()=>{
+  const names=r=>A.toolDefinitions(r).map(t=>t.function.name);
+  assert.ok(names('buyer').includes('advise_on_quotations'));assert.ok(!names('supplier').includes('advise_on_quotations'));
+  assert.ok(names('bank').includes('check_attention_items'));assert.ok(!names('bank').includes('check_order_documents'));
+  const sb=fakeSupabase({trade_orders:[{id:'o1',reference:'ORD-9',incoterm:'FOB',quantity:10}],trade_documents:[{document_type:'commercial_invoice',status:'approved'}]});
+  const ctx={supabase:sb,userId:'u',role:'buyer',supplierCompany:'',actions:[]};
+  const r=await A.runTool(ctx,'check_order_documents',{order_reference:'ORD-9'});
+  assert.equal(r.order.id,undefined);assert.ok(r.missing.includes('bill of lading'));assert.match(r.compare_with,/differences/);
+  assert.equal(sb.writes.length,0);
+  const nope=await A.runTool({...ctx,role:'bank'},'check_order_documents',{order_reference:'ORD-9'});assert.ok(nope.error);
+  assert.match(src,/never authenticity|never say a document is authentic/);
 });
