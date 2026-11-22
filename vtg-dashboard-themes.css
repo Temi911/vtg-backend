@@ -81,3 +81,28 @@ html[data-skin][data-theme] body .vtg-vstate,html[data-skin][data-theme] body .v
 html[data-skin][data-theme="dark"] body .vtg-vstate,html[data-skin][data-theme="dark"] body .vtg-vtag{color:color-mix(in srgb,var(--accent) 72%,#fff)!important}
 html[data-skin][data-theme] body .vtg-vstate.good{background:#e4f5eb!important;color:#187347!important}
 @media (prefers-reduced-motion:no-preference){html[data-skin][data-theme] body .sidebar a,html[data-skin][data-theme] body .sidebar button,html[data-skin][data-theme] body .btn,html[data-skin][data-theme] body .panel,html[data-skin][data-theme] body .stat{transition:background-color .2s ease,color .2s ease,border-color .2s ease}}
+
+/* Chat, messages, VTG AI and calls follow the workspace theme and mode.
+ * The chat sheet ships its own blue palette; here every --wa-* token is re-pointed at the active skin. */
+html[data-skin][data-theme] body .vtg-wa{--wa-blue:var(--t-btn);--wa-blue-ink:var(--t-onbtn);--wa-bg:var(--bg);--wa-panel:var(--panel);--wa-line:var(--line);--wa-ink:var(--ink);--wa-muted:var(--muted);--wa-in:var(--panel2);--wa-input:var(--panel2);--wa-time:color-mix(in srgb,var(--ink) 55%,transparent);--wa-dot:color-mix(in srgb,var(--accent) 7%,transparent)}
+html[data-skin][data-theme] body .vtg-wa-item .vtg-wa-avatar,html[data-skin][data-theme] body .vtg-wa .vtg-wa-clip{color:var(--accent)}
+html[data-skin][data-theme] body .vtg-wa-head,html[data-skin][data-theme] body .vtg-wa-head .vtg-wa-iconbtn,html[data-skin][data-theme] body .vtg-wa-send,html[data-skin][data-theme] body .vtg-wa-sidebtn{color:var(--t-onbtn)}
+html[data-skin][data-theme] body .vtg-wa .vtg-wa-row.is-self .vtg-wa-att-ico{color:var(--t-btn)}
+/* Call screen: surface, tiles and controls take the theme; chips drawn over live video stay dark for legibility. */
+html[data-skin][data-theme] body .vtg-call{background:var(--bg);color:var(--ink)}
+html[data-skin][data-theme] body .vtg-call-badge{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+html[data-skin][data-theme] body .vtg-call-tile{background:var(--panel2);border-color:var(--line)}
+html[data-skin][data-theme] body .vtg-call-tile.speaking{border-color:var(--accent)}
+html[data-skin][data-theme] body .vtg-call-tile .av{background:var(--t-btn);color:var(--t-onbtn)}
+html[data-skin][data-theme] body .vtg-call-btn{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+html[data-skin][data-theme] body .vtg-call-btn.off{background:var(--ink);color:var(--bg)}
+html[data-skin][data-theme] body .vtg-call-btn.end{background:#E0383E;color:#fff;border-color:#E0383E}
+html[data-skin][data-theme] body .vtg-call-incoming{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+html[data-skin][data-theme] body .vtg-call-incoming .x{background:var(--panel2);color:var(--ink)}
+/* VTG AI action cards */
+html[data-skin][data-theme] body .vtg-ai-card{background:var(--panel);color:var(--ink);border-color:var(--accent)}
+html[data-skin][data-theme] body .vtg-ai-card strong{color:var(--accent)}
+html[data-skin][data-theme] body .vtg-ai-card small,html[data-skin][data-theme] body .vtg-ai-card dt{color:var(--muted)}
+html[data-skin][data-theme] body .vtg-ai-card .go{background:var(--t-btn);color:var(--t-onbtn)}
+html[data-skin][data-theme] body .vtg-ai-card .no{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+html[data-skin][data-theme] body .vtg-call-tile .nm,html[data-skin][data-theme] body .vtg-call-tile .st{color:#fff}
