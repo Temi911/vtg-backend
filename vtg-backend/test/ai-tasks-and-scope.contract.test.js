@@ -8,7 +8,7 @@ const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const src=read('supabase/functions/vtg-ai-assistant/index.ts');
 const slice=(from,to)=>{const a=src.indexOf(from),b=src.indexOf(to,a);assert.ok(a>=0&&b>a,from);return src.slice(a,b);};
 const code=stripTypeScriptTypes(slice('// ---- agent tools: begin ----','const buckets = new Map'));
-const load=()=>new Function('crypto',code+'\nreturn {computeLandedCost,compareQuotes,validateProposal,toolDefinitions,runTool,confirmAction,adviseOnQuotes,findAttention,rankProducts,documentChecklist,parseValidity};')(globalThis.crypto);
+const load=()=>new Function('crypto',code+'\nreturn {computeLandedCost,compareQuotes,validateProposal,toolDefinitions,runTool,confirmAction,adviseOnQuotes,findAttention,rankProducts,documentChecklist,parseValidity,crossCheckDocuments};')(globalThis.crypto);
 const A=load();
 const REQ='11111111-2222-4333-8444-555555555555';
 
@@ -190,4 +190,43 @@ test('new tools are role-scoped and read-only; the document tool never claims au
   assert.equal(sb.writes.length,0);
   const nope=await A.runTool({...ctx,role:'bank'},'check_order_documents',{order_reference:'ORD-9'});assert.ok(nope.error);
   assert.match(src,/never authenticity|never say a document is authentic/);
+});
+
+const ORDER={id:'o1',reference:'ORD-7',quantity:100,unit_price:10,currency:'USD',origin_port:'Guangzhou Nansha',destination_port:'Lagos Tin Can'};
+const LC={reference:'LC-7',amount:1000,currency:'USD',expiry_date:'2026-12-31'};
+const TERMS={beneficiary_name:'Shenzhen Brightway Trading Co., Ltd',latest_shipment_date:'2026-12-10',requested_amount:1000};
+test('discrepancy detective: a clean set returns no findings and says what it did not prove',()=>{
+  const r=A.crossCheckDocuments([
+    {type:'Commercial Invoice',quantity:100,unit_price:10,total_amount:1000,currency:'USD',shipper:'Shenzhen Brightway Trading Co., Ltd',description:'LED street lights 100W',date:'2026-12-01'},
+    {type:'Packing List',quantity:100,gross_weight_kg:520,packages:20,shipper:'Shenzhen Brightway Trading Co Ltd',description:'LED street lights 100W'},
+    {type:'Bill of Lading',quantity:100,gross_weight_kg:521,packages:20,port_of_loading:'Nansha, Guangzhou',port_of_discharge:'Tin Can Island, Lagos',date:'2026-12-05',description:'LED street lights 100W'}],ORDER,LC,TERMS);
+  assert.equal(r.findings.length,0);assert.match(r.verdict,/does not mean the documents are authentic/);assert.ok(r.checked.includes('gross weight'));
+});
+test('discrepancy detective: catches amount over LC, late shipment, quantity, arithmetic, currency, names and packages',()=>{
+  const r=A.crossCheckDocuments([
+    {type:'invoice',quantity:100,unit_price:10,total_amount:1200,currency:'EUR',shipper:'Brightway Trading',date:'2026-12-01'},
+    {type:'packing list',quantity:98,gross_weight_kg:500,packages:20},
+    {type:'bill of lading',quantity:100,gross_weight_kg:540,packages:21,date:'2026-12-15',shipper:'Totally Different Exports'}],ORDER,LC,TERMS);
+  const fields=r.findings.map(f=>f.field);
+  for(const f of ['amount','shipment date','quantity','invoice total','currency','package count','gross weight'])assert.ok(fields.includes(f),f+' missing from '+fields);
+  assert.ok(r.findings.some(f=>f.field==='shipper vs beneficiary'));
+  assert.equal(r.findings[0].severity,'high');assert.ok(r.counts.high>=5);
+  assert.match(r.verdict,/Differences found/);
+  const ship=r.findings.find(f=>f.field==='shipment date');assert.match(ship.fix,/amendment/);
+});
+test('discrepancy detective: close names are low severity, missing LC is reported, and absent fields are not invented',()=>{
+  const r=A.crossCheckDocuments([{type:'commercial invoice',shipper:'Brightway Trading Co'},{type:'bill of lading',shipper:'Brightway Trading Corp Shenzhen'}],ORDER,null,null);
+  assert.ok(r.findings.every(f=>f.severity!=='high'||f.field!=='amount'));
+  assert.ok(r.not_checked.some(x=>/no LC or LC draft/.test(x)));
+  assert.equal(A.crossCheckDocuments([{type:'invoice'}],ORDER,null,null).findings.length,0);
+});
+test('cross-check tool is offered to every role, is read-only and resolves the order and LC through RLS',async()=>{
+  for(const r of ['buyer','supplier','bank'])assert.ok(A.toolDefinitions(r).some(t=>t.function.name==='cross_check_trade_documents'),r);
+  const sb=fakeSupabase({trade_orders:[ORDER],letters_of_credit:[LC],buyer_lc_request_drafts:[TERMS]});
+  const ctx={supabase:sb,userId:'u',role:'bank',supplierCompany:'',actions:[]};
+  const out=await A.runTool(ctx,'cross_check_trade_documents',{order_reference:'ORD-7',documents:[{type:'invoice',total_amount:1500,quantity:100,unit_price:15,currency:'USD'}]});
+  assert.equal(out.lc_found,true);assert.ok(out.findings.some(f=>f.field==='amount'));assert.ok(out.findings.some(f=>f.field==='unit price'));
+  assert.equal(sb.writes.length,0);
+  assert.ok((await A.runTool(ctx,'cross_check_trade_documents',{order_reference:'ORD-7',documents:[]})).error);
+  assert.ok((await A.runTool({...ctx,supabase:fakeSupabase()},'cross_check_trade_documents',{order_reference:'X',documents:[{type:'invoice'}]})).error);
 });
