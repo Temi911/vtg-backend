@@ -66,7 +66,7 @@
       ai.setAttribute('aria-label','Explore VTG AI');
       ai.setAttribute('title','Explore VTG AI');
       ai.innerHTML='<i data-lucide="sparkles" aria-hidden="true"></i><span>VTG AI</span>';
-      ai.style.cssText='position:fixed!important;right:22px!important;bottom:22px!important;z-index:1999!important;width:52px!important;height:52px!important;min-width:52px!important;border-radius:16px!important;display:grid!important;place-items:center!important;background:#151316!important;color:#fff!important;border:1px solid rgba(192,57,43,.55)!important;box-shadow:0 14px 34px rgba(0,0,0,.3)!important;text-decoration:none!important;';
+      ai.style.cssText='position:fixed!important;right:22px!important;bottom:22px!important;z-index:1999!important;width:52px!important;height:52px!important;min-width:52px!important;border-radius:16px!important;display:grid!important;place-items:center!important;text-decoration:none!important;';
       document.body.appendChild(ai);
       if(window.lucide) window.lucide.createIcons();
     }
