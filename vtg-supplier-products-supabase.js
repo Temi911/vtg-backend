@@ -39,8 +39,8 @@ async function load(){
   if(result.error)throw result.error;
   products=result.data||[];render();
   say(profile.supplierVerificationStatus==='verified'
-   ?'Connected to Supabase. Active products from your verified supplier account are visible in the buyer marketplace.'
-   :'Connected to Supabase. You can publish product listings now; buyers will see them after VTG verifies your supplier account.');
+   ?'Connected to Supabase. Your catalogue is saved in VTG; buyers see only products approved by VTG and backed by a verified supplier.'
+   :'Connected to Supabase. You can submit product listings now; buyers see them only after VTG approves the listing and verifies your supplier account.');
  }catch(error){rows.innerHTML='<div class="empty">'+esc(error.message||'Could not load live products.')+' <button class="btn" type="button" id="retrySupabaseProducts">Try again</button></div>';say(error.message||'Supabase catalogue unavailable.');$('retrySupabaseProducts')?.addEventListener('click',load);}
 }
 function showForm(){form.classList.toggle('hidden');if(!form.classList.contains('hidden'))$('liveProductName')?.focus();}
