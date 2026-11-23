@@ -96,7 +96,7 @@ Deno.serve(async(req:Request)=>{
     }
     if(req.method==="POST" && path==="feed/account") {
       const {user,profile}=await activeUser(db), body=await req.json().catch(()=>({}));
-      const postType=clean(body.postType||"update",30), text=clean(body.body,5000), externalUrl=clean(body.externalUrl,1800);
+      const postType=clean(body.postType||"update",30), text=clean(body.body,2000), externalUrl=clean(body.externalUrl,1800);
       const allowed=["update","product","advert","news","announcement","trade_tip","video"];
       if(!allowed.includes(postType)) return fail("Unsupported post type.");
       if(!text && !externalUrl) return fail("A post needs text or a link.");
@@ -106,20 +106,22 @@ Deno.serve(async(req:Request)=>{
       const countryCode=clean(body.countryCode||profile.country,80)||null;
       const region=clean(body.region||inferRegion(countryCode)||"",30)||null;
       if(region && !["Africa","China","South Korea"].includes(region)) return fail("Choose Africa, China or South Korea as the trade region.");
-      const {data:post,error}=await db.from("vtg_trade_posts").insert({
-        author_id:user.id,body:text||"Shared media",post_type:postType,external_url:externalUrl||null,
-        country_code:countryCode,region,is_published:true
-      }).select("*").single();
+      const {data:created,error}=await db.rpc("vtg_create_trade_post",{
+        p_body:text||"Shared media",p_post_type:postType,p_region:region,
+        p_external_url:externalUrl||null,p_country_code:countryCode
+      });
       if(error) throw error;
-      return reply({post},201);
+      if(!created?.ok) return reply(created,422);
+      return reply({post:created.post},201);
     }
     const commentPost=path.match(/^feed\/([0-9a-f-]+)\/comments$/i);
     if(req.method==="POST" && commentPost) {
       const {user}=await activeUser(db), body=await req.json().catch(()=>({})), text=clean(body.body,2000);
       if(!text) return fail("Comment text is required.");
-      const {data,error}=await db.from("vtg_trade_post_comments").insert({post_id:commentPost[1],author_id:user.id,body:text}).select("*").single();
+      const {data:created,error}=await db.rpc("vtg_create_trade_post_comment",{p_post_id:commentPost[1],p_body:text});
       if(error) throw error;
-      return reply({comment:data},201);
+      if(!created?.ok) return reply(created,422);
+      return reply({comment:created.comment},201);
     }
     const reactionMatch=path.match(/^feed\/([0-9a-f-]+)\/reactions$/i);
     if(req.method==="POST" && reactionMatch) {
