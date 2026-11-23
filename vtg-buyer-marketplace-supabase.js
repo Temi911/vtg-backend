@@ -36,12 +36,50 @@ function renderProducts(){
  if(!state.products.length){host.innerHTML='<div class="empty"><strong>The verified VTG catalogue is being built.</strong><br>No supplier listings are available to quote yet. A product becomes visible only after its listing is approved and the supplier completes VTG verification. Need something now? Create a sourcing request and VTG can help coordinate sourcing.<br><button class="btn primary" type="button" data-empty-rfq>Create a sourcing request</button><br><small>Are you a supplier? <a href="/supplier-signup.html">Register your company with VTG</a> and submit products for review.</small></div>';return;}
  if(!matches.length){host.innerHTML='<div class="empty">No verified supplier listings match your search. Try another category or search term.</div>';return;}
  host.innerHTML=matches.map(p=>{
-  const image=Array.isArray(p.image_urls)&&p.image_urls[0]?'<img src="'+esc(p.image_urls[0])+'" alt="'+esc(p.name)+'" loading="lazy" style="width:100%;height:100%;object-fit:contain;background:#fff">':'<span>Product image not supplied</span>';
+  const image=Array.isArray(p.image_urls)&&p.image_urls[0]?'<img src="'+esc(p.image_urls[0])+'" alt="'+esc(p.name)+'" loading="lazy">':'<span>Image not supplied</span>';
   const supplier=p.supplier_name||'Verified VTG supplier';
   const levelNames={registered_business:'Registered Business',vtg_verified:'VTG Verified',production_verified:'Production Verified',trade_performance_reviewed:'Trade Performance Reviewed'};
   const trustLabel=levelNames[p.supplier_verification_level]||'Business documents reviewed';
-  return '<article class="product"><div class="productArt">'+image+'</div><div class="productInfo"><strong>'+esc(p.name)+'</strong><p>'+esc(p.category||'General trade')+' · '+esc(p.supplier_country||p.origin_country||'Origin not supplied')+'<br><span class="chip">'+esc(supplier)+' · '+esc(trustLabel)+'</span><br><small>MOQ: '+Number(p.minimum_order_quantity||1).toLocaleString()+'</small></p><div class="productFoot"><b>'+money(p.unit_price,p.currency)+' <small>/ unit</small></b><button class="btn primary" type="button" data-add="'+esc(p.id)+'">Add to cart</button></div></div></article>';
+  return '<article class="product"><div class="productArt">'+image+'</div><div class="productInfo"><span class="productCategory">'+esc(p.category||'General trade')+'</span><strong>'+esc(p.name)+'</strong><p>'+esc(p.supplier_country||p.origin_country||'Origin not supplied')+' · <span class="chip">'+esc(supplier)+'</span><br><small>'+esc(trustLabel)+' · MOQ '+Number(p.minimum_order_quantity||1).toLocaleString()+'</small></p><div class="productFoot"><b>'+money(p.unit_price,p.currency)+' <small>/ unit</small></b></div><div class="productActions"><button class="btn" type="button" data-view-product="'+esc(p.id)+'">View &amp; quote</button><button class="btn primary" type="button" data-enquire-product="'+esc(p.id)+'">Enquire</button><button class="btn" type="button" data-add="'+esc(p.id)+'">Add to cart</button></div></div></article>';
  }).join('');
+}
+function openProductDetails(id,mode){
+ const p=state.products.find(item=>item.id===String(id));if(!p)return;
+ const modal=$('buyerProductModal');if(!modal)return;
+ const image=Array.isArray(p.image_urls)&&p.image_urls[0]?'<img src="'+esc(p.image_urls[0])+'" alt="'+esc(p.name)+' product image">':'<div class="buyerProductNoImage">Product image not supplied</div>';
+ const levelNames={registered_business:'Registered Business',vtg_verified:'VTG Verified',production_verified:'Production Verified',trade_performance_reviewed:'Trade Performance Reviewed'};
+ $('buyerProductContent').innerHTML='<div class="buyerProductMedia">'+image+'</div><div class="buyerProductSummary"><span class="productCategory">'+esc(p.category||'General trade')+'</span><h2>'+esc(p.name)+'</h2><p class="buyerProductPrice">'+money(p.unit_price,p.currency)+' <small>/ unit</small></p><dl><div><dt>Supplier</dt><dd>'+esc(p.supplier_name||'Verified VTG supplier')+'</dd></div><div><dt>Supplier country</dt><dd>'+esc(p.supplier_country||p.origin_country||'Not supplied')+'</dd></div><div><dt>Verification</dt><dd>'+esc(levelNames[p.supplier_verification_level]||'Business documents reviewed')+'</dd></div><div><dt>Minimum order</dt><dd>'+Number(p.minimum_order_quantity||1).toLocaleString()+'</dd></div><div><dt>HS code</dt><dd>'+esc(p.hs_code||'Not supplied')+'</dd></div><div><dt>Lead time</dt><dd>'+(p.lead_time_days?Number(p.lead_time_days)+' days':'Not supplied')+'</dd></div></dl><h3>Product description</h3><p class="buyerProductDescription">'+esc(p.description||'The supplier has not added a product description.')+'</p></div>';
+ $('buyerProductTitle').textContent=mode==='enquiry'?'Enquire about this product':'Product details & quote';
+ $('buyerProductMode').value=mode;
+ $('buyerProductId').value=p.id;
+ $('buyerProductQty').min=String(Math.max(1,Number(p.minimum_order_quantity||1)));
+ $('buyerProductQty').value=String(Math.max(1,Number(p.minimum_order_quantity||1)));
+ $('buyerProductNotes').value='';
+ $('buyerProductDestination').value='Nigeria — Tin Can Island, Lagos';
+ $('buyerProductSubmit').textContent=mode==='enquiry'?'Send enquiry':'Request a quote';
+ $('buyerProductStatus').textContent='';
+ modal.classList.remove('hidden');
+}
+async function submitProductAction(event){
+ event.preventDefault();
+ const p=state.products.find(item=>item.id===$('buyerProductId').value),mode=$('buyerProductMode').value;
+ const statusNode=$('buyerProductStatus'),button=$('buyerProductSubmit');
+ if(!p||!state.client||!state.buyerId){statusNode.textContent='Your buyer session is not ready. Refresh the marketplace and try again.';return;}
+ const quantity=Number($('buyerProductQty').value),minimum=Number(p.minimum_order_quantity||1);
+ if(!Number.isSafeInteger(quantity)||quantity<minimum){statusNode.textContent='Enter a whole-number quantity at or above the supplier minimum of '+minimum.toLocaleString()+'.';return;}
+ if(button.disabled)return;
+ button.disabled=true;button.textContent='Sending…';statusNode.textContent='';
+ const noteParts=[mode==='enquiry'?'Product enquiry — please contact me about this listing.':'Quote request from the Buyer Dashboard.', 'Requested Incoterm: '+$('buyerProductIncoterm').value, $('buyerProductNotes').value.trim()].filter(Boolean);
+ try{
+  const session=await state.client.auth.getSession();if(session.error)throw session.error;
+  if(!session.data.session||session.data.session.user.id!==state.buyerId)throw new Error('Your buyer session has expired. Please sign in again.');
+  const result=await state.client.rpc('vtg_create_trade_quote_request',{p_product_id:p.id,p_quantity:quantity,p_origin_country:p.origin_country||null,p_destination:$('buyerProductDestination').value.trim()||'Nigeria',p_buyer_message:noteParts.join('\n\n')});
+  if(result.error)throw result.error;
+  const ref=result.data?.order_reference||'created';
+  statusNode.textContent=(mode==='enquiry'?'Enquiry ':'Quote request ')+ref+' has been sent to the supplier.';
+  button.textContent='Sent successfully';
+  setTimeout(()=>{$('buyerProductModal').classList.add('hidden');button.disabled=false;button.textContent=mode==='enquiry'?'Send enquiry':'Request a quote';},1200);
+ }catch(error){statusNode.textContent=error.message||'Could not send your request.';button.disabled=false;button.textContent=mode==='enquiry'?'Send enquiry':'Request a quote';}
 }
 function normaliseCart(items){
  const map=new Map();
@@ -106,10 +144,10 @@ function updateCart(id,delta,remove){
  renderCart();persistCart();
 }
 document.addEventListener('click',event=>{
- const add=event.target.closest('[data-add]'),qty=event.target.closest('[data-q]'),remove=event.target.closest('[data-rem]'),retry=event.target.closest('[data-market-retry]'),empty=event.target.closest('[data-empty-rfq]');
- if(!add&&!qty&&!remove&&!retry&&!empty)return;
+ const add=event.target.closest('[data-add]'),view=event.target.closest('[data-view-product]'),enquire=event.target.closest('[data-enquire-product]'),qty=event.target.closest('[data-q]'),remove=event.target.closest('[data-rem]'),retry=event.target.closest('[data-market-retry]'),empty=event.target.closest('[data-empty-rfq]');
+ if(!add&&!view&&!enquire&&!qty&&!remove&&!retry&&!empty)return;
  event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
- if(retry){refresh();return;}if(empty){document.querySelector('[data-view="rfqs"]')?.click();return;}
+ if(retry){refresh();return;}if(view){openProductDetails(view.dataset.viewProduct,'quote');return;}if(enquire){openProductDetails(enquire.dataset.enquireProduct,'enquiry');return;}if(empty){document.querySelector('[data-view="rfqs"]')?.click();return;}
  if(add){updateCart(add.dataset.add,1,false);status('Product added to your account cart.');return;}
  if(qty){updateCart(qty.dataset.q,Number(qty.dataset.d)||0,false);return;}
  if(remove)updateCart(remove.dataset.rem,0,true);
@@ -118,5 +156,8 @@ $('searchProducts')?.addEventListener('input',renderProducts);
 $('category')?.addEventListener('change',renderProducts);
 ['shipping','insurance','duty','other'].forEach(id=>$(id)?.addEventListener('input',renderCart));
 window.addEventListener('vtg:buyer-cart-hydrated',()=>{});
-init();
+$('buyerProductForm')?.addEventListener('submit',submitProductAction);
+ $('buyerProductClose')?.addEventListener('click',()=>$('buyerProductModal')?.classList.add('hidden'));
+ $('buyerProductModal')?.addEventListener('click',event=>{if(event.target.id==='buyerProductModal')event.currentTarget.classList.add('hidden');});
+ init();
 })();
