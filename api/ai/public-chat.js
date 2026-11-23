@@ -3,11 +3,13 @@
 //  - has NO database access, NO user session and NO tools, so it cannot read or change anyone's data;
 //  - personal-account requests are declined before any model is called and the user is pointed to the
 //    signed-in assistant in their dashboard, which is the only assistant that works with account data.
+const { SITE_KNOWLEDGE } = require('./_site-knowledge.js');
 const SYSTEM_PROMPT = [
   'You are VTG AI, the public assistant on the website of VTG (Vintage Trade Global), a trade finance and marketplace platform connecting African businesses with suppliers in China and South Korea.',
   'You answer two kinds of questions only: (1) general questions about VTG: what it is, who it serves (buyers/importers, suppliers/exporters, banks and finance partners, inspection and logistics agents), how sign-up and verification work in general terms, and the public areas of the site such as the marketplace, Trade Atlas, Market Intelligence and the partnership pages; (2) general international trade knowledge: sourcing, RFQs, quotations, Incoterms, shipping and freight, customs concepts, trade documents, letters of credit, inspections, payment risk, forex concepts and the Africa-China-South Korea corridor.',
+  'Answer questions about the VTG website and about VTG itself using the SITE FACTS below. Name the relevant page when helpful, for example the Marketplace, Sourcing and suppliers, Logistics and shipping, Finance and payments, Market intelligence, Africa markets, Trade Atlas, Product verification, Partnerships, About or Contact pages. SITE FACTS were taken from the public pages and may be incomplete: if the answer is not in them, say you are not sure and point to the Contact page. Do not invent anything beyond them. SITE FACTS: ' + SITE_KNOWLEDGE,
   'You are a public, anonymous assistant. You have no access to any VTG account, order, quotation, shipment, letter of credit, document, balance, verification status or message, and you must never claim to. Never give, guess or confirm information about any specific person, company account or transaction on VTG. If asked, say you cannot see account information and that signed-in users can ask the VTG AI inside their dashboard, which works with their own records.',
-  'You cannot perform tasks for anyone: you cannot create, submit, change or cancel anything. Explain how a task is done in general terms instead, and point signed-in users to their dashboard.',
+  'You cannot perform tasks for anyone: you cannot create, submit, change, book, pay for, send or cancel anything, and you cannot sign anyone up. Explain how a task is done in general terms instead, and invite visitors to create a free account or sign in. You do not answer personal questions about the person you are chatting with (their identity, accounts, activity or history) and you never share details about any VTG user, buyer, supplier, staff member or agent.',
   'Stay on topic. For unrelated requests (homework, coding, entertainment, personal advice, politics and so on) say briefly that you only help with VTG and international trade.',
   'Never invent VTG fees, prices, partners, licences, statistics, features or availability. If you do not know a VTG-specific fact, say so and suggest the Contact page. Never invent duties, tariffs, exchange rates, vessel positions or regulatory requirements; explain general principles and name the official source to check.',
   'For customs, legal, tax, banking, sanctions and restricted-goods decisions give general considerations and direct people to licensed professionals or official authorities.',
@@ -21,11 +23,26 @@ const PERSONAL_PATTERNS = [
   /\b(tell|show|give|find|look\s*up|get)\b.{0,40}\b(email|phone|number|address|password|account|balance|kyc|bvn|nin)\b.{0,40}\b(of|for)\b.{0,30}\b(user|buyer|supplier|company|customer|person|him|her|them)\b/i,
   /\b(who|which)\s+(users?|buyers?|suppliers?|companies)\s+(has|have|bought|ordered|quoted|registered|signed)/i
 ];
+const TASK_PATTERNS = [
+  /\b(place|submit|create|make|start|open|cancel|approve|book|send|raise|file|upload|schedule|process|issue|confirm|pay|transfer|buy|purchase|order|ship|apply|request)\b.{0,50}\b(for me|on my behalf|in my name|my (order|rfq|quote|quotation|inspection|shipment|payment|account|request|application))\b/i,
+  /\b(sign|register|enrol|enroll)\s+(me|us)\s+(up|in)\b/i,
+  /\b(register|sign\s*up|log\s*in|sign\s*in)\s+(me|us|for me)\b/i,
+  /\b(pay|transfer|send)\b.{0,30}\b(money|funds|payment|\$|usd|naira|ngn)\b.{0,40}\b(for me|on my behalf|to (the )?supplier)\b/i,
+  /\b(contact|message|email|call|text)\b.{0,30}\b(supplier|buyer|seller|agent|bank)\b.{0,30}\b(for me|on my behalf)\b/i
+];
+const PERSONAL_ABOUT_ME = [
+  /\b(who am i|what(?:'s| is) my (name|email|role|company|phone|number|id|username)|do you (know|remember) me|my (profile|details|information|data)\b)/i,
+  /\b(email|phone|whatsapp|address|bvn|nin|password|number|identity)\b.{0,40}\b(of|for)\b.{0,40}\b(a |the |any |that |this )?(user|buyer|supplier|customer|client|member|staff|employee|agent|director|owner)\b/i,
+  /\b(list|show|give|tell|name)\b.{0,30}\b(all |your |the )?(users|customers|clients|members|buyers|suppliers|registered|accounts)\b/i
+];
+function isTaskRequest(text) { const t = String(text || ''); return TASK_PATTERNS.some((re) => re.test(t)); }
 function isPersonalRequest(text) {
   const t = String(text || '');
-  return PERSONAL_PATTERNS.some((re) => re.test(t));
+  return PERSONAL_PATTERNS.some((re) => re.test(t)) || PERSONAL_ABOUT_ME.some((re) => re.test(t));
 }
 const PERSONAL_REPLY = 'I can only help with general questions about VTG and international trade, so I cannot see or discuss any account, order, quotation, shipment or other personal or company records. If you have a VTG account, sign in and use the VTG AI in your dashboard: it works with your own records and can prepare tasks for you to confirm. I can also explain how any part of the process works in general. What would you like to know?';
+
+const TASK_REPLY = 'I cannot do tasks for you here: I cannot place orders, submit requests, send messages, make payments or sign anyone up. I can explain how any of these works on VTG, step by step. To actually do it, create a free account or sign in, then use the VTG AI in your dashboard, which can prepare the task for you to confirm. Which one would you like explained?';
 
 function cleanHistory(history) {
   if (!Array.isArray(history)) return [];
@@ -76,6 +93,7 @@ async function handler(req, res) {
   if (message.length > 2000) return res.status(413).json({ error: { code: 'MESSAGE_TOO_LONG', message: 'Please keep each message under 2,000 characters.' } });
   // The request body can carry a role, country or auth header; none of them is used. This endpoint is anonymous by design.
   if (isPersonalRequest(message)) return res.status(200).json({ reply: PERSONAL_REPLY, mode: 'public', scope: 'general' });
+  if (isTaskRequest(message)) return res.status(200).json({ reply: TASK_REPLY, mode: 'public', scope: 'general', cta: { href: '/signup.html', label: 'Create free account' } });
   const list = providers(process.env);
   if (!list.length) return res.status(503).json({ error: { code: 'AI_NOT_CONFIGURED', message: 'VTG AI is not available right now. Please try again later or use the Contact page.' } });
   const convo = [{ role: 'system', content: SYSTEM_PROMPT }, ...cleanHistory(req.body?.history), { role: 'user', content: message }];
@@ -99,4 +117,4 @@ async function handler(req, res) {
   return res.status(200).json({ reply: 'VTG AI is temporarily unable to answer. Please try again shortly, or use the Contact page.', mode: 'fallback', error: { code: 'AI_PROVIDER_UNAVAILABLE' } });
 }
 module.exports = handler;
-module.exports.__test = { SYSTEM_PROMPT, isPersonalRequest, cleanHistory, providers, PERSONAL_REPLY };
+module.exports.__test = { SYSTEM_PROMPT, isPersonalRequest, isTaskRequest, TASK_REPLY, SITE_KNOWLEDGE, cleanHistory, providers, PERSONAL_REPLY };

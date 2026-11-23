@@ -81,7 +81,9 @@
     post('/api/ai/public-chat', { message: q, history: history.slice(-12) }).then(function (r) {
       var a = (r.data && r.data.reply) || (r.data && r.data.error && r.data.error.message) || 'I could not answer just now. Please try again.';
       wait.textContent = a; history.push({ role: 'assistant', content: a });
-      asked += 1; if (asked >= 3 && !nudged) { nudged = true; cta(CTA_DEFAULT); }
+      asked += 1;
+      if (r.data && r.data.cta) { nudged = true; cta({ text: 'Ready to do this for real? Create a free VTG account and the VTG AI in your dashboard can prepare it for you to confirm.', href: r.data.cta.href, label: r.data.cta.label }); }
+      else if (asked >= 3 && !nudged) { nudged = true; cta(CTA_DEFAULT); }
     }).catch(function () { wait.textContent = 'I am having trouble connecting. Please try again in a moment.'; }).then(function () { busy = false; });
   }
   function renderResult(d) {
