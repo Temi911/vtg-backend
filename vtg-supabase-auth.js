@@ -14,6 +14,15 @@
       });
       window.VTG_SUPABASE = client;
 
+      // Capture recovery events as soon as the Supabase client is created. Pages that await
+      // VTG_AUTH_READY can otherwise subscribe after PASSWORD_RECOVERY has already fired.
+      window.VTG_PASSWORD_RECOVERY_EVENT = null;
+      client.auth.onAuthStateChange((event, session) => {
+        if (event === 'PASSWORD_RECOVERY' && session) {
+          window.VTG_PASSWORD_RECOVERY_EVENT = { session, receivedAt: Date.now() };
+        }
+      });
+
       const normalize = (row, user) => {
         const databaseRole = row?.role || 'buyer';
         const requestedRole = user?.user_metadata?.requested_role || null;
