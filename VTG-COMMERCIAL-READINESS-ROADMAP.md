@@ -24,6 +24,8 @@ The database already has the core entities for sourcing, quotations, negotiation
 
 **Important architecture finding:** the current code contains two quote paths: marketplace `trade_quotes` linked to `trade_orders`, and a separate sourcing workflow using `buyer_trade_requests` with `supplier_trade_quotations`. Priority 2 must reconcile these into one clearly mapped lifecycle, with one canonical order and auditable references. Do not silently assume the two paths are interchangeable.
 
+**Payment and fulfilment audit:** the order-payment endpoint currently creates an idempotent `vtg_payment_intents` record and explicitly returns `provider_connected: false`; it does not collect or confirm trade-order funds. Inspection payments have a separate provider/webhook path. A supplier shipment-save RPC already writes shipment events and buyer notifications, but the end-to-end workflow still needs proof from accepted quotation through payment confirmation, shipment, delivery evidence and buyer confirmation.
+
 ## Priority 1 — Real supplier density
 
 ### Deliverables
