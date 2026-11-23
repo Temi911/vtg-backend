@@ -41,7 +41,7 @@ test('server-side workforce and inspection privileges are limited to service_rol
 });
 
 test('only an active call participant can leave or end a call', () => {
-  const migration = read('supabase/migrations/20261123193000_restrict_call_leave_to_active_participants.sql');
+  const migration = read('supabase/migrations/20261123192102_restrict_call_leave_to_active_participants.sql');
   assert.match(migration, /from public\.vtg_call_participants[\s\S]*?call_id = p_call_id[\s\S]*?user_id = me[\s\S]*?left_at is null/i);
   assert.match(migration, /Only an active call participant can leave this call/);
   assert.match(migration, /using errcode = '42501'/i);
