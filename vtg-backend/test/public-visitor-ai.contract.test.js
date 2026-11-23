@@ -47,7 +47,7 @@ test('public tools and endpoint touch no account data',()=>{
 test('landing page loads the visitor AI and both bubbles follow the page theme',()=>{
   assert.match(read('frontend-v3.html'),/vtg-public-ai\.js\?v=/);
   const js=read('vtg-public-ai.js');
-  assert.match(js,/var\(--white/);assert.match(js,/var\(--ink/);assert.match(js,/var\(--teal/);
+  assert.match(js,/var\(--vp-surface\)/);assert.match(js,/var\(--vp-ink\)/);assert.match(js,/var\(--vp-accent\)/);assert.match(js,/html\[data-theme=\"dark\"\]/);
   assert.match(js,/#vtgAiPublicLaunch/);assert.match(js,/\.vtgIntelTools \.vtgIntelTool/);
   assert.match(js,/\/api\/ai\/public-chat/);assert.match(js,/\/api\/ai\/public-tool/);
   assert.doesNotMatch(js,/innerHTML/);
