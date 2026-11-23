@@ -189,7 +189,7 @@
         b.onclick = function () {
           var id = b.getAttribute('data-sv-approve'), select = body.querySelector('[data-sv-level="' + id + '"]');
           var selected = select ? select.value : null;
-          openDialog({ title: 'Approve supplier verification', description: 'The database will check that all evidence required for the selected level has already been marked verified. A higher level cannot be awarded than the supplier requested.', label: 'Decision summary visible to supplier (optional)', confirm: 'Approve level',
+          openDialog({ title: 'Approve supplier verification', description: 'The database will check that all evidence required for the selected level has already been marked verified. A higher level cannot be awarded than the supplier requested.', label: 'Public verification summary (visible on verified supplier profiles)', confirm: 'Approve level',
             onConfirm: async function (note) {
               await rpc('vtg_review_supplier_verification', { p_request_id: id, p_decision: 'approved', p_awarded_level: selected, p_decision_summary: note || null });
               toast('Supplier verification level awarded.'); refreshAll();
