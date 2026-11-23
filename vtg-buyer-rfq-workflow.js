@@ -111,5 +111,5 @@ $('rfqRows')?.addEventListener('click',e=>{const b=e.target.closest('[data-delet
 $('refreshLiveEnquiries')?.addEventListener('click',()=>loadRequests().catch(e=>notice(e.message,true)));
 $('refreshLiveQuotes')?.addEventListener('click',()=>loadRequests().catch(e=>notice(e.message,true)));
 (async()=>{try{await session();await Promise.all([loadDrafts(),loadRequests()]);await loadSuppliers();notice('Connected to your VTG account. Save drafts privately or publish to qualified suppliers.');}catch(e){notice(e.message||'Could not load the RFQ workspace.',true);}})();
-window.VTGBuyerRfqWorkflow={loadDrafts,loadRequests,publish};
+window.loadLiveEnquiries=loadRequests;window.loadLiveQuotes=loadRequests;window.VTGBuyerRfqWorkflow={loadDrafts,loadRequests,publish};
 })();
