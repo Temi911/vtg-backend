@@ -38,7 +38,7 @@ test('buyer RFQ workspace saves private drafts and publishes through the single 
  assert.match(dashboard,/id="publishRfqBtn"/);
  assert.match(buyer,/from\('buyer_rfq_drafts'\)\.insert\(payload\)/);
  assert.match(buyer,/rpc\('vtg_publish_buyer_rfq'/);
- assert.match(buyer,/VTG-RFQ/); // reference is displayed from the server result
+ assert.match(buyer,/data\.reference/);
  assert.doesNotMatch(buyer,/SERVICE_ROLE|service_role/);
 });
 
