@@ -20,12 +20,12 @@ async function load(){
  loading=true;host.innerHTML='<div class="empty">Loading account-linked orders from VTG…</div>';
  try{
   client=client||await getClient();
-  const {data:orders,error}=await client.from('trade_orders').select('id,reference,status,quantity,unit_price,currency,incoterm,origin_port,destination_port,created_at,supplier:profiles!trade_orders_supplier_id_fkey(full_name),product:products(name)').eq('buyer_id',buyerId).order('created_at',{ascending:false}).limit(100);
+  const {data:orders,error}=await client.from('trade_orders').select('id,reference,status,quantity,unit_price,currency,incoterm,origin_port,destination_port,created_at,supplier_id,closed_at,delivery_confirmed_by,supplier:profiles!trade_orders_supplier_id_fkey(full_name),product:products(name)').eq('buyer_id',buyerId).order('created_at',{ascending:false}).limit(100);
   if(error)throw error;if(!orders?.length){host.innerHTML='<div class="empty">No orders have been created for this buyer account yet. An accepted supplier quotation can create a linked trade order.</div>';return;}
   const cards=await Promise.all(orders.map(async o=>{
    const [sr,mr]=await Promise.all([
     client.from('shipments').select('id,carrier,tracking_number,container_number,origin_port,destination_port,current_location,status,progress_percent,estimated_arrival,created_at').eq('order_id',o.id).order('created_at',{ascending:false}).limit(10),
-    client.from('trade_order_milestones').select('id,milestone,description,location,event_at').eq('order_id',o.id).order('event_at',{ascending:false}).limit(50)
+    client.from('trade_order_milestones').select('id,milestone,description,location,event_at,created_by').eq('order_id',o.id).order('event_at',{ascending:false}).limit(50)
    ]);
    if(sr.error)throw sr.error;if(mr.error)throw mr.error;
    const shipCards=await Promise.all((sr.data||[]).map(async sh=>{
@@ -42,11 +42,11 @@ async function load(){
    const title=status==='pending'?'Quote request · '+(o.reference||'VTG reference'):status==='draft'?'Draft order · '+(o.reference||'VTG reference'):(o.reference||'VTG order');
    const statusLabel=status==='pending'?'QUOTE REQUEST PENDING':status==='draft'?'DRAFT — NOT CONFIRMED':label(status).toUpperCase();
    const valueLabel=awaitingQuote?'Supplier price not agreed':esc(o.currency||'USD')+' '+total;
-   const milestoneHtml=awaitingQuote?'<p class="small muted" style="margin:9px 0 0">Order milestones begin after a supplier quotation is accepted and the trade order is confirmed.</p>':renderMilestones(mr.data||[]);
+   const milestoneHtml=awaitingQuote?'<p class="small muted" style="margin:9px 0 0">Order milestones begin after a supplier quotation is accepted and the trade order is confirmed.</p>':renderMilestones(mr.data||[]);\n   const supplierMarkedDelivered=(mr.data||[]).some(m=>m.milestone==='delivered'&&m.created_by===o.supplier_id);\n   const closeAction=!o.closed_at&&supplierMarkedDelivered?'<div class="notice" style="margin-top:12px"><strong>Goods marked as delivered</strong><p class="small">Confirm that you have received the goods to close this trade deal.</p><button class="btn primary" type="button" data-confirm-delivery="'+esc(o.id)+'">Confirm receipt & close deal</button></div>':o.closed_at?'<div class="notice" style="margin-top:12px"><strong>Deal closed</strong><p class="small">Buyer confirmed delivery on '+esc(date(o.closed_at,true))+'</p></div>':'';
    const shipmentHtml=shipCards.length?shipCards.join(''):awaitingQuote?'<p class="small muted" style="margin:9px 0 0">Shipment tracking becomes relevant after the supplier quotation is accepted and a shipment is recorded.</p>':'<p class="small muted" style="margin:9px 0 0">No logistics-service shipment record is linked to this order yet. Shipment progress is not inferred from order status or trade assumptions.</p>';
    return '<article class="record-card"><div class="record-top"><div><strong>'+esc(title)+'</strong><p class="small muted">'+esc(o.supplier?.full_name||'Supplier')+' · '+esc(date(o.created_at,false))+'</p>'+(o.product?.name?'<p class="small muted">'+esc(o.product.name)+'</p>':'')+'</div><span class="chip">'+esc(statusLabel)+'</span></div>'+
    '<p style="margin:8px 0"><b>Quantity:</b> '+qty.toLocaleString()+' · <b>'+(awaitingQuote?'Quotation status:':'Order value:')+'</b> '+valueLabel+' · <b>Incoterm:</b> '+esc(o.incoterm||'Not specified')+'</p>'+
-   '<p class="small muted"><b>Order route:</b> '+esc(o.origin_port||'Origin not recorded')+' → '+esc(o.destination_port||'Destination not recorded')+'</p>'+milestoneHtml+shipmentHtml+'</article>';
+   '<p class="small muted"><b>Order route:</b> '+esc(o.origin_port||'Origin not recorded')+' → '+esc(o.destination_port||'Destination not recorded')+'</p>'+milestoneHtml+shipmentHtml+closeAction+'</article>';
   }));
   host.innerHTML=cards.join('');
  }catch(e){host.innerHTML='<div class="empty">Could not load account-linked orders. '+esc(e.message||'Supabase request failed')+' <button class="btn" type="button" id="retrySupabaseOrders">Try again</button></div>';$('retrySupabaseOrders')?.addEventListener('click',load);}
@@ -58,5 +58,15 @@ async function connectRealtime(){try{client=client||await getClient();const {dat
  .on('postgres_changes',{event:'*',schema:'public',table:'shipments'},scheduleLoad)
  .on('postgres_changes',{event:'*',schema:'public',table:'shipment_events'},scheduleLoad).subscribe();}catch(_){/* Manual refresh remains available. */}}
 window.VTGBuyerOrders={load,refresh:load};
-document.addEventListener('DOMContentLoaded',()=>{$('refreshLiveOrders')?.addEventListener('click',load);load();connectRealtime();},{once:true});
+document.addEventListener('DOMContentLoaded',()=>{
+ $('refreshLiveOrders')?.addEventListener('click',load);
+ $('liveOrdersRows')?.addEventListener('click',async event=>{
+  const button=event.target.closest('[data-confirm-delivery]');if(!button)return;
+  if(!window.confirm('Confirm that the goods for this order have been received? This will close the trade deal.'))return;
+  button.disabled=true;
+  try{const {data,error}=await client.rpc('vtg_confirm_order_delivery',{p_order_id:button.dataset.confirmDelivery});if(error)throw error;if(!data?.ok)throw new Error('Delivery confirmation was not completed.');await load();}
+  catch(error){button.disabled=false;const note=document.createElement('p');note.className='small';note.textContent=error.message||'Could not close the deal.';button.insertAdjacentElement('afterend',note);}
+ });
+ load();connectRealtime();
+},{once:true});
 })();
