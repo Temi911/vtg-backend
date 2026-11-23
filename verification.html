@@ -150,13 +150,29 @@ async function loadAdmin(){
  }).join(''):'<div class="notice">No verification documents are waiting for review.</div>';
 }
 async function viewDoc(id){
- const {data:doc,error}=await client.from('vtg_verification_documents').select('storage_path').eq('id',id).single();
- if(error||!doc){alert('Unable to find this verification document.');return;}
- const [bucket,...parts]=doc.storage_path.split('/'),path=parts.join('/');
- if(bucket===LOGO_BUCKET){const {data}=client.storage.from(bucket).getPublicUrl(path);window.open(data.publicUrl,'_blank','noopener');return;}
- const {data,error:signError}=await client.storage.from(bucket).createSignedUrl(path,90);
- if(signError){alert('Unable to open document: '+signError.message);return;}
- window.open(data.signedUrl,'_blank','noopener');
+ // Open the tab synchronously from the click event so browser popup blockers
+ // do not discard it while the private signed URL is being fetched.
+ const tab=window.open('about:blank','_blank');
+ if(!tab){alert('Your browser blocked the document tab. Allow pop-ups for this VTG site and try again.');return;}
+ try{
+  tab.document.title='Opening VTG document…';
+  tab.document.body.innerHTML='<p style="font:14px sans-serif;padding:24px">Securely opening document…</p>';
+  const {data:doc,error}=await client.from('vtg_verification_documents').select('storage_path').eq('id',id).single();
+  if(error||!doc)throw new Error(error?.message||'Unable to find this verification document.');
+  const [bucket,...parts]=doc.storage_path.split('/'),path=parts.join('/');
+  let target='';
+  if(bucket===LOGO_BUCKET){
+   target=client.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+  }else{
+   const {data,error:signError}=await client.storage.from(bucket).createSignedUrl(path,300);
+   if(signError)throw signError;
+   target=data.signedUrl;
+  }
+  tab.location.replace(target);
+ }catch(error){
+  try{tab.close();}catch(_){}
+  alert('Unable to open document: '+(error.message||'Please try again.'));
+ } 
 }
 async function reviewDoc(id,status){
  const notes=$('#note-'+id)?.value.trim()||'';
