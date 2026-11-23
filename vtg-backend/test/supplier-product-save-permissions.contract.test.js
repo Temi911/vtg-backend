@@ -46,3 +46,15 @@ test('only an active call participant can leave or end a call', () => {
   assert.match(migration, /Only an active call participant can leave this call/);
   assert.match(migration, /using errcode = '42501'/i);
 });
+
+test('public marketplace visibility does not require public access to profile or Trade Feed tables', () => {
+  const profilePolicy = read('supabase/migrations/20261123192339_fix_public_profile_policy_dependency_for_marketplace.sql');
+  const marketplacePolicy = read('supabase/migrations/20261123192420_isolate_public_marketplace_supplier_visibility.sql');
+  assert.match(profilePolicy, /private\.vtg_profile_has_public_trade_post/);
+  assert.match(profilePolicy, /t\.is_published = true/);
+  assert.match(marketplacePolicy, /private\.vtg_public_verified_supplier\(supplier_id\)/);
+  assert.match(marketplacePolicy, /to anon[\s\S]*?using/i);
+  assert.doesNotMatch(marketplacePolicy, /grant select on public\.(profiles|vtg_trade_posts) to anon/i);
+  assert.match(marketplacePolicy, /create policy "public verified supplier profiles read"/i);
+  assert.match(marketplacePolicy, /create policy "authenticated supplier profiles owner admin or verified"/i);
+});
