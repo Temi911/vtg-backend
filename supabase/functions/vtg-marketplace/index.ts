@@ -29,6 +29,13 @@ async function activeUser(db:SupabaseClient) {
   if(pe || !profile || profile.is_active!==true || (profile.role!=="admin" && profile.account_environment!=="trade")) throw new Error("ACTIVE_ACCOUNT_REQUIRED");
   return {user,profile};
 }
+function inferRegion(value:unknown):string|null {
+  const v=String(value??"").trim().toLowerCase();
+  if(["cn","china","chinese"].includes(v)) return "China";
+  if(["kr","south korea","korea","republic of korea"].includes(v)) return "South Korea";
+  if(["ng","nigeria","ke","kenya","gh","ghana","za","south africa","eg","egypt","ma","morocco","et","ethiopia","tz","tanzania","ug","uganda","rw","rwanda","sn","senegal","ci","cote d'ivoire","dz","algeria","ao","angola","cm","cameroon","zm","zambia","zw","zimbabwe"].includes(v)) return "Africa";
+  return null;
+}
 function errorResponse(error:unknown) {
   const code=(error as Error)?.message ?? "";
   if(code==="AUTH_REQUIRED") return fail("A valid signed-in session is required.",401);
@@ -37,7 +44,7 @@ function errorResponse(error:unknown) {
 }
 async function listFeed(db:SupabaseClient,limit:number) {
   const {data:posts,error}=await db.from("vtg_trade_posts")
-    .select("id,author_id,body,post_type,external_url,country_code,created_at")
+    .select("id,author_id,body,post_type,external_url,country_code,region,created_at")
     .eq("is_published",true).order("created_at",{ascending:false}).limit(limit);
   if(error) throw error;
   const ids=(posts??[]).map(p=>p.id), authors=[...new Set((posts??[]).map(p=>p.author_id))];
@@ -96,9 +103,12 @@ Deno.serve(async(req:Request)=>{
       if(externalUrl && !/^https?:\/\//i.test(externalUrl)) return fail("Only HTTP or HTTPS links are allowed.");
       if(["product","advert"].includes(postType) && !["supplier","admin"].includes(profile.role)) return fail("Supplier adverts and product offers are reserved for supplier accounts.",403);
       if(postType==="announcement" && !["supplier","bank","admin"].includes(profile.role)) return fail("Announcements are reserved for organisation accounts.",403);
+      const countryCode=clean(body.countryCode||profile.country,80)||null;
+      const region=clean(body.region||inferRegion(countryCode)||"",30)||null;
+      if(region && !["Africa","China","South Korea"].includes(region)) return fail("Choose Africa, China or South Korea as the trade region.");
       const {data:post,error}=await db.from("vtg_trade_posts").insert({
         author_id:user.id,body:text||"Shared media",post_type:postType,external_url:externalUrl||null,
-        country_code:clean(body.countryCode||profile.country,8)||null,is_published:true
+        country_code:countryCode,region,is_published:true
       }).select("*").single();
       if(error) throw error;
       return reply({post},201);
