@@ -12,6 +12,7 @@
 <body class="help">
 <div id="vsHeader" data-active=""></div>
 <script src="/vtg-shell.js?v=20261030-1"></script>
+<script src="/vtg-supabase-auth.js?v=20261123-help-auth-1"></script>
 <main id="main"><div class="vs-banner"><figure><img src="https://images.pexels.com/photos/8691822/pexels-photo-8691822.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Support agent wearing a headset" loading="lazy" onerror="this.closest('.vs-banner').remove()"><figcaption>Help with your VTG account</figcaption></figure></div>
 <section class="hero"><div class="kicker">VTG Account Help</div><h1 id="heroTitle">Let's get you back to business.</h1><p id="heroDesc">Choose your account type so we can show the right guidance for your role. Your account details stay protected throughout recovery.</p></section>
 <div class="layout"><aside class="panel"><h2>Which account do you use?</h2><p class="muted">Help is tailored to your account and access requirements.</p><div class="roles" id="roles">
@@ -43,8 +44,14 @@ const roleLocked=['buyer','supplier','bank','admin'].includes(requestedRole);
 let role=roleLocked?requestedRole:'buyer';
 let mode=params.get('mode')||'';
 let auth=null;
-try { auth=await window.VTG_AUTH_READY; }
-catch (_) { setMessage('The secure VTG account service could not be loaded. Refresh and try again.','error'); return; }
+try {
+ auth=await window.VTG_AUTH_READY;
+ if(!auth || !auth.client) throw new Error('The secure VTG account service did not initialize.');
+} catch (_) {
+ setMessage('The secure VTG account service could not be loaded. Refresh and try again.','error');
+ document.querySelectorAll('[data-mode]').forEach(button=>button.disabled=true);
+ return;
+}
 const client=auth.client;
 const roleCopy={
  buyer:{title:'Buyer / Importer support',desc:'Help with buyer login, verification and account setup across Africa.',note:'Buyer help covers password access, verification codes and buyer registration issues.'},
