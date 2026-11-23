@@ -58,3 +58,13 @@ test('public marketplace visibility does not require public access to profile or
   assert.match(marketplacePolicy, /create policy "public verified supplier profiles read"/i);
   assert.match(marketplacePolicy, /create policy "authenticated supplier profiles owner admin or verified"/i);
 });
+
+test('supplier and marketplace copy accurately distinguishes submitted products from approved listings', () => {
+  const html = read('supplier-dashboard.html');
+  const script = read('vtg-supplier-products-supabase.js');
+  const marketplace = read('marketplace.html');
+  assert.match(html, /VTG approves each product and completes supplier verification/);
+  assert.match(script, /buyers see only products approved by VTG and backed by a verified supplier/);
+  assert.match(marketplace, /VTG supplier catalogue · listings published after review/);
+  assert.doesNotMatch(marketplace, /Thousands of products from verified suppliers/);
+});
