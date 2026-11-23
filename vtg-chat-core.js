@@ -73,7 +73,7 @@ function bubbleRow(msg,first,onEdit){
  if(msg.role)row.dataset.senderRole=String(msg.role).toLowerCase();
  if(msg.id!=null)row.dataset.msgId=String(msg.id);
  const b=document.createElement('div');b.className='vtg-wa-bubble';
- if(!msg.mine&&first&&msg.name){const n=document.createElement('span');n.className='vtg-wa-name';n.textContent=msg.name;b.append(n);}
+ if(!msg.mine&&first&&msg.name){const n=document.createElement('span');n.className='vtg-wa-name';const roleLabel=({buyer:'Buyer',supplier:'Supplier',bank:'Bank',agent:'Trade agent'})[String(msg.role||'').toLowerCase()];n.textContent=msg.name+(roleLabel?' · '+roleLabel:'');b.append(n);}
  const t=document.createElement('div');t.className='vtg-wa-text';t.innerHTML=markdown(msg.text);
  const m=document.createElement('span');m.className='vtg-wa-meta';
  m.innerHTML=(msg.editedAt?'<span class="vtg-wa-edited">Edited</span>':'')+'<span>'+esc(time(msg.at))+'</span>'+(msg.mine?'<span class="vtg-wa-tick'+(msg.pending?' pending':'')+'">'+(msg.pending?I.clock:I.tick)+'</span>':'');
