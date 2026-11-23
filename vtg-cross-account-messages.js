@@ -127,6 +127,9 @@ function listen(){
    if(pendingIdx>=0)messages.splice(pendingIdx,1);
    messages.push(m);draw();
   }
+ }).on('postgres_changes',{event:'UPDATE',schema:'public',table:'messages'},payload=>{
+  const m=payload.new;if(!m||String(m.conversation_id)!==activeId)return;
+  const row=messages.find(x=>String(x.id)===String(m.id));if(row){row.body=m.body;row.edited_at=m.edited_at;draw();}
  }).subscribe();
  callChannel=client.channel('vtg-calls-'+userId).on('postgres_changes',{event:'*',schema:'public',table:'vtg_calls'},payload=>{
   const r=payload.new||payload.old||{};
