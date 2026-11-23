@@ -26,10 +26,10 @@ begin
   insert into public.trade_order_milestones(order_id,created_by,milestone,description,location,event_at)
   values(v_order.id,v_uid,'delivered',v_note,left(v_location,200),now()) returning id into v_milestone_id;
   insert into public.vtg_notifications(user_id,title,body,notification_type,entity_type,entity_id)
-  values(v_order.buyer_id,'Delivery recorded · '||coalesce(v_order.reference,'VTG order'),left(v_note,300),'shipment_update','trade_order',v_order.id::text);
+  values(v_order.buyer_id,'Delivery recorded · '||coalesce(v_order.reference,'VTG order'),left(v_note,300),'shipment_update','trade_order',v_order.id);
   for v_bank in select distinct lc.bank_id from public.letters_of_credit lc where lc.order_id=v_order.id and lc.bank_id is not null loop
     insert into public.vtg_notifications(user_id,title,body,notification_type,entity_type,entity_id)
-    values(v_bank.bank_id,'Delivery recorded · '||coalesce(v_order.reference,'VTG order'),left(v_note,300),'shipment_update','trade_order',v_order.id::text);
+    values(v_bank.bank_id,'Delivery recorded · '||coalesce(v_order.reference,'VTG order'),left(v_note,300),'shipment_update','trade_order',v_order.id);
   end loop;
   return v_milestone_id;
 end;
