@@ -85,7 +85,7 @@ Deno.serve(async(req:Request)=>{
     }
     if(req.method==="GET" && path==="news/interactions") {
       const articleUrl=clean(url.searchParams.get("url"),1800), sourceKey=clean(url.searchParams.get("source"),300);
-      if(!articleUrl || !/^https?:\\/\\//i.test(articleUrl)) return fail("A valid article URL is required.");
+      if(!articleUrl || !/^https?:\/\//i.test(articleUrl)) return fail("A valid article URL is required.");
       const articleKey="article:"+articleUrl, publisherKey="source:"+sourceKey;
       const [{data:likes,error:le},{data:comments,error:ce},{data:sourceFollows,error:fe}] = await Promise.all([
         db.from("vtg_news_interactions").select("id,user_id").eq("target_key",articleKey).eq("interaction_type","like"),
@@ -104,7 +104,7 @@ Deno.serve(async(req:Request)=>{
       await activeUser(db);
       const body=await req.json().catch(()=>({}));
       const articleUrl=clean(body.url,1800), type=clean(body.type,24), sourceKey=clean(body.source,300), comment=clean(body.body,2000);
-      if(!/^https?:\\/\\//i.test(articleUrl)) return fail("A valid article URL is required.");
+      if(!/^https?:\/\//i.test(articleUrl)) return fail("A valid article URL is required.");
       const targetKey=type==="follow_source"?"source:"+sourceKey:"article:"+articleUrl;
       const {data,error}=await db.rpc("vtg_news_interaction",{p_article_url:articleUrl,p_target_key:targetKey,p_interaction_type:type,p_body:type==="comment"?comment:null});
       if(error) throw error;
