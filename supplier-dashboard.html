@@ -229,7 +229,7 @@ html[data-vtg-pending-application="true"] #page-profile>.panel:last-child{displa
 <section class="panel" id="liveCataloguePanel" style="margin-top:14px">
   <div class="panel-head"><div><h2>Live VTG catalogue</h2><p>Products are saved directly to Supabase. Active listings appear in the buyer marketplace after VTG verifies the supplier account.</p></div><button class="btn primary" id="liveProductToggle" type="button">＋ Add live product</button></div>
   <div class="panel-body">
-    <div class="notice" id="liveCatalogueNotice">Your product planning records are saved to Supabase. Live catalogue listings below are stored in VTG and become buyer-visible after supplier verification.</div>
+    <div class="notice" id="liveCatalogueNotice">Your product planning records are saved to Supabase. Catalogue listings become buyer-visible only after VTG approves each product and completes supplier verification.</div>
     <form id="liveProductForm" class="hidden" style="margin:14px 0;padding:14px;border:1px solid var(--line);border-radius:12px">
       <div class="field-grid">
         <div class="field"><label for="liveProductName">Product name *</label><input id="liveProductName" name="name" required minlength="2" maxlength="180" placeholder="e.g. Electric vehicle spare parts"></div>
@@ -475,7 +475,7 @@ bootSupplierWorkspace();
 
 
 <script src="/vtg-business-verification-workspace.js?v=20261123-trust-1"></script>
-<script src="/vtg-supplier-products-supabase.js?v=20261123-live-products-2"></script>
+<script src="/vtg-supplier-products-supabase.js?v=20261123-live-products-3"></script>
 <div id="google_translate_element" aria-hidden="true" style="position:fixed;left:-10000px;top:-10000px;width:1px;height:1px;overflow:hidden"></div>
 
 
