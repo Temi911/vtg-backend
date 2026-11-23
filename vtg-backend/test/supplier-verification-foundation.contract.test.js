@@ -67,7 +67,7 @@ test('supplier verification guard trigger is not directly executable by API role
     path.join(root, 'supabase/migrations/20261123123000_vtg_supplier_verification_guard_hardening.sql'),
     'utf8'
   );
-  assert.match(hardening, /REVOKE ALL ON FUNCTION public\\.vtg_guard_supplier_verification_fields\\(\\)/i);
+  assert.match(hardening, /REVOKE ALL ON FUNCTION public\.vtg_guard_supplier_verification_fields\(\)/i);
   assert.match(hardening, /FROM PUBLIC, anon, authenticated/i);
 });
 
@@ -77,6 +77,6 @@ test('public supplier profiles do not expose reviewer identity and expired evide
     'utf8'
   );
   assert.match(privacy, /DROP COLUMN IF EXISTS verification_reviewed_by/i);
-  assert.match(privacy, /d\\.expires_at IS NULL OR d\\.expires_at > now\\(\\)/i);
+  assert.match(privacy, /d\.expires_at IS NULL OR d\.expires_at > now\(\)/i);
   assert.doesNotMatch(privacy, /verification_reviewed_by=/i);
 });
