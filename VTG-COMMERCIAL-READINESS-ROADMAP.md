@@ -22,6 +22,8 @@ The linked Supabase project currently reports zero rows in:
 
 The database already has the core entities for sourcing, quotations, negotiation, orders, milestones, shipments and inspection. The work should connect and harden these existing entities rather than create a parallel transaction model.
 
+**Important architecture finding:** the current code contains two quote paths: marketplace `trade_quotes` linked to `trade_orders`, and a separate sourcing workflow using `buyer_trade_requests` with `supplier_trade_quotations`. Priority 2 must reconcile these into one clearly mapped lifecycle, with one canonical order and auditable references. Do not silently assume the two paths are interchangeable.
+
 ## Priority 1 — Real supplier density
 
 ### Deliverables
