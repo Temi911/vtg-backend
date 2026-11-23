@@ -73,14 +73,9 @@
         root.setAttribute('data-vtg-pending-application','true');
         if(location.hash!==applicantHash)location.hash=applicantHash;
       }
-      // An approved supplier must complete document verification before opening
-      // operational tools. Keep the embedded Company & verification page available.
-      if(effective==='supplier'&&!user.pendingBusinessVerification&&user.businessVerificationStatus!=='verified'){
-        if(path!=='/supplier-dashboard.html'||location.hash!=='#page-profile'){
-          location.replace('/supplier-dashboard.html#page-profile');
-          return;
-        }
-      }
+      // Business Applications approval grants supplier workspace access.
+      // Company document verification remains a separate status shown inside the
+      // workspace; it must not redirect an approved supplier away from the dashboard.
       if(expected&&expected!==effective){signin();return;}
       if(typeof user.agreementRequired!=='boolean')throw new Error('VTG could not confirm your current agreement status.');
       if(user.agreementRequired){location.replace('/signup-agreement.html?next='+encodeURIComponent(path+location.search+location.hash));return;}
