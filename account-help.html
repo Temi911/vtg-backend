@@ -131,7 +131,19 @@ $('#detailForm').addEventListener('submit',async e=>{
    if(result?.error)throw new Error(result.error);
    setMessage(result?.message||'Your support request has been received by VTG.','ok');
   }
- }catch(err){setMessage(err.message||'Something went wrong. Please try again or contact VTG Support.','error');}
+ }catch(err){
+  let detail=err?.message||'Something went wrong. Please try again or contact VTG Support.';
+  // Supabase FunctionsHttpError stores the server Response in context; surface its safe JSON message.
+  try{
+   const response=err?.context;
+   if(response && typeof response.clone==='function'){
+    const payload=await response.clone().json();
+    if(typeof payload?.error==='string'&&payload.error.trim())detail=payload.error.trim();
+    else if(typeof payload?.message==='string'&&payload.message.trim())detail=payload.message.trim();
+   }
+  }catch(_){}
+  setMessage(detail,'error');
+ }
  finally{if(mode!=='reset'||!$('#message').classList.contains('ok')){btn.disabled=false;btn.textContent=modes[mode]?.button||'Continue';}}
 });
 const hash=new URLSearchParams(location.hash.slice(1));
