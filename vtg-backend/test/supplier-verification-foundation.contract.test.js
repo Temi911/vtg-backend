@@ -89,3 +89,13 @@ test('supplier-visible requests do not contain internal reviewer identity', () =
   assert.match(privacy, /DROP COLUMN IF EXISTS reviewer_id/i);
   assert.match(privacy, /vtg_supplier_verification_reviews\(request_id,supplier_id,reviewer_id/i);
 });
+
+test('public marketplace view uses invoker permissions and is read-only', () => {
+  const marketplace = fs.readFileSync(
+    path.join(root, 'supabase/migrations/20261123150000_vtg_marketplace_view_security.sql'),
+    'utf8'
+  );
+  assert.match(marketplace, /ALTER VIEW public\\.vtg_marketplace_products\\s+SET \\(security_invoker = true\\)/i);
+  assert.match(marketplace, /REVOKE ALL ON public\\.vtg_marketplace_products FROM PUBLIC, anon, authenticated/i);
+  assert.match(marketplace, /GRANT SELECT ON public\\.vtg_marketplace_products TO anon, authenticated/i);
+});
