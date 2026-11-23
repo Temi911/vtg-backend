@@ -37,6 +37,7 @@ async function start(opts){
  const grid=ui.querySelector('[data-grid]'),msg=ui.querySelector('[data-msg]');
  session={ui,grid,count:ui.querySelector('[data-count]'),live:new Map(),peers:new Map(),callId:null,stream:null,channels:[],seen:new Set(),pending:new Map(),started:0,timer:null,client,userId,ended:false};
  const s=session;
+ ui.querySelector('[data-end]').onclick=()=>cleanup(true);
  const fail=text=>{msg.hidden=false;msg.textContent=text;};
  try{
   s.stream=await navigator.mediaDevices.getUserMedia({audio:true,video:kind==='video'?{width:{ideal:640},height:{ideal:480}}:false});
@@ -137,6 +138,8 @@ function adoptVideo(entry){
   const {data:callId,error}=await client.rpc('vtg_start_call',{p_conversation_id:conversationId,p_kind:kind});
   if(error)throw error;
   s.callId=callId;
+  try{const {data:row}=await client.from('vtg_calls').select('started_by,status').eq('id',callId).maybeSingle();s.isStarter=!!row&&String(row.started_by)===String(userId);if(row&&row.status==='ended')throw new Error('This call has ended');}catch(e2){if(/ended/.test(e2?.message||''))throw e2;}
+  if(s.ended)return;
   // 3) offer to everyone who joined before me (total order by joined_at, then id) so exactly one side offers
   const {data:parts,error:pe}=await client.from('vtg_call_participants').select('user_id,joined_at').eq('call_id',callId).is('left_at',null);
   if(pe)throw pe;
@@ -150,11 +153,17 @@ function adoptVideo(entry){
 }
 async function cleanup(leave){
  const s=session;if(!s||s.ended)return;s.ended=true;
+ // Remove the call window straight away so End can never feel stuck; the server is told afterwards.
+ try{s.ui.style.display='none';}catch(_){}
  clearInterval(s.timer);
  s.peers.forEach(e=>{try{e.pc.close();}catch(_){}if(e.audio)e.audio.srcObject=null;});
  s.stream?.getTracks().forEach(t=>t.stop());
  s.channels.forEach(ch=>{try{s.client.removeChannel(ch);}catch(_){}});
- if(leave&&s.callId){try{await s.client.rpc('vtg_leave_call',{p_call_id:s.callId});}catch(_){}}
+ if(leave&&s.callId){
+  let done=false;
+  if(s.isStarter){try{const r=await s.client.rpc('vtg_end_call',{p_call_id:s.callId});done=!r.error;}catch(_){}}
+  if(!done){try{await s.client.rpc('vtg_leave_call',{p_call_id:s.callId});}catch(_){}}
+ }
  s.ui.remove();session=null;
 }
 function incoming(call,title){

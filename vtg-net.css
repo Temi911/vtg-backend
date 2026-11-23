@@ -86,9 +86,9 @@ html[data-theme="dark"] .net .avatar{color:#08162A}
 .net .comment-form input{flex:1;min-width:0;min-height:42px;background:var(--vs-paper);color:var(--vs-ink);border:1px solid var(--vs-line-2);border-radius:10px;padding:0 12px;font-size:1rem}
 .net .comment-empty{font-size:.9375rem;color:var(--vs-muted);padding:6px 0}
 .net .news-source{background:var(--vs-blue-soft)}
-.net .news-source .news-label{display:flex;align-items:center;gap:8px;color:var(--vs-blue);font-size:.8125rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em}
-.net .news-source h3{font-size:1.1875rem;line-height:1.45;margin:12px 0 8px}
-.net .news-source .summary{font-size:.9688rem;line-height:1.7;color:var(--vs-ink-2)}
+.net .news-source .news-label{display:flex;align-items:center;gap:6px;color:var(--vs-blue);font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em}
+.net .news-source h3{font-size:.95rem;line-height:1.4;margin:8px 0 5px}
+.net .news-source .summary{font-size:.8rem;line-height:1.55;color:var(--vs-ink-2)}
 .net .news-source .postactions{border-top:1px solid var(--vs-line-2);margin-top:12px}
 .net .rightbox{padding:18px;margin-bottom:16px}
 .net .rightbox h3{font-size:1rem;margin:0 0 12px}
@@ -123,3 +123,5 @@ html[data-theme="dark"] .net .avatar{color:#08162A}
 }
 .net .layout>*{min-width:0}
 .net .filters{max-width:100%}
+
+.net .news-source{padding:12px 14px!important}.net .news-source .statsline{font-size:.7rem}.net .news-source .postactions .btn,.net .news-source .postactions button{padding:6px 10px;font-size:.75rem}

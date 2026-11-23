@@ -87,7 +87,7 @@ function refreshHeader(){
  if(live)$('[data-calltext]').textContent='A '+live.kind+' call is in progress in this chat.';
 }
 function toRows(rows){
- return rows.map(m=>{const mem=members[m.sender_id];const att=m.localAtt||attMap[m.id]||null;const ph=m.body===ATT;return {id:m.id,senderId:m.sender_id,mine:String(m.sender_id)===String(userId),name:mem?.name||'Trade partner',tone:mem?.tone??0,text:ph?(att&&att.length?'':'Sending attachment…'):(m.body||''),attachments:att,client,at:m.created_at,pending:m.pending};});
+ return rows.map(m=>{const mem=members[m.sender_id];const att=m.localAtt||attMap[m.id]||null;const ph=m.body===ATT;return {id:m.id,senderId:m.sender_id,mine:String(m.sender_id)===String(userId),name:mem?.name||'Trade partner',tone:mem?.tone??0,role:mem?.role,roleLabel:mem&&!mem.me?(roleNames[String(mem.role||'').toLowerCase()]||''):'',text:ph?(att&&att.length?'':'Sending attachment…'):(m.body||''),attachments:att,client,at:m.created_at,pending:m.pending};});
 }
 function draw(){C.renderStream(log,toRows(messages),'No messages yet. Say hello below.');}
 async function openConv(id){

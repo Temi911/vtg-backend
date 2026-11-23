@@ -70,9 +70,10 @@ function bubbleRow(msg,first,onEdit){
  const row=document.createElement('div');
  row.className='vtg-wa-row '+(msg.mine?'is-self':'is-other')+(first?' first':'');
  row.dataset.tone=msg.ai?'ai':String(msg.tone??0);
+ if(msg.role&&!msg.ai)row.dataset.role=String(msg.role).toLowerCase();
  if(msg.id!=null)row.dataset.msgId=String(msg.id);
  const b=document.createElement('div');b.className='vtg-wa-bubble';
- if(!msg.mine&&first&&msg.name){const n=document.createElement('span');n.className='vtg-wa-name';n.textContent=msg.name;b.append(n);}
+ if(!msg.mine&&first&&msg.name){const n=document.createElement('span');n.className='vtg-wa-name';n.textContent=msg.name;if(msg.roleLabel){const c=document.createElement('em');c.className='vtg-wa-role';c.textContent=msg.roleLabel;n.append(c);}b.append(n);}
  const t=document.createElement('div');t.className='vtg-wa-text';t.innerHTML=markdown(msg.text);
  const m=document.createElement('span');m.className='vtg-wa-meta';
  m.innerHTML='<span>'+esc(time(msg.at))+'</span>'+(msg.mine?'<span class="vtg-wa-tick'+(msg.pending?' pending':'')+'">'+(msg.pending?I.clock:I.tick)+'</span>':'');

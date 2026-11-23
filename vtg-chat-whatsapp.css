@@ -175,3 +175,11 @@ html[data-theme="dark"] .vtg-wa .vtg-wa-clip{color:#9DBBF5}
 .vtg-wa .vtg-wa-att-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:190px;color:inherit}
 .vtg-wa .vtg-wa-att-size{opacity:.8;font-size:11px;font-weight:500;color:inherit}
 @media(max-width:520px){.vtg-wa .vtg-wa-att img,.vtg-wa .vtg-wa-att video{width:100%}}
+
+/* Role colours: buyer, supplier and bank bubbles are visibly different (own messages stay VTG blue, right-aligned). */
+.vtg-wa-row.is-other[data-role="buyer"]{--tone:#1f8aa0;--tone-bg:color-mix(in srgb,#1f8aa0 16%,var(--wa-in))}
+.vtg-wa-row.is-other[data-role="supplier"]{--tone:#c98a12;--tone-bg:color-mix(in srgb,#FFB81C 22%,var(--wa-in))}
+.vtg-wa-row.is-other[data-role="bank"]{--tone:#6f5cc0;--tone-bg:color-mix(in srgb,#6f5cc0 16%,var(--wa-in))}
+.vtg-wa-row.is-other[data-role] .vtg-wa-bubble{border-left-width:4px}
+.vtg-wa-role{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-style:normal;font-size:9.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;background:var(--tone);color:#fff}
+.vtg-wa-row.is-other[data-role="supplier"] .vtg-wa-role{color:#2b1d00}
