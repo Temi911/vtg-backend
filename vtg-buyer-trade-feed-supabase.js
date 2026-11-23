@@ -74,12 +74,14 @@
     button.disabled=true;status('Publishing your update securely…');
     try{
       await session();
-      const {data:post,error}=await client.from('vtg_trade_posts').insert({author_id:userId,body:body||'Shared photos',post_type:'update',region,is_published:true}).select('id').single();
+      const {data:postResult,error}=await client.rpc('vtg_create_trade_post',{p_body:body||'Shared photos',p_post_type:'update',p_region:region,p_external_url:null,p_country_code:null});
       if(error)throw new Error('The trade update was not published: '+error.message);
-      for(const file of files){const ext=(file.name.split('.').pop()||'jpg').replace(/[^a-z0-9]/gi,'').slice(0,8)||'jpg',storagePath=userId+'/'+post.id+'/'+crypto.randomUUID()+'.'+ext;
+      if(!postResult?.ok){status((postResult?.message||'Your post was blocked by VTG content rules')+' Warning '+Number(postResult?.warning_count||1)+' in the last 30 days.');return;}
+      const postId=postResult.post_id;
+      for(const file of files){const ext=(file.name.split('.').pop()||'jpg').replace(/[^a-z0-9]/gi,'').slice(0,8)||'jpg',storagePath=userId+'/'+postId+'/'+crypto.randomUUID()+'.'+ext;
         const {error:uploadError}=await client.storage.from('vtg-trade-feed-media').upload(storagePath,file,{contentType:file.type,upsert:false});if(uploadError)throw new Error('The post was saved, but a photo upload failed: '+uploadError.message);
         const {data:{publicUrl}}=client.storage.from('vtg-trade-feed-media').getPublicUrl(storagePath);
-        const {error:mediaError}=await client.from('vtg_trade_post_media').insert({post_id:post.id,media_type:'image',storage_path:storagePath,public_url:publicUrl,sort_order:0});if(mediaError)throw new Error('The post was saved, but photo details could not be attached: '+mediaError.message);
+        const {error:mediaError}=await client.from('vtg_trade_post_media').insert({post_id:postId,media_type:'image',storage_path:storagePath,public_url:publicUrl,sort_order:0});if(mediaError)throw new Error('The post was saved, but photo details could not be attached: '+mediaError.message);
       }
       field.value='';if($('liveTradePostFiles'))$('liveTradePostFiles').value='';status(files.length?'Trade update and photos published to your account network.':'Trade update published to your signed-in account network.');await load();
     }catch(error){status('Unable to publish update: '+(error.message||'Supabase request failed'));}
@@ -113,8 +115,9 @@
     const submit=form.querySelector('button[type=submit]');submit.disabled=true;
     try{
       await session();
-      const {error}=await client.from('vtg_trade_post_comments').insert({post_id:form.dataset.sbCommentForm,author_id:userId,body});
+      const {data:commentResult,error}=await client.rpc('vtg_create_trade_post_comment',{p_post_id:form.dataset.sbCommentForm,p_body:body});
       if(error)throw new Error('Your comment could not be saved: '+error.message);
+      if(!commentResult?.ok){status((commentResult?.message||'Your comment was blocked by VTG content rules')+' Warning '+Number(commentResult?.warning_count||1)+' in the last 30 days.');return;}
       status('Comment added.');await load();
       const slot=$('sbComments-'+form.dataset.sbCommentForm);if(slot)slot.classList.remove('hidden');
     }catch(error){status('Unable to add comment: '+(error.message||'Please try again'));}
