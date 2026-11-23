@@ -87,7 +87,7 @@ function refreshHeader(){
  if(live)$('[data-calltext]').textContent='A '+live.kind+' call is in progress in this chat.';
 }
 function toRows(rows){
- return rows.map(m=>{const mem=members[m.sender_id];const att=m.localAtt||attMap[m.id]||null;const ph=m.body===ATT;return {id:m.id,senderId:m.sender_id,mine:String(m.sender_id)===String(userId),name:mem?.name||'Trade partner',tone:mem?.tone??0,text:ph?(att&&att.length?'':'Sending attachment…'):(m.body||''),attachments:att,client,at:m.created_at,pending:m.pending,editedAt:m.edited_at,editable:String(m.sender_id)===String(userId)&&!m.pending&&Date.now()-new Date(m.created_at).getTime()<=15*60*1000};});
+ return rows.map(m=>{const mem=members[m.sender_id];const att=m.localAtt||attMap[m.id]||null;const ph=m.body===ATT;return {id:m.id,senderId:m.sender_id,mine:String(m.sender_id)===String(userId),name:mem?.name||'Trade partner',role:mem?.role||'other',tone:mem?.tone??0,text:ph?(att&&att.length?'':'Sending attachment…'):(m.body||''),attachments:att,client,at:m.created_at,pending:m.pending,editedAt:m.edited_at,editable:String(m.sender_id)===String(userId)&&!m.pending&&Date.now()-new Date(m.created_at).getTime()<=15*60*1000};});
 }
 async function editMessage(msg){
  const next=window.prompt('Edit your message',msg.text||'');
