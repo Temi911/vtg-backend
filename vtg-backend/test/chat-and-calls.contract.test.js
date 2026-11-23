@@ -7,6 +7,7 @@ const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const sql=read('supabase/migrations/20261114000000_vtg_chat_and_calls.sql');
 const send=read('supabase/migrations/20261123220000_secure_buyer_chat_message_send_rpc.sql');
 const moderation=read('supabase/migrations/20261123210000_vtg_message_moderation_edits_and_buyer_delivery_close.sql');
+const endCall=read('supabase/migrations/20261123225500_vtg_call_organizer_end_for_everyone.sql');
 const finalSend=read('supabase/migrations/20261123230000_vtg_final_chat_moderation_send_rpc.sql');
 const calls=read('vtg-calls.js'),msgs=read('vtg-cross-account-messages.js'),ai=read('vtg-dashboard-chat.js'),core=read('vtg-chat-core.js'),css=read('vtg-chat-whatsapp.css');
 const pages=['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html'];
@@ -32,6 +33,16 @@ test('own bubbles are right/blue and other people are left with name and per-per
  assert.match(core,/vtg-wa-name/);
  assert.match(msgs,/C\.toneMap\(/);
  assert.match(ai,/is-other first/);
+});
+
+test('buyer and supplier messages carry explicit role identity and stable role colours',()=>{
+ assert.match(msgs,/role:mem\?\.role\|\|'other'/);
+ assert.match(core,/dataset\.senderRole=String\(msg\.role\)/);
+ assert.match(core,/roleLabel=\(\{buyer:'Buyer',supplier:'Supplier'/);
+ assert.match(css,/data-sender-role="buyer"/);
+ assert.match(css,/data-sender-role="supplier"/);
+ assert.match(css,/is-self\[data-sender-role="buyer"\]/);
+ assert.match(css,/is-self\[data-sender-role="supplier"\]/);
 });
 
 test('chat renders message text only through the escaping markdown helper',()=>{
@@ -65,6 +76,18 @@ test('call client uses RPCs, WebRTC and never service credentials',()=>{
  assert.match(calls,/const MAX=5/);
  assert.doesNotMatch(calls+msgs+ai+core,/service_role|secret_key|SERVICE_ROLE/);
  assert.match(calls,/kind==='video'/);
+});
+
+test('call organiser can end the shared call for every participant',()=>{
+ assert.match(endCall,/create or replace function public\.vtg_end_call/);
+ assert.match(endCall,/v_call\.started_by <> me/);
+ assert.match(endCall,/status='ended'/);
+ assert.match(endCall,/update public\.vtg_call_participants[\s\S]*left_at=coalesce\(left_at,now\)/);
+ assert.match(endCall,/delete from public\.vtg_call_signals/);
+ assert.match(endCall,/grant execute on function public\.vtg_end_call\(uuid\) to authenticated/);
+ assert.match(calls,/vtg_end_call/);
+ assert.match(calls,/End call for everyone/);
+ assert.match(calls,/startedBy/);
 });
 
 test('placeholder "calls not connected" copy is gone',()=>{
