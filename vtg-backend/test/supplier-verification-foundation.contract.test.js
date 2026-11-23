@@ -8,6 +8,9 @@ const migration = fs.readFileSync(
   path.join(root, 'supabase/migrations/20261123120000_vtg_supplier_verification_foundation.sql'),
   'utf8'
 );
+const supplierWorkspace = fs.readFileSync(path.join(root, 'vtg-business-verification-workspace.js'), 'utf8');
+const adminWorkspace = fs.readFileSync(path.join(root, 'admin-dashboard.html'), 'utf8');
+const adminLive = fs.readFileSync(path.join(root, 'vtg-admin-live.js'), 'utf8');
 
 test('supplier verification has four evidence-backed levels', () => {
   for (const level of [
@@ -41,4 +44,20 @@ test('only admins can award a level, with evidence requirements enforced atomica
   assert.match(migration, /Production facility evidence must be verified first/);
   assert.match(migration, /Trade performance evidence must be verified first/);
   assert.match(migration, /INSERT INTO public\.vtg_supplier_verification_reviews/i);
+});
+
+test('supplier workspace supports evidence upload and a separate level request', () => {
+  assert.match(supplierWorkspace, /production_facility_evidence/);
+  assert.match(supplierWorkspace, /trade_performance_evidence/);
+  assert.match(supplierWorkspace, /vtg_supplier_verification_requests/);
+  assert.match(supplierWorkspace, /Request a VTG verification level/);
+  assert.match(supplierWorkspace, /request does not award it/i);
+});
+
+test('admin workspace reviews supplier verification requests through the protected RPC', () => {
+  assert.match(adminWorkspace, /supplierVerificationRows/);
+  assert.match(adminLive, /loadSupplierVerificationRequests/);
+  assert.match(adminLive, /vtg_review_supplier_verification/);
+  assert.match(adminLive, /p_decision: 'approved'/);
+  assert.match(adminLive, /p_decision: 'rejected'/);
 });
