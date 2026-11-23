@@ -51,7 +51,7 @@ test('supplier workspace supports evidence upload and a separate level request',
   assert.match(supplierWorkspace, /trade_performance_evidence/);
   assert.match(supplierWorkspace, /vtg_supplier_verification_requests/);
   assert.match(supplierWorkspace, /Request a VTG verification level/);
-  assert.match(supplierWorkspace, /request does not award it/i);
+  assert.match(supplierWorkspace, /requesting a level does not award it/i);
 });
 
 test('admin workspace reviews supplier verification requests through the protected RPC', () => {
