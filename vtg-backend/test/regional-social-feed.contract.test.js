@@ -51,3 +51,25 @@ test('buyer dashboard feed supports region selection, photo uploads, likes, comm
  assert.match(js,/data-sb-comment-form/);
  assert.match(js,/storage\.from\('vtg-trade-feed-media'\)/);
 });
+
+test('Trade Feed posts and comments are moderated by server-side RPCs with sender warnings',()=>{
+ const moderation=read('supabase/migrations/20261123214000_vtg_social_post_and_comment_moderation.sql');
+ const roleFix=read('supabase/migrations/20261123214500_vtg_social_content_moderation_role_gate_fix.sql');
+ const api=read('supabase/functions/vtg-marketplace/index.ts');
+ const buyer=read('vtg-buyer-trade-feed-supabase.js');
+ assert.match(moderation,/create or replace function public\.vtg_create_trade_post/);
+ assert.match(moderation,/create or replace function public\.vtg_create_trade_post_comment/);
+ assert.match(moderation,/private\.vtg_message_content_violation/);
+ assert.match(moderation,/warning_count/);
+ assert.match(moderation,/revoke insert,update on public\.vtg_trade_posts/);
+ assert.match(moderation,/revoke insert on public\.vtg_trade_post_comments/);
+ assert.match(roleFix,/account_environment is distinct from 'trade'/);
+ assert.match(api,/rpc\("vtg_create_trade_post"/);
+ assert.match(api,/rpc\("vtg_create_trade_post_comment"/);
+ assert.doesNotMatch(api,/from\("vtg_trade_posts"\)\.insert/);
+ assert.doesNotMatch(api,/from\("vtg_trade_post_comments"\)\.insert/);
+ assert.match(buyer,/rpc\('vtg_create_trade_post'/);
+ assert.match(buyer,/rpc\('vtg_create_trade_post_comment'/);
+ assert.doesNotMatch(buyer,/from\('vtg_trade_posts'\)\.insert/);
+ assert.doesNotMatch(buyer,/from\('vtg_trade_post_comments'\)\.insert/);
+});
