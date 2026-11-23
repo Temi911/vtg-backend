@@ -54,7 +54,7 @@ async function loadDrafts(){
  if(error)throw error;drafts=data||[];renderDrafts();
 }
 async function loadRequests(){
- const {data,error}=await client.from('buyer_trade_requests').select('id,reference,title,product,sourcing_market,category,quantity,unit,destination,destination_port,specifications,incoterm,budget_min,budget_max,quotation_deadline,shipment_window_start,shipment_window_end,audience,buyer_confidential,required_certifications,status,published_at,created_at,supplier_trade_quotations(id,supplier_id,supplier_company,currency,unit_price,lead_time,incoterms,validity,notes,status,created_at)').eq('buyer_id',buyerId).order('created_at',{ascending:false}).limit(100);
+ const {data,error}=await client.from('buyer_trade_requests').select('id,reference,title,product,sourcing_market,category,quantity,unit,destination,destination_port,specifications,incoterm,budget_min,budget_max,quotation_deadline,shipment_window_start,shipment_window_end,audience,buyer_confidential,required_certifications,status,published_at,created_at,supplier_trade_quotations!supplier_trade_quotations_request_id_fkey(id,supplier_id,supplier_company,currency,unit_price,lead_time,incoterms,validity,notes,status,created_at)').eq('buyer_id',buyerId).order('created_at',{ascending:false}).limit(100);
  if(error)throw error;requests=data||[];renderRequests();
  if(!channel){channel=client.channel('vtg-buyer-rfq-'+buyerId).on('postgres_changes',{event:'*',schema:'public',table:'buyer_trade_requests',filter:'buyer_id=eq.'+buyerId},()=>loadRequests()).on('postgres_changes',{event:'*',schema:'public',table:'supplier_trade_quotations'},()=>loadRequests()).subscribe();}
 }
