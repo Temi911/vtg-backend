@@ -192,3 +192,12 @@ html[data-theme="dark"] .vtg-wa-row[data-sender-role="buyer"]:not(.is-self) .vtg
 html[data-theme="dark"] .vtg-wa-row[data-sender-role="supplier"]:not(.is-self) .vtg-wa-name{color:#f0bd69}
 .vtg-call-btn.end{min-width:150px;width:auto;padding:0 18px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;font-weight:800}
 .vtg-call-btn.end:after{content:attr(data-end-label)}
+
+.vtg-wa-row.is-self[data-sender-role="buyer"] .vtg-wa-bubble{background:#16869a;border-color:#16869a;color:#fff}
+.vtg-wa-row.is-self[data-sender-role="supplier"] .vtg-wa-bubble{background:#9a641e;border-color:#9a641e;color:#fff}
+.vtg-wa-row.is-self[data-sender-role="bank"] .vtg-wa-bubble{background:#6552a8;border-color:#6552a8;color:#fff}
+.vtg-wa-row.is-self[data-sender-role="agent"] .vtg-wa-bubble{background:#277b50;border-color:#277b50;color:#fff}
+.vtg-wa-row.is-self[data-sender-role="buyer"] .vtg-wa-meta,
+.vtg-wa-row.is-self[data-sender-role="supplier"] .vtg-wa-meta,
+.vtg-wa-row.is-self[data-sender-role="bank"] .vtg-wa-meta,
+.vtg-wa-row.is-self[data-sender-role="agent"] .vtg-wa-meta{color:rgba(255,255,255,.8)}
