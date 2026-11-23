@@ -164,10 +164,12 @@ form.addEventListener('submit',async e=>{
  if(picker2)picker2.clear();
  messages.push(temp);draw();
  try{
-  const {data,error}=await client.from('messages').insert({conversation_id:activeId,sender_id:userId,body}).select('id,sender_id,body,created_at').single();
-  if(error)throw error;
+  const {data:messageId,error:sendError}=await client.rpc('vtg_send_message',{p_conversation_id:activeId,p_body:body});
+  if(sendError)throw sendError;
+  const {data,error:readError}=await client.from('messages').select('id,sender_id,body,created_at').eq('id',messageId).single();
+  if(readError)throw readError;
   const i=messages.findIndex(x=>x.id===temp.id);
-  if(i>=0){if(messages.some(x=>String(x.id)===String(data.id)))messages.splice(i,1);else messages[i]=data;}else if(!messages.some(x=>String(x.id)===String(data.id)))messages.push(data);
+  if(i>=0){if(messages.some(x=>String(x.id)===String(read.id)))messages.splice(i,1);else messages[i]=read;}else if(!messages.some(x=>String(x.id)===String(read.id)))messages.push(read);
   draw();
   if(items.length){try{const rows=await window.VTGAttach.attachToMessage(client,userId,activeId,data.id,items);rows.forEach(addAtt);draw();}catch(ae){flash('Your message was sent, but the files could not be attached: '+(ae.message||'upload failed'));}}
  }catch(err){
