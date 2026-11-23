@@ -63,7 +63,7 @@ async function load(){
  try{
   const auth=await window.VTG_AUTH_READY;client=auth.client;
   const result=await client.from('vtg_marketplace_products')
-   .select('id,supplier_id,name,category,description,unit_price,currency,minimum_order_quantity,hs_code,lead_time_days,origin_country,image_urls,is_verified,created_at,supplier_name,supplier_country,supplier_logo_url,supplier_rating')
+   .select('id,supplier_id,name,category,description,unit_price,currency,minimum_order_quantity,hs_code,lead_time_days,origin_country,image_urls,is_verified,created_at,supplier_name,supplier_country,supplier_logo_url,supplier_rating,supplier_verification_level')
    .order('created_at',{ascending:false}).limit(500);
   if(result.error)throw result.error;
   catalogue=(result.data||[]).map(p=>({...p,image_url:Array.isArray(p.image_urls)?p.image_urls[0]||'':'',supplier_name:p.supplier_name||'Verified VTG supplier',supplier_country:p.supplier_country||p.origin_country||''}));
@@ -86,8 +86,10 @@ function render(){
  $('#products').innerHTML=items.length?items.map(card).join(''):'<div class="empty">'+(catalogue.length?'No verified supplier listings match your filters. Try a broader search or another category.':'No supplier products have been published yet. Listings will appear here after a supplier publishes a product and VTG verifies the supplier account.')+'</div>';
 }
 function card(p){
+ const levels={registered_business:'Registered Business',vtg_verified:'VTG Verified',production_verified:'Production Verified',trade_performance_reviewed:'Trade Performance Reviewed'};
+ const trustLabel=levels[p.supplier_verification_level]||'Business documents reviewed';
  const media=p.image_url?'<img loading="lazy" decoding="async" src="'+esc(p.image_url)+'" alt="'+esc(p.name)+' product image" onerror="this.remove()">':'<span>Product image not supplied</span>';
- return '<article class="card"><div class="photo"><span class="badge">Verified supplier</span>'+media+'</div><div class="cardbody"><span class="category">'+esc(p.category||'General trade')+'</span><h3>'+esc(p.name)+'</h3><div class="desc">'+esc(p.description||'Product information supplied by the seller.')+'</div><div class="price">'+money(p.unit_price,p.currency)+' <span class="unit">/ unit</span></div><div class="supplier"><span>'+esc(p.supplier_name)+'</span><span class="verified">Verified supplier</span></div><div class="cardactions"><button class="vs-btn vs-btn-line" onclick="viewProduct(\''+esc(p.id)+'\')">View & quote</button><button class="vs-btn vs-btn-primary" onclick="openEnquiry(\''+esc(p.id)+'\')">Enquire</button></div></div></article>';
+ return '<article class="card"><div class="photo"><span class="badge">'+esc(trustLabel)+'</span>'+media+'</div><div class="cardbody"><span class="category">'+esc(p.category||'General trade')+'</span><h3>'+esc(p.name)+'</h3><div class="desc">'+esc(p.description||'Product information supplied by the seller.')+'</div><div class="price">'+money(p.unit_price,p.currency)+' <span class="unit">/ unit</span></div><div class="supplier"><span>'+esc(p.supplier_name)+'</span><span class="verified">'+esc(trustLabel)+'</span></div><div class="cardactions"><button class="vs-btn vs-btn-line" onclick="viewProduct(\''+esc(p.id)+'\')">View & quote</button><button class="vs-btn vs-btn-primary" onclick="openEnquiry(\''+esc(p.id)+'\')">Enquire</button></div></div></article>';
 }
 function viewProduct(id){
  const p=catalogue.find(x=>x.id===id);if(!p)return;selected=p;
