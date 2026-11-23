@@ -16,7 +16,7 @@ async function connect(){
  db=auth.client;user=result.data.session.user;
  const p=await db.from('profiles').select('role,is_active,account_environment,full_name,country').eq('id',user.id).single();
  if(p.error)throw p.error;
- if(p.data.role!=='supplier'||p.data.account_environment!=='trade'||!p.data.is_active)throw new Error('An active VTG trade supplier account is required to publish products.');
+ if(p.data.role!=='supplier'||p.data.account_environment!=='trade'||p.data.is_active!==true){console.error('VTG supplier publishing account check failed',{userId:user.id,email:user.email,role:p.data.role,accountEnvironment:p.data.account_environment,isActive:p.data.is_active});throw new Error('This signed-in account is not marked as an active trade supplier in VTG. Account check: role='+String(p.data.role||'missing')+', environment='+String(p.data.account_environment||'missing')+', active='+String(p.data.is_active)+'. Expected: supplier / trade / true. Sign out and back in with the approved supplier email. If these values are still wrong, VTG administrator account linking needs correction.');}
  profile=p.data;
  const sp=await db.from('supplier_profiles').select('verification_status').eq('user_id',user.id).maybeSingle();
  if(sp.error)throw sp.error;
