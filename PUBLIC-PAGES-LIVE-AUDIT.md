@@ -126,8 +126,8 @@ This follow-up records the additional live checks performed against the connecte
 
 ### Confirmed defects fixed
 
-- Supplier catalogue inserts were failing in the `private.vtg_products_review_guard()` trigger because authenticated sessions had no `USAGE` on the `private` schema. Applied and committed `20261123190000_grant_authenticated_private_schema_usage.sql`. This grants schema usage to `authenticated` only; it does not grant usage to `anon` or broaden function execution rights.
-- Trusted Edge Functions were missing required `service_role` table privileges. Applied and committed `20261123190500_restore_edge_function_service_role_table_privileges.sql` for workforce membership/invitations, inspection pricing/requests, trade-order reads, profile updates and audit-event inserts. No client-role grants were added by this migration.
+- Supplier catalogue inserts were failing in the `private.vtg_products_review_guard()` trigger because authenticated sessions had no `USAGE` on the `private` schema. Applied and committed `20261123185410_grant_authenticated_private_schema_usage.sql`. This grants schema usage to `authenticated` only; it does not grant usage to `anon` or broaden function execution rights.
+- Trusted Edge Functions were missing required `service_role` table privileges. Applied and committed `20261123185517_restore_edge_function_service_role_table_privileges.sql` for workforce membership/invitations, inspection pricing/requests, trade-order reads, profile updates and audit-event inserts. No client-role grants were added by this migration.
 - Added `vtg-backend/test/supplier-product-save-permissions.contract.test.js` to protect the supplier insert/feedback contract and both permission migrations.
 
 ### Live checks completed
