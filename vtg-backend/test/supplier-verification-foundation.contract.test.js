@@ -95,9 +95,9 @@ test('public marketplace view uses invoker permissions and is read-only', () => 
     path.join(root, 'supabase/migrations/20261123150000_vtg_marketplace_view_security.sql'),
     'utf8'
   );
-  assert.match(marketplace, /ALTER VIEW public\\.vtg_marketplace_products\\s+SET \\(security_invoker = true\\)/i);
-  assert.match(marketplace, /REVOKE ALL ON public\\.vtg_marketplace_products FROM PUBLIC, anon, authenticated/i);
-  assert.match(marketplace, /GRANT SELECT ON public\\.vtg_marketplace_products TO anon, authenticated/i);
+  assert.match(marketplace, /ALTER VIEW public\.vtg_marketplace_products\s+SET \(security_invoker = true\)/i);
+  assert.match(marketplace, /REVOKE ALL ON public\.vtg_marketplace_products FROM PUBLIC, anon, authenticated/i);
+  assert.match(marketplace, /GRANT SELECT ON public\.vtg_marketplace_products TO anon, authenticated/i);
 });
 
 test('buyer storefronts display awarded supplier verification levels without overstating legacy checks', () => {
@@ -122,9 +122,9 @@ test('marketplace quote RPC rejects products that are not approved and published
     path.join(root, 'supabase/migrations/20261123160000_vtg_quote_request_requires_approved_listing.sql'),
     'utf8'
   );
-  assert.match(quoteGuard, /p\\.is_verified = true/i);
-  assert.match(quoteGuard, /p\\.review_status = 'approved'/i);
-  assert.match(quoteGuard, /sp\\.verification_status = 'verified'/i);
+  assert.match(quoteGuard, /p\.is_verified = true/i);
+  assert.match(quoteGuard, /p\.review_status = 'approved'/i);
+  assert.match(quoteGuard, /sp\.verification_status = 'verified'/i);
   assert.match(quoteGuard, /An active buyer trade account is required/i);
   assert.match(quoteGuard, /Quantity is below the supplier minimum order quantity/i);
 });
