@@ -59,3 +59,9 @@ test('delivery closure requires supplier shipment status, proof document and buy
   assert.match(buyerOrders,/rpc\('vtg_confirm_order_delivery'/);
   assert.match(buyerOrders,/Confirm receipt & close deal/);
 });
+
+test('delivery notification entity references remain UUID-typed',()=>{
+ const fix=rd('supabase/migrations/20261123231000_vtg_supplier_delivery_notification_uuid_fix.sql');
+ assert.match(fix,/entity_type,entity_id\)[\s\S]*'trade_order',v_order\.id/);
+ assert.doesNotMatch(fix,/v_order\.id::text/);
+});
