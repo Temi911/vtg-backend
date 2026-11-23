@@ -17,7 +17,11 @@ test('buyer inspection request form is wired to the authenticated workflow funct
  assert.doesNotMatch(js,/localStorage|fetch\s*\(/);
 });
 
-test('inspection workflow permits the Supabase client preflight header',()=>{\n assert.match(edge,/Access-Control-Allow-Headers[^\\n]*x-client-info/);\n});\n\ntest('workflow function accepts the fields the form sends',()=>{
+test('inspection workflow permits the Supabase client preflight header',()=>{
+ assert.match(edge,/Access-Control-Allow-Headers[\s\S]*?x-client-info/i);
+});
+
+test('workflow function accepts the fields the form sends',()=>{
  for(const k of ['orderId','country','city','productName','category','quantity','serviceLevel','requestedChecks'])assert.match(edge,new RegExp('body\\.'+k));
  assert.match(edge,/Buyer account required/);
 });
