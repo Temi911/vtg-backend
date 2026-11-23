@@ -17,3 +17,9 @@ test('account help retains role-specific recovery and support actions',()=>{
   assert.match(html,/client\.functions\.invoke\('vtg-account-support'/);
   assert.match(html,/role==='admin'&&next!=='contact'/,'admin recovery remains restricted to contact');
 });
+
+test('account support Edge Function permits Supabase client preflight headers',()=>{
+  const fn=fs.readFileSync(path.join(root,'supabase','functions','vtg-account-support','index.ts'),'utf8');
+  assert.match(fn, /Access-Control-Allow-Headers[^\\n]*x-client-info/);
+  assert.match(fn, /req\.method === "OPTIONS"/);
+});
