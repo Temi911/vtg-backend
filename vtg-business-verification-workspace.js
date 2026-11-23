@@ -6,36 +6,58 @@ const required={
  supplier:[['company_registration','Company registration certificate'],['business_license','Business / trade licence'],['tax_certificate','Tax registration certificate'],['company_address_proof','Company address proof']],
  bank:[['bank_license','Bank / financial institution licence'],['regulatory_certificate','Regulatory certificate / authorisation'],['company_registration','Institution registration certificate'],['swift_bic_certificate','SWIFT / BIC evidence'],['institution_address_proof','Institution address proof'],['officer_authorization','Authorised officer evidence']]
 };
+const optional={supplier:[['production_facility_evidence','Production facility evidence'],['trade_performance_evidence','Trade performance evidence']]};
 const BUCKET='vtg-verification-documents',LOGO_BUCKET='vtg-company-logos',MAX=10*1024*1024;
-let auth,client,user,role,docs=[];
+let auth,client,user,role,docs=[],supplierProfile=null,verificationRequest=null;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function statusLabel(s){return String(s||'pending').replace(/_/g,' ')}
 function message(s,ok){const n=host.querySelector('[data-vtg-message]');if(n){n.textContent=s;n.dataset.state=ok?'ok':'error';}}
 function latestDocs(){const m=new Map();for(const d of docs)if(!m.has(d.doc_type))m.set(d.doc_type,d);return m;}
 function render(){
- const latest=latestDocs(),logo=latest.get('company_logo'),items=required[role]||[];
+ const latest=latestDocs(),logo=latest.get('company_logo'),requiredItems=required[role]||[],items=[...requiredItems,...(optional[role]||[])];
  const rejected=[...latest.values()].filter(d=>d.status==='rejected');
- const all=[...items.map(x=>x[0]),'company_logo'].every(k=>latest.has(k)&&latest.get(k).status!=='rejected');
- const state=user.businessVerificationStatus==='verified'||user.verificationStatus==='verified'?'verified':rejected.length?'needs_correction':(user.businessVerificationStatus||user.verificationStatus|| (all?'under_review':'pending'));
+ const all=[...requiredItems.map(x=>x[0]),'company_logo'].every(k=>latest.has(k)&&latest.get(k).status!=='rejected');
+ const profileStatus=supplierProfile?.verification_status;
+ const state=profileStatus==='verified'||user.businessVerificationStatus==='verified'||user.verificationStatus==='verified'?'verified':rejected.length?'needs_correction':(user.businessVerificationStatus||user.verificationStatus|| (all?'under_review':'pending'));
+ const level=supplierProfile?.verification_level||'unverified';
+ const levelNames={unverified:'Not yet verified',registered_business:'Registered Business',vtg_verified:'VTG Verified',production_verified:'Production Verified',trade_performance_reviewed:'Trade Performance Reviewed'};
  const verified=state==='verified';
  host.querySelector('[data-vtg-state]').textContent=verified?'Verified':statusLabel(state).replace(/^./,x=>x.toUpperCase());
  host.querySelector('[data-vtg-state]').className='vtg-vstate '+(verified?'good':state==='needs_correction'?'warn':'');
- host.querySelector('[data-vtg-state-note]').textContent=verified?'Your organisation has been approved.':state==='needs_correction'?'Review the notes beside rejected documents, then upload corrected files.':all?'Your documents have been received and are awaiting VTG review.':'Complete the required uploads below. Your account remains under review until VTG approves it.';
+ host.querySelector('[data-vtg-state-note]').textContent=verified?'Your organisation has been approved. Current level: '+(levelNames[level]||level)+'.':state==='needs_correction'?'Review the notes beside rejected documents, then upload corrected files.':all?'Your documents have been received. The verification level is awarded only after VTG reviews the evidence.':'Complete the required uploads below. Your account remains under review until VTG approves it.';
  host.querySelector('[data-vtg-logo-status]').textContent=logo?statusLabel(logo.status):'Required';
  host.querySelector('[data-vtg-docs]').innerHTML=items.map(([type,label])=>{
-  const d=latest.get(type),st=d?statusLabel(d.status):'Not submitted';
-  return '<article class="vtg-vdoc"><div><strong>'+esc(label)+'</strong><span class="vtg-vtag">'+esc(st)+'</span><p>'+esc(d?.review_notes||'PDF, JPEG, PNG or WEBP · up to 10 MB')+'</p></div><label class="vtg-vupload">Choose file<input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" data-vtg-type="'+type+'" '+(verified?'disabled':'')+'></label><button type="button" data-vtg-upload="'+type+'" '+(verified?'disabled':'')+'>Upload</button></article>';
+  const d=latest.get(type),st=d?statusLabel(d.status):'Not submitted',isOptional=(optional[role]||[]).some(x=>x[0]===type);
+  return '<article class="vtg-vdoc"><div><strong>'+esc(label)+(isOptional?' <small>(for higher verification levels)</small>':'')+'</strong><span class="vtg-vtag">'+esc(st)+'</span><p>'+esc(d?.review_notes||'PDF, JPEG, PNG or WEBP · up to 10 MB')+'</p></div><label class="vtg-vupload">Choose file<input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" data-vtg-type="'+type+'" '+(verified?'disabled':'')+'></label><button type="button" data-vtg-upload="'+type+'" '+(verified?'disabled':'')+'>Upload</button></article>';
  }).join('');
  host.querySelector('[data-vtg-submitted]').innerHTML=docs.length?docs.map(d=>'<div class="vtg-vsubmitted"><span>'+esc(d.doc_type.replace(/_/g,' '))+' · '+esc(d.file_name)+'</span><b>'+esc(statusLabel(d.status))+'</b>'+(d.review_notes?'<p>'+esc(d.review_notes)+'</p>':'')+'</div>').join(''):'<p class="vtg-vmuted">No documents submitted yet.</p>';
  host.querySelector('[data-vtg-logo-input]').disabled=verified;
  host.querySelector('[data-vtg-logo-upload]').disabled=verified;
  host.querySelector('[data-vtg-resubmit]').hidden=state!=='needs_correction';
  host.querySelector('[data-vtg-resubmit]').disabled=!(user.pendingBusinessVerification||user.requestedRole===role);
- host.querySelector('[data-vtg-required-note]').textContent=verified?'Verification is complete.': 'Organisation logo and all listed documents are required for VTG business verification.';
+ host.querySelector('[data-vtg-required-note]').textContent=verified?'Verification is complete.': 'The first four documents and organisation logo are the base evidence set. The two additional evidence types support higher verification levels.';
+ const requestPanel=host.querySelector('[data-vtg-request-panel]');
+ if(requestPanel&&role==='supplier'){
+  const open=verificationRequest&&['submitted','under_review'].includes(verificationRequest.status);
+  const baseReady=['company_registration','company_address_proof'].every(k=>latest.has(k)&&latest.get(k).status==='verified');
+  requestPanel.innerHTML='<h3>Request a VTG verification level</h3><p>Choose the level supported by the evidence you have submitted. VTG reviewers make the final decision; requesting a level does not award it.</p>'+
+   (verificationRequest?'<p><strong>Latest request:</strong> '+esc(statusLabel(verificationRequest.status))+' · '+esc(levelNames[verificationRequest.requested_level]||verificationRequest.requested_level)+'</p>'+(verificationRequest.decision_summary?'<p>'+esc(verificationRequest.decision_summary)+'</p>':''):'')+
+   (open?'': '<div class="vtg-vactions"><select data-vtg-level aria-label="Requested verification level"><option value="registered_business">Registered Business</option><option value="vtg_verified">VTG Verified</option><option value="production_verified">Production Verified</option><option value="trade_performance_reviewed">Trade Performance Reviewed</option></select></div><textarea data-vtg-applicant-note maxlength="1500" placeholder="Optional note for the VTG reviewer"></textarea><div class="vtg-vactions"><button type="button" data-vtg-request '+(!baseReady?'disabled':'')+'>Submit verification request</button></div>')+
+   (!baseReady&&!open?'<p class="vtg-vmuted">To request a review, first have your company registration and address documents verified by VTG.</p>':'');
+ }else if(requestPanel){requestPanel.hidden=true;}
 }
 async function refresh(){
  const {data,error}=await client.from('vtg_verification_documents').select('id,doc_type,file_name,status,review_notes,uploaded_at,reviewed_at').eq('user_id',user.id).eq('account_role',role).order('uploaded_at',{ascending:false});
- if(error)throw error;docs=data||[];render();
+ if(error)throw error;docs=data||[];
+ if(role==='supplier'){
+  const [profileResult,requestResult]=await Promise.all([
+   client.from('supplier_profiles').select('verification_status,verification_level,verification_expires_at,verification_summary').eq('user_id',user.id).maybeSingle(),
+   client.from('vtg_supplier_verification_requests').select('id,requested_level,status,decision_summary,submitted_at,reviewed_at,awarded_level,expires_at').eq('supplier_id',user.id).order('submitted_at',{ascending:false}).limit(1).maybeSingle()
+  ]);
+  if(profileResult.error)throw profileResult.error;if(requestResult.error)throw requestResult.error;
+  supplierProfile=profileResult.data;verificationRequest=requestResult.data;
+ }
+ render();
 }
 function fileExt(file){const ext=(file.name.split('.').pop()||'').toLowerCase();return ['pdf','jpg','jpeg','png','webp'].includes(ext)?ext:'';}
 async function upload(file,type){
@@ -54,9 +76,16 @@ async function upload(file,type){
  await refresh();
 }
 host.addEventListener('click',async e=>{
- const btn=e.target.closest('[data-vtg-upload],[data-vtg-logo-upload],[data-vtg-resubmit]');if(!btn)return;
+ const btn=e.target.closest('[data-vtg-upload],[data-vtg-logo-upload],[data-vtg-resubmit],[data-vtg-request]');if(!btn)return;
  try{
-  btn.disabled=true;message('Uploading securely…',true);
+  btn.disabled=true;message(btn.hasAttribute('data-vtg-request')?'Submitting your verification request…':'Uploading securely…',true);
+  if(btn.hasAttribute('data-vtg-request')){
+   const requestedLevel=host.querySelector('[data-vtg-level]')?.value;
+   const applicantNote=host.querySelector('[data-vtg-applicant-note]')?.value||'';
+   const result=await client.from('vtg_supplier_verification_requests').insert({supplier_id:user.id,requested_level:requestedLevel,applicant_note:applicantNote.trim()||null});
+   if(result.error)throw result.error;
+   await refresh();message('Your request has been submitted. VTG will review the evidence and notify you of the decision.',true);return;
+  }
   if(btn.hasAttribute('data-vtg-resubmit')){
    const result=await client.rpc('vtg_resubmit_rejected_role_request',{p_requested_role:role});
    if(result.error)throw result.error;
