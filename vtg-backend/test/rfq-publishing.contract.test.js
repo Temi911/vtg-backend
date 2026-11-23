@@ -11,6 +11,7 @@ const buyer=read('vtg-buyer-rfq-workflow.js');
 const supplier=read('vtg-supplier-shared-trade-desk-supabase.js');
 const dashboard=read('buyer-dashboard.html');
 const buyerMarketplace=read('vtg-buyer-marketplace-supabase.js');
+const buyerRequest=read('vtg-buyer-request-supabase.js');
 const publicMarketplace=read('marketplace.html');
 const supplierProducts=read('vtg-supplier-products-supabase.js');
 
@@ -53,6 +54,16 @@ test('supplier workspace renders structured RFQ requirements and uses existing q
  assert.match(supplier,/supplier_trade_quotations!supplier_trade_quotations_request_id_fkey/);
  assert.match(supplier,/trade_negotiation_messages!trade_negotiation_messages_quote_id_fkey/);
  assert.doesNotMatch(supplier,/supplier_trade_quotations\(id,supplier_id/);
+});
+
+test('RFQ product picker presents a structured empty-catalogue state only when no live products exist',()=>{
+ assert.match(buyerRequest,/if\(!products\.length\)/);
+ assert.match(buyerRequest,/renderEmptyCatalogue\(\)/);
+ assert.match(buyerRequest,/No approved products are available yet/);
+ assert.match(buyerRequest,/Supplier publishes a listing/);
+ assert.match(buyerRequest,/VTG reviews the listing and supplier/);
+ assert.match(buyerRequest,/save your sourcing details as a draft/);
+ assert.doesNotMatch(buyerRequest,/setStatus\('The live catalogue currently has no active products/);
 });
 
 test('catalogue empty states explain approval and supplier verification without implying products are live',()=>{
