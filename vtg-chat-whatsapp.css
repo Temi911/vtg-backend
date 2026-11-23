@@ -175,3 +175,20 @@ html[data-theme="dark"] .vtg-wa .vtg-wa-clip{color:#9DBBF5}
 .vtg-wa .vtg-wa-att-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:190px;color:inherit}
 .vtg-wa .vtg-wa-att-size{opacity:.8;font-size:11px;font-weight:500;color:inherit}
 @media(max-width:520px){.vtg-wa .vtg-wa-att img,.vtg-wa .vtg-wa-att video{width:100%}}
+
+
+/* Role identity is stable across conversations: buyers and suppliers never inherit arbitrary palette slots. */
+.vtg-wa-row[data-sender-role="buyer"]:not(.is-self){--tone:#16869a;--tone-bg:color-mix(in srgb,#16869a 17%,var(--wa-in))}
+.vtg-wa-row[data-sender-role="supplier"]:not(.is-self){--tone:#b47a2b;--tone-bg:color-mix(in srgb,#b47a2b 18%,var(--wa-in))}
+.vtg-wa-row[data-sender-role="bank"]:not(.is-self){--tone:#7564b7;--tone-bg:color-mix(in srgb,#7564b7 17%,var(--wa-in))}
+.vtg-wa-row[data-sender-role="agent"]:not(.is-self){--tone:#277b50;--tone-bg:color-mix(in srgb,#277b50 17%,var(--wa-in))}
+.vtg-wa-row[data-sender-role="buyer"]:not(.is-self) .vtg-wa-bubble,
+.vtg-wa-row[data-sender-role="supplier"]:not(.is-self) .vtg-wa-bubble,
+.vtg-wa-row[data-sender-role="bank"]:not(.is-self) .vtg-wa-bubble,
+.vtg-wa-row[data-sender-role="agent"]:not(.is-self) .vtg-wa-bubble{border-left-width:4px}
+.vtg-wa-row[data-sender-role="buyer"]:not(.is-self) .vtg-wa-name{color:#16869a}
+.vtg-wa-row[data-sender-role="supplier"]:not(.is-self) .vtg-wa-name{color:#b47a2b}
+html[data-theme="dark"] .vtg-wa-row[data-sender-role="buyer"]:not(.is-self) .vtg-wa-name{color:#55c4d5}
+html[data-theme="dark"] .vtg-wa-row[data-sender-role="supplier"]:not(.is-self) .vtg-wa-name{color:#f0bd69}
+.vtg-call-btn.end{min-width:150px;width:auto;padding:0 18px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;font-weight:800}
+.vtg-call-btn.end:after{content:attr(data-end-label)}
