@@ -6,7 +6,7 @@ const form=$('liveProductForm'),toggle=$('liveProductToggle'),rows=$('liveProduc
 if(!form||!toggle||!rows||!notice)return;
 
 let db=null,user=null,profile=null,products=[];
-function say(message){notice.textContent=message;}
+function say(message){notice.textContent=message;const feedback=$('liveProductFormNotice');if(feedback&&!form.classList.contains('hidden')){feedback.textContent=message;feedback.classList.remove('hidden');}}
 function money(value,currency){return esc(currency||'USD')+' '+Number(value||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 async function connect(){
  const auth=await window.VTG_AUTH_READY;
