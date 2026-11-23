@@ -128,3 +128,13 @@ test('marketplace quote RPC rejects products that are not approved and published
   assert.match(quoteGuard, /An active buyer trade account is required/i);
   assert.match(quoteGuard, /Quantity is below the supplier minimum order quantity/i);
 });
+
+test('expired supplier verification is hidden from public directory and marketplace', () => {
+  const expiry = fs.readFileSync(
+    path.join(root, 'supabase/migrations/20261123180000_vtg_supplier_verification_expiry_visibility.sql'),
+    'utf8'
+  );
+  assert.match(expiry, /verification_expires_at IS NULL OR verification_expires_at > now\(\)/i);
+  assert.match(expiry, /DROP POLICY IF EXISTS .*supplier profiles visible/i);
+  assert.match(expiry, /CREATE POLICY .*supplier profiles visible/i);
+});
