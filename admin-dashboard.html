@@ -131,6 +131,7 @@ html[data-theme="light"] .vtg-header-brand .logo-light{display:none!important}
 </section>
 <section class="section" id="section-verification"><div class="heading"><div><div class="eyebrow">Trust &amp; due diligence</div><h1>Verification queue</h1><p class="sub">Supplier, bank and agent documents waiting for review. Each decision is recorded in the audit trail.</p></div></div>
 <div class="panel"><div class="panelHead"><div><h2>Documents awaiting review</h2><p>Open the file, then verify it or reject it with a correction note</p></div><span class="pill warn" id="verifCount">Loading…</span></div><div class="tableWrap"><table><thead><tr><th>Submitted by</th><th>Account type</th><th>Document</th><th>File</th><th>Uploaded</th><th>State</th><th>Action</th></tr></thead><tbody id="verifRows"></tbody></table></div></div>
+<div class="panel" style="margin-top:15px"><div class="panelHead"><div><h2>Supplier verification level requests</h2><p>Review evidence and award only the level supported by verified documents</p></div><span class="pill warn" id="supplierVerificationCount">Loading…</span></div><div class="tableWrap"><table><thead><tr><th>Supplier / company</th><th>Requested level</th><th>Applicant note</th><th>Submitted</th><th>Award level</th><th>Review action</th></tr></thead><tbody id="supplierVerificationRows"><tr><td colspan="6" class="emptyHint">Loading supplier verification requests…</td></tr></tbody></table></div></div>
 <div class="panel" style="margin-top:15px"><div class="panelHead"><div><h2>Role requests awaiting review</h2><p>Buyers asking to become suppliers or banks</p></div><a class="btn" href="/admin-role-requests.html">Open role requests</a></div><div class="tableWrap"><table><thead><tr><th>Applicant</th><th>Requested role</th><th>Organisation</th><th>Country</th><th>Submitted</th><th>Action</th></tr></thead><tbody id="roleReqRows"></tbody></table></div></div>
 <div class="panel quickCard" style="margin-top:15px"><h3>Marketplace products</h3><p>Supplier listings are approved here before buyers can see them.</p><a class="btn" href="/admin-product-review.html">Open product review</a></div>
 </section>
@@ -230,5 +231,5 @@ const initialLanguage=localStorage.getItem('vtg-language')||localStorage.getItem
 
 
 <script src="/vtg-workforce-admin.js?v=20261106-1"></script>
-<script src="/vtg-user-id.js?v=20261116-bar-1" defer></script><script src="/vtg-admin-live.js?v=20261121-1"></script>
+<script src="/vtg-user-id.js?v=20261116-bar-1" defer></script><script src="/vtg-admin-live.js?v=20261123-trust-1"></script>
 </body></html>

@@ -38,7 +38,9 @@ function renderProducts(){
  host.innerHTML=matches.map(p=>{
   const image=Array.isArray(p.image_urls)&&p.image_urls[0]?'<img src="'+esc(p.image_urls[0])+'" alt="'+esc(p.name)+'" loading="lazy" style="width:100%;height:100%;object-fit:contain;background:#fff">':'<span>Product image not supplied</span>';
   const supplier=p.supplier_name||'Verified VTG supplier';
-  return '<article class="product"><div class="productArt">'+image+'</div><div class="productInfo"><strong>'+esc(p.name)+'</strong><p>'+esc(p.category||'General trade')+' · '+esc(p.supplier_country||p.origin_country||'Origin not supplied')+'<br><span class="chip">'+esc(supplier)+' · Verified supplier</span><br><small>MOQ: '+Number(p.minimum_order_quantity||1).toLocaleString()+'</small></p><div class="productFoot"><b>'+money(p.unit_price,p.currency)+' <small>/ unit</small></b><button class="btn primary" type="button" data-add="'+esc(p.id)+'">Add to cart</button></div></div></article>';
+  const levelNames={registered_business:'Registered Business',vtg_verified:'VTG Verified',production_verified:'Production Verified',trade_performance_reviewed:'Trade Performance Reviewed'};
+  const trustLabel=levelNames[p.supplier_verification_level]||'Business documents reviewed';
+  return '<article class="product"><div class="productArt">'+image+'</div><div class="productInfo"><strong>'+esc(p.name)+'</strong><p>'+esc(p.category||'General trade')+' · '+esc(p.supplier_country||p.origin_country||'Origin not supplied')+'<br><span class="chip">'+esc(supplier)+' · '+esc(trustLabel)+'</span><br><small>MOQ: '+Number(p.minimum_order_quantity||1).toLocaleString()+'</small></p><div class="productFoot"><b>'+money(p.unit_price,p.currency)+' <small>/ unit</small></b><button class="btn primary" type="button" data-add="'+esc(p.id)+'">Add to cart</button></div></div></article>';
  }).join('');
 }
 function normaliseCart(items){
@@ -60,7 +62,7 @@ async function persistCart(){
 async function refresh(){
  state.loading=true;state.error=null;renderProducts();
  try{
-  const result=await state.client.from('vtg_marketplace_products').select('id,supplier_id,name,category,description,unit_price,currency,minimum_order_quantity,hs_code,lead_time_days,origin_country,image_urls,is_verified,created_at,supplier_name,supplier_country,supplier_logo_url,supplier_rating').order('created_at',{ascending:false}).limit(500);
+  const result=await state.client.from('vtg_marketplace_products').select('id,supplier_id,name,category,description,unit_price,currency,minimum_order_quantity,hs_code,lead_time_days,origin_country,image_urls,is_verified,created_at,supplier_name,supplier_country,supplier_logo_url,supplier_rating,supplier_verification_level').order('created_at',{ascending:false}).limit(500);
   if(result.error)throw result.error;
   state.products=(result.data||[]).filter(p=>p.is_verified===true).map(p=>({...p,id:String(p.id)}));
   const select=$('category'),previous=select?.value||'all';

@@ -133,11 +133,91 @@
   }
 
   /* ---------- verification ---------- */
+  async function loadSupplierVerificationRequests() {
+    var body = $('supplierVerificationRows');
+    if (!body) return;
+    body.innerHTML = empty(6, 'Loading supplier verification requests…');
+    try {
+      var q = await client.from('vtg_supplier_verification_requests')
+        .select('id,supplier_id,requested_level,applicant_note,status,submitted_at,decision_summary')
+        .in('status', ['submitted','under_review'])
+        .order('submitted_at', { ascending: true });
+      if (q.error) throw q.error;
+      var requests = q.data || [];
+      $('supplierVerificationCount').textContent = requests.length + ' open request(s)';
+      if (!requests.length) {
+        body.innerHTML = empty(6, 'No supplier verification level requests are waiting.');
+        return;
+      }
+      var ids = requests.map(function (r) { return r.supplier_id; });
+      var pair = await Promise.all([
+        client.from('profiles').select('id,full_name,email').in('id', ids),
+        client.from('supplier_profiles').select('user_id,company_name,country,verification_level').in('user_id', ids)
+      ]);
+      if (pair[0].error) throw pair[0].error;
+      if (pair[1].error) throw pair[1].error;
+      var profiles = Object.fromEntries((pair[0].data || []).map(function (p) { return [p.id,p]; }));
+      var companies = Object.fromEntries((pair[1].data || []).map(function (p) { return [p.user_id,p]; }));
+      var levels = [
+        ['registered_business','Registered Business'],
+        ['vtg_verified','VTG Verified'],
+        ['production_verified','Production Verified'],
+        ['trade_performance_reviewed','Trade Performance Reviewed']
+      ];
+      var rank = function (level) { return levels.findIndex(function (x) { return x[0] === level; }); };
+      body.innerHTML = requests.map(function (r) {
+        var p = profiles[r.supplier_id] || {}, c = companies[r.supplier_id] || {};
+        var options = levels.filter(function (x) { return rank(x[0]) <= rank(r.requested_level); })
+          .map(function (x) { return '<option value="' + x[0] + '">' + esc(x[1]) + '</option>'; }).join('');
+        return '<tr><td><strong>' + esc(c.company_name || p.full_name || 'Supplier') + '</strong><span class="muted" style="display:block">' + esc(p.email || '') + '</span><span class="muted">' + esc(c.country || '') + '</span></td>' +
+          '<td>' + esc(levels.find(function (x) { return x[0] === r.requested_level; })?.[1] || r.requested_level) + '<div style="margin-top:4px">' + pill(r.status.replace(/_/g,' '), r.status === 'under_review' ? 'review' : 'warn') + '</div></td>' +
+          '<td>' + esc(r.applicant_note || '—') + '</td><td>' + esc(when(r.submitted_at)) + '</td>' +
+          '<td><select class="control" data-sv-level="' + esc(r.id) + '">' + options + '</select></td>' +
+          '<td style="white-space:nowrap"><button class="btn" type="button" data-sv-start="' + esc(r.id) + '">Start review</button> <button class="btn primary" type="button" data-sv-approve="' + esc(r.id) + '">Approve</button> <button class="btn" type="button" data-sv-reject="' + esc(r.id) + '">Reject</button></td></tr>';
+      }).join('');
+      body.querySelectorAll('[data-sv-start]').forEach(function (b) {
+        b.onclick = function () {
+          var id = b.getAttribute('data-sv-start');
+          openDialog({ title: 'Start supplier verification review', description: 'This moves the request into the review queue. It does not award a verification badge.', label: 'Internal reviewer note (optional)', confirm: 'Start review',
+            onConfirm: async function (note) {
+              await rpc('vtg_review_supplier_verification', { p_request_id: id, p_decision: 'under_review', p_reviewer_notes: note || null });
+              toast('Supplier verification review started.'); refreshAll();
+            } });
+        };
+      });
+      body.querySelectorAll('[data-sv-approve]').forEach(function (b) {
+        b.onclick = function () {
+          var id = b.getAttribute('data-sv-approve'), select = body.querySelector('[data-sv-level="' + id + '"]');
+          var selected = select ? select.value : null;
+          openDialog({ title: 'Approve supplier verification', description: 'The database will check that all evidence required for the selected level has already been marked verified. A higher level cannot be awarded than the supplier requested.', label: 'Public verification summary (visible on verified supplier profiles)', confirm: 'Approve level',
+            onConfirm: async function (note) {
+              await rpc('vtg_review_supplier_verification', { p_request_id: id, p_decision: 'approved', p_awarded_level: selected, p_decision_summary: note || null });
+              toast('Supplier verification level awarded.'); refreshAll();
+            } });
+        };
+      });
+      body.querySelectorAll('[data-sv-reject]').forEach(function (b) {
+        b.onclick = function () {
+          var id = b.getAttribute('data-sv-reject');
+          openDialog({ title: 'Reject supplier verification request', description: 'The supplier will see this decision summary and can submit a new request after correcting the evidence.', label: 'Reason / correction summary for supplier', required: true, confirm: 'Reject request',
+            onConfirm: async function (note) {
+              await rpc('vtg_review_supplier_verification', { p_request_id: id, p_decision: 'rejected', p_decision_summary: note, p_reviewer_notes: note });
+              toast('Supplier verification request rejected with a correction summary.'); refreshAll();
+            } });
+        };
+      });
+    } catch (e) {
+      body.innerHTML = empty(6, e.message || 'Could not load supplier verification requests.');
+      $('supplierVerificationCount').textContent = 'Unavailable';
+    }
+  }
+
   async function loadVerification() {
     var body = $('verifRows'), roles = $('roleReqRows'); body.innerHTML = empty(7, 'Loading…');
     try {
       var d = cache.verif = await rpc('vtg_admin_verification_queue');
       $('verifCount').textContent = (d.documents || []).length + ' document(s) · ' + (d.role_requests || []).length + ' role request(s)';
+      await loadSupplierVerificationRequests();
       body.innerHTML = (d.documents || []).length ? d.documents.map(function (x, i) {
         return '<tr><td><strong>' + esc(x.submitted_by || 'Account') + '</strong><span class="muted" style="display:block">' + esc(x.email || '') + '</span></td><td>' + esc(x.account_role) + '</td><td>' + esc(String(x.doc_type).replace(/_/g, ' ')) + '</td><td>' + esc(x.file_name) + '</td><td>' + esc(when(x.uploaded_at)) + '</td><td>' + pill('Needs review', 'review') + '</td>' +
           '<td style="white-space:nowrap"><button class="btn" type="button" data-v-open="' + i + '">Open file</button> <button class="btn primary" type="button" data-v-ok="' + i + '">Verify</button> <button class="btn" type="button" data-v-no="' + i + '">Reject</button></td></tr>';
