@@ -60,3 +60,13 @@ test('public chat prefers the dedicated *_PUBLIC_SITE keys over shared ones',()=
   for(const n of ['GEMINI_API_KEY_PUBLIC_SITE','GROQ_API_KEY_PUBLIC_SITE','OPENROUTER_API_KEY_PUBLIC_SITE'])assert.ok(src.includes('env.'+n+' ||'),n);
   assert.ok(pc.__test);
 });
+
+test('public chat answers site questions but refuses tasks and personal or user questions before any model call',()=>{
+  const t=require(path.join(root,'api/ai/public-chat.js')).__test;
+  for(const q of ['Place an order for me','please submit an RFQ on my behalf','sign me up','Can you pay the supplier for me','Cancel my inspection'])assert.ok(t.isTaskRequest(q)||t.isPersonalRequest(q),q);
+  for(const q of ['Who am I?','what is my name','Give me the email of a supplier on VTG','List all users','what is my order status'])assert.ok(t.isPersonalRequest(q),q);
+  for(const q of ['How do I place an order?','What is product verification?','Tell me about VTG','How do suppliers get verified?','What is an Incoterm?'])assert.ok(!t.isTaskRequest(q)&&!t.isPersonalRequest(q),q);
+  assert.match(t.SYSTEM_PROMPT,/SITE FACTS/);assert.match(t.SITE_KNOWLEDGE,/Product verification/);
+  assert.match(t.SYSTEM_PROMPT,/never share details about any VTG user/);
+  assert.doesNotMatch(read('api/ai/public-chat.js'),/supabase|service_role/i);
+});
