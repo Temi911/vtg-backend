@@ -6,6 +6,7 @@ const root=path.resolve(__dirname,'..','..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const sql=read('supabase/migrations/20261114000000_vtg_chat_and_calls.sql');
 const send=read('supabase/migrations/20261123220000_secure_buyer_chat_message_send_rpc.sql');
+const moderation=read('supabase/migrations/20261123210000_vtg_message_moderation_edits_and_buyer_delivery_close.sql');
 const calls=read('vtg-calls.js'),msgs=read('vtg-cross-account-messages.js'),ai=read('vtg-dashboard-chat.js'),core=read('vtg-chat-core.js'),css=read('vtg-chat-whatsapp.css');
 const pages=['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html'];
 
@@ -93,4 +94,22 @@ test('dashboard message sending uses an authenticated RPC and enforces active co
  assert.match(send,/grant execute on function public\.vtg_send_message\(uuid, text\) to authenticated/);
  assert.match(msgs,/client\.rpc\('vtg_send_message'/);
  assert.doesNotMatch(msgs,/client\.from\('messages'\)\.insert/);
+});
+
+test('chat blocks sexual, abusive and threatening messages with a sender warning and private audit event',()=>{
+ assert.match(moderation,/private\.vtg_message_content_violation/);
+ assert.match(moderation,/private\.vtg_message_moderation_events/);
+ assert.match(moderation,/warning_count/);
+ assert.match(moderation,/This message was not sent/);
+ assert.match(moderation,/revoke update on public\.messages from anon, authenticated/);
+ assert.match(msgs,/This message was blocked by VTG content rules/);
+});
+test('message edits are sender-only, time-limited and rechecked by moderation',()=>{
+ assert.match(moderation,/create or replace function public\.vtg_edit_message/);
+ assert.match(moderation,/v_message\.sender_id<>v_user_id/);
+ assert.match(moderation,/interval '15 minutes'/);
+ assert.match(moderation,/private\.vtg_message_content_violation\(v_body\)/);
+ assert.match(msgs,/client\.rpc\('vtg_edit_message'/);
+ assert.match(core,/msg\.editable/);
+ assert.match(core,/Edited/);
 });
