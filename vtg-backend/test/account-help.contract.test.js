@@ -17,3 +17,9 @@ test('account help retains role-specific recovery and support actions',()=>{
   assert.match(html,/client\.functions\.invoke\('vtg-account-support'/);
   assert.match(html,/role==='admin'&&next!=='contact'/,'admin recovery remains restricted to contact');
 });
+
+test('account support permits descriptions that mention a password problem but blocks submitted credential values',()=>{
+  const fn=fs.readFileSync(path.join(root,'supabase','functions','vtg-account-support','index.ts'),'utf8');
+  assert.match(fn, /password\\)\\s*\\[:=]\\s*\\S\+/i);
+  assert.doesNotMatch(fn, /if \\(\\/\\(password\\|verification code\\|one\\.time code\\|otp/);
+});
