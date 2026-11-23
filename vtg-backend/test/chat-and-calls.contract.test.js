@@ -7,6 +7,7 @@ const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const sql=read('supabase/migrations/20261114000000_vtg_chat_and_calls.sql');
 const send=read('supabase/migrations/20261123220000_secure_buyer_chat_message_send_rpc.sql');
 const moderation=read('supabase/migrations/20261123210000_vtg_message_moderation_edits_and_buyer_delivery_close.sql');
+const finalSend=read('supabase/migrations/20261123230000_vtg_final_chat_moderation_send_rpc.sql');
 const calls=read('vtg-calls.js'),msgs=read('vtg-cross-account-messages.js'),ai=read('vtg-dashboard-chat.js'),core=read('vtg-chat-core.js'),css=read('vtg-chat-whatsapp.css');
 const pages=['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html'];
 
@@ -112,4 +113,12 @@ test('message edits are sender-only, time-limited and rechecked by moderation',(
  assert.match(msgs,/client\.rpc\('vtg_edit_message'/);
  assert.match(core,/msg\.editable/);
  assert.match(core,/Edited/);
+});
+
+test('final ordered migration preserves the JSON moderation response after the legacy UUID RPC migration',()=>{
+ assert.match(finalSend,/drop function if exists public\.vtg_send_message\(uuid,text\)/);
+ assert.match(finalSend,/returns jsonb/);
+ assert.match(finalSend,/private\.vtg_message_content_violation\(v_body\)/);
+ assert.match(finalSend,/warning_count/);
+ assert.match(finalSend,/grant execute on function public\.vtg_send_message\(uuid,text\) to authenticated/);
 });
