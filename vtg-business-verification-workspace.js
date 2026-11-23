@@ -43,7 +43,7 @@ function render(){
   requestPanel.innerHTML='<h3>Request a VTG verification level</h3><p>Choose the level supported by the evidence you have submitted. VTG reviewers make the final decision; requesting a level does not award it.</p>'+
    (level==='trade_performance_reviewed'?'<p>Your highest VTG supplier verification level is already recorded.</p>':(verificationRequest?'<p><strong>Latest request:</strong> '+esc(statusLabel(verificationRequest.status))+' · '+esc(levelNames[verificationRequest.requested_level]||verificationRequest.requested_level)+'</p>'+(verificationRequest.decision_summary?'<p>'+esc(verificationRequest.decision_summary)+'</p>':''):'')+
    (open?'': '<div class="vtg-vactions"><select data-vtg-level aria-label="Requested verification level"><option value="registered_business">Registered Business</option><option value="vtg_verified">VTG Verified</option><option value="production_verified">Production Verified</option><option value="trade_performance_reviewed">Trade Performance Reviewed</option></select></div><textarea data-vtg-applicant-note maxlength="1500" placeholder="Optional note for the VTG reviewer"></textarea><div class="vtg-vactions"><button type="button" data-vtg-request '+(!baseReady?'disabled':'')+'>Submit verification request</button></div>')+
-   (!baseReady&&!open?'<p class="vtg-vmuted">To request a review, first have your company registration and address documents verified by VTG.</p>':'') ) );
+   (!baseReady&&!open?'<p class="vtg-vmuted">To request a review, first have your company registration and address documents verified by VTG.</p>':'') );
  }else if(requestPanel){requestPanel.hidden=true;}
 }
 async function refresh(){
