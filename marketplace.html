@@ -91,13 +91,44 @@ function card(p){
  const media=p.image_url?'<img loading="lazy" decoding="async" src="'+esc(p.image_url)+'" alt="'+esc(p.name)+' product image" onerror="this.remove()">':'<span>Product image not supplied</span>';
  return '<article class="card"><div class="photo"><span class="badge">'+esc(trustLabel)+'</span>'+media+'</div><div class="cardbody"><span class="category">'+esc(p.category||'General trade')+'</span><h3>'+esc(p.name)+'</h3><div class="desc">'+esc(p.description||'Product information supplied by the seller.')+'</div><div class="price">'+money(p.unit_price,p.currency)+' <span class="unit">/ unit</span></div><div class="supplier"><span>'+esc(p.supplier_name)+'</span><span class="verified">'+esc(trustLabel)+'</span></div><div class="cardactions"><button class="vs-btn vs-btn-line" onclick="viewProduct(\''+esc(p.id)+'\')">View & quote</button><button class="vs-btn vs-btn-primary" onclick="openEnquiry(\''+esc(p.id)+'\')">Enquire</button></div></div></article>';
 }
-function viewProduct(id){
- const p=catalogue.find(x=>x.id===id);if(!p)return;selected=p;
+async function requireBuyerAccess(action,id){
+ try{
+  const auth=await window.VTG_AUTH_READY;
+  client=auth.client;
+  const session=await client.auth.getSession();
+  if(session.error)throw session.error;
+  if(session.data.session)return true;
+  const params=new URLSearchParams({role:'buyer',next:'/marketplace.html',product:id,action});
+  window.location.href='/signin.html?'+params.toString();
+  return false;
+ }catch(error){
+  const wrap=$('#products');
+  wrap.insertAdjacentHTML('beforebegin','<p class="vs-note" role="alert">We could not check your VTG sign-in status. Please use the <a href="/signin.html?role=buyer">buyer sign-in page</a> and try again.</p>');
+  return false;
+ }
+}
+async function viewProduct(id){
+ const p=catalogue.find(x=>x.id===id);if(!p)return;
+ if(!(await requireBuyerAccess('quote',id)))return;
+ selected=p;
  $('#quoteTitle').textContent=p.name;
  $('#authNotice').innerHTML='<b>'+esc(p.supplier_name)+'</b> • Verified supplier<br>MOQ: '+Number(p.minimum_order_quantity||1).toLocaleString()+' • HS code: '+esc(p.hs_code||'Not supplied')+' • Lead time: '+(p.lead_time_days?Number(p.lead_time_days)+' days':'Not supplied')+'<br><br>'+esc(p.description||'Product information supplied by the seller.');
- $('#quoteQty').value=Math.max(1,Number(p.minimum_order_quantity||1));$('#quoteIncoterm').value='FOB';$('#quoteDestination').value='';$('#quoteValidity').value='';$('#quoteNotes').value='';$('#formmsg').textContent='';$('#quoteNext').style.display='none';$('#quoteModal').classList.add('open');
+ $('#quoteQty').value=Math.max(1,Number(p.minimum_order_quantity||1));$('#quoteForm button[type="submit"]').textContent='Send quote request';$('#quoteIncoterm').value='FOB';$('#quoteDestination').value='';$('#quoteValidity').value='';$('#quoteNotes').value='';$('#formmsg').textContent='';$('#quoteNext').style.display='none';$('#quoteModal').classList.add('open');
 }
-function openEnquiry(id){viewProduct(id)}
+async function openEnquiry(id){
+ if(!(await requireBuyerAccess('enquiry',id)))return;
+ viewProductAfterAccess(id);
+}
+function viewProductAfterAccess(id){
+ const p=catalogue.find(x=>x.id===id);if(!p)return;selected=p;
+ $('#quoteTitle').textContent='Enquire about '+p.name;
+ $('#authNotice').innerHTML='<b>'+esc(p.supplier_name)+'</b> • Product enquiry<br>'+esc(p.description||'Ask the supplier about specifications, availability, customisation, samples or delivery.');
+ $('#quoteQty').value=Math.max(1,Number(p.minimum_order_quantity||1));
+ $('#quoteIncoterm').value='FOB';$('#quoteDestination').value='';$('#quoteValidity').value='';$('#quoteNotes').value='';
+ $('#formmsg').textContent='';$('#quoteNext').style.display='none';
+ $('#quoteForm button[type="submit"]').textContent='Send enquiry';
+ $('#quoteModal').classList.add('open');
+}
 function markChip(){const v=($('#category').value||'').toLowerCase();document.querySelectorAll('.categoryTile').forEach(b=>b.classList.toggle('is-on',(b.dataset.category||'').toLowerCase()===v))}
 $('#closeModal').onclick=()=>$('#quoteModal').classList.remove('open');
 $('#quoteModal').addEventListener('click',e=>{if(e.target.id==='quoteModal')e.currentTarget.classList.remove('open')});
