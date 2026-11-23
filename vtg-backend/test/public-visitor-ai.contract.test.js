@@ -53,3 +53,10 @@ test('landing page loads the visitor AI and both bubbles follow the page theme',
   assert.doesNotMatch(js,/innerHTML/);
   assert.doesNotMatch(read('vtg-interaction-recovery.js'),/#151316/);
 });
+
+test('public chat prefers the dedicated *_PUBLIC_SITE keys over shared ones',()=>{
+  const pc=require(path.join(root,'api/ai/public-chat.js'));
+  const src=read('api/ai/public-chat.js');
+  for(const n of ['GEMINI_API_KEY_PUBLIC_SITE','GROQ_API_KEY_PUBLIC_SITE','OPENROUTER_API_KEY_PUBLIC_SITE'])assert.ok(src.includes('env.'+n+' ||'),n);
+  assert.ok(pc.__test);
+});

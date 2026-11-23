@@ -56,9 +56,9 @@ function allowed(ip) {
 function providers(env) {
   const trim = (v) => String(v).replace(/\/+$/, '');
   return [
-    { name: 'gemini', key: env.GEMINI_API_KEY || env.VTG_AI_API_KEY, base: trim(env.VTG_AI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai'), model: env.VTG_AI_MODEL || 'gemini-2.5-flash' },
-    { name: 'groq', key: env.GROQ_API_KEY, base: 'https://api.groq.com/openai/v1', model: env.GROQ_MODEL || 'openai/gpt-oss-120b' },
-    { name: 'openrouter', key: env.OPENROUTER_API_KEY, base: 'https://openrouter.ai/api/v1', model: env.OPENROUTER_MODEL || 'openrouter/free' }
+    { name: 'gemini', key: env.GEMINI_API_KEY_PUBLIC_SITE || env.GEMINI_API_KEY || env.VTG_AI_API_KEY, base: trim(env.VTG_AI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai'), model: env.VTG_AI_MODEL || 'gemini-2.5-flash' },
+    { name: 'groq', key: env.GROQ_API_KEY_PUBLIC_SITE || env.GROQ_API_KEY, base: 'https://api.groq.com/openai/v1', model: env.GROQ_MODEL || 'openai/gpt-oss-120b' },
+    { name: 'openrouter', key: env.OPENROUTER_API_KEY_PUBLIC_SITE || env.OPENROUTER_API_KEY, base: 'https://openrouter.ai/api/v1', model: env.OPENROUTER_MODEL || 'openrouter/free' }
   ].filter((p) => Boolean(p.key));
 }
 
