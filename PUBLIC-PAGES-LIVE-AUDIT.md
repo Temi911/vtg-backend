@@ -168,3 +168,11 @@ This follow-up records the additional live checks performed against the connecte
 - Did not grant anonymous SELECT on `profiles` or `vtg_trade_posts`; published Trade Feed content and private profile fields are not exposed as a workaround.
 - Applied Supabase migrations `20261123192339_fix_public_profile_policy_dependency_for_marketplace` and `20261123192420_isolate_public_marketplace_supplier_visibility`, with matching files committed to GitHub. The latter's Vercel production build was `READY` at the last deployment-history check.
 - Verified an anonymous-role SELECT against `public.vtg_marketplace_products` now executes successfully and returns zero rows, which is the correct result while there are no approved products. Anonymous SELECT on `vtg_trade_posts` remains false.
+
+
+### Supplier catalogue messaging
+
+- Corrected the supplier dashboard's status copy so a verified supplier is not told that every active product is already buyer-visible. It now distinguishes saved/submitted products from products approved by VTG.
+- Corrected the catalogue notice to state both requirements: product approval and supplier verification.
+- Removed the marketplace hero caption claiming "Thousands of products" while the live catalogue is currently empty. The caption now describes VTG's reviewed supplier catalogue without claiming a product count.
+- Bumped the supplier catalogue script cache version and added regression assertions for the publication messaging.
