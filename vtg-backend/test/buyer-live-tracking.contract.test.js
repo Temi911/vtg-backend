@@ -19,7 +19,11 @@ test('cargo references are not sent to a provider until registration and polling
  assert.match(fn,/if\(!configured\(cfg\) \|\| !env\(cfg\.pollPath\)\)[\s\S]*no live request was sent/);
 });
 
-test('tracking Edge Function permits the Supabase client preflight header',()=>{\n assert.match(fn,/Access-Control-Allow-Headers[^\\n]*x-client-info/);\n});\n\ntest('tracking never labels sandbox records as live carrier data',()=>{
+test('tracking Edge Function permits the Supabase client preflight header',()=>{
+ assert.match(fn,/Access-Control-Allow-Headers[^\n]*x-client-info/);
+});
+
+test('tracking never labels sandbox records as live carrier data',()=>{
  assert.match(fn,/mode:\s*"sandbox"/);
  assert.match(fn,/Test-only event\. Not a carrier or port update\./);
  assert.match(ui,/SANDBOX · TEST DATA/);
