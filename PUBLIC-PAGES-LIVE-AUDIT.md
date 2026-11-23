@@ -118,3 +118,32 @@ The `vtg-email-preferences` Edge Function is ACTIVE (v3), and `vtg-email` is ACT
 ## Important limitations of this first pass
 
 This report combines repository source inspection with limited runtime checks of deployed Supabase endpoints. Supabase `vtg-api` is deployed at v21 with account-preference routes; the matching Vercel rewrites are committed but are not yet in the latest READY production deployment because Vercel reports a build-rate limit. It does **not** claim that all pages, authenticated workflows, payment provider, email delivery or third-party data sources have passed full acceptance tests. Several route groups still need deeper inspection. All API traffic remains on Supabase; unsupported routes must be migrated rather than sent to Railway. Supabase now has a replacement unsubscribe-token system. Legacy PostgreSQL tokens remain incompatible and must not be represented as migrated.
+
+
+## 2026-11-23 follow-up — catalogue and permissions audit
+
+This follow-up records the additional live checks performed against the connected VTG Supabase project and the public production alias. It is not a claim that every authenticated workflow has completed an end-to-end browser test.
+
+### Confirmed defects fixed
+
+- Supplier catalogue inserts were failing in the `private.vtg_products_review_guard()` trigger because authenticated sessions had no `USAGE` on the `private` schema. Applied and committed `20261123190000_grant_authenticated_private_schema_usage.sql`. This grants schema usage to `authenticated` only; it does not grant usage to `anon` or broaden function execution rights.
+- Trusted Edge Functions were missing required `service_role` table privileges. Applied and committed `20261123190500_restore_edge_function_service_role_table_privileges.sql` for workforce membership/invitations, inspection pricing/requests, trade-order reads, profile updates and audit-event inserts. No client-role grants were added by this migration.
+- Added `vtg-backend/test/supplier-product-save-permissions.contract.test.js` to protect the supplier insert/feedback contract and both permission migrations.
+
+### Live checks completed
+
+- Simulated an authenticated supplier insert against `public.products`; the review trigger returned a new row with `review_status='pending'` and `is_verified=false`. The transaction was rolled back, leaving no test product behind.
+- Confirmed the authenticated admin helper returns true for the active admin identity and the admin product-queue RPC executes.
+- Confirmed the admin can see the seven objects in the private verification-document bucket through the storage RLS policy. Those seven objects are all owned by the supplier account tested; the supplier's own visibility is therefore expected.
+- Verified the service-role grants with `has_table_privilege`.
+- Checked that the nine RLS-enabled/no-policy tables flagged by Supabase are server-only: `anon` and `authenticated` have no SELECT privilege; `service_role` has access.
+- Checked the exposed `SECURITY DEFINER` RPC set: none of the inspected functions is executable by `anon`. The admin RPCs inspected use the private admin gate/helper; the conversation-members RPC checks actual conversation membership; the bank workspace RPC requires the active, verified bank identity.
+- Reviewed the public landing page, sign-in, marketplace, Trade Atlas, Market Intelligence, Africa Markets, VTG AI, Trade Feed, contact, partnership application, inspection request, verification portal and workforce access routes. Protected role dashboards redirect unauthenticated visitors to the appropriate sign-in page.
+
+### Still requires verification or configuration
+
+- A real signed-in supplier/admin browser test is still required to confirm the supplier can save a real listing and that the admin can open a real document preview. The SQL checks validate the underlying trigger, RPC and storage policy, not the browser's signed-URL flow.
+- The contract test file has been committed but has not been executed in a repository test runner during this pass.
+- GitHub reports the Vercel check as successful for the latest audit commit. The Vercel deployment-inspection API returns 403 for this project, and the deployment preview URLs are behind Vercel login protection, so the exact deployed production commit could not be independently confirmed here.
+- Supabase Security Advisor still reports leaked-password protection disabled. This requires an Auth security setting change in the Supabase dashboard; it was not changed in this pass.
+- Supabase also reports authenticated-callable `SECURITY DEFINER` functions. The role/membership guards described above were inspected, but a complete function-by-function review remains a separate security-hardening task.
