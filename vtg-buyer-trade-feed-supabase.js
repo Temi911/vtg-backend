@@ -70,7 +70,7 @@
     event.preventDefault();
     const form=event.currentTarget,field=$('liveTradePostText'),button=$('publishLiveTradePost'),body=field?.value.trim(),files=Array.from($('liveTradePostFiles')?.files||[]).slice(0,4),region=$('liveTradePostRegion')?.value||'Africa';
     if(!body&&!files.length)return;
-    for(const file of files){if(!['image/jpeg','image/png','image/webp','image/gif'].includes(file.type)||file.size>20*1024*1024){status('Use JPEG, PNG, WebP or GIF photos up to 20 MB each.');return;}}
+    for(const [fileIndex,file] of files.entries()){if(!['image/jpeg','image/png','image/webp','image/gif'].includes(file.type)||file.size>20*1024*1024){status('Use JPEG, PNG, WebP or GIF photos up to 20 MB each.');return;}}
     button.disabled=true;status('Publishing your update securely…');
     try{
       await session();
@@ -81,7 +81,7 @@
       for(const file of files){const ext=(file.name.split('.').pop()||'jpg').replace(/[^a-z0-9]/gi,'').slice(0,8)||'jpg',storagePath=userId+'/'+postId+'/'+crypto.randomUUID()+'.'+ext;
         const {error:uploadError}=await client.storage.from('vtg-trade-feed-media').upload(storagePath,file,{contentType:file.type,upsert:false});if(uploadError)throw new Error('The post was saved, but a photo upload failed: '+uploadError.message);
         const {data:{publicUrl}}=client.storage.from('vtg-trade-feed-media').getPublicUrl(storagePath);
-        const {error:mediaError}=await client.from('vtg_trade_post_media').insert({post_id:postId,media_type:'image',storage_path:storagePath,public_url:publicUrl,sort_order:0});if(mediaError)throw new Error('The post was saved, but photo details could not be attached: '+mediaError.message);
+        const {error:mediaError}=await client.from('vtg_trade_post_media').insert({post_id:postId,media_type:'image',storage_path:storagePath,public_url:publicUrl,sort_order:fileIndex});if(mediaError)throw new Error('The post was saved, but photo details could not be attached: '+mediaError.message);
       }
       field.value='';if($('liveTradePostFiles'))$('liveTradePostFiles').value='';status(files.length?'Trade update and photos published to your account network.':'Trade update published to your signed-in account network.');await load();
     }catch(error){status('Unable to publish update: '+(error.message||'Supabase request failed'));}
