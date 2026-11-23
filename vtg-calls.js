@@ -35,7 +35,7 @@ async function start(opts){
   +'<div class="vtg-call-bar"><button class="vtg-call-btn" data-mic aria-label="Mute microphone">'+I.mic+'</button><button class="vtg-call-btn'+(kind==='video'?'':' off')+'" data-cam aria-label="'+(kind==='video'?'Turn camera off':'Switch to video: turn camera on')+'" title="'+(kind==='video'?'Turn camera off':'Switch to video (only you decide whether your camera is on)')+'">'+(kind==='video'?I.video:I.camoff)+'</button><button class="vtg-call-btn end" data-end aria-label="Leave call">'+I.hangup+'</button></div>';
  document.body.append(ui);
  const grid=ui.querySelector('[data-grid]'),msg=ui.querySelector('[data-msg]');
- session={ui,grid,count:ui.querySelector('[data-count]'),live:new Map(),peers:new Map(),callId:null,stream:null,channels:[],seen:new Set(),pending:new Map(),started:0,timer:null,client,userId,ended:false};
+ session={ui,grid,count:ui.querySelector('[data-count]'),live:new Map(),peers:new Map(),callId:null,startedBy:null,stream:null,channels:[],seen:new Set(),pending:new Map(),started:0,timer:null,client,userId,ended:false};
  const s=session;
  const fail=text=>{msg.hidden=false;msg.textContent=text;};
  try{
@@ -60,7 +60,7 @@ async function start(opts){
    setStream(me,s.stream,true);setCam(true);s.peers.forEach(e=>e.sendCam?.());
   }catch(err){fail(err?.name==='NotAllowedError'?'Camera permission was blocked. You are still on the voice call.':'Could not start your camera: '+(err?.message||err));}
  };
- ui.querySelector('[data-end]').onclick=()=>cleanup(true);
+ ui.querySelector('[data-end]').onclick=()=>endOrLeave();
 
  function peer(id,initiator){
   if(s.peers.has(id))return s.peers.get(id);
@@ -137,6 +137,14 @@ function adoptVideo(entry){
   const {data:callId,error}=await client.rpc('vtg_start_call',{p_conversation_id:conversationId,p_kind:kind});
   if(error)throw error;
   s.callId=callId;
+  const {data:callRow,error:callReadError}=await client.from('vtg_calls').select('started_by,status').eq('id',callId).single();
+  if(callReadError)throw callReadError;
+  s.startedBy=callRow?.started_by||null;
+  const endButton=ui.querySelector('[data-end]');
+  const isOrganizer=String(s.startedBy)===String(userId);
+  endButton.dataset.endLabel=isOrganizer?'End call for everyone':'Leave call';
+  endButton.setAttribute('aria-label',isOrganizer?'End call for everyone':'Leave call');
+  endButton.title=isOrganizer?'End this call for every participant':'Leave this call';
   // 3) offer to everyone who joined before me (total order by joined_at, then id) so exactly one side offers
   const {data:parts,error:pe}=await client.from('vtg_call_participants').select('user_id,joined_at').eq('call_id',callId).is('left_at',null);
   if(pe)throw pe;
@@ -147,6 +155,21 @@ function adoptVideo(entry){
   for(const u of parts.filter(x=>String(x.user_id)!==String(userId)&&before(x)))await offerTo(u.user_id);
   if(!parts.some(x=>String(x.user_id)!==String(userId)))ui.querySelector('[data-time]').textContent='waiting for others to join…';
  }catch(e){fail(e?.message||'Could not start the call.');setTimeout(()=>cleanup(!!s.callId),2500);}
+}
+async function endOrLeave(){
+ const s=session;if(!s||s.ended)return;
+ const button=s.ui.querySelector('[data-end]');if(button)button.disabled=true;
+ if(s.callId&&String(s.startedBy)===String(s.userId)){
+  try{
+   const {error}=await s.client.rpc('vtg_end_call',{p_call_id:s.callId});
+   if(error)throw error;
+   await cleanup(false);
+  }catch(error){
+   if(button)button.disabled=false;
+   const msg=s.ui.querySelector('[data-msg]');msg.hidden=false;
+   msg.textContent='The call could not be ended for everyone: '+(error.message||'Please try again.');
+  }
+ }else await cleanup(true);
 }
 async function cleanup(leave){
  const s=session;if(!s||s.ended)return;s.ended=true;
