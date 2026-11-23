@@ -158,3 +158,13 @@ This follow-up records the additional live checks performed against the connecte
 - Vercel's deployment listing showed the call-authorization commit reached `READY` production. Later migration filename/test-only commits were queued at the last deployment-history check.
 - Vercel runtime logs and deployment detail endpoints returned 403, so runtime error logs could not be inspected in this pass.
 - Supabase Auth leaked-password protection remains disabled and must be enabled in the Supabase Dashboard under Authentication → Settings → Password Security. This is a project Auth setting, not a SQL permission; it was not changed through the database.
+
+
+### Marketplace public-query dependency fix
+
+- A direct anonymous-role query of `vtg_marketplace_products` initially failed even though the view itself had SELECT permission. Its underlying RLS policies referenced `profiles`, and the profile author-label policy also referenced `vtg_trade_posts`; those tables intentionally had no anonymous SELECT grant. This was a genuine public catalogue visibility defect.
+- Reworked the public profile policy to use a private, boolean-only helper that checks for a published Trade Feed post without returning post content.
+- Reworked the anonymous product visibility policy to use a private, boolean-only helper that checks supplier role, active trade account, verified status and verification expiry. Split supplier-profile policies by role so anonymous reads only see currently verified, unexpired supplier profiles and signed-in owners/admins retain their intended access.
+- Did not grant anonymous SELECT on `profiles` or `vtg_trade_posts`; published Trade Feed content and private profile fields are not exposed as a workaround.
+- Applied Supabase migrations `20261123192339_fix_public_profile_policy_dependency_for_marketplace` and `20261123192420_isolate_public_marketplace_supplier_visibility`, with matching files committed to GitHub.
+- Verified an anonymous-role SELECT against `public.vtg_marketplace_products` now executes successfully and returns zero rows, which is the correct result while there are no approved products. Anonymous SELECT on `vtg_trade_posts` remains false.
