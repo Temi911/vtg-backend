@@ -18,14 +18,14 @@ test('supplier catalogue insert has visible feedback and writes to the live Supa
 });
 
 test('authenticated supplier inserts can resolve the private admin helper used by the review guard', () => {
-  const migration = read('supabase/migrations/20261123190000_grant_authenticated_private_schema_usage.sql');
+  const migration = read('supabase/migrations/20261123185410_grant_authenticated_private_schema_usage.sql');
   assert.match(migration, /grant usage on schema private to authenticated/i);
   assert.doesNotMatch(migration, /grant usage on schema private to anon/i);
   assert.doesNotMatch(migration, /grant execute on all functions/i);
 });
 
 test('server-side workforce and inspection privileges are limited to service_role', () => {
-  const migration = read('supabase/migrations/20261123190500_restore_edge_function_service_role_table_privileges.sql');
+  const migration = read('supabase/migrations/20261123185517_restore_edge_function_service_role_table_privileges.sql');
   for (const table of [
     'vtg_workforce_members',
     'vtg_workforce_invitations',
