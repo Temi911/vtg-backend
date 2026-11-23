@@ -9,8 +9,16 @@
   script.async = true;
   script.onload = () => {
     try {
+      // A page may set window.VTG_AUTH_CONFIG = { detectSessionInUrl: false } before this script
+      // loads when it must handle the URL callback itself (the administrator recovery page does).
+      const pageConfig = window.VTG_AUTH_CONFIG || {};
       const client = window.supabase.createClient(URL, KEY, {
-        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' }
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: pageConfig.detectSessionInUrl === false ? false : true,
+          flowType: 'pkce'
+        }
       });
       window.VTG_SUPABASE = client;
 
