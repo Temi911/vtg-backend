@@ -10,6 +10,9 @@ const policyFix=read('supabase/migrations/20261123191000_vtg_qualified_rfq_read_
 const buyer=read('vtg-buyer-rfq-workflow.js');
 const supplier=read('vtg-supplier-shared-trade-desk-supabase.js');
 const dashboard=read('buyer-dashboard.html');
+const buyerMarketplace=read('vtg-buyer-marketplace-supabase.js');
+const publicMarketplace=read('marketplace.html');
+const supplierProducts=read('vtg-supplier-products-supabase.js');
 
 test('RFQ publish RPC is authenticated, buyer-scoped and generates a shared reference',()=>{
  assert.match(migration,/create or replace function public\.vtg_publish_buyer_rfq/);
@@ -47,9 +50,22 @@ test('supplier workspace renders structured RFQ requirements and uses existing q
  assert.match(supplier,/required_certifications/);
  assert.match(supplier,/destination_port/);
  assert.match(supplier,/from\('supplier_trade_quotations'\)\.insert/);
+ assert.match(supplier,/supplier_trade_quotations!supplier_trade_quotations_request_id_fkey/);
+ assert.match(supplier,/trade_negotiation_messages!trade_negotiation_messages_quote_id_fkey/);
+ assert.doesNotMatch(supplier,/supplier_trade_quotations\(id,supplier_id/);
+});
+
+test('catalogue empty states explain approval and supplier verification without implying products are live',()=>{
+ assert.match(buyerMarketplace,/listing is approved and the supplier completes VTG verification/);
+ assert.match(buyerMarketplace,/data-empty-rfq/);
+ assert.match(publicMarketplace,/VTG approves the product and completes supplier verification/);
+ assert.match(supplierProducts,/Product submitted to the VTG catalogue for review/);
+ assert.doesNotMatch(supplierProducts,/Product published to the live VTG marketplace/);
 });
 
 test('new browser RFQ scripts parse as JavaScript',()=>{
  assert.doesNotThrow(()=>new vm.Script(buyer));
  assert.doesNotThrow(()=>new vm.Script(supplier));
+ assert.doesNotThrow(()=>new vm.Script(buyerMarketplace));
+ assert.doesNotThrow(()=>new vm.Script(supplierProducts));
 });
