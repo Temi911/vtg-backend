@@ -80,3 +80,12 @@ test('public supplier profiles do not expose reviewer identity and expired evide
   assert.match(privacy, /d\.expires_at IS NULL OR d\.expires_at > now\(\)/i);
   assert.doesNotMatch(privacy, /verification_reviewed_by=/i);
 });
+
+test('supplier-visible requests do not contain internal reviewer identity', () => {
+  const privacy = fs.readFileSync(
+    path.join(root, 'supabase/migrations/20261123140000_vtg_supplier_verification_request_privacy.sql'),
+    'utf8'
+  );
+  assert.match(privacy, /DROP COLUMN IF EXISTS reviewer_id/i);
+  assert.match(privacy, /vtg_supplier_verification_reviews\(request_id,supplier_id,reviewer_id/i);
+});
