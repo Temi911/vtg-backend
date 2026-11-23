@@ -3,7 +3,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-vtg-webhook-secret",
+  "Access-Control-Allow-Headers": "authorization, apikey, x-client-info, content-type, x-vtg-webhook-secret",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Content-Type": "application/json",
 };

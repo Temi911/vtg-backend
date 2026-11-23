@@ -17,6 +17,11 @@ test('buyer tracking readiness is derived from complete provider configuration',
 
 test('cargo references are not sent to a provider until registration and polling endpoints are configured',()=>{
  assert.match(fn,/if\(!configured\(cfg\) \|\| !env\(cfg\.pollPath\)\)[\s\S]*no live request was sent/);
+ assert.match(fn,/provider_status:"pending_provider"/);
+});
+
+test('tracking Edge Function permits the Supabase client preflight header',()=>{
+ assert.match(fn,/Access-Control-Allow-Headers[^\n]*x-client-info/);
 });
 
 test('tracking never labels sandbox records as live carrier data',()=>{

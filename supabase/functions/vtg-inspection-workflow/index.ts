@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import {createClient} from "npm:@supabase/supabase-js@2";
-const H={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, apikey, content-type","Access-Control-Allow-Methods":"GET,POST,PATCH,OPTIONS","Content-Type":"application/json"};
+const H={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, apikey, x-client-info, content-type","Access-Control-Allow-Methods":"GET,POST,PATCH,OPTIONS","Content-Type":"application/json"};
 const out=(x:unknown,s=200)=>new Response(JSON.stringify(x),{status:s,headers:H});
 const text=(x:unknown)=>typeof x==="string"?x.trim():"";
 const ref=()=>"INS-"+new Date().getUTCFullYear()+"-"+crypto.randomUUID().replaceAll("-","").slice(0,8).toUpperCase();
