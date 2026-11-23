@@ -166,9 +166,9 @@ function isHttpUrl(value:string){
 }
 function classifyNewsRegions(title:string,domain:string):string[] {
   const text=(title+" "+domain).toLowerCase(),regions:string[]=[];
-  if(/\\b(africa|african|nigeria|kenya|ghana|egypt|ethiopia|tanzania|uganda|rwanda|senegal|morocco|algeria|angola|cameroon|zambia|zimbabwe|south africa)\\b/.test(text)||domain.endsWith(".africa")) regions.push("Africa");
-  if(/\\b(china|chinese|beijing|shanghai|shenzhen|guangzhou)\\b/.test(text)||domain.endsWith(".cn")) regions.push("China");
-  if(/\\b(south korea|korean|seoul|busan|incheon)\\b/.test(text)||domain.endsWith(".kr")) regions.push("South Korea");
+  if(/\b(africa|african|nigeria|kenya|ghana|egypt|ethiopia|tanzania|uganda|rwanda|senegal|morocco|algeria|angola|cameroon|zambia|zimbabwe|south africa)\b/.test(text)||domain.endsWith(".africa")) regions.push("Africa");
+  if(/\b(china|chinese|beijing|shanghai|shenzhen|guangzhou)\b/.test(text)||domain.endsWith(".cn")) regions.push("China");
+  if(/\b(south korea|korean|seoul|busan|incheon)\b/.test(text)||domain.endsWith(".kr")) regions.push("South Korea");
   return regions;
 }
 async function loadGoogleNews(){
@@ -186,9 +186,9 @@ async function loadGoogleNews(){
       const title=rssTag(item,"title"),articleUrl=rssTag(item,"link"),dateValue=rssTag(item,"pubDate");
       const sourceOpen=item.match(/<source[^>]*>/i)?.[0]||"",sourceUrl=sourceOpen.match(/url=["']([^"']+)["']/i)?.[1]||"";
       const sourceText=sourceOpen?(item.split(sourceOpen)[1]||"").split("</source>")[0]||"":"";
-      const imageTag=item.match(/<(?:media:content|media:thumbnail|enclosure)\\b[^>]*>/i)?.[0]||"";
+      const imageTag=item.match(/<(?:media:content|media:thumbnail|enclosure)\b[^>]*>/i)?.[0]||"";
       const rawImage=imageTag.match(/url=["']([^"']+)["']/i)?.[1]||"";
-      let domain="",source="";try{domain=new URL(sourceUrl).hostname.replace(/^www\\./,"").toLowerCase();}catch(_){}
+      let domain="",source="";try{domain=new URL(sourceUrl).hostname.replace(/^www\./,"").toLowerCase();}catch(_){}
       source=decodeXml(sourceText)||domain;
       const discoveredAt=dateValue&&!Number.isNaN(Date.parse(dateValue))?new Date(dateValue).toISOString():null;
       const {topic,relevance,trusted}=classify(title,domain);
