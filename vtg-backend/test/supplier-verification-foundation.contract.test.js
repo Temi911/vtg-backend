@@ -61,3 +61,12 @@ test('admin workspace reviews supplier verification requests through the protect
   assert.match(adminLive, /p_decision: 'approved'/);
   assert.match(adminLive, /p_decision: 'rejected'/);
 });
+
+test('supplier verification guard trigger is not directly executable by API roles', () => {
+  const hardening = fs.readFileSync(
+    path.join(root, 'supabase/migrations/20261123123000_vtg_supplier_verification_guard_hardening.sql'),
+    'utf8'
+  );
+  assert.match(hardening, /REVOKE ALL ON FUNCTION public\\.vtg_guard_supplier_verification_fields\\(\\)/i);
+  assert.match(hardening, /FROM PUBLIC, anon, authenticated/i);
+});
