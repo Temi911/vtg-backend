@@ -99,3 +99,20 @@ test('public marketplace view uses invoker permissions and is read-only', () => 
   assert.match(marketplace, /REVOKE ALL ON public\\.vtg_marketplace_products FROM PUBLIC, anon, authenticated/i);
   assert.match(marketplace, /GRANT SELECT ON public\\.vtg_marketplace_products TO anon, authenticated/i);
 });
+
+test('buyer storefronts display awarded supplier verification levels without overstating legacy checks', () => {
+  const marketplace = fs.readFileSync(path.join(root, 'vtg-buyer-marketplace-supabase.js'), 'utf8');
+  const publicPage = fs.readFileSync(path.join(root, 'marketplace.html'), 'utf8');
+  const requestForm = fs.readFileSync(path.join(root, 'vtg-buyer-request-supabase.js'), 'utf8');
+  const viewMigration = fs.readFileSync(
+    path.join(root, 'supabase/migrations/20261123150000_vtg_marketplace_view_security.sql'),
+    'utf8'
+  );
+  assert.match(viewMigration, /supplier_verification_level/);
+  assert.match(marketplace, /supplier_verification_level/);
+  assert.match(publicPage, /supplier_verification_level/);
+  assert.match(marketplace, /Business documents reviewed/);
+  assert.match(publicPage, /Business documents reviewed/);
+  assert.match(requestForm, /from\('vtg_marketplace_products'\)/);
+  assert.doesNotMatch(requestForm, /from\('products'\)/);
+});
