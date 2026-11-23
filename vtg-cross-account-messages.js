@@ -87,16 +87,29 @@ function refreshHeader(){
  if(live)$('[data-calltext]').textContent='A '+live.kind+' call is in progress in this chat.';
 }
 function toRows(rows){
- return rows.map(m=>{const mem=members[m.sender_id];const att=m.localAtt||attMap[m.id]||null;const ph=m.body===ATT;return {id:m.id,senderId:m.sender_id,mine:String(m.sender_id)===String(userId),name:mem?.name||'Trade partner',tone:mem?.tone??0,text:ph?(att&&att.length?'':'Sending attachment…'):(m.body||''),attachments:att,client,at:m.created_at,pending:m.pending};});
+ return rows.map(m=>{const mem=members[m.sender_id];const att=m.localAtt||attMap[m.id]||null;const ph=m.body===ATT;return {id:m.id,senderId:m.sender_id,mine:String(m.sender_id)===String(userId),name:mem?.name||'Trade partner',tone:mem?.tone??0,text:ph?(att&&att.length?'':'Sending attachment…'):(m.body||''),attachments:att,client,at:m.created_at,pending:m.pending,editedAt:m.edited_at,editable:String(m.sender_id)===String(userId)&&!m.pending&&Date.now()-new Date(m.created_at).getTime()<=15*60*1000};});
 }
-function draw(){C.renderStream(log,toRows(messages),'No messages yet. Say hello below.');}
+async function editMessage(msg){
+ const next=window.prompt('Edit your message',msg.text||'');
+ if(next===null)return;
+ const body=next.trim();if(!body||body===msg.text)return;
+ try{
+  const {data,error}=await client.rpc('vtg_edit_message',{p_message_id:msg.id,p_body:body});
+  if(error)throw error;
+  if(!data?.ok){flash(data?.message||'Your edit was not saved. Please review VTG messaging rules.');return;}
+  const row=messages.find(x=>String(x.id)===String(msg.id));
+  if(row){row.body=body;row.edited_at=data.edited_at||new Date().toISOString();}
+  draw();
+ }catch(error){flash('Message edit failed: '+(error.message||'Please try again'));}
+}
+function draw(){C.renderStream(log,toRows(messages),'No messages yet. Say hello below.',editMessage);}
 async function openConv(id){
  activeId=String(id);host.classList.add('is-open');renderList();empty(log,'Loading messages…');
  try{
   members=await membersOf(activeId);
   const c=convs.find(x=>String(x.id)===activeId);if(c)c.members=members;
   refreshHeader();
-  const {data,error}=await client.from('messages').select('id,sender_id,body,created_at').eq('conversation_id',activeId).order('created_at',{ascending:true}).limit(500);
+  const {data,error}=await client.from('messages').select('id,sender_id,body,created_at,edited_at').eq('conversation_id',activeId).order('created_at',{ascending:true}).limit(500);
   if(error)throw error;
   messages=data||[];await loadAtts(activeId);draw();
  }catch(e){empty(log,'Messages could not be loaded: '+(e.message||'request failed'));}
@@ -164,9 +177,10 @@ form.addEventListener('submit',async e=>{
  if(picker2)picker2.clear();
  messages.push(temp);draw();
  try{
-  const {data:messageId,error:sendError}=await client.rpc('vtg_send_message',{p_conversation_id:activeId,p_body:body});
+  const {data:sendResult,error:sendError}=await client.rpc('vtg_send_message',{p_conversation_id:activeId,p_body:body});
   if(sendError)throw sendError;
-  const {data,error:readError}=await client.from('messages').select('id,sender_id,body,created_at').eq('id',messageId).single();
+  if(!sendResult?.ok){messages=messages.filter(x=>x.id!==temp.id);draw();input.value=typed;flash((sendResult?.message||'This message was blocked by VTG content rules')+' Warning '+Number(sendResult?.warning_count||1)+' in the last 30 days.');return;}
+  const {data,error:readError}=await client.from('messages').select('id,sender_id,body,created_at,edited_at').eq('id',sendResult.message_id).single();
   if(readError)throw readError;
   const i=messages.findIndex(x=>x.id===temp.id);
   if(i>=0){if(messages.some(x=>String(x.id)===String(read.id)))messages.splice(i,1);else messages[i]=read;}else if(!messages.some(x=>String(x.id)===String(read.id)))messages.push(read);
