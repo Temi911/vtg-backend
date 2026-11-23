@@ -5,6 +5,7 @@ const path=require('node:path');
 const root=path.resolve(__dirname,'..','..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const sql=read('supabase/migrations/20261114000000_vtg_chat_and_calls.sql');
+const send=read('supabase/migrations/20261123220000_secure_buyer_chat_message_send_rpc.sql');
 const calls=read('vtg-calls.js'),msgs=read('vtg-cross-account-messages.js'),ai=read('vtg-dashboard-chat.js'),core=read('vtg-chat-core.js'),css=read('vtg-chat-whatsapp.css');
 const pages=['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html'];
 
@@ -80,4 +81,16 @@ test('a voice call can switch to video (and back) per person without renegotiati
 
 test('bank dashboard no longer throws on a missing messageCase element',()=>{
  assert.match(read('bank-trade-os.html'),/const mc=\$\('messageCase'\);if\(!mc\)return;/);
+});
+
+test('dashboard message sending uses an authenticated RPC and enforces active conversation membership',()=>{
+ assert.match(send,/create or replace function public\.vtg_send_message/);
+ assert.match(send,/v_user_id uuid := auth\.uid\(\)/);
+ assert.match(send,/private\.vtg_is_conversation_member\(p_conversation_id\)/);
+ assert.match(send,/p\.is_active = true/);
+ assert.match(send,/length\(v_body\) > 4000/);
+ assert.match(send,/revoke all on function public\.vtg_send_message/);
+ assert.match(send,/grant execute on function public\.vtg_send_message\(uuid, text\) to authenticated/);
+ assert.match(msgs,/client\.rpc\('vtg_send_message'/);
+ assert.doesNotMatch(msgs,/client\.from\('messages'\)\.insert/);
 });
