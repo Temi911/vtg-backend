@@ -75,7 +75,7 @@ Deno.serve(async (req: Request) => {
   if (issue.length < 3 || issue.length > 120 || description.length < 10 || description.length > 2000) {
     return reply({ error: "Check the issue and description fields, then try again." }, 400);
   }
-  if (/(password|verification code|one.time code|otp\s*[:=])/i.test(description)) {
+  if (/(?:password|verification\s*code|one[ -]?time\s*code|otp)\s*[:=]\s*\S+/i.test(description)) {
     return reply({ error: "For your security, do not include passwords or verification codes." }, 400);
   }
 
