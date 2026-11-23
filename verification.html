@@ -156,7 +156,11 @@ async function viewDoc(id){
  try{
   const {data:doc,error}=await client.from('vtg_verification_documents').select('storage_path,mime_type,file_name').eq('id',id).single();
   if(error||!doc)throw new Error(error?.message||'Unable to find this verification document.');
-  const [bucket,...parts]=String(doc.storage_path||'').split('/'),path=parts.join('/');
+  const [bucket,...parts]=String(doc.storage_path||'').split('/');
+  let path=parts.join('/');
+  // Some legacy uploads stored the bucket name inside storage_path as well.
+  // Supabase expects the object path WITHOUT the bucket prefix.
+  if(bucket&&path.startsWith(bucket+'/'))path=path.slice(bucket.length+1);
   if(!bucket||!path)throw new Error('The document storage reference is incomplete.');
   let target='';
   if(bucket===LOGO_BUCKET){
