@@ -9,7 +9,7 @@
   var BUCKET = 'vtg-trade-documents', MAX = 10 * 1024 * 1024, TYPES = { 'application/pdf': 'pdf', 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
   var SHIP_ORDER_OK = ['confirmed', 'processing', 'in_production', 'shipped', 'in_transit', 'arrived', 'customs', 'delivered'];
   var STATUSES = [['booked', 'Booked'], ['departed', 'Departed'], ['in_transit', 'In transit'], ['arrived', 'Arrived at port'], ['customs', 'In customs'], ['delivered', 'Delivered']];
-  var DOC_TYPES = ['Commercial invoice', 'Packing list', 'Bill of lading', 'Certificate of origin', 'Inspection certificate', 'Insurance certificate', 'Other'];
+  var DOC_TYPES = ['Commercial invoice', 'Packing list', 'Bill of lading', 'Certificate of origin', 'Inspection certificate', 'Insurance certificate', 'Proof of delivery', 'Other'];
   var ctx = null, orders = [];
 
   async function context() {
