@@ -122,9 +122,9 @@ test('marketplace quote RPC rejects products that are not approved and published
     path.join(root, 'supabase/migrations/20261123160000_vtg_quote_request_requires_approved_listing.sql'),
     'utf8'
   );
-  assert.match(quoteGuard, /p\.is_verified = true/i);
-  assert.match(quoteGuard, /p\.review_status = 'approved'/i);
-  assert.match(quoteGuard, /sp\.verification_status = 'verified'/i);
+  assert.match(quoteGuard, /p\.is_verified\s*=\s*true/i);
+  assert.match(quoteGuard, /p\.review_status\s*=\s*'approved'/i);
+  assert.match(quoteGuard, /sp\.verification_status\s*=\s*'verified'/i);
   assert.match(quoteGuard, /An active buyer trade account is required/i);
   assert.match(quoteGuard, /Quantity is below the supplier minimum order quantity/i);
 });
