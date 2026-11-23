@@ -83,7 +83,7 @@ document.addEventListener('submit',event=>{
    const result=await db.from('products').insert(payload).select('id').single();
    if(result.error)throw result.error;
    form.reset();form.classList.add('hidden');
-   say(profile.supplierVerificationStatus==='verified'?'Product published to the live VTG marketplace.':'Product saved to Supabase. It will appear in the buyer marketplace after VTG verifies your supplier account.');
+   say('Product submitted to the VTG catalogue for review. Buyers will see it only after the listing is approved and your supplier verification is complete.');
    await load();
   }catch(error){say(error.message||'Product could not be saved to Supabase.');}
   finally{if(button){button.disabled=false;button.textContent='Save to VTG catalogue';}}
