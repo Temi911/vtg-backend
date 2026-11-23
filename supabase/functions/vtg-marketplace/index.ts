@@ -83,6 +83,34 @@ Deno.serve(async(req:Request)=>{
       if(error) throw error;
       return reply({following:(data??[]).map(x=>({id:x.following_id}))});
     }
+    if(req.method==="GET" && path==="news/interactions") {
+      const articleUrl=clean(url.searchParams.get("url"),1800), sourceKey=clean(url.searchParams.get("source"),300);
+      if(!articleUrl || !/^https?:\\/\\//i.test(articleUrl)) return fail("A valid article URL is required.");
+      const articleKey="article:"+articleUrl, publisherKey="source:"+sourceKey;
+      const [{data:likes,error:le},{data:comments,error:ce},{data:sourceFollows,error:fe}] = await Promise.all([
+        db.from("vtg_news_interactions").select("id,user_id").eq("target_key",articleKey).eq("interaction_type","like"),
+        db.from("vtg_news_interactions").select("id,user_id,body,created_at").eq("target_key",articleKey).eq("interaction_type","comment").order("created_at"),
+        sourceKey?db.from("vtg_news_interactions").select("id,user_id").eq("target_key",publisherKey).eq("interaction_type","follow_source"):Promise.resolve({data:[],error:null})
+      ]);
+      if(le||ce||fe) throw le||ce||fe;
+      const {data:{user}}=await db.auth.getUser();
+      const ids=[...new Set((comments??[]).map(x=>x.user_id))];
+      const {data:profiles,error:pe}=ids.length?await db.from("profiles").select("id,full_name,role").in("id",ids):{data:[],error:null};
+      if(pe) throw pe;
+      const profileMap=new Map((profiles??[]).map(p=>[p.id,p]));
+      return reply({likes:likes?.length??0,comments:(comments??[]).map(c=>({...c,full_name:profileMap.get(c.user_id)?.full_name??"VTG member",role:profileMap.get(c.user_id)?.role??"buyer"})),comment_count:comments?.length??0,liked:!!user&&(likes??[]).some(x=>x.user_id===user.id),following_source:!!user&&(sourceFollows??[]).some(x=>x.user_id===user.id),followers:sourceFollows?.length??0});
+    }
+    if(req.method==="POST" && path==="news/interactions") {
+      await activeUser(db);
+      const body=await req.json().catch(()=>({}));
+      const articleUrl=clean(body.url,1800), type=clean(body.type,24), sourceKey=clean(body.source,300), comment=clean(body.body,2000);
+      if(!/^https?:\\/\\//i.test(articleUrl)) return fail("A valid article URL is required.");
+      const targetKey=type==="follow_source"?"source:"+sourceKey:"article:"+articleUrl;
+      const {data,error}=await db.rpc("vtg_news_interaction",{p_article_url:articleUrl,p_target_key:targetKey,p_interaction_type:type,p_body:type==="comment"?comment:null});
+      if(error) throw error;
+      if(!data?.ok) return reply(data,422);
+      return reply(data,201);
+    }
     const commentsMatch=path.match(/^feed\/([0-9a-f-]+)\/comments$/i);
     if(req.method==="GET" && commentsMatch) {
       const postId=commentsMatch[1];
