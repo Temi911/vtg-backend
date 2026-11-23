@@ -83,7 +83,7 @@ function render(){
  if(sort==='price-low')items.sort((a,b)=>Number(a.unit_price)-Number(b.unit_price));
  if(sort==='price-high')items.sort((a,b)=>Number(b.unit_price)-Number(a.unit_price));
  $('#count').textContent=`${items.length} product${items.length===1?'':'s'} available`;
- $('#products').innerHTML=items.length?items.map(card).join(''):'<div class="empty">'+(catalogue.length?'No verified supplier listings match your filters. Try a broader search or another category.':'No supplier products have been published yet. Listings will appear here after a supplier publishes a product and VTG verifies the supplier account.')+'</div>';
+ $('#products').innerHTML=items.length?items.map(card).join(''):'<div class="empty">'+(catalogue.length?'No verified supplier listings match your filters. Try a broader search or another category.':'No approved supplier listings are available yet. A listing appears only after VTG approves the product and completes supplier verification. Suppliers can <a href="/supplier-signup.html">register with VTG</a> and submit their catalogue for review.')+'</div>';
 }
 function card(p){
  const levels={registered_business:'Registered Business',vtg_verified:'VTG Verified',production_verified:'Production Verified',trade_performance_reviewed:'Trade Performance Reviewed'};
