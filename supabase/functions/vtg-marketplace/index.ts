@@ -86,19 +86,19 @@ Deno.serve(async(req:Request)=>{
     if(req.method==="GET" && path==="news/interactions") {
       const articleUrl=clean(url.searchParams.get("url"),1800), sourceKey=clean(url.searchParams.get("source"),300);
       if(!articleUrl || !/^https?:\/\//i.test(articleUrl)) return fail("A valid article URL is required.");
-      const articleKey="article:"+articleUrl, publisherKey="source:"+sourceKey;
+      const {data:{user}}=await db.auth.getUser();
+      const articleKey="article:"+articleUrl, publisherKey="source:"+sourceKey, ownFields=user?"id,user_id":"id";
       const [{data:likes,error:le},{data:comments,error:ce},{data:sourceFollows,error:fe}] = await Promise.all([
-        db.from("vtg_news_interactions").select("id,user_id").eq("target_key",articleKey).eq("interaction_type","like"),
-        db.from("vtg_news_interactions").select("id,user_id,body,created_at").eq("target_key",articleKey).eq("interaction_type","comment").order("created_at"),
-        sourceKey?db.from("vtg_news_interactions").select("id,user_id").eq("target_key",publisherKey).eq("interaction_type","follow_source"):Promise.resolve({data:[],error:null})
+        db.from("vtg_news_interactions").select(ownFields).eq("target_key",articleKey).eq("interaction_type","like"),
+        db.from("vtg_news_interactions").select(user?"id,user_id,body,created_at":"id,body,created_at").eq("target_key",articleKey).eq("interaction_type","comment").order("created_at"),
+        sourceKey?db.from("vtg_news_interactions").select(ownFields).eq("target_key",publisherKey).eq("interaction_type","follow_source"):Promise.resolve({data:[],error:null})
       ]);
       if(le||ce||fe) throw le||ce||fe;
-      const {data:{user}}=await db.auth.getUser();
-      const ids=[...new Set((comments??[]).map(x=>x.user_id))];
+      const ids=user?[...new Set((comments??[]).map(x=>x.user_id))]:[];
       const {data:profiles,error:pe}=ids.length?await db.from("profiles").select("id,full_name,role").in("id",ids):{data:[],error:null};
       if(pe) throw pe;
       const profileMap=new Map((profiles??[]).map(p=>[p.id,p]));
-      return reply({likes:likes?.length??0,comments:(comments??[]).map(c=>({...c,full_name:profileMap.get(c.user_id)?.full_name??"VTG member",role:profileMap.get(c.user_id)?.role??"buyer"})),comment_count:comments?.length??0,liked:!!user&&(likes??[]).some(x=>x.user_id===user.id),following_source:!!user&&(sourceFollows??[]).some(x=>x.user_id===user.id),followers:sourceFollows?.length??0});
+      return reply({likes:likes?.length??0,comments:(comments??[]).map(c=>({id:c.id,body:c.body,created_at:c.created_at,full_name:c.user_id?(profileMap.get(c.user_id)?.full_name??"VTG member"):"VTG member",role:c.user_id?(profileMap.get(c.user_id)?.role??"buyer"):"buyer"})),comment_count:comments?.length??0,liked:!!user&&(likes??[]).some(x=>x.user_id===user.id),following_source:!!user&&(sourceFollows??[]).some(x=>x.user_id===user.id),followers:sourceFollows?.length??0});
     }
     if(req.method==="POST" && path==="news/interactions") {
       await activeUser(db);
