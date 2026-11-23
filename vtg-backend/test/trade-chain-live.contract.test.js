@@ -44,3 +44,18 @@ test('product review: supplier sees status, staff queue uses the existing RPCs',
   assert.match(admin,/vtg_admin_product_queue/);assert.match(admin,/vtg_review_product/);
   assert.match(admin,/give the supplier a reason/);assert.doesNotMatch(admin,/service_role/);
 });
+
+test('delivery closure requires supplier shipment status, proof document and buyer receipt confirmation',()=>{
+  const delivery=rd('supabase/migrations/20261123213000_vtg_delivery_proof_and_buyer_deal_closure_hardening.sql');
+  const supplierOrders=rd('vtg-supplier-orders-supabase.js');
+  const buyerOrders=rd('vtg-buyer-orders-supabase.js');
+  assert.match(delivery,/create or replace function public\.vtg_supplier_record_delivery/);
+  assert.match(delivery,/lower\(s\.status\)='delivered'/);
+  assert.match(delivery,/proof of delivery/);
+  assert.match(delivery,/create or replace function public\.vtg_confirm_order_delivery/);
+  assert.match(delivery,/delivery_confirmed_by=v_user/);
+  assert.match(supplierOrders,/rpc\('vtg_supplier_record_delivery'/);
+  assert.match(chain,/Proof of delivery/);
+  assert.match(buyerOrders,/rpc\('vtg_confirm_order_delivery'/);
+  assert.match(buyerOrders,/Confirm receipt & close deal/);
+});
