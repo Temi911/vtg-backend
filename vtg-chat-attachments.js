@@ -19,6 +19,7 @@ function check(files,scope,already){
   if(already+ok.length>=LIMITS.count){errors.push('At most '+LIMITS.count+' files per message.');break;}
   const mime=mimeOf(f);
   if(!mime){errors.push(f.name+': this file type is not supported. Use PDF, Word, Excel, TXT, CSV, JPG, PNG, WEBP, GIF, MP4, WEBM or MOV.');continue;}
+  if(scope==='ai'&&mime.startsWith('audio/')){errors.push(f.name+': audio notes are supported in Messages, not the VTG AI upload.');continue;}
   if(!f.size){errors.push(f.name+': the file is empty.');continue;}
   if(f.size>lim.max){errors.push(f.name+': larger than '+(lim.max/MB)+' MB ('+size(f.size)+').');continue;}
   ok.push({file:f,mime,kind:kindOf(mime)});
