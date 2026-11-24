@@ -92,7 +92,7 @@ function refreshHeader(){
  if(live)$('[data-calltext]').textContent='A '+live.kind+' call is in progress in this chat.';
 }
 function toRows(rows){
- return rows.map(m=>{const mem=members[m.sender_id];const att=m.localAtt||attMap[m.id]||null;const ph=m.body===ATT;return {id:m.id,senderId:m.sender_id,mine:String(m.sender_id)===String(userId),name:mem?.name||'Trade partner',role:mem?.role||'other',tone:mem?.tone??0,text:m.deleted_at?'This message was deleted':(ph?(att&&att.length?'':'Sending attachment…'):(m.body||'')),attachments:m.deleted_at?null:att,client,at:m.created_at,pending:m.pending,editedAt:m.edited_at,editable:!m.deleted_at&&String(m.sender_id)===String(userId)&&!m.pending&&Date.now()-new Date(m.created_at).getTime()<=15*60*1000};});
+ return rows.map(m=>{const mem=members[m.sender_id];const att=m.localAtt||attMap[m.id]||null;const ph=m.body===ATT;return {id:m.id,senderId:m.sender_id,mine:String(m.sender_id)===String(userId),name:mem?.name||'Trade partner',role:mem?.role||'other',tone:mem?.tone??0,text:m.deleted_at?'This message was deleted':(ph?(att&&att.length?'':'Sending attachment…'):(m.body||'')),replyText:m.reply_to_message_id?('Replying to: '+String(rows.find(x=>String(x.id)===String(m.reply_to_message_id))?.body||'Original message unavailable').slice(0,160)):'',attachments:m.deleted_at?null:att,client,at:m.created_at,pending:m.pending,editedAt:m.edited_at,editable:!m.deleted_at&&String(m.sender_id)===String(userId)&&!m.pending&&Date.now()-new Date(m.created_at).getTime()<=15*60*1000};});
 }
 async function editMessage(msg){
  const next=window.prompt('Edit your message',msg.text||'');
@@ -225,7 +225,7 @@ async function openConv(id){
   refreshHeader();
   const {data,error}=await client.from('messages').select('id,sender_id,body,created_at,edited_at,deleted_at,reply_to_message_id').eq('conversation_id',activeId).order('created_at',{ascending:true}).limit(500);
   if(error)throw error;
-  messages=data||[];await loadAtts(activeId);await markDelivered(messages);await loadReactions();await markRead();await loadPinned();await loadPendingClear();joinPresence();draw();
+  messages=data||[];await loadAtts(activeId);await markDelivered(messages);await markRead();await loadReactions();await loadPinned();await loadPendingClear();joinPresence();draw();
  }catch(e){empty(log,'Messages could not be loaded: '+(e.message||'request failed'));}
 }
 function listen(){
@@ -239,7 +239,7 @@ function listen(){
   if(String(m.conversation_id)===activeId&&!messages.some(x=>String(x.id)===String(m.id))){
    const pendingIdx=messages.findIndex(x=>x.pending&&x.body===m.body&&String(x.sender_id)===String(m.sender_id));
    if(pendingIdx>=0)messages.splice(pendingIdx,1);
-   messages.push(m);markRead();draw();
+   messages.push(m);if(String(m.sender_id)!==String(userId))markDelivered([m]);markRead();loadReactions().then(()=>draw());
   }
  }).on('postgres_changes',{event:'UPDATE',schema:'public',table:'messages'},payload=>{
   const m=payload.new;if(!m||String(m.conversation_id)!==activeId)return;
@@ -248,6 +248,12 @@ function listen(){
   const row=payload.new||payload.old||{};if(String(row.conversation_id)===activeId){loadReactions().then(()=>{log.querySelectorAll('.vtg-wa-tools').forEach(x=>x.remove());decorateMessages();});}
  }).on('postgres_changes',{event:'*',schema:'public',table:'vtg_message_read_receipts'},payload=>{
   const row=payload.new||payload.old||{};if(String(row.conversation_id)===activeId){loadReactions().then(()=>{log.querySelectorAll('.vtg-wa-tools').forEach(x=>x.remove());decorateMessages();});}
+ }).on('postgres_changes',{event:'*',schema:'public',table:'vtg_message_delivery_receipts'},payload=>{
+  const row=payload.new||payload.old||{};if(String(row.conversation_id)===activeId){loadReactions().then(()=>{log.querySelectorAll('.vtg-wa-tools').forEach(x=>x.remove());decorateMessages();});}
+ }).on('postgres_changes',{event:'*',schema:'public',table:'vtg_message_stars'},payload=>{
+  const row=payload.new||payload.old||{};if(String(row.conversation_id)===activeId){loadReactions().then(()=>{log.querySelectorAll('.vtg-wa-tools').forEach(x=>x.remove());decorateMessages();});}
+ }).on('postgres_changes',{event:'*',schema:'public',table:'vtg_conversation_pins'},payload=>{
+  const row=payload.new||payload.old||{};if(String(row.conversation_id)===activeId)loadPinned();
  }).subscribe();
  callChannel=client.channel('vtg-calls-'+userId).on('postgres_changes',{event:'*',schema:'public',table:'vtg_calls'},payload=>{
   const r=payload.new||payload.old||{};
@@ -294,7 +300,7 @@ form.addEventListener('submit',async e=>{
  if(!activeId){empty(log,'Choose a chat first, or start a new one.');return;}
  if(body.length>4000){return;}
  busy=true;sendBtn.disabled=true;input.value='';input.style.height='';replyTo=null;host.querySelector('[data-reply]')?.remove();isTyping=false;setTyping(false);replyTo=null;host.querySelector('[data-reply]')?.remove();isTyping=false;setTyping(false);
- const temp={id:'tmp-'+Date.now(),sender_id:userId,body,created_at:new Date().toISOString(),pending:true,localAtt:items.length?items.map(it=>({name:it.file.name,mime:it.mime,size:it.file.size,kind:it.kind,file:it.file})):null};
+ const temp={id:'tmp-'+Date.now(),sender_id:userId,body,reply_to_message_id:replyTarget?.id||null,created_at:new Date().toISOString(),pending:true,localAtt:items.length?items.map(it=>({name:it.file.name,mime:it.mime,size:it.file.size,kind:it.kind,file:it.file})):null};
  if(picker2)picker2.clear();
  messages.push(temp);draw();
  try{
@@ -306,6 +312,7 @@ form.addEventListener('submit',async e=>{
   if(readError)throw readError;
   const i=messages.findIndex(x=>x.id===temp.id);
   if(i>=0){if(messages.some(x=>String(x.id)===String(data.id)))messages.splice(i,1);else messages[i]=data;}else if(!messages.some(x=>String(x.id)===String(data.id)))messages.push(data);
+  const activeConv=convs.find(x=>String(x.id)===activeId);if(activeConv){activeConv.last_message=body===ATT?'Attachment':body;activeConv.last_at=data.created_at;convs.sort((a,b)=>new Date(b.last_at)-new Date(a.last_at));renderList();}
   draw();
   if(items.length){try{const rows=await window.VTGAttach.attachToMessage(client,userId,activeId,data.id,items);rows.forEach(addAtt);draw();}catch(ae){flash('Your message was sent, but the files could not be attached: '+(ae.message||'upload failed'));}}
  }catch(err){
