@@ -275,3 +275,14 @@ html[data-theme="dark"] .vtg-wa-row[data-sender-role="supplier"]:not(.is-self) .
 }
 
 .vtg-wa-actions [hidden],.vtg-wa-selection-toolbar[hidden]{display:none!important}
+
+
+/* Hard guarantee: message rows always span the conversation width, independent of role/theme/page styles. */
+.vtg-wa-messages .vtg-wa-main .vtg-wa-stream{display:flex!important;flex-direction:column!important;align-items:stretch!important}
+.vtg-wa-messages .vtg-wa-main .vtg-wa-stream>.vtg-wa-row{display:flex!important;flex:0 0 auto!important;flex-direction:row!important;width:100%!important;min-width:100%!important;max-width:100%!important;align-self:stretch!important;box-sizing:border-box!important}
+.vtg-wa-messages .vtg-wa-main .vtg-wa-stream>.vtg-wa-row.is-self{justify-content:flex-end!important}
+.vtg-wa-messages .vtg-wa-main .vtg-wa-stream>.vtg-wa-row.is-other{justify-content:flex-start!important}
+.vtg-wa-messages .vtg-wa-main .vtg-wa-stream>.vtg-wa-row.is-self>.vtg-wa-bubble{margin-left:auto!important;margin-right:0!important}
+.vtg-wa-messages .vtg-wa-main .vtg-wa-stream>.vtg-wa-row.is-other>.vtg-wa-bubble{margin-left:0!important;margin-right:auto!important}
+.vtg-wa-messages .vtg-wa-main .vtg-wa-stream>.vtg-wa-row>.vtg-wa-bubble{flex:0 1 auto!important;width:fit-content!important;max-width:min(78%,560px)!important}
+@media(max-width:760px){.vtg-wa-messages .vtg-wa-main .vtg-wa-stream>.vtg-wa-row>.vtg-wa-bubble{max-width:88%!important}}
