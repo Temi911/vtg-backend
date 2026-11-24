@@ -7,7 +7,7 @@ const C=window.VTGChat,I=C.icons,esc=C.esc;
 const role=String(document.documentElement.dataset.vtgRole||'').toLowerCase();
 const roleNames={buyer:'Buyer',supplier:'Supplier',bank:'Bank'};
 host.className='vtg-wa vtg-wa-messages';
-host.innerHTML='<aside class="vtg-wa-side"><div class="vtg-wa-sidehead"><strong>Chats</strong><button type="button" class="vtg-wa-sidebtn" data-new>'+I.plus+' New chat</button><button type="button" class="vtg-wa-sidebtn ghost" data-refresh>Refresh</button></div><div data-picker hidden></div><div class="vtg-wa-list" data-list role="list"></div></aside>'
+host.innerHTML='<aside class="vtg-wa-side"><div class="vtg-wa-sidehead"><strong>Chats</strong><button type="button" class="vtg-wa-sidebtn" data-new>'+I.plus+' New chat</button><button type="button" class="vtg-wa-sidebtn ghost" data-refresh>Refresh</button></div><label class="vtg-wa-search"><input data-chat-search type="search" placeholder="Search chats" aria-label="Search chats"></label><div data-picker hidden></div><div class="vtg-wa-list" data-list role="list"></div></aside>'
  +'<div class="vtg-wa-main"><header class="vtg-wa-head"><button type="button" class="vtg-wa-iconbtn vtg-wa-back" data-back aria-label="Back to chats">'+I.back+'</button><div class="vtg-wa-avatar" data-avatar>V</div><div class="vtg-wa-title"><strong data-title>Choose a chat</strong><small data-sub>Secure account-linked trade messages</small></div><div class="vtg-wa-actions"><button type="button" class="vtg-wa-iconbtn" data-voice aria-label="Start voice call" title="Voice call (up to 5 people)" disabled>'+I.phone+'</button><button type="button" class="vtg-wa-iconbtn" data-video aria-label="Start video call" title="Video call (up to 5 people)" disabled>'+I.video+'</button></div></header>'
  +'<div class="vtg-wa-callbar" data-callbar><span data-calltext></span><button type="button" data-joincall>Join</button></div>'
  +'<div class="vtg-wa-stream" data-log role="log" aria-live="polite"></div>'
@@ -19,7 +19,7 @@ const titleEl=$('[data-title]'),subEl=$('[data-sub]'),avatarEl=$('[data-avatar]'
 const ATT='[Attachment]',attMap={};
 let picker2=null, presenceChannel=null, typingTimer=null, isTyping=false, replyTo=null, reactionsByMessage={}, receiptsByMessage={};
 let client=null,userId='',convs=[],activeId='',members={},messages=[],busy=false,channel=null,callChannel=null,liveCalls={};
-const memberCache={};let presenceChannel=null,typingTimer=null,isTyping=false,replyTo=null,reactionsByMessage={},receiptsByMessage={};
+const memberCache={};
 picker2=window.VTGAttach?(function(){try{return window.VTGAttach.mountPicker(form,'chat',note=>flash(note));}catch(_){return null;}})():null;
 function flash(text){const n=document.createElement('div');n.className='vtg-wa-empty';n.textContent=text;log.append(n);log.scrollTop=log.scrollHeight;}
 function addAtt(a){const list=attMap[a.message_id]||(attMap[a.message_id]=[]);if(!list.some(x=>x.id===a.id))list.push({id:a.id,name:a.original_name,mime:a.mime_type,size:a.size_bytes,kind:a.attachment_type,path:a.storage_path,bucket:'vtg-chat-attachments'});}
