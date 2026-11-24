@@ -91,8 +91,10 @@ async function start(opts){
   return entry;
  }
  async function signal(to,kind2,payload){
-  const {error}=await client.rpc('vtg_send_call_signal',{p_call_id:s.callId,p_to_user:to,p_kind:kind2,p_payload:payload});
-  if(error&&!s.ended)fail('Signalling failed: '+error.message);
+  try{
+   const {error}=await client.rpc('vtg_send_call_signal',{p_call_id:s.callId,p_to_user:to,p_kind:kind2,p_payload:payload});
+   if(error&&!s.ended)fail('Signalling failed: '+error.message);
+  }catch(error){if(!s.ended)fail('Signalling failed: '+(error?.message||'connection unavailable'));}
  }
  async function offerTo(id){
   const e=peer(id,true);const o=await e.pc.createOffer();await e.pc.setLocalDescription(o);
@@ -186,13 +188,16 @@ async function endOrLeave(){
  }else await cleanup(true);
 }
 async function cleanup(leave){
- const s=session;if(!s||s.ended)return;s.ended=true;
- clearInterval(s.timer);
+ const s=session;if(!s||s.ended)return;
+ if(leave&&s.callId){
+  try{const {error}=await s.client.rpc('vtg_leave_call',{p_call_id:s.callId});if(error)throw error;}
+  catch(error){const button=s.ui.querySelector('[data-end]');if(button)button.disabled=false;const note=s.ui.querySelector('[data-msg]');if(note){note.hidden=false;note.textContent='You could not leave the call yet: '+(error?.message||'Please check your connection and try again.');}return false;}
+ }
+ s.ended=true;clearInterval(s.timer);
  s.peers.forEach(e=>{try{e.pc.close();}catch(_){}if(e.audio)e.audio.srcObject=null;});
  s.stream?.getTracks().forEach(t=>t.stop());
  s.channels.forEach(ch=>{try{s.client.removeChannel(ch);}catch(_){}});
- if(leave&&s.callId){try{await s.client.rpc('vtg_leave_call',{p_call_id:s.callId});}catch(_){}}
- s.ui.remove();session=null;
+ s.ui.remove();session=null;return true;
 }
 function incoming(call,title){
  if(session||banner)return;
@@ -206,6 +211,6 @@ function incoming(call,title){
  banner.querySelector('.join').onclick=()=>{close();const join=window.VTGPeerMessages?.openWithCall;if(join)join(call.conversation_id);else window.VTGPeerMessages?.open?.(call.conversation_id);};
  setTimeout(close,45000);
 }
-window.addEventListener('pagehide',()=>{if(session?.callId&&!session.ended){try{session.client.rpc('vtg_leave_call',{p_call_id:session.callId});}catch(_){}}});
+window.addEventListener('pagehide',()=>{const s=session;if(s?.callId&&!s.ended){try{void s.client.rpc('vtg_leave_call',{p_call_id:s.callId});}catch(_){}}});
 window.VTGCalls={start,incoming,max:MAX,active:()=>!!session};
 })();
