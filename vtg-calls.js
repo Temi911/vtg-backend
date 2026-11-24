@@ -35,7 +35,7 @@ async function start(opts){
   +'<div class="vtg-call-bar"><button class="vtg-call-btn" data-mic aria-label="Mute microphone">'+I.mic+'</button><button class="vtg-call-btn'+(kind==='video'?'':' off')+'" data-cam aria-label="'+(kind==='video'?'Turn camera off':'Switch to video: turn camera on')+'" title="'+(kind==='video'?'Turn camera off':'Switch to video (only you decide whether your camera is on)')+'">'+(kind==='video'?I.video:I.camoff)+'</button><button class="vtg-call-btn end" data-end aria-label="Leave call">'+I.hangup+'</button></div>';
  document.body.append(ui);
  const grid=ui.querySelector('[data-grid]'),msg=ui.querySelector('[data-msg]');
- session={ui,grid,count:ui.querySelector('[data-count]'),live:new Map(),peers:new Map(),callId:null,startedBy:null,stream:null,channels:[],seen:new Set(),pending:new Map(),started:0,timer:null,client,userId,ended:false};
+ session={ui,grid,count:ui.querySelector('[data-count]'),live:new Map(),peers:new Map(),callId:null,startedBy:null,stream:null,channels:[],seen:new Set(),pending:new Map(),started:0,timer:null,client,userId,ended:false,cancelRequested:false};
  const s=session;
  const fail=text=>{msg.hidden=false;msg.textContent=text;};
  try{
@@ -140,6 +140,7 @@ function adoptVideo(entry){
   const {data:callRow,error:callReadError}=await client.from('vtg_calls').select('started_by,status').eq('id',callId).single();
   if(callReadError)throw callReadError;
   s.startedBy=callRow?.started_by||null;
+  if(s.cancelRequested){await endOrLeave();return;}
   const endButton=ui.querySelector('[data-end]');
   const isOrganizer=String(s.startedBy)===String(userId);
   endButton.dataset.endLabel=isOrganizer?'End call for everyone':'Leave call';
@@ -154,12 +155,25 @@ function adoptVideo(entry){
   layout();
   for(const u of parts.filter(x=>String(x.user_id)!==String(userId)&&before(x)))await offerTo(u.user_id);
   if(!parts.some(x=>String(x.user_id)!==String(userId)))ui.querySelector('[data-time]').textContent='waiting for others to join…';
- }catch(e){fail(e?.message||'Could not start the call.');setTimeout(()=>cleanup(!!s.callId),2500);}
+ }catch(e){
+  fail(e?.message||'Could not start the call.');
+  setTimeout(async()=>{
+   if(s.callId){try{await s.client.rpc(String(s.startedBy)===String(s.userId)?'vtg_end_call':'vtg_leave_call',{p_call_id:s.callId});}catch(_){}}
+   await cleanup(false);
+  },1200);
+ }
 }
 async function endOrLeave(){
  const s=session;if(!s||s.ended)return;
- const button=s.ui.querySelector('[data-end]');if(button)button.disabled=true;
- if(s.callId&&String(s.startedBy)===String(s.userId)){
+ const button=s.ui.querySelector('[data-end]');
+ if(!s.callId){
+  s.cancelRequested=true;
+  if(button){button.disabled=true;button.setAttribute('aria-label','Cancelling call setup');button.title='Cancelling call setup';}
+  const note=s.ui.querySelector('[data-msg]');if(note){note.hidden=false;note.textContent='Cancelling call setup…';}
+  return;
+ }
+ if(button)button.disabled=true;
+ if(String(s.startedBy)===String(s.userId)){
   try{
    const {error}=await s.client.rpc('vtg_end_call',{p_call_id:s.callId});
    if(error)throw error;
@@ -188,7 +202,8 @@ function incoming(call,title){
  document.body.append(banner);
  const close=()=>{banner?.remove();banner=null;};
  banner.querySelector('.x').onclick=close;
- banner.querySelector('.join').onclick=()=>{close();window.VTGPeerMessages?.open?.(call.conversation_id);};
+ banner.querySelector('.join').textContent='Join call';
+ banner.querySelector('.join').onclick=()=>{close();const join=window.VTGPeerMessages?.openWithCall;if(join)join(call.conversation_id);else window.VTGPeerMessages?.open?.(call.conversation_id);};
  setTimeout(close,45000);
 }
 window.addEventListener('pagehide',()=>{if(session?.callId&&!session.ended){try{session.client.rpc('vtg_leave_call',{p_call_id:session.callId});}catch(_){}}});
