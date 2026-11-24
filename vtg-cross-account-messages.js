@@ -28,8 +28,11 @@ function addAtt(a){const list=attMap[a.message_id]||(attMap[a.message_id]=[]);if
 async function loadAtts(id){try{const {data,error}=await client.from('vtg_chat_attachments').select('id,message_id,storage_path,original_name,mime_type,size_bytes,attachment_type').eq('conversation_id',id).limit(500);if(!error)(data||[]).forEach(addAtt);}catch(_){}}
 
 function empty(el,text){el.innerHTML='<div class="vtg-wa-empty">'+esc(text)+'</div>';}
+const sameUser=(a,b)=>String(a??'').trim().toLowerCase()===String(b??'').trim().toLowerCase();
 async function boot(){
- const s=await C.clientReady();client=s.client;userId=s.userId;
+ const s=await C.clientReady();client=s.client;userId=String(s.userId||'').trim();
+ if(!userId)throw new Error('Your signed-in VTG account could not be identified. Please sign in again.');
+ host.dataset.viewerRole=role;host.dataset.viewerId=userId;
  const {data:profile,error}=await client.from('profiles').select('role,is_active').eq('id',userId).single();
  if(error)throw error;
  if(!profile?.is_active||profile.role!==role)throw new Error('An active '+(roleNames[role]||'VTG')+' account is required.');
@@ -78,6 +81,8 @@ async function loadList(){
   }
   unreadCounts={};try{const {data:counts,error:countError}=await client.rpc('vtg_unread_conversation_counts');if(!countError)(counts||[]).forEach(x=>{unreadCounts[x.conversation_id]=Number(x.unread_count||0);});}catch(_){}
   renderList();
+  const pendingIncoming=Object.values(liveCalls).find(call=>!sameUser(call.started_by,userId));
+  if(pendingIncoming)window.VTGCalls?.incoming?.(pendingIncoming,convTitleById(pendingIncoming.conversation_id));
   if(activeId&&convs.some(c=>String(c.id)===activeId))refreshHeader();
  }catch(e){
   list.innerHTML='<div class="vtg-wa-empty">Chats could not be loaded: '+esc(e.message||'request failed')+'<br><br><button type="button" class="vtg-wa-sidebtn" data-refresh>Try again</button></div>';
