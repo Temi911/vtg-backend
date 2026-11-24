@@ -8,7 +8,7 @@ const sql=read('supabase/migrations/20261114000000_vtg_chat_and_calls.sql');
 const send=read('supabase/migrations/20261123220000_secure_buyer_chat_message_send_rpc.sql');
 const moderation=read('supabase/migrations/20261123210000_vtg_message_moderation_edits_and_buyer_delivery_close.sql');
 const endCall=read('supabase/migrations/20261123225500_vtg_call_organizer_end_for_everyone.sql');
-const callLifecycle=read('supabase/migrations/20261124200000_vtg_call_lifecycle_cleanup.sql');
+const callLifecycle=read('supabase/migrations/20261124201947_vtg_call_lifecycle_cleanup.sql');
 const finalSend=read('supabase/migrations/20261123230000_vtg_final_chat_moderation_send_rpc.sql');
 const calls=read('vtg-calls.js'),msgs=read('vtg-cross-account-messages.js'),ai=read('vtg-dashboard-chat.js'),core=read('vtg-chat-core.js'),css=read('vtg-chat-whatsapp.css');
 const pages=['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html'];
