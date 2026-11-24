@@ -82,7 +82,7 @@ test('call organiser can end the shared call for every participant',()=>{
  assert.match(endCall,/create or replace function public\.vtg_end_call/);
  assert.match(endCall,/v_call\.started_by <> me/);
  assert.match(endCall,/status='ended'/);
- assert.match(endCall,/update public\.vtg_call_participants[\s\S]*left_at=coalesce\(left_at,now\)/);
+ assert.match(endCall,/update public\.vtg_call_participants[\s\S]*left_at\s*=\s*coalesce\(left_at\s*,\s*now\(\)\s*\)/);
  assert.match(endCall,/delete from public\.vtg_call_signals/);
  assert.match(endCall,/grant execute on function public\.vtg_end_call\(uuid\) to authenticated/);
  assert.match(calls,/vtg_end_call/);
@@ -116,7 +116,7 @@ test('dashboard message sending uses an authenticated RPC and enforces active co
  assert.match(send,/length\(v_body\) > 4000/);
  assert.match(send,/revoke all on function public\.vtg_send_message/);
  assert.match(send,/grant execute on function public\.vtg_send_message\(uuid, text\) to authenticated/);
- assert.match(msgs,/client\.rpc\('vtg_send_message'/);
+ assert.match(msgs,/client\.rpc\(replyTarget\?'vtg_send_message_with_reply':'vtg_send_message'/);
  assert.doesNotMatch(msgs,/client\.from\('messages'\)\.insert/);
 });
 
@@ -134,7 +134,7 @@ test('message edits are sender-only, time-limited and rechecked by moderation',(
  assert.match(moderation,/interval '15 minutes'/);
  assert.match(moderation,/private\.vtg_message_content_violation\(v_body\)/);
  assert.match(msgs,/client\.rpc\('vtg_edit_message'/);
- assert.match(core,/msg\.editable/);
+ assert.match(msgs,/view\.editable/);
  assert.match(core,/Edited/);
 });
 
