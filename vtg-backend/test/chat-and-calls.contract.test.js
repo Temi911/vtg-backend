@@ -155,7 +155,7 @@ test('call setup can be cancelled without leaving an orphan active call',()=>{
 });
 
 test('incoming call acceptance opens the chat and joins the live call',()=>{
- assert.match(calls,/openWithCall\(call\.conversation_id\)/);
+ assert.match(calls,/const join=window\.VTGPeerMessages\?\.openWithCall;[\s\S]*join\(call\.conversation_id\)/);
  assert.match(msgs,/async openWithCall\(conversationId\)\{await openConv\(conversationId\);const live=liveCalls\[String\(conversationId\)\];if\(live\)startCall\(live\.kind\)/);
 });
 
