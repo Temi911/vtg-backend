@@ -66,7 +66,7 @@ async function loadList(){
   convs=[];
   if(ids.length){
    const [msgs,mems,calls]=await Promise.all([
-    client.from('messages').select('conversation_id,body,created_at').in('conversation_id',ids).order('created_at',{ascending:false}).limit(400),
+    client.from('messages').select('conversation_id,body,created_at,hidden_at').in('conversation_id',ids).is('hidden_at',null).order('created_at',{ascending:false}).limit(400),
     Promise.all(ids.slice(0,40).map(id=>membersOf(id).catch(()=>({})))),
     client.from('vtg_calls').select('id,conversation_id,kind').in('conversation_id',ids).eq('status','active')
    ]);
@@ -209,12 +209,12 @@ function joinPresence(){if(presenceChannel){client.removeChannel(presenceChannel
 async function setTyping(value){if(presenceChannel)try{await presenceChannel.track({online_at:new Date().toISOString(),typing:!!value});}catch(_){}}
 async function copyMessage(msg){try{await navigator.clipboard.writeText(String(msg.body||''));flash('Message copied.');}catch(_){const ta=document.createElement('textarea');ta.value=String(msg.body||'');document.body.append(ta);ta.select();const ok=document.execCommand('copy');ta.remove();flash(ok?'Message copied.':'Copy is unavailable in this browser.');}}
 async function shareMessage(msg){try{if(navigator.share)await navigator.share({text:String(msg.body||'')});else await copyMessage(msg);}catch(e){if(e?.name!=='AbortError')flash('Sharing is unavailable here.');}}
-async function deleteMessage(id){if(!window.confirm('Delete this message for everyone in the conversation?'))return;try{const {error}=await client.rpc('vtg_delete_message',{p_message_id:id});if(error)throw error;const m=messages.find(x=>String(x.id)===String(id));if(m){m.deleted_at=new Date().toISOString();m.body='This message was deleted';}draw();flash('Message deleted.');}catch(e){flash('Delete failed: '+(e.message||'Please try again'));}}
+async function deleteMessage(id){if(!window.confirm('Delete this message for everyone in the conversation?'))return;try{const {data,error}=await client.rpc('vtg_delete_message',{p_message_id:id});if(error)throw error;if(data?.ok===false)throw new Error(data?.message||'The message was not deleted.');const m=messages.find(x=>String(x.id)===String(id));if(m){m.deleted_at=new Date().toISOString();m.body='This message was deleted';m.deleted_by=userId;}draw();flash('Message deleted.');}catch(e){flash('Delete failed: '+(e.message||'Please try again'));}}
 async function toggleStar(id){try{const {data,error}=await client.rpc('vtg_toggle_message_star',{p_message_id:id});if(error)throw error;if(data)starredByMessage[id]=true;else delete starredByMessage[id];log.querySelectorAll('.vtg-wa-tools').forEach(x=>x.remove());decorateMessages();}catch(e){flash('Star could not be saved: '+(e.message||'Please try again'));}}
 async function togglePin(id){try{const {data,error}=await client.rpc('vtg_pin_message',{p_message_id:id});if(error)throw error;await loadPinned();flash(data?.pinned?'Message pinned.':'Message unpinned.');}catch(e){flash('Pin could not be saved: '+(e.message||'Please try again'));}}
 async function loadPinned(){try{const {data,error}=await client.from('vtg_conversation_pins').select('message_id,pinned_by,pinned_at').eq('conversation_id',activeId).maybeSingle();if(error)throw error;pinnedMessage=data||null;pinbar.hidden=!pinnedMessage;pinbar.replaceChildren();if(pinnedMessage){const m=messages.find(x=>String(x.id)===String(pinnedMessage.message_id));const label=document.createElement('span');label.textContent='Pinned message: '+String(m?.body||'Message').slice(0,140);const jump=document.createElement('button');jump.type='button';jump.textContent='View';jump.onclick=()=>log.querySelector('[data-msg-id="'+CSS.escape(String(pinnedMessage.message_id))+'"]')?.scrollIntoView({behavior:'smooth',block:'center'});pinbar.append(label,jump);}}catch(_){pinbar.hidden=true;}}
 async function loadPendingClear(){clearbar.hidden=true;clearbar.replaceChildren();if(!activeId)return;try{const {data,error}=await client.rpc('vtg_pending_chat_clear',{p_conversation_id:activeId});if(error||!data)return;clearbar.hidden=false;const msg=document.createElement('span');msg.textContent=String(data.requested_by)===String(userId)?'You requested a shared chat clear. Waiting for every participant.':'A participant requested to clear this chat for everyone. Your approval is required.';clearbar.append(msg);if(String(data.requested_by)!==String(userId)){for(const [label,approve] of [['Agree',true],['Decline',false]]){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.clearResponse=approve?'yes':'no';b.dataset.requestId=data.id;clearbar.append(b);}}}catch(_){}}
-async function respondClear(requestId,approve){try{const {data,error}=await client.rpc('vtg_respond_chat_clear',{p_request_id:requestId,p_approve:approve});if(error)throw error;flash(data?.message||'Your response was recorded.');await loadPendingClear();if(data?.cleared){const {data:rows}=await client.from('messages').select('id,sender_id,body,created_at,edited_at,deleted_at,reply_to_message_id').eq('conversation_id',activeId).order('created_at',{ascending:true}).limit(500);messages=rows||[];await loadAtts(activeId);await loadReactions();draw();}}catch(e){flash('Your response could not be saved: '+(e.message||'Please try again'));}}
+async function respondClear(requestId,approve){try{const {data,error}=await client.rpc('vtg_respond_chat_clear',{p_request_id:requestId,p_approve:approve});if(error)throw error;flash(data?.message||'Your response was recorded.');if(data?.cleared){messages=[];pinnedMessage=null;pinbar.hidden=true;pinbar.replaceChildren();clearbar.hidden=true;clearbar.replaceChildren();selectedMessageId='';await loadPendingClear();draw();await loadList();return;}await loadPendingClear();}catch(e){flash('Your response could not be saved: '+(e.message||'Please try again'));}}
 async function requestClear(){if(!activeId)return;if(!window.confirm('Ask every participant to agree before this chat history is cleared for everyone? No messages will be cleared unless everyone approves.'))return;try{const {data,error}=await client.rpc('vtg_request_chat_clear',{p_conversation_id:activeId});if(error)throw error;flash(data?.message||'Clear request sent to the other participants.');await loadPendingClear();}catch(e){flash('Could not request a shared chat clear: '+(e.message||'Please try again'));}}
 async function startVoiceNote(){if(!picker2||!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){flash('Voice notes are not supported by this browser.');return;}let stream;try{stream=await navigator.mediaDevices.getUserMedia({audio:true});const recorder=new MediaRecorder(stream),chunks=[];const stopBtn=host.querySelector('[data-voice-note]');stopBtn.textContent='Stop recording';stopBtn.classList.add('recording');stopBtn.dataset.recording='true';recorder.ondataavailable=e=>{if(e.data?.size)chunks.push(e.data);};recorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());stopBtn.textContent='Voice note';stopBtn.classList.remove('recording');delete stopBtn.dataset.recording;stopBtn.onclick=null;if(chunks.length){const blob=new Blob(chunks,{type:recorder.mimeType||'audio/webm'});const ext=blob.type.includes('mp4')?'m4a':'webm';picker2.addFiles([new File([blob],'voice-note-'+Date.now()+'.'+ext,{type:blob.type||'audio/webm'})]);}};stopBtn.onclick=()=>{if(recorder.state!=='inactive')recorder.stop();};recorder.start();}catch(e){stream?.getTracks().forEach(t=>t.stop());flash('Microphone access was not available: '+(e.message||'Please check browser permission'));}}
 
@@ -224,7 +224,7 @@ async function openConv(id){
   members=await membersOf(activeId);
   const c=convs.find(x=>String(x.id)===activeId);if(c)c.members=members;
   refreshHeader();
-  const {data,error}=await client.from('messages').select('id,sender_id,body,created_at,edited_at,deleted_at,reply_to_message_id').eq('conversation_id',activeId).order('created_at',{ascending:true}).limit(500);
+  const {data,error}=await client.from('messages').select('id,sender_id,body,created_at,edited_at,deleted_at,hidden_at,reply_to_message_id').eq('conversation_id',activeId).is('hidden_at',null).order('created_at',{ascending:true}).limit(500);
   if(error)throw error;
   messages=data||[];await loadAtts(activeId);await markDelivered(messages);await markRead();await loadReactions();await loadPinned();await loadPendingClear();joinPresence();draw();
  }catch(e){empty(log,'Messages could not be loaded: '+(e.message||'request failed'));}
@@ -243,8 +243,11 @@ function listen(){
    messages.push(m);if(String(m.sender_id)!==String(userId))markDelivered([m]);markRead();loadReactions().then(()=>draw());
   }
  }).on('postgres_changes',{event:'UPDATE',schema:'public',table:'messages'},payload=>{
-  const m=payload.new;if(!m||String(m.conversation_id)!==activeId)return;
-  const row=messages.find(x=>String(x.id)===String(m.id));if(row){row.body=m.body;row.edited_at=m.edited_at;draw();}
+  const m=payload.new;if(!m)return;
+  if(String(m.conversation_id)===activeId){
+   if(m.hidden_at){messages=messages.filter(x=>String(x.id)!==String(m.id));draw();if(!messages.length){clearbar.hidden=true;clearbar.replaceChildren();loadPendingClear();loadList();}}
+   else {const row=messages.find(x=>String(x.id)===String(m.id));if(row){row.body=m.body;row.edited_at=m.edited_at;row.deleted_at=m.deleted_at;row.deleted_by=m.deleted_by;draw();}}
+  }
  }).on('postgres_changes',{event:'*',schema:'public',table:'vtg_message_reactions'},payload=>{
   const row=payload.new||payload.old||{};if(String(row.conversation_id)===activeId){loadReactions().then(()=>{log.querySelectorAll('.vtg-wa-tools').forEach(x=>x.remove());decorateMessages();});}
  }).on('postgres_changes',{event:'*',schema:'public',table:'vtg_message_read_receipts'},payload=>{
@@ -309,7 +312,7 @@ form.addEventListener('submit',async e=>{
   const {data:sendResult,error:sendError}=await client.rpc(replyTarget?'vtg_send_message_with_reply':'vtg_send_message',replyTarget?{...sendArgs,p_reply_to_message_id:replyTarget.id}:sendArgs);
   if(sendError)throw sendError;
   if(!sendResult?.ok){messages=messages.filter(x=>x.id!==temp.id);draw();input.value=typed;flash((sendResult?.message||'This message was blocked by VTG content rules')+' Warning '+Number(sendResult?.warning_count||1)+' in the last 30 days.');return;}
-  const {data,error:readError}=await client.from('messages').select('id,sender_id,body,created_at,edited_at,deleted_at,reply_to_message_id').eq('id',sendResult.message_id).single();
+  const {data,error:readError}=await client.from('messages').select('id,sender_id,body,created_at,edited_at,deleted_at,hidden_at,reply_to_message_id').eq('id',sendResult.message_id).is('hidden_at',null).single();
   if(readError)throw readError;
   const i=messages.findIndex(x=>x.id===temp.id);
   if(i>=0){if(messages.some(x=>String(x.id)===String(data.id)))messages.splice(i,1);else messages[i]=data;}else if(!messages.some(x=>String(x.id)===String(data.id)))messages.push(data);
