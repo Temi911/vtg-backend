@@ -248,3 +248,28 @@ html[data-theme="dark"] .vtg-wa-row[data-sender-role="supplier"]:not(.is-self) .
 .vtg-wa-tools button{min-height:25px;min-width:25px}
 .vtg-wa-row.is-self .vtg-wa-meta{flex-wrap:wrap}
 @media(max-width:760px){.vtg-wa-actions [data-clearchat]{font-size:10px}.vtg-wa-pinbar,.vtg-wa-clearbar{align-items:flex-start;flex-wrap:wrap}.vtg-wa-att-audio{min-width:220px}}
+
+/* Chat scroll isolation: conversation history scrolls independently; composer stays fixed. */
+.vtg-wa-messages{height:min(78vh,820px);min-height:560px;max-height:820px}
+.vtg-wa-main{height:100%;min-height:0;overflow:hidden}
+.vtg-wa-main .vtg-wa-stream{flex:1 1 auto;min-height:0;max-height:none;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+.vtg-wa-compose{flex:0 0 auto;position:relative;z-index:2}
+.vtg-wa-compose textarea{overflow-y:auto;overscroll-behavior:contain}
+.vtg-wa-note{flex:0 0 auto}
+.vtg-wa-actions{min-width:0;display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
+.vtg-wa-selection-toolbar{display:flex;align-items:center;gap:5px;max-width:min(58vw,620px);overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;padding:2px}
+.vtg-wa-selection-toolbar[hidden]{display:none}
+.vtg-wa-selection-toolbar button{flex:0 0 auto;padding:7px 9px;border:1px solid var(--wa-line);border-radius:8px;background:var(--wa-input);color:var(--wa-ink);font-size:11px;font-weight:750;white-space:nowrap}
+.vtg-wa-selection-toolbar button:hover{background:var(--wa-dot)}
+.vtg-wa-row{cursor:pointer}
+.vtg-wa-row.is-selected .vtg-wa-bubble{outline:2px solid var(--wa-blue);outline-offset:2px;box-shadow:0 0 0 4px color-mix(in srgb,var(--wa-blue) 13%,transparent)}
+.vtg-wa-row:focus-visible{outline:2px solid var(--wa-blue);outline-offset:4px;border-radius:12px}
+.vtg-wa-row .vtg-wa-tools{display:none!important}
+.vtg-wa-actions>[data-voice],.vtg-wa-actions>[data-video],.vtg-wa-actions>[data-clearchat]{flex:0 0 auto}
+@media(max-width:760px){
+ .vtg-wa-messages{height:76dvh;min-height:520px;max-height:780px;grid-template-columns:minmax(0,1fr)}
+ .vtg-wa-main{min-height:0}
+ .vtg-wa-main .vtg-wa-stream{min-height:0}
+ .vtg-wa-selection-toolbar{max-width:54vw}
+ .vtg-wa-selection-toolbar button{padding:7px 8px;font-size:10px}
+}
