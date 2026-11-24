@@ -102,7 +102,7 @@ async function editMessage(msg){
   draw();
  }catch(error){flash('Message edit failed: '+(error.message||'Please try again'));}
 }
-function draw(){C.renderStream(log,toRows(messages.filter(m=>!m.hidden_at)),'No messages yet. Say hello below.',editMessage);}
+function draw(){C.renderStream(log,toRows(messages),'No messages yet. Say hello below.',editMessage);}
 async function openConv(id){
  activeId=String(id);host.classList.add('is-open');renderList();empty(log,'Loading messages…');
  try{
