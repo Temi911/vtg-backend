@@ -77,6 +77,7 @@ function bubbleRow(msg,first,onEdit){
  row.className='vtg-wa-row '+(mine?'is-self':'is-other')+(first?' first':'');
  row.dataset.messageSide=mine?'outgoing':'incoming';
  if(msg.viewerId)row.dataset.viewerId=String(msg.viewerId);
+ if(msg.viewerRole)row.dataset.viewerRole=String(msg.viewerRole).toLowerCase();
  if(msg.senderId)row.dataset.senderId=String(msg.senderId);
  row.dataset.tone=msg.ai?'ai':String(msg.tone??0);
  if(msg.role)row.dataset.senderRole=String(msg.role).toLowerCase();
