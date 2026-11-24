@@ -38,15 +38,20 @@ async function uploadForAI(client,userId,items){
 }
 /* Chat: upload after the message exists, then insert metadata rows. Returns the inserted rows. */
 async function attachToMessage(client,userId,conversationId,messageId,items){
- const rows=[];
- for(const it of items){
-  const path=conversationId+'/'+userId+'/'+uuid()+'-'+safeName(it.file.name);
-  await upload(client,'chat',path,it);
-  rows.push({conversation_id:conversationId,message_id:messageId,uploaded_by:userId,storage_path:path,original_name:it.file.name.slice(0,255),mime_type:it.mime,size_bytes:it.file.size,attachment_type:it.kind});
+ const rows=[],uploaded=[];
+ try{
+  for(const it of items){
+   const path=conversationId+'/'+userId+'/'+uuid()+'-'+safeName(it.file.name);
+   await upload(client,'chat',path,it);uploaded.push(path);
+   rows.push({conversation_id:conversationId,message_id:messageId,uploaded_by:userId,storage_path:path,original_name:it.file.name.slice(0,255),mime_type:it.mime,size_bytes:it.file.size,attachment_type:it.kind});
+  }
+  if(!rows.length)return [];
+  const {data,error}=await client.from('vtg_chat_attachments').insert(rows).select('id,message_id,conversation_id,storage_path,original_name,mime_type,size_bytes,attachment_type,created_at');
+  if(error)throw error;return data||[];
+ }catch(error){
+  if(uploaded.length)try{await client.storage.from(LIMITS.chat.bucket).remove(uploaded);}catch(_){}
+  throw error;
  }
- if(!rows.length)return [];
- const {data,error}=await client.from('vtg_chat_attachments').insert(rows).select('id,message_id,conversation_id,storage_path,original_name,mime_type,size_bytes,attachment_type,created_at');
- if(error)throw error;return data||[];
 }
 const urlCache=new Map();
 async function signedUrl(client,bucket,path){
@@ -69,6 +74,9 @@ function render(container,att,client){
   }else if(kind==='video'){
    box.innerHTML='<video controls preload="metadata" playsinline></video><div class="vtg-wa-att-cap">'+label+'</div>';
    resolve().then(u=>{box.querySelector('video').src=u;}).catch(()=>{box.innerHTML='<div class="vtg-wa-att-file"><span class="vtg-wa-att-ico">VID</span>'+label+'</div>';});
+  }else if(kind==='audio'){
+   box.innerHTML='<div class="vtg-wa-att-audio"><span class="vtg-wa-att-ico">AUDIO</span><audio controls preload="metadata"></audio></div><div class="vtg-wa-att-cap">'+label+'</div>';
+   resolve().then(u=>{box.querySelector('audio').src=u;}).catch(()=>{box.innerHTML='<div class="vtg-wa-att-file"><span class="vtg-wa-att-ico">AUDIO</span>'+label+'</div>';});
   }else{
    const ext=String(a.name).split('.').pop().slice(0,4).toUpperCase();
    box.innerHTML='<a class="vtg-wa-att-file" href="#" rel="noopener"><span class="vtg-wa-att-ico">'+esc(ext)+'</span>'+label+'</a>';
