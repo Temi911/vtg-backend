@@ -59,7 +59,7 @@
   var form = h('form', { 'class': 'vtgpa-in' }, [input, send]);
   panel.appendChild(h('div', { 'class': 'vtgpa-head' }, [h('div', {}, [h('b', { text: 'VTG AI' }), h('small', { text: 'General trade help · free to try' })]), closeBtn]));
   panel.appendChild(log); panel.appendChild(tools); panel.appendChild(form);
-  panel.appendChild(h('div', { 'class': 'vtgpa-note', text: 'I answer general questions only and cannot see any account. Sign in for the assistant that works with your own trade records.' }));
+  panel.appendChild(h('div', { 'class': 'vtgpa-note', text: 'Ask me anything about VTG, trade or general topics. I cannot see any account. Sign in for the assistant that works with your own trade records.' }));
   document.body.appendChild(panel);
 
   var history = [], asked = 0, nudged = false, busy = false;

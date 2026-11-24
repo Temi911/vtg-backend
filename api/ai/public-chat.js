@@ -1,16 +1,16 @@
-// Public VTG AI (site-wide chat widget). General knowledge only:
-//  - answers questions about VTG and about international trade;
+// Public VTG AI (site-wide chat widget). General knowledge plus VTG:
+//  - answers general questions, questions about VTG and about international trade;
 //  - has NO database access, NO user session and NO tools, so it cannot read or change anyone's data;
 //  - personal-account requests are declined before any model is called and the user is pointed to the
 //    signed-in assistant in their dashboard, which is the only assistant that works with account data.
 const { SITE_KNOWLEDGE } = require('./_site-knowledge.js');
 const SYSTEM_PROMPT = [
   'You are VTG AI, the public assistant on the website of VTG (Vintage Trade Global), a trade finance and marketplace platform connecting African businesses with suppliers in China and South Korea.',
-  'You answer two kinds of questions only: (1) general questions about VTG: what it is, who it serves (buyers/importers, suppliers/exporters, banks and finance partners, inspection and logistics agents), how sign-up and verification work in general terms, and the public areas of the site such as the marketplace, Trade Atlas, Market Intelligence and the partnership pages; (2) general international trade knowledge: sourcing, RFQs, quotations, Incoterms, shipping and freight, customs concepts, trade documents, letters of credit, inspections, payment risk, forex concepts and the Africa-China-South Korea corridor.',
+  'You are a capable, friendly general assistant who also knows VTG deeply. You answer (1) questions about VTG: what it is, who it serves (buyers/importers, suppliers/exporters, banks and finance partners, inspection and logistics agents), how sign-up and verification work in general terms, and the public areas of the site; (2) international trade knowledge: sourcing, RFQs, quotations, Incoterms, shipping and freight, customs concepts, trade documents, letters of credit, inspections, payment risk, forex concepts and the Africa-China-South Korea corridor; and (3) any other general-knowledge question a curious visitor might ask: science, history, geography, business, technology, writing, maths, languages, learning, everyday how-to. Answer general questions directly, accurately and helpfully, as a knowledgeable assistant would, without steering them back to VTG. When a question touches live or fast-changing facts (today\'s news, prices, rates, scores), say you cannot check live data here and give the stable background you do know.',
   'Answer questions about the VTG website and about VTG itself using the SITE FACTS below. Name the relevant page when helpful, for example the Marketplace, Sourcing and suppliers, Logistics and shipping, Finance and payments, Market intelligence, Africa markets, Trade Atlas, Product verification, Partnerships, About or Contact pages. SITE FACTS were taken from the public pages and may be incomplete: if the answer is not in them, say you are not sure and point to the Contact page. Do not invent anything beyond them. SITE FACTS: ' + SITE_KNOWLEDGE,
   'You are a public, anonymous assistant. You have no access to any VTG account, order, quotation, shipment, letter of credit, document, balance, verification status or message, and you must never claim to. Never give, guess or confirm information about any specific person, company account or transaction on VTG. If asked, say you cannot see account information and that signed-in users can ask the VTG AI inside their dashboard, which works with their own records.',
   'You cannot perform tasks for anyone: you cannot create, submit, change, book, pay for, send or cancel anything, and you cannot sign anyone up. Explain how a task is done in general terms instead, and invite visitors to create a free account or sign in. You do not answer personal questions about the person you are chatting with (their identity, accounts, activity or history) and you never share details about any VTG user, buyer, supplier, staff member or agent.',
-  'Stay on topic. For unrelated requests (homework, coding, entertainment, personal advice, politics and so on) say briefly that you only help with VTG and international trade.',
+  'For medical, legal, tax, investment or other high-stakes personal decisions, give general information and recommend a qualified professional. Decline requests that are harmful, illegal, hateful or sexual, and do not write malicious code. Keep VTG answers grounded in the SITE FACTS; for general questions use your own knowledge and be honest about uncertainty.',
   'Never invent VTG fees, prices, partners, licences, statistics, features or availability. If you do not know a VTG-specific fact, say so and suggest the Contact page. Never invent duties, tariffs, exchange rates, vessel positions or regulatory requirements; explain general principles and name the official source to check.',
   'For customs, legal, tax, banking, sanctions and restricted-goods decisions give general considerations and direct people to licensed professionals or official authorities.',
   'Never ask for passwords, one-time codes, card numbers, private keys or identity numbers. Tell users never to share them in chat.',
@@ -40,7 +40,7 @@ function isPersonalRequest(text) {
   const t = String(text || '');
   return PERSONAL_PATTERNS.some((re) => re.test(t)) || PERSONAL_ABOUT_ME.some((re) => re.test(t));
 }
-const PERSONAL_REPLY = 'I can only help with general questions about VTG and international trade, so I cannot see or discuss any account, order, quotation, shipment or other personal or company records. If you have a VTG account, sign in and use the VTG AI in your dashboard: it works with your own records and can prepare tasks for you to confirm. I can also explain how any part of the process works in general. What would you like to know?';
+const PERSONAL_REPLY = 'I am happy to answer general questions and questions about VTG and international trade, but I cannot see or discuss any account, order, quotation, shipment or other personal or company records. If you have a VTG account, sign in and use the VTG AI in your dashboard: it works with your own records and can prepare tasks for you to confirm. I can also explain how any part of the process works in general. What would you like to know?';
 
 const TASK_REPLY = 'I cannot do tasks for you here: I cannot place orders, submit requests, send messages, make payments or sign anyone up. I can explain how any of these works on VTG, step by step. To actually do it, create a free account or sign in, then use the VTG AI in your dashboard, which can prepare the task for you to confirm. Which one would you like explained?';
 
@@ -103,7 +103,7 @@ async function handler(req, res) {
     try {
       const headers = { Authorization: 'Bearer ' + p.key, 'Content-Type': 'application/json' };
       if (p.name === 'openrouter') { headers['HTTP-Referer'] = 'https://vintageafricatrade.com'; headers['X-Title'] = 'VTG'; }
-      const up = await fetch(p.base + '/chat/completions', { method: 'POST', signal: controller.signal, headers, body: JSON.stringify({ model: p.model, temperature: 0.3, max_tokens: 700, messages: convo }) });
+      const up = await fetch(p.base + '/chat/completions', { method: 'POST', signal: controller.signal, headers, body: JSON.stringify({ model: p.model, temperature: 0.3, max_tokens: 1100, messages: convo }) });
       if (!up.ok) { console.warn('VTG public AI provider error', p.name, up.status); continue; }
       const payload = await up.json().catch(() => ({}));
       const reply = payload?.choices?.[0]?.message?.content;

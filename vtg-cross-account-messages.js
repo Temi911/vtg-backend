@@ -186,7 +186,7 @@ form.addEventListener('submit',async e=>{
   const {data,error:readError}=await client.from('messages').select('id,sender_id,body,created_at,edited_at').eq('id',sendResult.message_id).single();
   if(readError)throw readError;
   const i=messages.findIndex(x=>x.id===temp.id);
-  if(i>=0){if(messages.some(x=>String(x.id)===String(read.id)))messages.splice(i,1);else messages[i]=read;}else if(!messages.some(x=>String(x.id)===String(read.id)))messages.push(read);
+  if(i>=0){if(messages.some(x=>String(x.id)===String(data.id)))messages.splice(i,1);else messages[i]=data;}else if(!messages.some(x=>String(x.id)===String(data.id)))messages.push(data);
   draw();
   if(items.length){try{const rows=await window.VTGAttach.attachToMessage(client,userId,activeId,data.id,items);rows.forEach(addAtt);draw();}catch(ae){flash('Your message was sent, but the files could not be attached: '+(ae.message||'upload failed'));}}
  }catch(err){
