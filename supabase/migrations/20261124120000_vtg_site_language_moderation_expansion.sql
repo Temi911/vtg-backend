@@ -12,7 +12,7 @@ begin
   -- Normalise common substitutions and repeated characters used to evade moderation.
   v := translate(v, '@$0!13', 'aaoiie');
   v := regexp_replace(v, '(.)\\1{2,}', '\\1\\1', 'g');
-  v := regexp_replace(v, '(?<=[a-z])[_.*\\-]+(?=[a-z])', '', 'g');
+  v := regexp_replace(v, '([a-z])[_.*-]+([a-z])', '\\1\\2', 'g');
 
   if v ~* (b||'(porn\\w*|xxx|nudes?|naked pics?|blow ?job|hand ?job|anal|oral sex|sex ?tape|sex ?chat|cum|orgasm|horny|dick pics?|boobs?|pussy|penis|vagina|masturbat\\w*|incest|fetish|escort|explicit (photos|pictures|images)|sexual (services|favou?rs|content|acts?)|hook ?up|have sex|sleep with me|send me nudes)'||e) then
     return 'sexual_content';
