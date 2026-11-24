@@ -145,3 +145,20 @@ test('final ordered migration preserves the JSON moderation response after the l
  assert.match(finalSend,/warning_count/);
  assert.match(finalSend,/grant execute on function public\.vtg_send_message\(uuid,text\) to authenticated/);
 });
+
+
+test('call setup can be cancelled without leaving an orphan active call',()=>{
+ assert.match(calls,/cancelRequested:false/);
+ assert.match(calls,/if\(!s\.callId\)\{[\s\S]*s\.cancelRequested=true/);
+ assert.match(calls,/if\(s\.cancelRequested\)\{await endOrLeave\(\);return;\}/);
+ assert.match(calls,/vtg_end_call':'vtg_leave_call/);
+});
+
+test('incoming call acceptance opens the chat and joins the live call',()=>{
+ assert.match(calls,/openWithCall\(call\.conversation_id\)/);
+ assert.match(msgs,/async openWithCall\(conversationId\)\{await openConv\(conversationId\);const live=liveCalls\[String\(conversationId\)\];if\(live\)startCall\(live\.kind\)/);
+});
+
+test('all dashboards invalidate stale call and cross-account messaging assets',()=>{
+ for(const f of pages){const h=read(f);assert.match(h,/vtg-calls\.js\?v=20261124-buyer-call-repair-1/);assert.match(h,/vtg-cross-account-messages\.js\?v=20261124-buyer-call-repair-1/);}
+});
