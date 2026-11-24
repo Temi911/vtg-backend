@@ -273,3 +273,5 @@ html[data-theme="dark"] .vtg-wa-row[data-sender-role="supplier"]:not(.is-self) .
  .vtg-wa-selection-toolbar{max-width:54vw}
  .vtg-wa-selection-toolbar button{padding:7px 8px;font-size:10px}
 }
+
+.vtg-wa-actions [hidden],.vtg-wa-selection-toolbar[hidden]{display:none!important}
