@@ -39,7 +39,7 @@ async function membersOf(id){
  const {data,error}=await client.rpc('vtg_conversation_members',{p_conversation_id:id});
  if(error)throw error;
  const tones=C.toneMap((data||[]).map(m=>m.user_id),userId);
- const map={};(data||[]).forEach(m=>{map[m.user_id]={id:m.user_id,name:m.display_name,role:m.role,tone:tones[String(m.user_id)]??0,me:String(m.user_id)===String(userId)};});
+ const map={};(data||[]).forEach(m=>{map[m.user_id]={id:m.user_id,name:m.display_name,role:m.role,tone:tones[String(m.user_id)]??0,me:sameUser(m.user_id,userId)};});
  return (memberCache[id]=map);
 }
 function convTitle(c){
@@ -68,7 +68,7 @@ async function loadList(){
    const [msgs,mems,calls]=await Promise.all([
     client.from('messages').select('conversation_id,body,created_at,hidden_at').in('conversation_id',ids).is('hidden_at',null).order('created_at',{ascending:false}).limit(400),
     Promise.all(ids.slice(0,40).map(id=>membersOf(id).catch(()=>({})))),
-    client.from('vtg_calls').select('id,conversation_id,kind').in('conversation_id',ids).eq('status','active')
+    client.from('vtg_calls').select('id,conversation_id,kind,started_by').in('conversation_id',ids).eq('status','active')
    ]);
    if(msgs.error)throw msgs.error;
    const latest={};(msgs.data||[]).forEach(m=>{if(!latest[m.conversation_id])latest[m.conversation_id]=m;});
@@ -93,7 +93,7 @@ function refreshHeader(){
  if(live)$('[data-calltext]').textContent='A '+live.kind+' call is in progress in this chat.';
 }
 function toRows(rows){
- return rows.map(m=>{const mem=members[m.sender_id];const att=m.localAtt||attMap[m.id]||null;const ph=m.body===ATT;return {id:m.id,senderId:m.sender_id,viewerId:userId,mine:String(m.sender_id).trim().toLowerCase()===String(userId).trim().toLowerCase(),name:mem?.name||'Trade partner',role:mem?.role||'other',tone:mem?.tone??0,text:m.deleted_at?'This message was deleted':(ph?(att&&att.length?'':'Sending attachment…'):(m.body||'')),replyText:m.reply_to_message_id?('Replying to: '+String(rows.find(x=>String(x.id)===String(m.reply_to_message_id))?.body||'Original message unavailable').slice(0,160)):'',attachments:m.deleted_at?null:att,client,at:m.created_at,pending:m.pending,editedAt:m.edited_at,editable:!m.deleted_at&&String(m.sender_id)===String(userId)&&!m.pending&&Date.now()-new Date(m.created_at).getTime()<=15*60*1000};});
+ return rows.map(m=>{const mem=members[m.sender_id];const att=m.localAtt||attMap[m.id]||null;const ph=m.body===ATT;return {id:m.id,senderId:String(m.sender_id||'').trim(),viewerId:userId,viewerRole:role,mine:sameUser(m.sender_id,userId),name:mem?.name||'Trade partner',role:mem?.role||'other',tone:mem?.tone??0,text:m.deleted_at?'This message was deleted':(ph?(att&&att.length?'':'Sending attachment…'):(m.body||'')),replyText:m.reply_to_message_id?('Replying to: '+String(rows.find(x=>String(x.id)===String(m.reply_to_message_id))?.body||'Original message unavailable').slice(0,160)):'',attachments:m.deleted_at?null:att,client,at:m.created_at,pending:m.pending,editedAt:m.edited_at,editable:!m.deleted_at&&sameUser(m.sender_id,userId)&&!m.pending&&Date.now()-new Date(m.created_at).getTime()<=15*60*1000};});
 }
 async function editMessage(msg){
  const next=window.prompt('Edit your message',msg.text||'');
@@ -133,7 +133,7 @@ function syncSelectionToolbar(){
  const view=toRows([msg])[0];
  if(!msg.deleted_at&&view.editable)add('Edit',()=>{editMessage(view);clearMessageSelection();});
  if(!msg.deleted_at){add('Copy',()=>{copyMessage(msg);clearMessageSelection();});add('Share',()=>{shareMessage(msg);clearMessageSelection();});add('Reply',()=>{replyTo=msg;showReply();clearMessageSelection();});add('React',()=>showReactions(msg.id));add('Forward',()=>{forwardMessage(msg.id);clearMessageSelection();});add(starredByMessage[msg.id]?'Unstar':'Star',()=>{toggleStar(msg.id);clearMessageSelection();});add(pinnedMessage&&String(pinnedMessage.message_id)===String(msg.id)?'Unpin':'Pin',()=>{togglePin(msg.id);clearMessageSelection();});}
- if(String(msg.sender_id)===String(userId)&&!msg.deleted_at)add('Delete',()=>{deleteMessage(msg.id);clearMessageSelection();});
+ if(sameUser(msg.sender_id,userId)&&!msg.deleted_at)add('Delete',()=>{deleteMessage(msg.id);clearMessageSelection();});
  add('Cancel',clearMessageSelection);
 }
 function clearMessageSelection(){selectedMessageId='';decorateMessages();syncSelectionToolbar();}
