@@ -80,10 +80,6 @@ function bubbleRow(msg,first,onEdit){
  if(msg.replyText){const q=document.createElement('div');q.className='vtg-wa-reply-quote';q.textContent=msg.replyText;b.append(q);}
  if(String(msg.text||'').trim())b.append(t);
  if(msg.attachments?.length&&window.VTGAttach){try{window.VTGAttach.render(b,msg.attachments,msg.client);}catch(_){}}
- if(msg.mine&&msg.editable&&typeof onEdit==='function'){
-  const edit=document.createElement('button');edit.type='button';edit.className='vtg-wa-edit';edit.textContent='Edit';
-  edit.setAttribute('aria-label','Edit your message');edit.addEventListener('click',()=>onEdit(msg));b.append(edit);
- }
  b.append(m);row.append(b);return row;
 }
 /* Full re-render of a stream with day separators and name grouping. */
