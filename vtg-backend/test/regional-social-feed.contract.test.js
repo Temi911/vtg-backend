@@ -12,7 +12,7 @@ test('regional Trade Feed stores and serves Africa, China and South Korea labels
  assert.match(migration,/region in \('Africa','China','South Korea'\)/);
  assert.match(migration,/vtg_trade_posts_region_created_idx/);
  assert.match(api,/country_code,region,created_at/);
- assert.match(api,/countryCode,region,is_published/);
+ assert.match(api,/country_code,region,created_at/);\n assert.match(api,/eq\(\"is_published\",true\)/);
 });
 
 test('news intelligence requests all three regions and includes provider image metadata safely',()=>{
