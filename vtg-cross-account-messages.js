@@ -211,6 +211,10 @@ function listen(){
  }).on('postgres_changes',{event:'UPDATE',schema:'public',table:'messages'},payload=>{
   const m=payload.new;if(!m||String(m.conversation_id)!==activeId)return;
   const row=messages.find(x=>String(x.id)===String(m.id));if(row){row.body=m.body;row.edited_at=m.edited_at;draw();}
+ }).on('postgres_changes',{event:'*',schema:'public',table:'vtg_message_reactions'},payload=>{
+  const row=payload.new||payload.old||{};if(String(row.conversation_id)===activeId){loadReactions().then(()=>{log.querySelectorAll('.vtg-wa-tools').forEach(x=>x.remove());decorateMessages();});}
+ }).on('postgres_changes',{event:'*',schema:'public',table:'vtg_message_read_receipts'},payload=>{
+  const row=payload.new||payload.old||{};if(String(row.conversation_id)===activeId){loadReactions().then(()=>{log.querySelectorAll('.vtg-wa-tools').forEach(x=>x.remove());decorateMessages();});}
  }).subscribe();
  callChannel=client.channel('vtg-calls-'+userId).on('postgres_changes',{event:'*',schema:'public',table:'vtg_calls'},payload=>{
   const r=payload.new||payload.old||{};
