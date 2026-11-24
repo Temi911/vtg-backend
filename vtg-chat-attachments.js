@@ -4,11 +4,11 @@
 'use strict';
 if(window.VTGAttach)return;
 const MB=1048576;
-const EXT={pdf:'application/pdf',txt:'text/plain',csv:'text/csv',doc:'application/msword',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',xls:'application/vnd.ms-excel',xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp',gif:'image/gif',mp4:'video/mp4',webm:'video/webm',mov:'video/quicktime'};
+const EXT={pdf:'application/pdf',txt:'text/plain',csv:'text/csv',doc:'application/msword',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',xls:'application/vnd.ms-excel',xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp',gif:'image/gif',mp4:'video/mp4',webm:'video/webm',mov:'video/quicktime',webm:'audio/webm',m4a:'audio/mp4',mp3:'audio/mpeg',wav:'audio/wav',ogg:'audio/ogg'};
 const LIMITS={chat:{bucket:'vtg-chat-attachments',max:25*MB},ai:{bucket:'vtg-ai-attachments',max:20*MB},count:5};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function mimeOf(file){const ext=String(file.name||'').split('.').pop().toLowerCase();const t=String(file.type||'').toLowerCase();return (t&&Object.values(EXT).includes(t))?t:(EXT[ext]||'');}
-function kindOf(mime){return mime.startsWith('image/')?'image':mime.startsWith('video/')?'video':mime?'document':'other';}
+function kindOf(mime){return mime.startsWith('image/')?'image':mime.startsWith('video/')?'video':mime.startsWith('audio/')?'audio':mime?'document':'other';}
 function size(n){return n>=MB?(n/MB).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB';}
 function safeName(n){return String(n||'file').normalize('NFKD').replace(/[^\w.\- ]+/g,'_').replace(/\s+/g,'_').replace(/^\.+/,'').slice(-90)||'file';}
 function uuid(){return (crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return (c==='x'?r:(r&3|8)).toString(16);}));}
@@ -19,6 +19,7 @@ function check(files,scope,already){
   if(already+ok.length>=LIMITS.count){errors.push('At most '+LIMITS.count+' files per message.');break;}
   const mime=mimeOf(f);
   if(!mime){errors.push(f.name+': this file type is not supported. Use PDF, Word, Excel, TXT, CSV, JPG, PNG, WEBP, GIF, MP4, WEBM or MOV.');continue;}
+  if(scope==='ai'&&mime.startsWith('audio/')){errors.push(f.name+': audio notes are supported in Messages, not the VTG AI upload.');continue;}
   if(!f.size){errors.push(f.name+': the file is empty.');continue;}
   if(f.size>lim.max){errors.push(f.name+': larger than '+(lim.max/MB)+' MB ('+size(f.size)+').');continue;}
   ok.push({file:f,mime,kind:kindOf(mime)});
@@ -38,15 +39,20 @@ async function uploadForAI(client,userId,items){
 }
 /* Chat: upload after the message exists, then insert metadata rows. Returns the inserted rows. */
 async function attachToMessage(client,userId,conversationId,messageId,items){
- const rows=[];
- for(const it of items){
-  const path=conversationId+'/'+userId+'/'+uuid()+'-'+safeName(it.file.name);
-  await upload(client,'chat',path,it);
-  rows.push({conversation_id:conversationId,message_id:messageId,uploaded_by:userId,storage_path:path,original_name:it.file.name.slice(0,255),mime_type:it.mime,size_bytes:it.file.size,attachment_type:it.kind});
+ const rows=[],uploaded=[];
+ try{
+  for(const it of items){
+   const path=conversationId+'/'+userId+'/'+uuid()+'-'+safeName(it.file.name);
+   await upload(client,'chat',path,it);uploaded.push(path);
+   rows.push({conversation_id:conversationId,message_id:messageId,uploaded_by:userId,storage_path:path,original_name:it.file.name.slice(0,255),mime_type:it.mime,size_bytes:it.file.size,attachment_type:it.kind});
+  }
+  if(!rows.length)return [];
+  const {data,error}=await client.from('vtg_chat_attachments').insert(rows).select('id,message_id,conversation_id,storage_path,original_name,mime_type,size_bytes,attachment_type,created_at');
+  if(error)throw error;return data||[];
+ }catch(error){
+  if(uploaded.length)try{await client.storage.from(LIMITS.chat.bucket).remove(uploaded);}catch(_){}
+  throw error;
  }
- if(!rows.length)return [];
- const {data,error}=await client.from('vtg_chat_attachments').insert(rows).select('id,message_id,conversation_id,storage_path,original_name,mime_type,size_bytes,attachment_type,created_at');
- if(error)throw error;return data||[];
 }
 const urlCache=new Map();
 async function signedUrl(client,bucket,path){
@@ -69,6 +75,9 @@ function render(container,att,client){
   }else if(kind==='video'){
    box.innerHTML='<video controls preload="metadata" playsinline></video><div class="vtg-wa-att-cap">'+label+'</div>';
    resolve().then(u=>{box.querySelector('video').src=u;}).catch(()=>{box.innerHTML='<div class="vtg-wa-att-file"><span class="vtg-wa-att-ico">VID</span>'+label+'</div>';});
+  }else if(kind==='audio'){
+   box.innerHTML='<div class="vtg-wa-att-audio"><span class="vtg-wa-att-ico">AUDIO</span><audio controls preload="metadata"></audio></div><div class="vtg-wa-att-cap">'+label+'</div>';
+   resolve().then(u=>{box.querySelector('audio').src=u;}).catch(()=>{box.innerHTML='<div class="vtg-wa-att-file"><span class="vtg-wa-att-ico">AUDIO</span>'+label+'</div>';});
   }else{
    const ext=String(a.name).split('.').pop().slice(0,4).toUpperCase();
    box.innerHTML='<a class="vtg-wa-att-file" href="#" rel="noopener"><span class="vtg-wa-att-ico">'+esc(ext)+'</span>'+label+'</a>';
@@ -102,7 +111,7 @@ function mountPicker(form,scope,onProblem){
  btn.addEventListener('click',()=>inp.click());
  inp.addEventListener('change',()=>{add(inp.files);inp.value='';});
  form.addEventListener('paste',e=>{const fs=[...(e.clipboardData?.files||[])];if(fs.length){add(fs);}});
- return {items:()=>items.slice(),clear(){items=[];draw();},setDisabled(v){btn.disabled=v;}};
+ return {items:()=>items.slice(),addFiles(files){add(files||[]);},clear(){items=[];draw();},setDisabled(v){btn.disabled=v;}};
 }
 window.VTGAttach={LIMITS,check,uploadForAI,attachToMessage,render,mountPicker,signedUrl,kindOf,size};
 })();

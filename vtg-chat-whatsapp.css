@@ -231,3 +231,20 @@ html[data-theme="dark"] .vtg-wa-row[data-sender-role="supplier"]:not(.is-self) .
 .vtg-wa-read-label{font-size:10px;color:var(--wa-blue);font-weight:700}
 .vtg-wa-row.is-self .vtg-wa-tools{justify-content:flex-end}
 @media(hover:none){.vtg-wa-tools{opacity:1}}
+
+/* Full chat controls, delivery state, voice notes and secure attachments. */
+.vtg-wa-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.vtg-wa-actions [data-clearchat]{font-size:11px;padding:6px 8px;min-height:30px}
+.vtg-wa-unread{display:grid;place-items:center;min-width:21px;height:21px;padding:0 6px;border-radius:99px;background:var(--wa-green,#167b54);color:#fff;font-size:10px;font-weight:800;flex:0 0 auto}
+.vtg-wa-pinbar,.vtg-wa-clearbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 13px;font-size:12px;line-height:1.45;background:var(--wa-input);border-bottom:1px solid var(--wa-line);color:var(--wa-ink)}
+.vtg-wa-clearbar{background:color-mix(in srgb,var(--wa-blue) 9%,var(--wa-panel));border-left:3px solid var(--wa-blue)}
+.vtg-wa-pinbar button,.vtg-wa-clearbar button{border:1px solid var(--wa-line);border-radius:7px;background:var(--wa-panel);color:var(--wa-ink);padding:6px 9px;font-size:11px;font-weight:700}
+.vtg-wa-voice-note{font-size:11px;white-space:nowrap;padding:8px 10px}
+.vtg-wa-voice-note.recording{background:#a12d37;color:#fff;border-color:#a12d37}
+.vtg-wa-att-audio{display:flex;align-items:center;gap:9px;padding:8px 10px;min-width:min(280px,70vw);border-radius:10px;background:var(--wa-input)}
+.vtg-wa-att-audio audio{width:100%;max-width:260px;height:34px}
+.vtg-wa-reply-quote{border-left:3px solid var(--wa-blue);padding:6px 9px;margin:0 0 7px;border-radius:4px;background:var(--wa-input);color:var(--wa-muted);font-size:11px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+.vtg-wa-tools{flex-wrap:wrap;opacity:1}
+.vtg-wa-tools button{min-height:25px;min-width:25px}
+.vtg-wa-row.is-self .vtg-wa-meta{flex-wrap:wrap}
+@media(max-width:760px){.vtg-wa-actions [data-clearchat]{font-size:10px}.vtg-wa-pinbar,.vtg-wa-clearbar{align-items:flex-start;flex-wrap:wrap}.vtg-wa-att-audio{min-width:220px}}

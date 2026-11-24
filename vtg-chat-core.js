@@ -77,6 +77,7 @@ function bubbleRow(msg,first,onEdit){
  const t=document.createElement('div');t.className='vtg-wa-text';t.innerHTML=markdown(msg.text);
  const m=document.createElement('span');m.className='vtg-wa-meta';
  m.innerHTML=(msg.editedAt?'<span class="vtg-wa-edited">Edited</span>':'')+'<span>'+esc(time(msg.at))+'</span>'+(msg.mine?'<span class="vtg-wa-tick'+(msg.pending?' pending':'')+'">'+(msg.pending?I.clock:I.tick)+'</span>':'');
+ if(msg.replyText){const q=document.createElement('div');q.className='vtg-wa-reply-quote';q.textContent=msg.replyText;b.append(q);}
  if(String(msg.text||'').trim())b.append(t);
  if(msg.attachments?.length&&window.VTGAttach){try{window.VTGAttach.render(b,msg.attachments,msg.client);}catch(_){}}
  if(msg.mine&&msg.editable&&typeof onEdit==='function'){
