@@ -53,3 +53,6 @@ verify_jwt = false
 
 [functions.vtg-email-preferences]
 verify_jwt = false
+
+[functions.vtg-staff-access]
+verify_jwt = false

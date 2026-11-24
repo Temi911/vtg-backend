@@ -318,10 +318,10 @@
   async function init() {
     var auth; try { auth = await window.VTG_AUTH_READY; } catch (_) {}
     client = (auth && auth.client) || window.VTG_SUPABASE;
-    var bad = function (msg) { document.querySelectorAll('.section').forEach(function (s) { s.hidden = true; }); var m = document.querySelector('main.content'); if (m) m.insertAdjacentHTML('afterbegin', '<div class="panel quickCard"><h3>Administrator access</h3><p>' + esc(msg) + '</p><a class="btn primary" href="/admin-signin.html?next=%2Fadmin-dashboard.html">Sign in as administrator</a></div>'); };
+    var bad = function (msg) { document.querySelectorAll('.section').forEach(function (s) { s.hidden = true; }); var m = document.querySelector('main.content'); if (m) m.insertAdjacentHTML('afterbegin', '<div class="panel quickCard"><h3>Administrator access</h3><p>' + esc(msg) + '</p><a class="btn primary" href="/workforce-access.html?next=%2Fadmin-dashboard.html">Sign in as administrator</a></div>'); };
     if (!client) { bad('Secure sign-in is unavailable. Refresh and try again.'); return; }
     var s = await client.auth.getSession();
-    if (!s.data || !s.data.session) { location.replace('/admin-signin.html?next=' + encodeURIComponent('/admin-dashboard.html')); return; }
+    if (!s.data || !s.data.session) { location.replace('/workforce-access.html?next=' + encodeURIComponent('/admin-dashboard.html')); return; }
     var p = await client.from('profiles').select('role,is_active,full_name').eq('id', s.data.session.user.id).maybeSingle();
     if (p.error || !p.data || p.data.role !== 'admin' || !p.data.is_active) { bad('This workspace is for active VTG administrator accounts.'); return; }
     wire(); refreshAll();

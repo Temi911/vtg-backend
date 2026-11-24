@@ -5,154 +5,169 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <meta name="description" content="Private workforce and staff access for authorised Vintage Trade Global personnel.">
+  <meta name="description" content="Private access for authorised Vintage Trade Global personnel.">
   <title>Workforce &amp; Staff Access | VTG — The Private Trade House</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
-  <link rel="stylesheet" href="/vtg-content.css?v=20261030-1">
-  <link rel="stylesheet" href="/vtg-type.css">
-  <link rel="stylesheet" href="/vtg-loader.css?v=20261117-lang-1">
-  <script src="/vtg-loader.js?v=20261117-lang-1" defer></script>
+    <link rel="stylesheet" href="/vtg-type.css">
+  <link rel="stylesheet" href="/vtg-loader.css?v=20261117-lang-1"><script src="/vtg-loader.js?v=20261117-lang-1" defer></script>
+  <script>window.VTG_AUTH_CONFIG={detectSessionInUrl:false};</script>
+  <script src="/vtg-supabase-auth.js?v=20261123-staff-1"></script>
   <style>
-    #main{padding-bottom:52px}
-    .workforce-footer-note{display:flex;align-items:center;justify-content:space-between;gap:14px;max-width:1200px;margin:0 auto;padding:16px 24px 24px;color:var(--vs-muted);font-size:.8rem}
-    .workforce-footer-note a{color:var(--vs-blue);font-weight:800;text-decoration:none}
-    @media(max-width:600px){.workforce-footer-note{padding:14px 16px 22px;align-items:flex-start;flex-direction:column}}
-    #main .workforce-hero{padding:34px max(24px,calc((100% - 1200px)/2)) 58px;background:var(--vs-bg)}
-    #main .workforce-hero .hero-shell{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(340px,.95fr);gap:54px;align-items:center;max-width:1200px;margin:auto}
-    #main .workforce-hero .eyebrow{margin-bottom:12px}
-    #main .workforce-hero h1{max-width:12ch;font-size:clamp(2.6rem,5.4vw,4.5rem);line-height:1.02;margin:0 0 20px}
-    #main .workforce-hero .lead{max-width:58ch;font-size:1.08rem;line-height:1.8}
-    #main .workforce-hero .trust-note{display:flex;gap:14px;align-items:flex-start;margin-top:28px;padding:17px 19px;background:var(--vs-tint);border:1px solid var(--vs-line);border-left:4px solid var(--vs-blue);border-radius:12px}
-    #main .trust-note .trust-mark{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:9px;background:var(--vs-paper);color:var(--vs-blue);font-weight:900}
-    #main .trust-note strong{display:block;margin-bottom:3px}
-    #main .trust-note p{font-size:.9rem;line-height:1.6;margin:0}
-    #main .workforce-visual{position:relative;min-height:390px;border-radius:20px;overflow:hidden;background:#132b4a;box-shadow:var(--vs-shadow)}
-    #main .workforce-visual>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.72}
-    #main .workforce-visual:after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(7,23,45,.12),rgba(7,23,45,.9))}
-    #main .visual-caption{position:absolute;z-index:1;left:28px;right:28px;bottom:26px;color:#fff}
-    #main .visual-caption .visual-kicker{font-size:.75rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#f5cf62}
-    #main .visual-caption h2{font-size:clamp(1.55rem,2.8vw,2.25rem);line-height:1.15;color:#fff;margin:9px 0}
-    #main .visual-caption p{max-width:42ch;color:rgba(255,255,255,.85);margin:0}
-    #main .access-section{padding:58px max(24px,calc((100% - 1200px)/2)) 34px}
-    #main .access-section .sectionHead{max-width:720px;margin-bottom:26px}
-    #main .access-section .sectionHead h2{font-size:clamp(1.8rem,3vw,2.35rem)}
-    #main .access-section .sectionHead p{margin-top:8px}
-    #main .workspace-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-    #main .workspace-card{display:flex;flex-direction:column;min-height:226px;padding:22px;background:var(--vs-paper);border:1px solid var(--vs-line);border-radius:15px;box-shadow:0 8px 28px rgba(14,35,62,.045);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
-    #main .workspace-card:hover{transform:translateY(-3px);border-color:var(--vs-blue);box-shadow:var(--vs-shadow)}
-    #main .workspace-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}
-    #main .workspace-icon{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--vs-tint);color:var(--vs-blue);font-size:1.25rem;font-weight:800}
-    #main .workspace-label{font-size:.69rem;letter-spacing:.09em;text-transform:uppercase;font-weight:800;color:var(--vs-muted);text-align:right}
-    #main .workspace-card h3{font-size:1.08rem;margin-bottom:8px}
-    #main .workspace-card p{font-size:.9rem;line-height:1.65;margin:0 0 20px}
-    #main .workspace-link{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:14px;border-top:1px solid var(--vs-line);font-size:.88rem;font-weight:800;text-decoration:none;color:var(--vs-blue)}
-    #main .workspace-link span:last-child{font-size:1.2rem;transition:transform .18s}
-    #main .workspace-card:hover .workspace-link span:last-child{transform:translateX(3px)}
-    #main .access-guidance{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:26px}
-    #main .guidance-item{padding:17px 18px;border:1px solid var(--vs-line);border-radius:12px;background:var(--vs-tint)}
-    #main .guidance-item b{display:block;margin-bottom:5px;font-size:.9rem}
-    #main .guidance-item p{font-size:.83rem;line-height:1.55;margin:0}
-    #main .admin-access{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:38px auto 0;max-width:1200px;padding:28px 30px;border-radius:16px;background:var(--vs-ink);color:#fff}
-    #main .admin-access h2{font-size:1.35rem;color:#fff;margin-bottom:6px}
-    #main .admin-access p{color:rgba(255,255,255,.75);margin:0;font-size:.9rem}
-    #main .admin-actions{display:flex;flex-wrap:wrap;gap:10px}
-    #main .admin-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:43px;padding:0 16px;border:1px solid rgba(255,255,255,.28);border-radius:9px;color:#fff!important;text-decoration:none;font-size:.85rem;font-weight:800}
-    #main .admin-actions a.primary{background:#f2c75c;border-color:#f2c75c;color:#13233b!important}
-    #main .workforce-footnote{max-width:1200px;margin:18px auto 0;font-size:.78rem;color:var(--vs-muted);line-height:1.6}
-    #main .workforce-header{border-bottom:1px solid var(--vs-line);background:var(--vs-paper)}
-    #main .workforce-header .nav{max-width:1200px;margin:auto;min-height:76px}
-    #main .workforce-header .brand img{max-height:42px;width:auto}
-    #main .workforce-header .navActions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    #main .workforce-header .internalOnly{padding-left:12px;border-left:1px solid var(--vs-line);font-size:.78rem;color:var(--vs-muted);font-weight:700}
-    @media(max-width:900px){
-      #main .workforce-hero{padding:30px 20px 42px}
-      #main .workforce-hero .hero-shell{grid-template-columns:1fr;gap:28px}
-      #main .workforce-visual{min-height:300px}
-      #main .access-section{padding:42px 20px 28px}
-      #main .workspace-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-      #main .admin-access{margin-inline:20px}
-      #main .workforce-footnote{margin-inline:20px}
-    }
-    @media(max-width:600px){
-      #main .workforce-header .nav{align-items:flex-start;gap:14px;padding:14px 16px;flex-direction:column}
-      #main .workforce-header .navActions{width:100%;gap:7px}
-      #main .workforce-header .navActions select{width:auto;min-width:112px}
-      #main .workforce-header .internalOnly{display:none}
-      #main .workforce-hero{padding:28px 16px 34px}
-      #main .workforce-hero h1{font-size:2.65rem}
-      #main .workforce-visual{min-height:260px}
-      #main .visual-caption{left:20px;right:20px;bottom:20px}
-      #main .access-section{padding:36px 16px 22px}
-      #main .workspace-grid{grid-template-columns:1fr;gap:12px}
-      #main .workspace-card{min-height:0;padding:19px}
-      #main .access-guidance{grid-template-columns:1fr;gap:10px}
-      #main .admin-access{margin:26px 16px 0;padding:23px 20px;align-items:flex-start;flex-direction:column}
-      #main .admin-actions{width:100%}
-      #main .admin-actions a{flex:1}
-      #main .workforce-footnote{margin:14px 16px 0}
-    }
+    body{margin:0;background:var(--vs-bg,#f3f6fb);color:var(--vs-ink,#14213A);font-family:Manrope,system-ui,sans-serif}
+    html[data-theme="dark"] body{background:#0C1422;color:#E8EEF8}
+    #main{min-height:100vh;display:grid;place-items:center;padding:28px 16px}
+    .sa-card{width:min(100%,500px);background:var(--vs-paper,#fff);border:1px solid rgba(20,33,58,.14);border-radius:18px;padding:clamp(24px,5vw,40px);box-shadow:0 18px 50px rgba(10,30,70,.1)}
+    html[data-theme="dark"] .sa-card{background:#111C2E;border-color:rgba(255,255,255,.12)}
+    .sa-eyebrow{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#1558D6}
+    html[data-theme="dark"] .sa-eyebrow{color:#FFB81C}
+    .sa-card h1{font-size:clamp(24px,5vw,32px);line-height:1.15;margin:10px 0}
+    .sa-lead{font-size:14px;line-height:1.65;opacity:.8;margin:0 0 18px}
+    .sa-field{margin:14px 0}.sa-field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
+    .sa-field input{width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid rgba(20,33,58,.25);border-radius:10px;font:inherit;background:transparent;color:inherit}
+    .sa-btn{width:100%;border:0;border-radius:10px;padding:14px 16px;font:800 14px Manrope,sans-serif;cursor:pointer;background:#1558D6;color:#fff;margin-top:6px}
+    .sa-btn.alt{background:transparent;color:inherit;border:1px solid rgba(20,33,58,.3)}
+    .sa-btn.gold{background:#FFB81C;color:#2b1d00}
+    .sa-btn:disabled{opacity:.55;cursor:wait}
+    .sa-msg{margin-top:14px;padding:12px 14px;border-radius:10px;font-size:13px;line-height:1.55;background:rgba(21,88,214,.08);display:none}
+    .sa-msg.show{display:block}.sa-msg.error{background:rgba(190,50,40,.12);color:#9b2c25}.sa-msg.ok{background:rgba(30,140,70,.12);color:#1d6b3a}
+    html[data-theme="dark"] .sa-msg.error{color:#ff9d93}html[data-theme="dark"] .sa-msg.ok{color:#8fe0ae}
+    .sa-panel{display:none}.sa-panel.active{display:block}
+    .sa-foot{margin-top:22px;font-size:12px;opacity:.7;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .sa-foot a{color:inherit;font-weight:700}
+    .sa-roles{display:grid;gap:8px;margin-top:10px}
   </style>
 </head>
 <body>
 <main id="main">
+ <section class="sa-card" aria-labelledby="saTitle">
+  <div class="sa-eyebrow">VTG · Workforce &amp; Staff Access</div>
+  <h1 id="saTitle">Private staff access</h1>
+  <p class="sa-lead" id="saLead">Enter the work email VTG gave you. If it belongs to a member of staff, we send a private link to that inbox. The link takes you to your own workspace, or to sign-up if you have been invited.</p>
 
-  <section class="workforce-hero">
-    <div class="hero-shell">
-      <div class="hero-copy">
-        <div class="eyebrow">VTG workforce portal</div>
-        <h1>One team.<br><span>Connected trade.</span></h1>
-        <p class="lead">A dedicated access point for the people who keep VTG moving — from trade operations and logistics to compliance, customer care and management.</p>
-        <div class="trust-note">
-          <span class="trust-mark" aria-hidden="true">✓</span>
-          <div><strong>Private access for authorised personnel</strong><p>Choose the workspace assigned to you. Access is controlled by your VTG account permissions; selecting a workspace does not grant additional privileges.</p></div>
-        </div>
-      </div>
-      <div class="workforce-visual">
-        <img src="https://images.pexels.com/photos/7709156/pexels-photo-7709156.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Colleagues coordinating work in a professional operations environment" loading="lazy" onerror="this.style.display='none'">
-        <div class="visual-caption">
-          <div class="visual-kicker">The people behind every shipment</div>
-          <h2>Clear roles. Better coordination.</h2>
-          <p>Bring teams, responsibilities and operational handoffs into one organised working environment.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  <div class="sa-panel active" id="panelRequest">
+   <form id="requestForm" novalidate>
+    <div class="sa-field"><label for="workEmail">Work email</label><input id="workEmail" type="email" autocomplete="username" maxlength="254" required placeholder="you@work-email"></div>
+    <input type="text" name="website" id="saHp" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+    <button class="sa-btn" id="btnLink" type="submit">Email me my private link</button>
+    <button class="sa-btn alt" id="btnPassword" type="button">I need to set or reset my password</button>
+   </form>
+  </div>
 
-  <section class="access-section">
-    <div class="sectionHead">
-      <div class="eyebrow">Your assigned access</div>
-      <h2>Choose your workspace</h2>
-      <p>Sign in with your VTG-issued work account. If you are unsure which workspace to use, contact your team administrator before continuing.</p>
-    </div>
+  <div class="sa-panel" id="panelChecking"><p class="sa-lead">Verifying your secure link…</p></div>
 
-    <div class="workspace-grid">
-      <article class="workspace-card"><div class="workspace-top"><span class="workspace-icon" aria-hidden="true">▤</span><span class="workspace-label">Internal team</span></div><h3>Staff &amp; Operations</h3><p>Daily assignments, operational queues, task handoffs and activity history.</p><a class="workspace-link" href="/workforce-signin.html?workspace=staff"><span>Staff sign-in</span><span>→</span></a></article>
-      <article class="workspace-card"><div class="workspace-top"><span class="workspace-icon" aria-hidden="true">▥</span><span class="workspace-label">Team leads</span></div><h3>Management</h3><p>Team workload, operational oversight, escalations and review workflows.</p><a class="workspace-link" href="/workforce-signin.html?workspace=manager"><span>Management sign-in</span><span>→</span></a></article>
-      <article class="workspace-card"><div class="workspace-top"><span class="workspace-icon" aria-hidden="true">◎</span><span class="workspace-label">Trade network</span></div><h3>Trade Agents</h3><p>Trade leads, sourcing opportunities, partner follow-ups and commission workflow.</p><a class="workspace-link" href="/workforce-signin.html?workspace=agent"><span>Agent sign-in</span><span>→</span></a></article>
-      <article class="workspace-card"><div class="workspace-top"><span class="workspace-icon" aria-hidden="true">⇢</span><span class="workspace-label">Operations</span></div><h3>Logistics &amp; Clearing</h3><p>Shipment tasks, document gaps, customs milestones and delivery coordination.</p><a class="workspace-link" href="/workforce-signin.html?workspace=logistics"><span>Logistics sign-in</span><span>→</span></a></article>
-      <article class="workspace-card"><div class="workspace-top"><span class="workspace-icon" aria-hidden="true">✓</span><span class="workspace-label">Restricted review</span></div><h3>Verification &amp; Compliance</h3><p>Evidence review, document follow-ups, risk indicators and escalations.</p><a class="workspace-link" href="/workforce-signin.html?workspace=compliance"><span>Compliance sign-in</span><span>→</span></a></article>
-      <article class="workspace-card"><div class="workspace-top"><span class="workspace-icon" aria-hidden="true">✉</span><span class="workspace-label">Customer care</span></div><h3>Customer Support</h3><p>Customer cases, enquiries, complaints, response commitments and resolutions.</p><a class="workspace-link" href="/workforce-signin.html?workspace=support"><span>Support sign-in</span><span>→</span></a></article>
-      <article class="workspace-card"><div class="workspace-top"><span class="workspace-icon" aria-hidden="true">₦</span><span class="workspace-label">Limited access</span></div><h3>Finance &amp; Commissions</h3><p>Reconciliation tasks, commission claims and approval handoffs.</p><a class="workspace-link" href="/workforce-signin.html?workspace=finance"><span>Finance sign-in</span><span>→</span></a></article>
-      <article class="workspace-card"><div class="workspace-top"><span class="workspace-icon" aria-hidden="true">⌕</span><span class="workspace-label">Field work</span></div><h3>Inspection &amp; Quality</h3><p>Inspection assignments, evidence collection and quality reporting.</p><a class="workspace-link" href="/workforce-signin.html?workspace=inspector"><span>Inspection sign-in</span><span>→</span></a></article>
-      <article class="workspace-card"><div class="workspace-top"><span class="workspace-icon" aria-hidden="true">▧</span><span class="workspace-label">Content team</span></div><h3>Marketing &amp; Catalogue</h3><p>Catalogue reviews, content moderation, campaign tasks and activity.</p><a class="workspace-link" href="/workforce-signin.html?workspace=marketing"><span>Marketing sign-in</span><span>→</span></a></article>
-    </div>
+  <div class="sa-panel" id="panelReady">
+   <p class="sa-lead" id="readyText">Your identity is verified.</p>
+   <div class="sa-roles" id="readyRoles"></div>
+  </div>
 
-    <div class="access-guidance">
-      <div class="guidance-item"><b>Use your assigned role</b><p>Only enter the workspace your administrator has assigned to your account.</p></div>
-      <div class="guidance-item"><b>Keep account details private</b><p>Never share your password or use another staff member's credentials.</p></div>
-      <div class="guidance-item"><b>Need access or help?</b><p>Contact your VTG administrator if your role is missing or your sign-in is not working.</p></div>
-    </div>
+  <div class="sa-panel" id="panelPassword">
+   <form id="passwordForm" novalidate>
+    <div class="sa-field"><label for="newPw">New password</label><input id="newPw" type="password" autocomplete="new-password" minlength="10" maxlength="128" required></div>
+    <div class="sa-field"><label for="confirmPw">Confirm new password</label><input id="confirmPw" type="password" autocomplete="new-password" minlength="10" maxlength="128" required></div>
+    <button class="sa-btn gold" id="btnSetPw" type="submit">Update password</button>
+   </form>
+  </div>
 
-    <section class="admin-access">
-      <div><div class="eyebrow" style="color:#f2c75c">Restricted area</div><h2>Administrator access</h2><p>For authorised VTG administrators responsible for workforce access and oversight.</p></div>
-      <div class="admin-actions"><a class="primary" href="/admin-signin.html">Administrator sign-in ↗</a></div>
-    </section>
-    <p class="workforce-footnote">Some internal workspace features may still be undergoing backend integration. Preview-only tools are for evaluation and must not be treated as official operational records.</p>
-  </section>
+  <div class="sa-msg" id="saMsg" role="status" aria-live="polite"></div>
+  <div class="sa-foot"><span>Authorised VTG personnel only.</span><a href="/">&larr; Back to VTG</a></div>
+ </section>
 </main>
-<div class="workforce-footer-note"><span>Internal staff portal · Private access for authorised VTG personnel</span><a href="/">← Back to VTG</a></div>
+<script src="/vtg-password-toggle.js?v=20261123-1" defer></script>
+<script>
+(async function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const msg=$('saMsg');
+let auth=null,client=null;
+function say(t,type){msg.textContent=t;msg.className='sa-msg show'+(type?' '+type:'');}
+function clear(){msg.className='sa-msg';msg.textContent='';}
+function show(name){['Request','Checking','Ready','Password'].forEach(n=>$('panel'+n).classList.toggle('active',n===name));}
+function linkError(code,desc){const t=((code||'')+' '+(desc||'')).toLowerCase();return /expired|otp_expired/.test(t)?'This link has expired or was already used. Request a new one below.':'This link is not valid. Request a new one below.';}
+async function verifyStaff(){
+ const current=await auth.getCurrent();
+ if(!current||current.user.accountEnvironment!=='staff'||!current.user.isActive){
+  try{await client.auth.signOut({scope:'local'})}catch(_){}
+  throw new Error('This link is not connected to an active VTG staff account.');
+ }
+ return current.user;
+}
+function showReady(user){
+ const name=user.fullName||user.name||'';
+ $('readyText').textContent=(name?'Welcome, '+name+'. ':'')+'Your identity is verified. Choose where to go.';
+ const box=$('readyRoles');box.innerHTML='';
+ const dests=[];
+ if(user.role==='admin')dests.push(['Open the administrator control centre','/admin-dashboard.html']);
+ (user.workforceMemberships||[]).filter(m=>m.status==='active').forEach(m=>dests.push(['Open my '+String(m.workspace_role).replace(/_/g,' ')+' workspace','/workforce-dashboard.html?workspace='+encodeURIComponent(m.workspace_role)]));
+ if(!dests.length){say('Your account has no workspace assigned yet. Contact your VTG administrator.','error');}
+ dests.forEach(([label,href],i)=>{const a=document.createElement('button');a.type='button';a.className='sa-btn'+(i?' alt':'');a.textContent=label;a.onclick=()=>location.assign(href);box.append(a);});
+ show('Ready');
+ if(dests.length===1)setTimeout(()=>location.assign(dests[0][1]),900);
+}
+async function callback(){
+ const q=new URLSearchParams(location.search),h=new URLSearchParams(location.hash.replace(/^#/,''));
+ const get=k=>h.get(k)||q.get(k);
+ if(!['code','access_token','token_hash','error','error_code'].some(k=>get(k)))return {status:'none'};
+ const errCode=get('error_code')||get('error'),desc=get('error_description'),type=get('type');
+ const access=h.get('access_token'),refresh=h.get('refresh_token'),code=q.get('code');
+ try{history.replaceState(null,'',location.pathname)}catch(_){}
+ if(errCode)return {status:'error',text:linkError(errCode,desc)};
+ try{
+  if(access&&refresh){const {error}=await client.auth.setSession({access_token:access,refresh_token:refresh});if(error)return {status:'error',text:linkError(error.code,error.message)};return {status:'session',type};}
+  if(code){const {data,error}=await client.auth.exchangeCodeForSession(code);if(error)return {status:'error',text:'This link was opened in a different browser from the one that asked for it. Request a new link here and open it on this device.'};return {status:'session',type:data?.redirectType||type};}
+ }catch(e){return {status:'error',text:linkError('',e.message)};}
+ return {status:'error',text:linkError('','')};
+}
+async function send(intent){
+ clear();
+ const email=$('workEmail').value.trim().toLowerCase();
+ if(!/^\S+@\S+\.\S+$/.test(email)){say('Enter your work email address.','error');return;}
+ $('btnLink').disabled=$('btnPassword').disabled=true;
+ try{
+  const r=await fetch(auth.projectUrl+'/functions/v1/vtg-staff-access',{method:'POST',headers:{'Content-Type':'application/json',apikey:auth.publishableKey,Authorization:'Bearer '+auth.publishableKey},body:JSON.stringify({kind:'staff',email,intent,website:$('saHp').value})});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(j.error||'The request could not be completed. Please try again.');
+  say(j.message||'If this work email is registered, a private link has been sent.','ok');
+ }catch(e){say(e.message,'error');}
+ finally{$('btnLink').disabled=$('btnPassword').disabled=false;}
+}
+function problem(pw){
+ if(pw.length<10)return 'Use at least 10 characters.';
+ if(!/[a-z]/.test(pw)||!/[A-Z]/.test(pw)||!/[0-9]/.test(pw))return 'Include an uppercase letter, a lowercase letter and a number.';
+ return '';
+}
+try{
+ auth=await window.VTG_AUTH_READY;client=auth&&auth.client;
+ if(!client)throw new Error('Secure access is unavailable. Refresh and try again.');
+ $('requestForm').addEventListener('submit',e=>{e.preventDefault();send('signin');});
+ if(new URLSearchParams(location.search).get('passwordReset')==='success'){say('Your password was updated. Enter your work email to receive your private link.','ok');try{history.replaceState(null,'',location.pathname)}catch(_){}}
+ $('btnPassword').addEventListener('click',()=>send('password'));
+ const cb=await callback();
+ if(cb.status==='session'){
+  show('Checking');
+  try{
+   const user=await verifyStaff();
+   if(cb.type==='recovery'){show('Password');say('Link verified. Choose a new password.','ok');
+    $('passwordForm').addEventListener('submit',async e=>{
+     e.preventDefault();const a=$('newPw').value,b=$('confirmPw').value;
+     if(a!==b){say('The passwords do not match.','error');return;}
+     const p=problem(a);if(p){say(p,'error');return;}
+     $('btnSetPw').disabled=true;
+     try{const {error}=await client.auth.updateUser({password:a});if(error)throw error;clear();showReady(user);say('Password updated.','ok');}
+     catch(err){say(err.message||'The password could not be updated.','error');$('btnSetPw').disabled=false;}
+    });
+   }else showReady(user);
+  }catch(err){show('Request');say(err.message,'error');}
+ }else if(cb.status==='error'){show('Request');say(cb.text,'error');}
+ else{
+  // Already signed in as staff on this device? Offer the workspace directly.
+  const cur=await auth.getCurrent().catch(()=>null);
+  if(cur&&cur.user.accountEnvironment==='staff'&&cur.user.isActive)showReady(cur.user);
+ }
+}catch(err){show('Request');say(err.message||'Secure access could not start.','error');}
+})();
+</script>
 </body>
 </html>

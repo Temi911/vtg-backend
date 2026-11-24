@@ -59,12 +59,12 @@
     auth=await window.VTG_AUTH_READY;
     current=await auth.getCurrent();
     if(!current||current.user.role!=='admin'||current.user.accountEnvironment!=='staff'){
-      location.replace('/admin-signin.html');return;
+      location.replace('/workforce-access.html');return;
     }
     await load();
   }catch(error){
     message(error.message||'Could not verify administrator access.','error');
-    if(!current)setTimeout(()=>location.replace('/admin-signin.html'),500);
+    if(!current)setTimeout(()=>location.replace('/workforce-access.html'),500);
     return;
   }
   form?.addEventListener('submit',async event=>{

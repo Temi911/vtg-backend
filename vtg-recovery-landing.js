@@ -17,6 +17,9 @@
         if (/-code-verifier$/.test(key) && /\/PASSWORD_RECOVERY$/.test(localStorage.getItem(key) || '')) { pkceReturn = true; break; }
       }
     }
+    // Private staff links (magic link / invitation) that fell back to the Site URL go to staff access.
+    var staffLink = /(^|[#&])type=(magiclink|invite)(&|$)/.test(hash) && /access_token=/.test(hash);
+    if (staffLink) { location.replace('/workforce-access.html' + search + hash); return; }
     if (implicitRecovery || recoveryError || pkceReturn) location.replace(target + search + hash);
   } catch (_) { /* never block the page */ }
 })();

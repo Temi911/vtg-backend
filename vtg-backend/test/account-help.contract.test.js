@@ -10,10 +10,11 @@ test('account help loads the Supabase auth bootstrap before waiting for it',()=>
   assert.match(html,/if\(!auth \|\| !auth\.client\) throw new Error/);
 });
 test('account help retains role-specific recovery and support actions',()=>{
-  for(const role of ['buyer','supplier','bank','admin']) assert.ok(html.includes(role+':{'));
+  for(const role of ['buyer','supplier','bank']) assert.ok(html.includes(role+':{'));
+  assert.ok(!html.includes('data-role="admin"'),'staff and administrator options are not offered on the public help page');
   for(const mode of ['forgot','code','trouble','contact','reset']) assert.ok(html.includes(mode+':{'));
-  assert.match(html,/client\.auth\.resetPasswordForEmail/);
+  assert.match(html,/vtg-staff-access/);
+  assert.match(html,/kind:'user'/);
   assert.match(html,/client\.auth\.resend/);
   assert.match(html,/client\.functions\.invoke\('vtg-account-support'/);
-  assert.match(html,/role==='admin'&&next!=='contact'/,'admin recovery remains restricted to contact');
 });

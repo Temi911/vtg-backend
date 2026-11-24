@@ -21,7 +21,8 @@ test('account support inbox is private and only the server function can write re
 
 test('account help uses Supabase Auth for password recovery and signup verification', () => {
   const page = readRoot('account-help.html');
-  assert.match(page, /resetPasswordForEmail/);
+  // Reset emails are now requested through the verified server-side function (see vtg-staff-access).
+  assert.match(page, /vtg-staff-access/);
   assert.match(page, /auth\.updateUser/);
   assert.match(page, /auth\.resend/);
   assert.match(page, /functions\.invoke\('vtg-account-support'/);
