@@ -37,7 +37,7 @@ test('all role dashboards force incoming chat left and own chat right',()=>{
   const css=read('vtg-chat-whatsapp.css');
   assert.match(css,/\.vtg-wa-stream>\.vtg-wa-row\.is-self\{justify-content:flex-end\}/);
   assert.match(css,/\.vtg-wa-stream>\.vtg-wa-row\.is-other\{justify-content:flex-start\}/);
-  for(const page of ['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html'])assert.match(read(page),/vtg-chat-whatsapp\.css\?v=20261124-whatsapp-alignment-2/);
+  for(const page of ['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html'])assert.match(read(page),/vtg-chat-whatsapp\.css\?v=20261124-viewer-align-3/);
 });
 test('expanded moderation is shared by chat, edits and social feed RPCs',()=>{
   const sql=read('supabase/migrations/20261124120000_vtg_site_language_moderation_expansion.sql');
@@ -47,4 +47,18 @@ test('expanded moderation is shared by chat, edits and social feed RPCs',()=>{
   assert.match(social,/private\.vtg_message_content_violation/);
   assert.match(chat,/private\.vtg_message_content_violation/);
   assert.match(chat,/warning_count/);
+});
+
+test('message side is calculated from the viewing account identity and applied to every role',()=>{
+ const core=read('vtg-chat-core.js'),messages=read('vtg-cross-account-messages.js');
+ assert.match(core,/function viewerOwnsMessage\(msg\)/);
+ assert.match(core,/sender===viewer\?sender===viewer:msg\?\.mine===true/);
+ assert.match(core,/data-message-side/);
+ assert.match(messages,/viewerId:userId/);
+ for(const page of ['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html']){
+  const html=read(page);
+  assert.match(html,/vtg-chat-core\.js\?v=20261124-viewer-align-3/);
+  assert.match(html,/vtg-cross-account-messages\.js\?v=20261124-viewer-align-3/);
+  assert.match(html,/vtg-chat-whatsapp\.css\?v=20261124-viewer-align-3/);
+ }
 });

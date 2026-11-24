@@ -66,17 +66,26 @@ function markdown(value){
  flushP();flushL();flushT();
  return out.join('');
 }
+function viewerOwnsMessage(msg){
+ const sender=String(msg?.senderId??'').trim().toLowerCase();
+ const viewer=String(msg?.viewerId??'').trim().toLowerCase();
+ return sender&&viewer?sender===viewer:msg?.mine===true;
+}
 function bubbleRow(msg,first,onEdit){
+ const mine=viewerOwnsMessage(msg);
  const row=document.createElement('div');
- row.className='vtg-wa-row '+(msg.mine?'is-self':'is-other')+(first?' first':'');
+ row.className='vtg-wa-row '+(mine?'is-self':'is-other')+(first?' first':'');
+ row.dataset.messageSide=mine?'outgoing':'incoming';
+ if(msg.viewerId)row.dataset.viewerId=String(msg.viewerId);
+ if(msg.senderId)row.dataset.senderId=String(msg.senderId);
  row.dataset.tone=msg.ai?'ai':String(msg.tone??0);
  if(msg.role)row.dataset.senderRole=String(msg.role).toLowerCase();
  if(msg.id!=null)row.dataset.msgId=String(msg.id);
  const b=document.createElement('div');b.className='vtg-wa-bubble';
- if(!msg.mine&&first&&msg.name){const n=document.createElement('span');n.className='vtg-wa-name';const roleLabel=({buyer:'Buyer',supplier:'Supplier',bank:'Bank',agent:'Trade agent'})[String(msg.role||'').toLowerCase()];n.textContent=msg.name+(roleLabel?' · '+roleLabel:'');b.append(n);}
+ if(!mine&&first&&msg.name){const n=document.createElement('span');n.className='vtg-wa-name';const roleLabel=({buyer:'Buyer',supplier:'Supplier',bank:'Bank',agent:'Trade agent'})[String(msg.role||'').toLowerCase()];n.textContent=msg.name+(roleLabel?' · '+roleLabel:'');b.append(n);}
  const t=document.createElement('div');t.className='vtg-wa-text';t.innerHTML=markdown(msg.text);
  const m=document.createElement('span');m.className='vtg-wa-meta';
- m.innerHTML=(msg.editedAt?'<span class="vtg-wa-edited">Edited</span>':'')+'<span>'+esc(time(msg.at))+'</span>'+(msg.mine?'<span class="vtg-wa-tick'+(msg.pending?' pending':'')+'">'+(msg.pending?I.clock:I.tick)+'</span>':'');
+ m.innerHTML=(msg.editedAt?'<span class="vtg-wa-edited">Edited</span>':'')+'<span>'+esc(time(msg.at))+'</span>'+(mine?'<span class="vtg-wa-tick'+(msg.pending?' pending':'')+'">'+(msg.pending?I.clock:I.tick)+'</span>':'');
  if(msg.replyText){const q=document.createElement('div');q.className='vtg-wa-reply-quote';q.textContent=msg.replyText;b.append(q);}
  if(String(msg.text||'').trim())b.append(t);
  if(msg.attachments?.length&&window.VTGAttach){try{window.VTGAttach.render(b,msg.attachments,msg.client);}catch(_){}}
@@ -90,7 +99,7 @@ function renderStream(stream,msgs,emptyText,onEdit){
  msgs.forEach(m=>{
   const d=day(m.at);
   if(d!==lastDay){const s=document.createElement('div');s.className='vtg-wa-day';s.textContent=d;stream.append(s);lastDay=d;lastKey='';}
-  const key=(m.mine?'me':String(m.senderId||m.name))+'|'+(m.ai?'ai':'');
+  const key=(viewerOwnsMessage(m)?'me':String(m.senderId||m.name))+'|'+(m.ai?'ai':'');
   stream.append(bubbleRow(m,key!==lastKey,onEdit));lastKey=key;
  });
  stream.scrollTop=stream.scrollHeight;
@@ -105,5 +114,5 @@ function clientReady(){
   return {client,userId:data.session.user.id};
  })();
 }
-window.VTGChat={esc,icons:I,initials,time,day,toneMap,bubbleRow,renderStream,markdown,clientReady};
+window.VTGChat={esc,icons:I,initials,time,day,toneMap,bubbleRow,renderStream,markdown,clientReady,viewerOwnsMessage};
 })();
