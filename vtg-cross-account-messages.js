@@ -16,10 +16,11 @@ host.innerHTML='<aside class="vtg-wa-side"><div class="vtg-wa-sidehead"><strong>
  +'<div class="vtg-wa-note">Only people in a chat can read or send messages, and you can only chat with partners linked to your trade records. Do not share passwords, one-time codes or bank credentials.</div></div>';
 const $=s=>host.querySelector(s);
 const list=$('[data-list]'),log=$('[data-log]'),form=$('[data-form]'),input=$('[data-input]'),sendBtn=$('[data-send]'),picker=$('[data-picker]'),chatSearch=$('[data-chat-search]'),clearBtn=$('[data-clearchat]'),pinbar=$('[data-pinbar]'),clearbar=$('[data-clearbar]');
-const titleEl=$('[data-title]'),subEl=$('[data-sub]'),avatarEl=$('[data-avatar]'),voiceBtn=$('[data-voice]'),videoBtn=$('[data-video]'),callbar=$('[data-callbar]');
+const titleEl=$('[data-title]'),subEl=$('[data-sub]'),avatarEl=$('[data-avatar]'),voiceBtn=$('[data-voice]'),videoBtn=$('[data-video]'),callbar=$('[data-callbar]'),headerActions=$('.vtg-wa-actions');
+const selectionBar=document.createElement('div');selectionBar.className='vtg-wa-selection-toolbar';selectionBar.hidden=true;selectionBar.setAttribute('aria-label','Selected message actions');headerActions.insertBefore(selectionBar,clearBtn);
 const ATT='[Attachment]',attMap={};
 let picker2=null, presenceChannel=null, typingTimer=null, isTyping=false, replyTo=null, reactionsByMessage={}, receiptsByMessage={};
-let client=null,userId='',convs=[],activeId='',members={},messages=[],busy=false,channel=null,callChannel=null,liveCalls={},unreadCounts={},starredByMessage={},deliveryByMessage={},pinnedMessage=null;
+let client=null,userId='',convs=[],activeId='',members={},messages=[],busy=false,channel=null,callChannel=null,liveCalls={},unreadCounts={},starredByMessage={},deliveryByMessage={},pinnedMessage=null,selectedMessageId='';
 const memberCache={};
 picker2=window.VTGAttach?(function(){try{return window.VTGAttach.mountPicker(form,'chat',note=>flash(note));}catch(_){return null;}})():null;
 function flash(text){const n=document.createElement('div');n.className='vtg-wa-empty';n.textContent=text;log.append(n);log.scrollTop=log.scrollHeight;}
@@ -107,7 +108,7 @@ async function editMessage(msg){
   draw();
  }catch(error){flash('Message edit failed: '+(error.message||'Please try again'));}
 }
-function draw(){C.renderStream(log,toRows(messages),'No messages yet. Say hello below.',editMessage);decorateMessages();}
+function draw(){C.renderStream(log,toRows(messages),'No messages yet. Say hello below.',editMessage);decorateMessages();if(selectedMessageId&&!messages.some(m=>String(m.id)===String(selectedMessageId)))selectedMessageId='';syncSelectionToolbar();}
 async function loadReactions(){
  reactionsByMessage={};receiptsByMessage={};
  const ids=messages.map(m=>m.id).filter(Boolean);if(!ids.length)return;
@@ -121,23 +122,23 @@ async function loadReactions(){
 async function markRead(){if(!activeId)return;try{await client.rpc('vtg_mark_conversation_read',{p_conversation_id:activeId});}catch(_){}}
 function decorateMessages(){
  log.querySelectorAll('.vtg-wa-row[data-msg-id]').forEach(row=>{
-  const id=row.dataset.msgId;if(row.querySelector('.vtg-wa-tools'))return;
-  const bar=document.createElement('div');bar.className='vtg-wa-tools';
-  const acts=[['↩','Reply'],['👍','React'],['↗','Forward']];
-  acts.forEach(([glyph,label])=>{const b=document.createElement('button');b.type='button';b.textContent=glyph;b.title=label;b.setAttribute('aria-label',label);b.addEventListener('click',()=>{
-   const m=messages.find(x=>String(x.id)===String(id));if(!m)return;
-   if(label==='Reply'){replyTo=m;showReply();}
-   else if(label==='React')showReactions(id);
-   else forwardMessage(id);
-  });bar.append(b);});
-  const reactions=reactionsByMessage[id]||[];
-  if(reactions.length){const summary=document.createElement('div');summary.className='vtg-wa-reaction-summary';const counts={};reactions.forEach(x=>counts[x.emoji]=(counts[x.emoji]||0)+1);summary.textContent=Object.entries(counts).map(([e,n])=>e+' '+n).join('  ');bar.append(summary);}
-  if(String(row.dataset.msgId)&&row.classList.contains('is-self')){
-   const read=(receiptsByMessage[id]||[]).length>0;const meta=row.querySelector('.vtg-wa-meta');if(meta&&read&&!meta.querySelector('.vtg-wa-read-label')){const x=document.createElement('span');x.className='vtg-wa-read-label';x.textContent='Read';meta.append(x);}
-  }
-  row.querySelector('.vtg-wa-bubble')?.append(bar);
+  const id=String(row.dataset.msgId||'');row.classList.toggle('is-selected',id===String(selectedMessageId));
+  row.setAttribute('aria-selected',id===String(selectedMessageId)?'true':'false');row.setAttribute('tabindex','0');row.setAttribute('role','button');row.setAttribute('aria-label','Select message');row.querySelector('.vtg-wa-tools')?.remove();
  });
 }
+function syncSelectionToolbar(){
+ const msg=messages.find(x=>String(x.id)===String(selectedMessageId));selectionBar.replaceChildren();selectionBar.hidden=!msg;
+ voiceBtn.hidden=!!msg;videoBtn.hidden=!!msg;clearBtn.hidden=!!msg;if(!msg)return;
+ const add=(label,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.addEventListener('click',fn);selectionBar.append(b);};
+ const view=toRows([msg])[0];
+ if(!msg.deleted_at&&view.editable)add('Edit',()=>{editMessage(view);clearMessageSelection();});
+ if(!msg.deleted_at){add('Copy',()=>{copyMessage(msg);clearMessageSelection();});add('Share',()=>{shareMessage(msg);clearMessageSelection();});add('Reply',()=>{replyTo=msg;showReply();clearMessageSelection();});add('React',()=>showReactions(msg.id));add('Forward',()=>{forwardMessage(msg.id);clearMessageSelection();});add(starredByMessage[msg.id]?'Unstar':'Star',()=>{toggleStar(msg.id);clearMessageSelection();});add(pinnedMessage&&String(pinnedMessage.message_id)===String(msg.id)?'Unpin':'Pin',()=>{togglePin(msg.id);clearMessageSelection();});}
+ if(String(msg.sender_id)===String(userId)&&!msg.deleted_at)add('Delete',()=>{deleteMessage(msg.id);clearMessageSelection();});
+ add('Cancel',clearMessageSelection);
+}
+function clearMessageSelection(){selectedMessageId='';decorateMessages();syncSelectionToolbar();}
+function selectMessage(id){selectedMessageId=String(id);decorateMessages();syncSelectionToolbar();}
+
 function showReactions(id){
  const m=messages.find(x=>String(x.id)===String(id));if(!m)return;
  const pick=document.createElement('div');pick.className='vtg-wa-reaction-picker';
@@ -218,7 +219,7 @@ async function requestClear(){if(!activeId)return;if(!window.confirm('Ask every 
 async function startVoiceNote(){if(!picker2||!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){flash('Voice notes are not supported by this browser.');return;}let stream;try{stream=await navigator.mediaDevices.getUserMedia({audio:true});const recorder=new MediaRecorder(stream),chunks=[];const stopBtn=host.querySelector('[data-voice-note]');stopBtn.textContent='Stop recording';stopBtn.classList.add('recording');stopBtn.dataset.recording='true';recorder.ondataavailable=e=>{if(e.data?.size)chunks.push(e.data);};recorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());stopBtn.textContent='Voice note';stopBtn.classList.remove('recording');delete stopBtn.dataset.recording;stopBtn.onclick=null;if(chunks.length){const blob=new Blob(chunks,{type:recorder.mimeType||'audio/webm'});const ext=blob.type.includes('mp4')?'m4a':'webm';picker2.addFiles([new File([blob],'voice-note-'+Date.now()+'.'+ext,{type:blob.type||'audio/webm'})]);}};stopBtn.onclick=()=>{if(recorder.state!=='inactive')recorder.stop();};recorder.start();}catch(e){stream?.getTracks().forEach(t=>t.stop());flash('Microphone access was not available: '+(e.message||'Please check browser permission'));}}
 
 async function openConv(id){
- activeId=String(id);host.classList.add('is-open');renderList();empty(log,'Loading messages…');
+ selectedMessageId='';syncSelectionToolbar();activeId=String(id);host.classList.add('is-open');renderList();empty(log,'Loading messages…');
  try{
   members=await membersOf(activeId);
   const c=convs.find(x=>String(x.id)===activeId);if(c)c.members=members;
@@ -341,12 +342,14 @@ $('[data-joincall]').addEventListener('click',()=>{
 });
 
 host.addEventListener('click',e=>{
+ const messageRow=e.target.closest('.vtg-wa-row[data-msg-id]');if(messageRow&&!e.target.closest('a,button,audio,video,input,textarea')){selectMessage(messageRow.dataset.msgId);return;}
  const open=e.target.closest('[data-open]');if(open){openConv(open.dataset.open);return;}
  if(e.target.closest('[data-new]')){picker.hidden?showPicker():picker.hidden=true;return;}
  if(e.target.closest('[data-refresh]')){Object.keys(memberCache).forEach(k=>delete memberCache[k]);loadList();return;}
  if(e.target.closest('[data-clear-response]')){const b=e.target.closest('[data-clear-response]');respondClear(b.dataset.requestId,b.dataset.clearResponse==='yes');return;}
  if(e.target.closest('[data-back]')){host.classList.remove('is-open');}
 });
+log.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('.vtg-wa-row[data-msg-id]')){e.preventDefault();selectMessage(e.target.dataset.msgId);}});
 window.VTGPeerMessages={refresh:loadList,open:openConv,openWithCall(conversationId){return openConv(conversationId);}};
 empty(log,'Choose a chat to read its messages.');
 const start=()=>loadList().then(()=>{if(client)listen();});
