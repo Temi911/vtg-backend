@@ -87,11 +87,11 @@ Deno.serve(async(req:Request)=>{
       const articleUrl=clean(url.searchParams.get("url"),1800), sourceKey=clean(url.searchParams.get("source"),300);
       if(!articleUrl || !/^https?:\/\//i.test(articleUrl)) return fail("A valid article URL is required.");
       const {data:{user}}=await db.auth.getUser();
-      const articleKey="article:"+articleUrl, publisherKey="source:"+sourceKey, ownFields=user?"id,user_id":"id";
+      const articleKey="article:"+articleUrl, publisherKey="source:"+sourceKey;
       const [{data:likes,error:le},{data:comments,error:ce},{data:sourceFollows,error:fe}] = await Promise.all([
-        db.from("vtg_news_interactions").select(ownFields).eq("target_key",articleKey).eq("interaction_type","like"),
-        db.from("vtg_news_interactions").select(user?"id,user_id,body,created_at":"id,body,created_at").eq("target_key",articleKey).eq("interaction_type","comment").order("created_at"),
-        sourceKey?db.from("vtg_news_interactions").select(ownFields).eq("target_key",publisherKey).eq("interaction_type","follow_source"):Promise.resolve({data:[],error:null})
+        db.from("vtg_news_interactions").select("id,user_id").eq("target_key",articleKey).eq("interaction_type","like"),
+        db.from("vtg_news_interactions").select("id,user_id,body,created_at").eq("target_key",articleKey).eq("interaction_type","comment").order("created_at"),
+        sourceKey?db.from("vtg_news_interactions").select("id,user_id").eq("target_key",publisherKey).eq("interaction_type","follow_source"):Promise.resolve({data:[],error:null})
       ]);
       if(le||ce||fe) throw le||ce||fe;
       const ids=user?[...new Set((comments??[]).map(x=>x.user_id))]:[];
