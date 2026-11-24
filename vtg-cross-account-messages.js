@@ -243,8 +243,12 @@ function listen(){
    messages.push(m);if(String(m.sender_id)!==String(userId))markDelivered([m]);markRead();loadReactions().then(()=>draw());
   }
  }).on('postgres_changes',{event:'UPDATE',schema:'public',table:'messages'},payload=>{
-  const m=payload.new;if(!m||String(m.conversation_id)!==activeId)return;
-  const row=messages.find(x=>String(x.id)===String(m.id));if(row){row.body=m.body;row.edited_at=m.edited_at;draw();}
+  const m=payload.new;if(!m)return;
+  if(String(m.conversation_id)===activeId){
+   if(m.hidden_at){messages=messages.filter(x=>String(x.id)!==String(m.id));if(!messages.length){clearbar.hidden=true;clearbar.replaceChildren();}draw();loadPendingClear();}
+   else {const row=messages.find(x=>String(x.id)===String(m.id));if(row){row.body=m.body;row.edited_at=m.edited_at;row.deleted_at=m.deleted_at;row.deleted_by=m.deleted_by;draw();}}
+  }
+  if(m.hidden_at)loadList();
  }).on('postgres_changes',{event:'*',schema:'public',table:'vtg_message_reactions'},payload=>{
   const row=payload.new||payload.old||{};if(String(row.conversation_id)===activeId){loadReactions().then(()=>{log.querySelectorAll('.vtg-wa-tools').forEach(x=>x.remove());decorateMessages();});}
  }).on('postgres_changes',{event:'*',schema:'public',table:'vtg_message_read_receipts'},payload=>{
