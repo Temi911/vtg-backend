@@ -185,23 +185,23 @@ async function markDelivered(rows){for(const m of (rows||[]).filter(x=>String(x.
 async function markRead(){if(!activeId)return;try{await client.rpc('vtg_mark_conversation_read',{p_conversation_id:activeId});unreadCounts[activeId]=0;renderList();}catch(_){}}
 function decorateMessages(){
  log.querySelectorAll('.vtg-wa-row[data-msg-id]').forEach(row=>{
-  const id=row.dataset.msgId;if(row.querySelector('.vtg-wa-tools'))return;
-  const msg=messages.find(x=>String(x.id)===String(id));if(!msg)return;
-  const bar=document.createElement('div');bar.className='vtg-wa-tools';
-  const add=(glyph,label,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=glyph;b.title=label;b.setAttribute('aria-label',label);b.addEventListener('click',fn);bar.append(b);};
-  if(!msg.deleted_at){
-   add('↩','Reply',()=>{replyTo=msg;showReply();});add('👍','React',()=>showReactions(id));add('↗','Forward',()=>forwardMessage(id));
-   add('☆',starredByMessage[id]?'Unstar message':'Star message',()=>toggleStar(id));add('⌖','Pin / unpin message',()=>togglePin(id));
-  }
-  if(!msg.deleted_at){add('▢','Copy message',()=>copyMessage(msg));add('↗','Share message',()=>shareMessage(msg));}
-  if(msg.mine&&!msg.deleted_at)add('⌫','Delete message',()=>deleteMessage(id));
-  const reactions=reactionsByMessage[id]||[];
-  if(reactions.length){const summary=document.createElement('div');summary.className='vtg-wa-reaction-summary';const counts={};reactions.forEach(x=>counts[x.emoji]=(counts[x.emoji]||0)+1);summary.textContent=Object.entries(counts).map(([e,n])=>e+' '+n).join('  ');bar.append(summary);}
-  const meta=row.querySelector('.vtg-wa-meta');
-  if(row.classList.contains('is-self')&&meta){const recipients=Object.values(members).filter(x=>!x.me).length;const readCount=(receiptsByMessage[id]||[]).filter(x=>String(x.user_id)!==String(userId)).length;const deliveredCount=(deliveryByMessage[id]||[]).filter(x=>String(x.user_id)!==String(userId)).length;const status=recipients&&readCount>=recipients?'Read':(recipients&&deliveredCount>=recipients?'Delivered':'Sent');if(!meta.querySelector('.vtg-wa-read-label')){const x=document.createElement('span');x.className='vtg-wa-read-label';x.textContent=status;meta.append(x);}}
-  row.querySelector('.vtg-wa-bubble')?.append(bar);
+  const id=String(row.dataset.msgId||'');row.classList.toggle('is-selected',id===String(selectedMessageId));
+  row.setAttribute('aria-selected',id===String(selectedMessageId)?'true':'false');row.setAttribute('tabindex','0');row.setAttribute('role','button');row.setAttribute('aria-label','Select message');row.querySelector('.vtg-wa-tools')?.remove();
  });
 }
+function syncSelectionToolbar(){
+ const msg=messages.find(x=>String(x.id)===String(selectedMessageId));selectionBar.replaceChildren();selectionBar.hidden=!msg;
+ voiceBtn.hidden=!!msg;videoBtn.hidden=!!msg;clearBtn.hidden=!!msg;if(!msg)return;
+ const add=(label,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.addEventListener('click',fn);selectionBar.append(b);};
+ const view=toRows([msg])[0];
+ if(!msg.deleted_at&&view.editable)add('Edit',()=>{editMessage(view);clearMessageSelection();});
+ if(!msg.deleted_at){add('Copy',()=>{copyMessage(msg);clearMessageSelection();});add('Share',()=>{shareMessage(msg);clearMessageSelection();});add('Reply',()=>{replyTo=msg;showReply();clearMessageSelection();});add('React',()=>showReactions(msg.id));add('Forward',()=>{forwardMessage(msg.id);clearMessageSelection();});add(starredByMessage[msg.id]?'Unstar':'Star',()=>{toggleStar(msg.id);clearMessageSelection();});add(pinnedMessage&&String(pinnedMessage.message_id)===String(msg.id)?'Unpin':'Pin',()=>{togglePin(msg.id);clearMessageSelection();});}
+ if(String(msg.sender_id)===String(userId)&&!msg.deleted_at)add('Delete',()=>{deleteMessage(msg.id);clearMessageSelection();});
+ add('Cancel',clearMessageSelection);
+}
+function clearMessageSelection(){selectedMessageId='';decorateMessages();syncSelectionToolbar();}
+function selectMessage(id){selectedMessageId=String(id);decorateMessages();syncSelectionToolbar();}
+
 function showReactions(id){const picker=document.createElement('div');picker.className='vtg-wa-reaction-picker';['👍','❤️','😂','😮','😢','🙏'].forEach(emoji=>{const b=document.createElement('button');b.type='button';b.textContent=emoji;b.onclick=async()=>{picker.remove();try{const {error}=await client.rpc('vtg_toggle_message_reaction',{p_message_id:id,p_emoji:emoji});if(error)throw error;await loadReactions();decorateMessages();}catch(e){flash('Reaction not saved: '+e.message);}};picker.append(b);});log.querySelector('[data-msg-id="'+CSS.escape(String(id))+'"]')?.append(picker);}
 function showReply(){let tray=host.querySelector('[data-reply]');if(!tray){tray=document.createElement('div');tray.className='vtg-wa-reply-preview';tray.dataset.reply='';form.parentNode.insertBefore(tray,form);}tray.innerHTML='';const t=document.createElement('span');t.textContent='Replying to '+(String(replyTo?.sender_id)===String(userId)?'yourself':(members[replyTo?.sender_id]?.name||'message'))+': '+String(replyTo?.body||'').slice(0,140);const x=document.createElement('button');x.type='button';x.textContent='×';x.onclick=()=>{replyTo=null;tray.remove();};tray.append(t,x);input.focus();}
 async function forwardMessage(id){const options=convs.filter(c=>String(c.id)!==activeId);if(!options.length){flash('Open another conversation before forwarding.');return;}const choice=window.prompt('Forward to which chat? Enter its number:\n'+options.map((c,i)=>(i+1)+'. '+convTitle(c)).join('\n'));const n=Number(choice)-1;if(!Number.isInteger(n)||n<0||n>=options.length)return;try{const {error}=await client.rpc('vtg_forward_message',{p_message_id:id,p_target_conversation_id:options[n].id});if(error)throw error;flash('Message forwarded.');}catch(e){flash('Forward failed: '+e.message);}}
