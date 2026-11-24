@@ -280,7 +280,8 @@ form.addEventListener('submit',async e=>{
  }finally{busy=false;sendBtn.disabled=false;input.focus();}
 });
 input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,130)+'px';if(!isTyping){isTyping=true;setTyping(true);}clearTimeout(typingTimer);typingTimer=setTimeout(()=>{isTyping=false;setTyping(false);},1200);});
-chatSearch?.addEventListener('input',renderList);\ninput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit();}});
+chatSearch?.addEventListener('input',renderList);
+input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit();}});
 
 /* ---- calls */
 function startCall(kind){
