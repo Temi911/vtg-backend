@@ -166,30 +166,30 @@ test('all dashboards invalidate stale call and cross-account messaging assets',(
 
 
 test('organiser departure ends the call for every participant and clears signalling',()=>{
- assert.match(callLifecycle,/create or replace function public\\.vtg_leave_call/);
- assert.match(callLifecycle,/if v_call\\.started_by = me then/);
- assert.match(callLifecycle,/update public\\.vtg_calls[\\s\\S]*status = 'ended'/);
- assert.match(callLifecycle,/update public\\.vtg_call_participants[\\s\\S]*left_at = coalesce\\(left_at, now\\(\\)\\)/);
- assert.match(callLifecycle,/delete from public\\.vtg_call_signals where call_id = p_call_id/);
- assert.match(calls,/window\\.addEventListener\\('pagehide',[\\s\\S]*vtg_leave_call/);
+ assert.match(callLifecycle,/create or replace function public\.vtg_leave_call/);
+ assert.match(callLifecycle,/if v_call\.started_by = me then/);
+ assert.match(callLifecycle,/update public\.vtg_calls[\\s\\S]*status = 'ended'/);
+ assert.match(callLifecycle,/update public\.vtg_call_participants[\\s\\S]*left_at = coalesce\\(left_at, now\\(\\)\\)/);
+ assert.match(callLifecycle,/delete from public\.vtg_call_signals where call_id = p_call_id/);
+ assert.match(calls,/window\.addEventListener\\('pagehide',[\\s\\S]*vtg_leave_call/);
 });
 
 test('a stale abandoned call is retired before a new call starts',()=>{
  assert.match(callLifecycle,/created_at < now\\(\\) - interval '8 hours'/);
  assert.match(callLifecycle,/set status = 'ended', ended_at = now\\(\\)/);
- assert.match(callLifecycle,/return public\\.vtg_join_call\\(new_call\\)/);
+ assert.match(callLifecycle,/return public\.vtg_join_call\\(new_call\\)/);
 });
 
 test('buyer messages retain viewer identity and role for deterministic left/right rendering',()=>{
  assert.match(msgs,/viewerId:userId,viewerRole:role/);
- assert.match(msgs,/host\\.dataset\\.viewerRole=role/);
- assert.match(core,/dataset\\.viewerRole=String\\(msg\\.viewerRole\\)/);
- assert.match(core,/dataset\\.messageSide=mine\\?'outgoing':'incoming'/);
+ assert.match(msgs,/host\.dataset\.viewerRole=role/);
+ assert.match(core,/dataset\.viewerRole=String\\(msg\.viewerRole\\)/);
+ assert.match(core,/dataset\.messageSide=mine\\?'outgoing':'incoming'/);
  for(const f of pages){
   const h=read(f);
-  assert.match(h,/vtg-chat-core\\.js\\?v=20261124-viewer-align-4/);
-  assert.match(h,/vtg-cross-account-messages\\.js\\?v=20261124-buyer-call-lifecycle-2/);
-  assert.match(h,/vtg-calls\\.js\\?v=20261124-buyer-call-lifecycle-2/);
-  assert.match(h,/vtg-chat-whatsapp\\.css\\?v=20261124-viewer-align-4/);
+  assert.match(h,/vtg-chat-core\.js\\?v=20261124-viewer-align-4/);
+  assert.match(h,/vtg-cross-account-messages\.js\\?v=20261124-buyer-call-lifecycle-2/);
+  assert.match(h,/vtg-calls\.js\\?v=20261124-buyer-call-lifecycle-2/);
+  assert.match(h,/vtg-chat-whatsapp\.css\\?v=20261124-viewer-align-4/);
  }
 });
