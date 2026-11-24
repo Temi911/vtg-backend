@@ -7,17 +7,17 @@ const C=window.VTGChat,I=C.icons,esc=C.esc;
 const role=String(document.documentElement.dataset.vtgRole||'').toLowerCase();
 const roleNames={buyer:'Buyer',supplier:'Supplier',bank:'Bank'};
 host.className='vtg-wa vtg-wa-messages';
-host.innerHTML='<aside class="vtg-wa-side"><div class="vtg-wa-sidehead"><strong>Chats</strong><button type="button" class="vtg-wa-sidebtn" data-new>'+I.plus+' New chat</button><button type="button" class="vtg-wa-sidebtn ghost" data-refresh>Refresh</button></div><div data-picker hidden></div><div class="vtg-wa-list" data-list role="list"></div></aside>'
+host.innerHTML='<aside class="vtg-wa-side"><div class="vtg-wa-sidehead"><strong>Chats</strong><button type="button" class="vtg-wa-sidebtn" data-new>'+I.plus+' New chat</button><button type="button" class="vtg-wa-sidebtn ghost" data-refresh>Refresh</button></div><label class="vtg-wa-search"><input data-chat-search type="search" placeholder="Search chats" aria-label="Search chats"></label><div data-picker hidden></div><div class="vtg-wa-list" data-list role="list"></div></aside>'
  +'<div class="vtg-wa-main"><header class="vtg-wa-head"><button type="button" class="vtg-wa-iconbtn vtg-wa-back" data-back aria-label="Back to chats">'+I.back+'</button><div class="vtg-wa-avatar" data-avatar>V</div><div class="vtg-wa-title"><strong data-title>Choose a chat</strong><small data-sub>Secure account-linked trade messages</small></div><div class="vtg-wa-actions"><button type="button" class="vtg-wa-iconbtn" data-voice aria-label="Start voice call" title="Voice call (up to 5 people)" disabled>'+I.phone+'</button><button type="button" class="vtg-wa-iconbtn" data-video aria-label="Start video call" title="Video call (up to 5 people)" disabled>'+I.video+'</button></div></header>'
  +'<div class="vtg-wa-callbar" data-callbar><span data-calltext></span><button type="button" data-joincall>Join</button></div>'
  +'<div class="vtg-wa-stream" data-log role="log" aria-live="polite"></div>'
  +'<form class="vtg-wa-compose" data-form><textarea data-input rows="1" maxlength="4000" placeholder="Type a message" aria-label="Type a message"></textarea><button class="vtg-wa-send" data-send type="submit" aria-label="Send message">'+I.send+'</button></form>'
  +'<div class="vtg-wa-note">Only people in a chat can read or send messages, and you can only chat with partners linked to your trade records. Do not share passwords, one-time codes or bank credentials.</div></div>';
 const $=s=>host.querySelector(s);
-const list=$('[data-list]'),log=$('[data-log]'),form=$('[data-form]'),input=$('[data-input]'),sendBtn=$('[data-send]'),picker=$('[data-picker]');
+const list=$('[data-list]'),log=$('[data-log]'),form=$('[data-form]'),input=$('[data-input]'),sendBtn=$('[data-send]'),picker=$('[data-picker]'),chatSearch=$('[data-chat-search]');
 const titleEl=$('[data-title]'),subEl=$('[data-sub]'),avatarEl=$('[data-avatar]'),voiceBtn=$('[data-voice]'),videoBtn=$('[data-video]'),callbar=$('[data-callbar]');
 const ATT='[Attachment]',attMap={};
-let picker2=null;
+let picker2=null, presenceChannel=null, typingTimer=null, isTyping=false, replyTo=null, reactionsByMessage={}, receiptsByMessage={};
 let client=null,userId='',convs=[],activeId='',members={},messages=[],busy=false,channel=null,callChannel=null,liveCalls={};
 const memberCache={};
 picker2=window.VTGAttach?(function(){try{return window.VTGAttach.mountPicker(form,'chat',note=>flash(note));}catch(_){return null;}})():null;
@@ -45,8 +45,11 @@ function convTitle(c){
  return c.title||others.join(', ')||'Trade chat';
 }
 function renderList(){
+ const needle=(chatSearch?.value||'').trim().toLowerCase();
+ const visible=convs.filter(c=>(convTitle(c)+' '+(c.last_message||'')).toLowerCase().includes(needle));
  if(!convs.length){empty(list,'No chats yet. Tap “New chat” to message a partner linked to your trade records.');return;}
- list.innerHTML=convs.map(c=>{
+ if(!visible.length){empty(list,'No matching chats.');return;}
+ list.innerHTML=visible.map(c=>{
   const t=convTitle(c),live=liveCalls[c.id];
   return '<button type="button" role="listitem" class="vtg-wa-item'+(String(c.id)===String(activeId)?' active':'')+'" data-open="'+esc(c.id)+'"><div class="vtg-wa-avatar">'+esc(C.initials(t))+'</div><div class="vtg-wa-item-body"><div class="vtg-wa-item-top"><strong>'+esc(t)+'</strong><time>'+(c.last_at?esc(C.time(c.last_at)):'')+'</time></div><small>'+(live?'<span class="vtg-wa-live">Call in progress</span>':esc(c.last_message||'No messages yet'))+'</small></div></button>';
  }).join('');
@@ -102,7 +105,85 @@ async function editMessage(msg){
   draw();
  }catch(error){flash('Message edit failed: '+(error.message||'Please try again'));}
 }
-function draw(){C.renderStream(log,toRows(messages),'No messages yet. Say hello below.',editMessage);}
+function draw(){C.renderStream(log,toRows(messages),'No messages yet. Say hello below.',editMessage);decorateMessages();}
+async function loadReactions(){
+ reactionsByMessage={};receiptsByMessage={};
+ const ids=messages.map(m=>m.id).filter(Boolean);if(!ids.length)return;
+ const [rr,rd]=await Promise.all([
+  client.from('vtg_message_reactions').select('message_id,user_id,emoji').in('message_id',ids),
+  client.from('vtg_message_read_receipts').select('message_id,user_id,read_at').in('message_id',ids)
+ ]);
+ (rr.data||[]).forEach(x=>(reactionsByMessage[x.message_id]||(reactionsByMessage[x.message_id]=[])).push(x));
+ (rd.data||[]).forEach(x=>(receiptsByMessage[x.message_id]||(receiptsByMessage[x.message_id]=[])).push(x));
+}
+async function markRead(){if(!activeId)return;try{await client.rpc('vtg_mark_conversation_read',{p_conversation_id:activeId});}catch(_){}}
+function decorateMessages(){
+ log.querySelectorAll('.vtg-wa-row[data-msg-id]').forEach(row=>{
+  const id=row.dataset.msgId;if(row.querySelector('.vtg-wa-tools'))return;
+  const bar=document.createElement('div');bar.className='vtg-wa-tools';
+  const acts=[['↩','Reply'],['👍','React'],['↗','Forward']];
+  acts.forEach(([glyph,label])=>{const b=document.createElement('button');b.type='button';b.textContent=glyph;b.title=label;b.setAttribute('aria-label',label);b.addEventListener('click',()=>{
+   const m=messages.find(x=>String(x.id)===String(id));if(!m)return;
+   if(label==='Reply'){replyTo=m;showReply();}
+   else if(label==='React')showReactions(id);
+   else forwardMessage(id);
+  });bar.append(b);});
+  const reactions=reactionsByMessage[id]||[];
+  if(reactions.length){const summary=document.createElement('div');summary.className='vtg-wa-reaction-summary';const counts={};reactions.forEach(x=>counts[x.emoji]=(counts[x.emoji]||0)+1);summary.textContent=Object.entries(counts).map(([e,n])=>e+' '+n).join('  ');bar.append(summary);}
+  if(String(row.dataset.msgId)&&row.classList.contains('is-self')){
+   const read=(receiptsByMessage[id]||[]).length>0;const meta=row.querySelector('.vtg-wa-meta');if(meta&&read&&!meta.querySelector('.vtg-wa-read-label')){const x=document.createElement('span');x.className='vtg-wa-read-label';x.textContent='Read';meta.append(x);}
+  }
+  row.querySelector('.vtg-wa-bubble')?.append(bar);
+ });
+}
+function showReactions(id){
+ const m=messages.find(x=>String(x.id)===String(id));if(!m)return;
+ const pick=document.createElement('div');pick.className='vtg-wa-reaction-picker';
+ ['👍','❤️','😂','😮','😢','🙏'].forEach(emoji=>{const b=document.createElement('button');b.type='button';b.textContent=emoji;b.addEventListener('click',async()=>{pick.remove();try{const {error}=await client.rpc('vtg_toggle_message_reaction',{p_message_id:id,p_emoji:emoji});if(error)throw error;await loadReactions();decorateMessages();}catch(e){flash('Reaction not saved: '+e.message);}});pick.append(b);});
+ const row=log.querySelector('[data-msg-id="'+CSS.escape(String(id))+'"]');row?.append(pick);
+}
+function showReply(){
+ let tray=host.querySelector('[data-reply]');if(!tray){tray=document.createElement('div');tray.className='vtg-wa-reply-preview';tray.dataset.reply='';form.parentNode.insertBefore(tray,form);}
+ tray.innerHTML='';const text=document.createElement('span');text.textContent='Replying to '+(replyTo.sender_id===userId?'yourself':(members[replyTo.sender_id]?.name||'message'))+': '+String(replyTo.body||'').slice(0,160);
+ const close=document.createElement('button');close.type='button';close.textContent='×';close.onclick=()=>{replyTo=null;tray.remove();};tray.append(text,close);input.focus();
+}
+async function forwardMessage(id){
+ const options=convs.filter(c=>String(c.id)!==activeId);if(!options.length){flash('Open another conversation before forwarding.');return;}
+ const choice=window.prompt('Forward to which chat? Enter its number:\n'+options.map((c,i)=>(i+1)+'. '+convTitle(c)).join('\n'));
+ const index=Number(choice)-1;if(!Number.isInteger(index)||index<0||index>=options.length)return;
+ try{const {error}=await client.rpc('vtg_forward_message',{p_message_id:id,p_target_conversation_id:options[index].id});if(error)throw error;flash('Message forwarded.');}catch(e){flash('Forward failed: '+e.message);}
+}
+function joinPresence(){
+ if(presenceChannel||!activeId)return;
+ presenceChannel=client.channel('vtg-presence-'+activeId,{config:{presence:{key:userId}}});
+ presenceChannel.on('presence',{event:'sync'},()=>{const state=presenceChannel.presenceState();const online=Object.keys(state).filter(k=>k!==String(userId)).length;subEl.textContent=online?'Online now · '+online+' other participant(s)':'Trade partner';});
+ presenceChannel.on('presence',{event:'join'},()=>{const state=presenceChannel.presenceState();subEl.textContent=Object.keys(state).length>1?'Online now':'Trade partner';});
+ presenceChannel.on('presence',{event:'leave'},()=>{const state=presenceChannel.presenceState();subEl.textContent=Object.keys(state).length>1?'Online now':'Trade partner';});
+ presenceChannel.subscribe(async status=>{if(status==='SUBSCRIBED')await presenceChannel.track({online_at:new Date().toISOString(),typing:false});});
+}
+async function setTyping(value){
+ if(!presenceChannel)return;try{await presenceChannel.track({online_at:new Date().toISOString(),typing:!!value});}catch(_){}
+}
+async function loadReactions(){
+ reactionsByMessage={};receiptsByMessage={};const ids=messages.map(m=>m.id).filter(Boolean);if(!ids.length)return;
+ const [rr,rd]=await Promise.all([client.from('vtg_message_reactions').select('message_id,user_id,emoji').in('message_id',ids),client.from('vtg_message_read_receipts').select('message_id,user_id,read_at').in('message_id',ids)]);
+ (rr.data||[]).forEach(x=>(reactionsByMessage[x.message_id]||(reactionsByMessage[x.message_id]=[])).push(x));
+ (rd.data||[]).forEach(x=>(receiptsByMessage[x.message_id]||(receiptsByMessage[x.message_id]=[])).push(x));
+}
+async function markRead(){if(activeId)try{await client.rpc('vtg_mark_conversation_read',{p_conversation_id:activeId});}catch(_){}}
+function decorateMessages(){
+ log.querySelectorAll('.vtg-wa-row[data-msg-id]').forEach(row=>{const id=row.dataset.msgId;if(row.querySelector('.vtg-wa-tools'))return;const bar=document.createElement('div');bar.className='vtg-wa-tools';
+ [['↩','Reply'],['👍','React'],['↗','Forward']].forEach(([glyph,label])=>{const b=document.createElement('button');b.type='button';b.textContent=glyph;b.title=label;b.setAttribute('aria-label',label);b.onclick=()=>{if(label==='Reply'){replyTo=messages.find(x=>String(x.id)===String(id));showReply();}else if(label==='React')showReactions(id);else forwardMessage(id);};bar.append(b);});
+ const rr=reactionsByMessage[id]||[];if(rr.length){const s=document.createElement('span');s.className='vtg-wa-reaction-summary';const counts={};rr.forEach(x=>counts[x.emoji]=(counts[x.emoji]||0)+1);s.textContent=Object.entries(counts).map(([e,n])=>e+' '+n).join(' ');bar.append(s);}
+ const read=(receiptsByMessage[id]||[]).some(x=>String(x.user_id)!==String(userId));const meta=row.querySelector('.vtg-wa-meta');if(row.classList.contains('is-self')&&read&&meta&&!meta.querySelector('.vtg-wa-read-label')){const x=document.createElement('span');x.className='vtg-wa-read-label';x.textContent='Read';meta.append(x);}
+ row.querySelector('.vtg-wa-bubble')?.append(bar);
+ });
+}
+function showReactions(id){const picker=document.createElement('div');picker.className='vtg-wa-reaction-picker';['👍','❤️','😂','😮','😢','🙏'].forEach(emoji=>{const b=document.createElement('button');b.type='button';b.textContent=emoji;b.onclick=async()=>{picker.remove();try{const {error}=await client.rpc('vtg_toggle_message_reaction',{p_message_id:id,p_emoji:emoji});if(error)throw error;await loadReactions();decorateMessages();}catch(e){flash('Reaction not saved: '+e.message);}};picker.append(b);});log.querySelector('[data-msg-id="'+CSS.escape(String(id))+'"]')?.append(picker);}
+function showReply(){let tray=host.querySelector('[data-reply]');if(!tray){tray=document.createElement('div');tray.className='vtg-wa-reply-preview';tray.dataset.reply='';form.parentNode.insertBefore(tray,form);}tray.innerHTML='';const t=document.createElement('span');t.textContent='Replying to '+(String(replyTo?.sender_id)===String(userId)?'yourself':(members[replyTo?.sender_id]?.name||'message'))+': '+String(replyTo?.body||'').slice(0,140);const x=document.createElement('button');x.type='button';x.textContent='×';x.onclick=()=>{replyTo=null;tray.remove();};tray.append(t,x);input.focus();}
+async function forwardMessage(id){const options=convs.filter(c=>String(c.id)!==activeId);if(!options.length){flash('Open another conversation before forwarding.');return;}const choice=window.prompt('Forward to which chat? Enter its number:\n'+options.map((c,i)=>(i+1)+'. '+convTitle(c)).join('\n'));const n=Number(choice)-1;if(!Number.isInteger(n)||n<0||n>=options.length)return;try{const {error}=await client.rpc('vtg_forward_message',{p_message_id:id,p_target_conversation_id:options[n].id});if(error)throw error;flash('Message forwarded.');}catch(e){flash('Forward failed: '+e.message);}}
+function joinPresence(){if(presenceChannel){client.removeChannel(presenceChannel);presenceChannel=null;}if(!activeId)return;presenceChannel=client.channel('vtg-presence-'+activeId,{config:{presence:{key:userId}}});presenceChannel.on('presence',{event:'sync'},()=>{const state=presenceChannel.presenceState(),others=Object.entries(state).filter(([k])=>k!==String(userId));const typing=others.some(([,v])=>(v||[]).some(x=>x.typing));subEl.textContent=typing?'typing…':(others.length?'Online now':'Trade partner');});presenceChannel.subscribe(async status=>{if(status==='SUBSCRIBED')await presenceChannel.track({online_at:new Date().toISOString(),typing:false});});}
+async function setTyping(value){if(presenceChannel)try{await presenceChannel.track({online_at:new Date().toISOString(),typing:!!value});}catch(_){}}
 async function openConv(id){
  activeId=String(id);host.classList.add('is-open');renderList();empty(log,'Loading messages…');
  try{
@@ -111,7 +192,7 @@ async function openConv(id){
   refreshHeader();
   const {data,error}=await client.from('messages').select('id,sender_id,body,created_at,edited_at').eq('conversation_id',activeId).order('created_at',{ascending:true}).limit(500);
   if(error)throw error;
-  messages=data||[];await loadAtts(activeId);draw();
+  messages=data||[];await loadAtts(activeId);await loadReactions();await markRead();joinPresence();draw();
  }catch(e){empty(log,'Messages could not be loaded: '+(e.message||'request failed'));}
 }
 function listen(){
@@ -125,11 +206,15 @@ function listen(){
   if(String(m.conversation_id)===activeId&&!messages.some(x=>String(x.id)===String(m.id))){
    const pendingIdx=messages.findIndex(x=>x.pending&&x.body===m.body&&String(x.sender_id)===String(m.sender_id));
    if(pendingIdx>=0)messages.splice(pendingIdx,1);
-   messages.push(m);draw();
+   messages.push(m);markRead();draw();
   }
  }).on('postgres_changes',{event:'UPDATE',schema:'public',table:'messages'},payload=>{
   const m=payload.new;if(!m||String(m.conversation_id)!==activeId)return;
   const row=messages.find(x=>String(x.id)===String(m.id));if(row){row.body=m.body;row.edited_at=m.edited_at;draw();}
+ }).on('postgres_changes',{event:'*',schema:'public',table:'vtg_message_reactions'},payload=>{
+  const row=payload.new||payload.old||{};if(String(row.conversation_id)===activeId){loadReactions().then(()=>{log.querySelectorAll('.vtg-wa-tools').forEach(x=>x.remove());decorateMessages();});}
+ }).on('postgres_changes',{event:'*',schema:'public',table:'vtg_message_read_receipts'},payload=>{
+  const row=payload.new||payload.old||{};if(String(row.conversation_id)===activeId){loadReactions().then(()=>{log.querySelectorAll('.vtg-wa-tools').forEach(x=>x.remove());decorateMessages();});}
  }).subscribe();
  callChannel=client.channel('vtg-calls-'+userId).on('postgres_changes',{event:'*',schema:'public',table:'vtg_calls'},payload=>{
   const r=payload.new||payload.old||{};
@@ -172,10 +257,10 @@ picker.addEventListener('click',async e=>{
 
 /* ---- sending */
 form.addEventListener('submit',async e=>{
- e.preventDefault();if(busy)return;const typed=input.value.trim(),items=picker2?picker2.items():[];if(!typed&&!items.length)return;const body=typed||ATT;
+ e.preventDefault();if(busy)return;const typed=input.value.trim(),items=picker2?picker2.items():[];if(!typed&&!items.length)return;const body=(replyTo?'Replying to: '+String(replyTo.body||'').slice(0,160)+'\\n':'')+(typed||ATT);
  if(!activeId){empty(log,'Choose a chat first, or start a new one.');return;}
  if(body.length>4000){return;}
- busy=true;sendBtn.disabled=true;input.value='';input.style.height='';
+ busy=true;sendBtn.disabled=true;input.value='';input.style.height='';replyTo=null;host.querySelector('[data-reply]')?.remove();isTyping=false;setTyping(false);replyTo=null;host.querySelector('[data-reply]')?.remove();isTyping=false;setTyping(false);
  const temp={id:'tmp-'+Date.now(),sender_id:userId,body,created_at:new Date().toISOString(),pending:true,localAtt:items.length?items.map(it=>({name:it.file.name,mime:it.mime,size:it.file.size,kind:it.kind,file:it.file})):null};
  if(picker2)picker2.clear();
  messages.push(temp);draw();
@@ -194,8 +279,8 @@ form.addEventListener('submit',async e=>{
   const note=document.createElement('div');note.className='vtg-wa-empty';note.textContent='Message not sent: '+(err.message||'request failed');log.append(note);log.scrollTop=log.scrollHeight;
  }finally{busy=false;sendBtn.disabled=false;input.focus();}
 });
-input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,130)+'px';});
-input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit();}});
+input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,130)+'px';if(!isTyping){isTyping=true;setTyping(true);}clearTimeout(typingTimer);typingTimer=setTimeout(()=>{isTyping=false;setTyping(false);},1200);});
+chatSearch?.addEventListener('input',renderList);\ninput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit();}});
 
 /* ---- calls */
 function startCall(kind){
