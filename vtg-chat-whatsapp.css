@@ -216,12 +216,3 @@ html[data-theme="dark"] .vtg-wa-row[data-sender-role="supplier"]:not(.is-self) .
 .chatLog>.bubble{align-self:flex-start!important;margin-right:auto!important}
 .chatLog>.bubble.mine{align-self:flex-end!important;margin-left:auto!important;margin-right:0!important}
 @media(max-width:760px){.vtg-wa-stream>.vtg-wa-row .vtg-wa-bubble{max-width:88%}}
-
-/* Message-level actions and unanimous chat-clear controls. */
-.vtg-wa-actions-row{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0 0;clear:both}
-.vtg-wa-actions-row button{border:1px solid var(--wa-line);border-radius:999px;background:transparent;color:var(--wa-muted);padding:3px 8px;font-size:10px;font-weight:700}
-.vtg-wa-actions-row button:hover{border-color:var(--wa-blue);color:var(--wa-blue)}
-.vtg-wa-clear{width:auto!important;min-width:52px;padding:0 9px!important;font-size:10px!important;font-weight:800!important}
-.vtg-wa-clear-request{padding:10px 14px;background:var(--wa-input);border-bottom:1px solid var(--wa-line);color:var(--wa-ink);font-size:12px;line-height:1.5}
-.vtg-wa-clear-request button{margin-left:8px;border:0;border-radius:999px;padding:6px 11px;background:var(--wa-blue);color:#fff;font-size:11px;font-weight:800}
-.vtg-wa-clear-request button+button{background:var(--wa-panel);color:var(--wa-ink);border:1px solid var(--wa-line)}
