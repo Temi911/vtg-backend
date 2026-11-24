@@ -25,3 +25,26 @@ test('public AI answers general questions but still refuses account access',()=>
   assert.equal(t.isPersonalRequest('show my orders'),true);
   assert.equal(t.isPersonalRequest('Why is the sky blue?'),false);
 });
+
+test('buyer dashboard exposes photo search and searches the approved live catalogue',()=>{
+  const page=read('buyer-dashboard.html'),js=read('vtg-buyer-marketplace-supabase.js');
+  for(const id of ['buyerVisualPhoto','buyerVisualUpload','buyerVisualCamera','buyerVisualRun','buyerVisualStatus'])assert.ok(page.includes(id),id);
+  assert.match(js,/fetch\('\/api\/visual-search'/);
+  assert.match(js,/renderProducts\(\)/);
+  assert.match(js,/state\.products/);
+});
+test('all role dashboards force incoming chat left and own chat right',()=>{
+  const css=read('vtg-chat-whatsapp.css');
+  assert.match(css,/\.vtg-wa-stream>\.vtg-wa-row\.is-self\{justify-content:flex-end\}/);
+  assert.match(css,/\.vtg-wa-stream>\.vtg-wa-row\.is-other\{justify-content:flex-start\}/);
+  for(const page of ['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html'])assert.match(read(page),/vtg-chat-whatsapp\.css\?v=20261124-whatsapp-alignment-1/);
+});
+test('expanded moderation is shared by chat, edits and social feed RPCs',()=>{
+  const sql=read('supabase/migrations/20261124120000_vtg_site_language_moderation_expansion.sql');
+  for(const term of ['sexual_content','harassment_or_abuse','threat_or_violence','porn','fuck','violence','murder','shoot','rape'])assert.ok(sql.includes(term),term);
+  const social=read('supabase/migrations/20261123214500_vtg_social_content_moderation_role_gate_fix.sql');
+  const chat=read('supabase/migrations/20261123230000_vtg_final_chat_moderation_send_rpc.sql');
+  assert.match(social,/private\.vtg_message_content_violation/);
+  assert.match(chat,/private\.vtg_message_content_violation/);
+  assert.match(chat,/warning_count/);
+});
