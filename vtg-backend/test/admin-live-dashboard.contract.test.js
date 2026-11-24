@@ -30,7 +30,7 @@ test('exceptions compare statuses as text so one function works on every environ
   assert.match(sql,/o\.status::text in \('confirmed','processing','in_production'\)/);
 });
 test('admin page: staff-only, live containers, no sample markers or browser-only audit',()=>{
-  assert.match(js,/role !== 'admin'/);assert.match(js,/admin-signin\.html/);
+  assert.match(js,/role !== 'admin'/);assert.match(js,/workforce-access\.html/);
   for(const f of ['vtg_admin_overview','vtg_admin_trade_exceptions','vtg_admin_verification_queue','vtg_admin_finance_overview','vtg_admin_audit_list','vtg_admin_settings_snapshot','vtg_admin_record_note','vtg_admin_review_verification_document'])assert.ok(js.includes("'"+f+"'"),f);
   assert.doesNotMatch(js,/localStorage|service_role|\.insert\(|\.update\(|\.delete\(/);
   assert.doesNotMatch(html,/Sample data|Illustrative|PREVIEW MODE|fabricated|Demonstration records/);

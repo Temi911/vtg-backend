@@ -12,15 +12,15 @@
 <body class="help">
 <div id="vsHeader" data-active=""></div>
 <script src="/vtg-shell.js?v=20261030-1"></script>
-<script src="/vtg-supabase-auth.js?v=20261123-help-auth-1"></script>
+<script>window.VTG_AUTH_CONFIG={detectSessionInUrl:false};</script>
+<script src="/vtg-supabase-auth.js?v=20261123-help-auth-2"></script>
 <main id="main"><div class="vs-banner"><figure><img src="https://images.pexels.com/photos/8691822/pexels-photo-8691822.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Support agent wearing a headset" loading="lazy" onerror="this.closest('.vs-banner').remove()"><figcaption>Help with your VTG account</figcaption></figure></div>
 <section class="hero"><div class="kicker">VTG Account Help</div><h1 id="heroTitle">Let's get you back to business.</h1><p id="heroDesc">Choose your account type so we can show the right guidance for your role. Your account details stay protected throughout recovery.</p></section>
 <div class="layout"><aside class="panel"><h2>Which account do you use?</h2><p class="muted">Help is tailored to your account and access requirements.</p><div class="roles" id="roles">
 <button class="role active" type="button" data-role="buyer"><span class="ico">B</span><span><strong>Buyer / Importer</strong><small>Africa-based buyers</small></span></button>
 <button class="role" type="button" data-role="supplier"><span class="ico">S</span><span><strong>Supplier</strong><small>China or South Korea</small></span></button>
 <button class="role" type="button" data-role="bank"><span class="ico">F</span><span><strong>Bank / Finance</strong><small>Institutional accounts</small></span></button>
-<button class="role" type="button" data-role="admin"><span class="ico">A</span><span><strong>VTG Administrator</strong><small>Restricted recovery</small></span></button>
-</div><div class="adminNote" id="adminNote">Administrator accounts use a restricted recovery path. Do not use a public user account to regain admin access. Contact the authorized VTG system owner using your official work address.</div><p class="note" id="roleNote">Buyer help covers password access, verification codes and buyer registration issues.</p></aside>
+</div><p class="note" id="roleNote">Buyer help covers password access, verification codes and buyer registration issues.</p></aside>
 <section class="panel"><h2 id="optionsTitle">What do you need help with?</h2><p class="muted" id="optionsDesc">Select an option below. VTG will guide you to the appropriate next step.</p>
 <div class="actions" id="actions">
 <button class="action" type="button" data-mode="forgot"><span class="sym">↗</span><strong>Forgot Password</strong><small>Request a secure, one-time reset link by email.</small></button>
@@ -40,7 +40,7 @@
 const $=s=>document.querySelector(s);
 const params=new URLSearchParams(location.search);
 const requestedRole=params.get('role');
-const roleLocked=['buyer','supplier','bank','admin'].includes(requestedRole);
+const roleLocked=['buyer','supplier','bank'].includes(requestedRole);
 let role=roleLocked?requestedRole:'buyer';
 let mode=params.get('mode')||'';
 let auth=null;
@@ -53,14 +53,26 @@ try {
  return;
 }
 const client=auth.client;
+// Secure links arrive here as one-time tokens in the address. This page handles them itself so a
+// link opened from the email can never fail silently.
+let callbackNote='';
+const callbackReady=(async()=>{
+ const h=new URLSearchParams(location.hash.replace(/^#/,''));
+ try{
+  if(h.get('error')||h.get('error_code')){callbackNote='This link has expired or was already used. Request a new one from this page.';}
+  else if(h.get('access_token')&&h.get('refresh_token')){const {error}=await client.auth.setSession({access_token:h.get('access_token'),refresh_token:h.get('refresh_token')});if(error)callbackNote='This link is not valid or has expired. Request a new one from this page.';}
+  else if(params.get('code')){const {error}=await client.auth.exchangeCodeForSession(params.get('code'));if(error)callbackNote='This link was opened in a different browser from the one that asked for it. Request a new link and open it on this device.';}
+ }catch(_){callbackNote='This link could not be verified. Request a new one from this page.';}
+ if(location.hash||params.get('code')){try{history.replaceState(null,'','/account-help.html?mode=reset'+(requestedRole?'&role='+requestedRole:''));}catch(_){}}
+})();
+callbackReady.then(()=>{if(callbackNote)setTimeout(()=>{try{setMessage(callbackNote,'error')}catch(_){}},50)});
 const roleCopy={
  buyer:{title:'Buyer / Importer support',desc:'Help with buyer login, verification and account setup across Africa.',note:'Buyer help covers password access, verification codes and buyer registration issues.'},
  supplier:{title:'Supplier account support',desc:'Help with supplier access, company verification and business-document checks.',note:'Supplier support can guide you on login, email verification and supplier business verification. It cannot bypass verification checks.'},
  bank:{title:'Bank and finance partner support',desc:'Help for institutional users with login, verification and authorized access.',note:'Institutional access issues may require confirmation of your organization and authorized work email.'},
- admin:{title:'VTG administrator support',desc:'A restricted recovery path for authorized VTG administrators.',note:'Admin recovery is handled separately by the authorized system owner. Public recovery cannot grant administrator permissions.'}
 };
 const modes={
- forgot:{title:'Reset your password',desc:'Enter your registered email. If it matches an account, Supabase Auth will email a secure reset link.',fields:'email',button:'Send reset link'},
+ forgot:{title:'Reset your password',desc:'To protect your account, confirm who you are. If these details match your VTG account, a secure link is sent to your registered email.',fields:'verify',button:'Send secure link'},
  code:{title:'Request a verification code',desc:'Enter the email address used for your VTG account. A new signup verification code will be requested.',fields:'email',button:'Send verification code'},
  trouble:{title:'Tell us what is going wrong',desc:'Choose the issue that best describes your access problem. We will direct you to the next step.',fields:'trouble',button:'Show next step'},
  contact:{title:'Contact VTG Account Support',desc:'Submit a support request. Do not include passwords, verification codes, or bank account credentials.',fields:'support',button:'Submit support request'},
@@ -75,13 +87,13 @@ function renderRole(){
  document.querySelectorAll('[data-mode]').forEach(b=>{const copy=actionCopy[role][b.dataset.mode];if(copy){b.querySelector('strong').textContent=copy[0];b.querySelector('small').textContent=copy[1];}});
  $('#heroTitle').textContent=role==='admin'?'Secure administrator account recovery.':roleCopy[role].title;
  $('#heroDesc').textContent=roleCopy[role].desc;$('#roleNote').textContent=roleCopy[role].note;
- $('#adminNote').classList.toggle('show',role==='admin');
- $('#optionsTitle').textContent=role==='admin'?'Administrator recovery options':'What do you need help with?';
+  $('#optionsTitle').textContent=role==='admin'?'Administrator recovery options':'What do you need help with?';
  $('#optionsDesc').textContent=role==='admin'?'Admin access uses a separate, restricted process.':'Select an option below. VTG will guide you to the appropriate next step.';
  document.querySelectorAll('[data-mode]').forEach(b=>{b.style.display=role==='admin'&&b.dataset.mode!=='contact'?'none':''});
  if(roleLocked)$('#roleNote').textContent='This help page is specific to your '+({buyer:'buyer',supplier:'supplier',bank:'bank / finance partner',admin:'administrator'}[role])+' sign-in. To switch account types, return to Sign In.';
 }
 function fieldMarkup(kind){
+ if(kind==='verify')return '<div class="field"><label for="email">Registered email address</label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" required placeholder="you@company.com"></div><div class="field"><label for="fullName">Full name on the account</label><input id="fullName" name="full_name" maxlength="120" required autocomplete="name"></div><div class="field"><label for="country">Country on the account</label><input id="country" name="country" maxlength="80" autocomplete="country-name" placeholder="e.g. Nigeria"></div>';
  if(kind==='email')return '<div class="field"><label for="email">Registered email address</label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" required placeholder="you@company.com"></div>';
  if(kind==='password')return '<div class="field"><label for="newPassword">New password</label><input id="newPassword" name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" required placeholder="At least 8 characters, uppercase and a number"></div><div class="field"><label for="confirmPassword">Confirm new password</label><input id="confirmPassword" name="confirmPassword" type="password" minlength="8" autocomplete="new-password" required placeholder="Enter the new password again"></div>';
  if(kind==='trouble'){const opts={buyer:[['incorrect','Buyer email or password is not accepted'],['verification','Buyer account verification pending'],['locked','Buyer account appears locked or inactive'],['dashboard','I cannot access my buyer workspace'],['other','Another buyer sign-in issue']],supplier:[['incorrect','Supplier email or password is not accepted'],['verification','Supplier email or business verification pending'],['locked','Supplier account appears locked or inactive'],['dashboard','I cannot access my supplier workspace'],['business','Supplier documents or license verification'],['other','Another supplier sign-in issue']],bank:[['incorrect','Bank / finance login is not accepted'],['verification','Institution verification pending'],['locked','Institution account appears locked or inactive'],['dashboard','I cannot access the authorized finance workspace'],['business','Institution documents or authorization'],['other','Another bank / finance sign-in issue']],admin:[['incorrect','Administrator sign-in access issue'],['verification','Administrator verification issue'],['locked','Administrator account access restricted'],['other','Another administrator access issue']]};return '<div class="field"><label for="issue">Choose your '+roleCopy[role].title.toLowerCase()+' issue</label><select id="issue" name="issue" required><option value="">Select an issue</option>'+opts[role].map(x=>'<option value="'+x[0]+'">'+x[1]+'</option>').join('')+'</select></div>';}
@@ -102,16 +114,21 @@ $('#detailForm').addEventListener('submit',async e=>{
  try{
   if(mode==='forgot'){
    if(!/^\S+@\S+\.\S+$/.test(data.email||''))throw Error('Enter a valid email address.');
-   const {error}=await client.auth.resetPasswordForEmail(data.email.trim().toLowerCase(),{redirectTo:location.origin+'/account-help.html?mode=reset&role='+encodeURIComponent(role)});
-   if(error)throw error;
-   setMessage('If an account matches that address, Supabase Auth will send a secure password-reset link.','ok');
+   if(!data.full_name||data.full_name.trim().length<2)throw Error('Enter the full name on the account.');
+   const resp=await fetch(auth.projectUrl+'/functions/v1/vtg-staff-access',{method:'POST',headers:{'Content-Type':'application/json',apikey:auth.publishableKey,Authorization:'Bearer '+auth.publishableKey},body:JSON.stringify({kind:'user',email:data.email.trim().toLowerCase(),full_name:data.full_name,country:data.country||''})});
+   const out=await resp.json().catch(()=>({}));
+   if(!resp.ok)throw new Error(out.error||'The request could not be completed. Please try again.');
+   setMessage(out.message||'If those details match a VTG account, a secure link has been sent to the registered email address.','ok');
+   return;
   }else if(mode==='reset'){
+   await callbackReady;
    if(data.password!==data.confirmPassword)throw Error('The passwords do not match.');
-   if(data.password.length<8||!/[A-Z]/.test(data.password)||!/[0-9]/.test(data.password))throw Error('Use at least 8 characters, one uppercase letter and one number.');
+   if(data.password.length<10||!/[A-Z]/.test(data.password)||!/[a-z]/.test(data.password)||!/[0-9]/.test(data.password))throw Error('Use at least 10 characters with an uppercase letter, a lowercase letter and a number.');
    const {data:sessionData,error:sessionError}=await client.auth.getSession();if(sessionError)throw sessionError;
    if(!sessionData.session)throw Error('Your recovery session has expired. Request a new reset link.');
    const {error}=await client.auth.updateUser({password:data.password});if(error)throw error;
-   setMessage('Password updated. You can now sign in with your new password.','ok');btn.textContent='Go to Sign In';btn.disabled=false;btn.onclick=()=>location.href='/signin.html';return;
+   try{await client.auth.signOut({scope:'global'})}catch(_){}
+   setMessage('Password updated. Sign in again with your new password.','ok');btn.textContent='Go to Sign In';btn.disabled=false;btn.onclick=()=>location.href='/signin.html';return;
   }else if(mode==='code'){
    if(role==='admin')throw Error('Administrator verification uses the restricted recovery process.');
    if(!/^\S+@\S+\.\S+$/.test(data.email||''))throw Error('Enter a valid email address.');
@@ -152,4 +169,5 @@ else if(params.get('mode')&&modes[params.get('mode')]){renderRole();openMode(par
 else renderRole();
 })();
 </script>
+<script src="/vtg-password-toggle.js?v=20261123-1" defer></script>
 </body></html>

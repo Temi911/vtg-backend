@@ -18,4 +18,5 @@
 </section></main>
 <script>
 document.getElementById("agentForm").addEventListener("submit",async e=>{e.preventDefault();const form=e.currentTarget,button=document.getElementById("submitAgent"),msg=document.getElementById("agentMessage"),d=Object.fromEntries(new FormData(form));button.disabled=true;msg.textContent="Submitting your secure application…";try{const auth=await window.VTG_AUTH_READY;const {data,error}=await auth.signUp(d.email,d.password,{requested_role:"agent",organization_name:d.agencyName,registration_reference:d.licenseNumber||"",full_name:d.fullName,phone:d.phone||"",preferred_language:"en",country:d.country,city:d.city,agentType:d.agentType,licenseNumber:d.licenseNumber||""});if(error)throw error;msg.textContent=data.session?"Application created. Opening your VTG verification page…":"Application submitted. Check your email and follow the confirmation link. VTG administrator review is required before agent access is enabled.";if(data.session)setTimeout(()=>location.href="/verification.html",900);else button.disabled=false;}catch(err){msg.textContent=err.message||"Could not submit your application.";button.disabled=false;}});
-</script></body></html>
+</script><script src="/vtg-password-toggle.js?v=20261123-1" defer></script>
+</body></html>

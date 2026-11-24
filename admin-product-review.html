@@ -46,7 +46,7 @@ async function init(){
   client=auth&&auth.client;
   if(!client){$('list').innerHTML='<div class="empty">Secure sign-in is unavailable. Refresh and try again.</div>';return}
   var s=await client.auth.getSession();
-  if(!s.data||!s.data.session){location.replace('/admin-signin.html?next='+encodeURIComponent('/admin-product-review.html'));return}
+  if(!s.data||!s.data.session){location.replace('/workforce-access.html');return}
   $('status').onchange=load;$('refresh').onclick=load;load();
 }
 async function load(){
