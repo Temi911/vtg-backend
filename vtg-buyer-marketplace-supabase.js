@@ -154,6 +154,47 @@ document.addEventListener('click',event=>{
 },true);
 $('searchProducts')?.addEventListener('input',renderProducts);
 $('category')?.addEventListener('change',renderProducts);
+
+/* Buyer dashboard visual search: analyse a photo, then filter only the live approved catalogue. */
+(function mountBuyerVisualSearch(){
+ const file=$('buyerVisualPhoto'),upload=$('buyerVisualUpload'),camera=$('buyerVisualCamera'),run=$('buyerVisualRun'),clear=$('buyerVisualClear'),preview=$('buyerVisualPreview'),note=$('buyerVisualStatus');
+ if(!file||!upload||!camera||!run||!preview||!note)return;
+ let selected=null,previewUrl='';
+ const say=t=>{note.textContent=t;};
+ function choose(f){
+  if(!f)return;
+  if(!['image/jpeg','image/png','image/webp'].includes(f.type)){say('Choose a JPG, PNG or WEBP product photo.');return;}
+  if(f.size>12*1024*1024){say('Photo must be 12 MB or smaller.');return;}
+  selected=f;if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=URL.createObjectURL(f);
+  preview.src=previewUrl;preview.hidden=false;clear.hidden=false;run.disabled=false;say('Photo ready. Select Find matching products.');
+ }
+ async function compress(f){
+  const url=URL.createObjectURL(f);
+  try{const img=new Image();img.src=url;await new Promise((ok,no)=>{img.onload=ok;img.onerror=no;});
+   const scale=Math.min(1,1200/Math.max(img.naturalWidth,img.naturalHeight)),canvas=document.createElement('canvas');
+   canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));
+   canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);return canvas.toDataURL('image/jpeg',.75);
+  }finally{URL.revokeObjectURL(url);}
+ }
+ upload.onclick=()=>{file.removeAttribute('capture');file.click();};
+ camera.onclick=()=>{file.setAttribute('capture','environment');file.click();};
+ file.onchange=()=>choose(file.files?.[0]);
+ clear.onclick=()=>{selected=null;file.value='';if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl='';preview.hidden=true;clear.hidden=true;run.disabled=true;say('Matches are drawn only from approved VTG marketplace listings.');};
+ run.onclick=async()=>{
+  if(!selected||run.disabled)return;
+  run.disabled=true;upload.disabled=camera.disabled=true;say('Analysing the photo and searching approved listings…');
+  try{
+   const response=await fetch('/api/visual-search',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({image:await compress(selected)})});
+   const data=await response.json();if(!response.ok)throw new Error(data?.error?.message||'Visual search is unavailable.');
+   const terms=[data.product,data.category,...(Array.isArray(data.keywords)?data.keywords:[])].filter(Boolean).join(' ').trim();
+   if(!terms)throw new Error('The product could not be identified. Try a clearer photo or type a search.');
+   $('searchProducts').value=terms;renderProducts();
+   say('Identified as '+(data.product||data.category)+'. Showing matching approved supplier listings.');
+   $('products')?.scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(error){say(error.message||'Visual search failed. Please try again.');}
+  finally{run.disabled=!selected;upload.disabled=camera.disabled=false;}
+ };
+})();
 ['shipping','insurance','duty','other'].forEach(id=>$(id)?.addEventListener('input',renderCart));
 window.addEventListener('vtg:buyer-cart-hydrated',()=>{});
 $('buyerProductForm')?.addEventListener('submit',submitProductAction);

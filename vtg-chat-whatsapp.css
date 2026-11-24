@@ -201,3 +201,18 @@ html[data-theme="dark"] .vtg-wa-row[data-sender-role="supplier"]:not(.is-self) .
 .vtg-wa-row.is-self[data-sender-role="supplier"] .vtg-wa-meta,
 .vtg-wa-row.is-self[data-sender-role="bank"] .vtg-wa-meta,
 .vtg-wa-row.is-self[data-sender-role="agent"] .vtg-wa-meta{color:rgba(255,255,255,.8)}
+
+
+/* Explicit WhatsApp alignment across all role dashboards. Each row occupies the
+   stream width so its own bubble is anchored right and incoming bubbles left. */
+.vtg-wa-stream>.vtg-wa-row{width:100%;max-width:100%;align-self:stretch;display:flex;flex-direction:row;justify-content:flex-start}
+.vtg-wa-stream>.vtg-wa-row.is-self{justify-content:flex-end}
+.vtg-wa-stream>.vtg-wa-row.is-other{justify-content:flex-start}
+.vtg-wa-stream>.vtg-wa-row .vtg-wa-bubble{width:fit-content;max-width:min(78%,560px);margin:0}
+.vtg-wa-stream>.vtg-wa-row.is-self .vtg-wa-bubble{margin-left:auto}
+.vtg-wa-stream>.vtg-wa-row.is-other .vtg-wa-bubble{margin-right:auto}
+.vtg-peer-log>.bubble{align-self:flex-start!important;margin-right:auto!important}
+.vtg-peer-log>.bubble.mine{align-self:flex-end!important;margin-left:auto!important;margin-right:0!important}
+.chatLog>.bubble{align-self:flex-start!important;margin-right:auto!important}
+.chatLog>.bubble.mine{align-self:flex-end!important;margin-left:auto!important;margin-right:0!important}
+@media(max-width:760px){.vtg-wa-stream>.vtg-wa-row .vtg-wa-bubble{max-width:88%}}
