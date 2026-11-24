@@ -53,7 +53,7 @@ test('message side is calculated from the viewing account identity and applied t
  const core=read('vtg-chat-core.js'),messages=read('vtg-cross-account-messages.js');
  assert.match(core,/function viewerOwnsMessage\(msg\)/);
  assert.match(core,/sender&&viewer\?sender===viewer:msg\?\.mine===true/);
- assert.match(core,/data-message-side/);
+ assert.match(core,/dataset\.messageSide/);
  assert.match(messages,/viewerId:userId/);
  for(const page of ['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html']){
   const html=read(page);
