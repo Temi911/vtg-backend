@@ -77,3 +77,14 @@ revoke all on function public.vtg_respond_chat_clear(uuid,boolean) from public,a
 grant execute on function public.vtg_delete_message(uuid) to authenticated;
 grant execute on function public.vtg_request_chat_clear(uuid) to authenticated;
 grant execute on function public.vtg_respond_chat_clear(uuid,boolean) to authenticated;
+create or replace function public.vtg_pending_chat_clear(p_conversation_id uuid)
+returns jsonb language plpgsql security definer set search_path=public,private as $$
+declare v_req public.vtg_chat_clear_requests%rowtype;
+begin
+ if auth.uid() is null or not private.vtg_is_conversation_member(p_conversation_id) then raise exception 'You are not a participant in this chat' using errcode='42501'; end if;
+ select * into v_req from public.vtg_chat_clear_requests where conversation_id=p_conversation_id and status='pending' order by created_at desc limit 1;
+ if not found then return null; end if;
+ return jsonb_build_object('id',v_req.id,'requested_by',v_req.requested_by,'created_at',v_req.created_at);
+end $$;
+revoke all on function public.vtg_pending_chat_clear(uuid) from public,anon;
+grant execute on function public.vtg_pending_chat_clear(uuid) to authenticated;
