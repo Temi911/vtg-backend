@@ -353,7 +353,7 @@ host.addEventListener('click',e=>{
  if(e.target.closest('[data-back]')){host.classList.remove('is-open');}
 });
 log.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('.vtg-wa-row[data-msg-id]')){e.preventDefault();selectMessage(e.target.dataset.msgId);}});
-window.VTGPeerMessages={refresh:loadList,open:openConv,openWithCall(conversationId){return openConv(conversationId);}};
+window.VTGPeerMessages={refresh:loadList,open:openConv,async openWithCall(conversationId){await openConv(conversationId);const live=liveCalls[String(conversationId)];if(live)startCall(live.kind);else flash('This call is no longer active.');}};
 empty(log,'Choose a chat to read its messages.');
 const start=()=>loadList().then(()=>{if(client)listen();});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
