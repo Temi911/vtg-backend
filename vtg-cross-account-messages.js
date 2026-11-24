@@ -192,12 +192,12 @@ function decorateMessages(){
    add('↩','Reply',()=>{replyTo=msg;showReply();});add('👍','React',()=>showReactions(id));add('↗','Forward',()=>forwardMessage(id));
    add('☆',starredByMessage[id]?'Unstar message':'Star message',()=>toggleStar(id));add('⌖','Pin / unpin message',()=>togglePin(id));
   }
-  add('▢','Copy message',()=>copyMessage(msg));add('↗','Share message',()=>shareMessage(msg));
+  if(!msg.deleted_at){add('▢','Copy message',()=>copyMessage(msg));add('↗','Share message',()=>shareMessage(msg));}
   if(msg.mine&&!msg.deleted_at)add('⌫','Delete message',()=>deleteMessage(id));
   const reactions=reactionsByMessage[id]||[];
   if(reactions.length){const summary=document.createElement('div');summary.className='vtg-wa-reaction-summary';const counts={};reactions.forEach(x=>counts[x.emoji]=(counts[x.emoji]||0)+1);summary.textContent=Object.entries(counts).map(([e,n])=>e+' '+n).join('  ');bar.append(summary);}
   const meta=row.querySelector('.vtg-wa-meta');
-  if(row.classList.contains('is-self')&&meta){const read=(receiptsByMessage[id]||[]).some(x=>String(x.user_id)!==String(userId));const delivered=(deliveryByMessage[id]||[]).some(x=>String(x.user_id)!==String(userId));const status=read?'Read':(delivered?'Delivered':'Sent');if(!meta.querySelector('.vtg-wa-read-label')){const x=document.createElement('span');x.className='vtg-wa-read-label';x.textContent=status;meta.append(x);}}
+  if(row.classList.contains('is-self')&&meta){const recipients=Object.values(members).filter(x=>!x.me).length;const readCount=(receiptsByMessage[id]||[]).filter(x=>String(x.user_id)!==String(userId)).length;const deliveredCount=(deliveryByMessage[id]||[]).filter(x=>String(x.user_id)!==String(userId)).length;const status=recipients&&readCount>=recipients?'Read':(recipients&&deliveredCount>=recipients?'Delivered':'Sent');if(!meta.querySelector('.vtg-wa-read-label')){const x=document.createElement('span');x.className='vtg-wa-read-label';x.textContent=status;meta.append(x);}}
   row.querySelector('.vtg-wa-bubble')?.append(bar);
  });
 }
