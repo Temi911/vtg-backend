@@ -4,11 +4,11 @@
 'use strict';
 if(window.VTGAttach)return;
 const MB=1048576;
-const EXT={pdf:'application/pdf',txt:'text/plain',csv:'text/csv',doc:'application/msword',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',xls:'application/vnd.ms-excel',xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp',gif:'image/gif',mp4:'video/mp4',webm:'video/webm',mov:'video/quicktime'};
+const EXT={pdf:'application/pdf',txt:'text/plain',csv:'text/csv',doc:'application/msword',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',xls:'application/vnd.ms-excel',xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp',gif:'image/gif',mp4:'video/mp4',webm:'video/webm',mov:'video/quicktime',webm:'audio/webm',m4a:'audio/mp4',mp3:'audio/mpeg',wav:'audio/wav',ogg:'audio/ogg'};
 const LIMITS={chat:{bucket:'vtg-chat-attachments',max:25*MB},ai:{bucket:'vtg-ai-attachments',max:20*MB},count:5};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function mimeOf(file){const ext=String(file.name||'').split('.').pop().toLowerCase();const t=String(file.type||'').toLowerCase();return (t&&Object.values(EXT).includes(t))?t:(EXT[ext]||'');}
-function kindOf(mime){return mime.startsWith('image/')?'image':mime.startsWith('video/')?'video':mime?'document':'other';}
+function kindOf(mime){return mime.startsWith('image/')?'image':mime.startsWith('video/')?'video':mime.startsWith('audio/')?'audio':mime?'document':'other';}
 function size(n){return n>=MB?(n/MB).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB';}
 function safeName(n){return String(n||'file').normalize('NFKD').replace(/[^\w.\- ]+/g,'_').replace(/\s+/g,'_').replace(/^\.+/,'').slice(-90)||'file';}
 function uuid(){return (crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return (c==='x'?r:(r&3|8)).toString(16);}));}
@@ -102,7 +102,7 @@ function mountPicker(form,scope,onProblem){
  btn.addEventListener('click',()=>inp.click());
  inp.addEventListener('change',()=>{add(inp.files);inp.value='';});
  form.addEventListener('paste',e=>{const fs=[...(e.clipboardData?.files||[])];if(fs.length){add(fs);}});
- return {items:()=>items.slice(),clear(){items=[];draw();},setDisabled(v){btn.disabled=v;}};
+ return {items:()=>items.slice(),addFiles(files){add(files||[]);},clear(){items=[];draw();},setDisabled(v){btn.disabled=v;}};
 }
 window.VTGAttach={LIMITS,check,uploadForAI,attachToMessage,render,mountPicker,signedUrl,kindOf,size};
 })();
