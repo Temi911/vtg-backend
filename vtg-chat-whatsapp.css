@@ -305,3 +305,8 @@ html[data-theme="dark"] .vtg-wa-row[data-sender-role="supplier"]:not(.is-self) .
 .vtg-wa .vtg-wa-sidebtn.ghost{background:var(--wa-input)!important;color:var(--wa-ink)!important;border:1px solid var(--wa-line)}
 .vtg-wa .vtg-wa-head .vtg-wa-sidebtn.ghost{background:rgba(255,255,255,.2)!important;color:#fff!important;border:1px solid rgba(255,255,255,.45)}
 .vtg-wa .vtg-wa-head .vtg-wa-sidebtn.ghost:disabled{opacity:.55}
+
+
+/* Legacy account-chat fallback: align by authenticated sender identity, never by role. */
+.vtg-peer-log>.bubble[data-message-side="outgoing"],.chatLog>.bubble[data-message-side="outgoing"]{align-self:flex-end!important;margin-left:auto!important;margin-right:0!important}
+.vtg-peer-log>.bubble[data-message-side="incoming"],.chatLog>.bubble[data-message-side="incoming"]{align-self:flex-start!important;margin-left:0!important;margin-right:auto!important}
