@@ -190,6 +190,6 @@ test('buyer messages retain viewer identity and role for deterministic left/righ
   assert.match(h,/vtg-chat-core\.js\?v=20261124-viewer-align-4/);
   assert.match(h,/vtg-cross-account-messages\.js\?v=20261124-buyer-call-lifecycle-2/);
   assert.match(h,/vtg-calls\.js\?v=20261124-buyer-call-lifecycle-2/);
-  assert.match(h,/vtg-chat-whatsapp\.css\?v=20261124-viewer-align-4/);
+  assert.match(h,/vtg-chat-whatsapp\.css\?v=20261125-contrast-1/);
  }
 });

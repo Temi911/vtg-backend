@@ -18,3 +18,9 @@ test('all three dashboards load the same chat renderer and stamp the viewer id o
   assert.match(read('vtg-cross-account-messages.js'),/viewerId/);
   assert.match(read('vtg-chat-whatsapp.css'),/\.vtg-wa-row\.is-self\{justify-content:flex-end\}/);
 });
+test('ghost chat buttons stay readable on all three dashboards',()=>{
+  const css=read('vtg-chat-whatsapp.css');
+  assert.match(css,/\.vtg-wa \.vtg-wa-sidebtn\.ghost\{background:var\(--wa-input\)!important;color:var\(--wa-ink\)!important/);
+  assert.match(css,/\.vtg-wa \.vtg-wa-head \.vtg-wa-sidebtn\.ghost\{background:rgba\(255,255,255,\.2\)!important;color:#fff!important/);
+  for(const f of ['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html'])assert.match(read(f),/vtg-chat-whatsapp\.css\?v=20261125-contrast-1/,f);
+});
