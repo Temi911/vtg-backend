@@ -18,6 +18,8 @@
     client=supabase;userId=data.session.user.id;
     return data.session;
   }
+  const normalizeUserId=value=>String(value??'').trim().toLowerCase();
+  const isViewerMessage=senderId=>{const sender=normalizeUserId(senderId),viewer=normalizeUserId(userId);return !!sender&&!!viewer&&sender===viewer;};
   function showError(host,message,retry){
     host.innerHTML='<div class="empty">'+esc(message)+' <button type="button" class="btn" id="retryLiveConversations">Try again</button></div>';
     $('retryLiveConversations')?.addEventListener('click',retry);
@@ -63,9 +65,9 @@
       }
       const roleNames={buyer:'Buyer',supplier:'Supplier',bank:'Bank',agent:'Trade agent'};
       box.innerHTML=rows?.length?rows.map(m=>{
-        const mine=m.sender_id===userId,profile=senderProfiles[m.sender_id]||{},senderRole=String(profile.role||'other').toLowerCase();
+        const mine=isViewerMessage(m.sender_id),profile=senderProfiles[m.sender_id]||{},senderRole=String(profile.role||'other').toLowerCase(),messageSide=mine?'outgoing':'incoming';
         const senderLabel=mine?'You':(roleNames[senderRole]||'Trade partner');
-        return '<div class="bubble '+(mine?'mine':'')+'" data-sender-role="'+esc(senderRole)+'">'+esc(m.body)+'<small>'+esc(senderLabel)+' · '+esc(m.created_at?new Date(m.created_at).toLocaleString():'')+'</small></div>';
+        return '<div class="bubble '+(mine?'mine':'')+'" data-message-side="'+messageSide+'" data-sender-role="'+esc(senderRole)+'">'+esc(m.body)+'<small>'+esc(senderLabel)+' · '+esc(m.created_at?new Date(m.created_at).toLocaleString():'')+'</small></div>';
       }).join(''):'<div class="empty">No messages in this conversation yet.</div>';
       const conv=conversations.find(c=>c.id===conversationId);
       $('threadTitle').textContent=conv?.order_reference||'Live trade conversation';
