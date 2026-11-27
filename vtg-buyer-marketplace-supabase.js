@@ -36,19 +36,24 @@ function renderProducts(){
  if(!state.products.length){host.innerHTML='<div class="empty"><strong>The verified VTG catalogue is being built.</strong><br>No supplier listings are available to quote yet. A product becomes visible only after its listing is approved and the supplier completes VTG verification. Need something now? Create a sourcing request and VTG can help coordinate sourcing.<br><button class="btn primary" type="button" data-empty-rfq>Create a sourcing request</button><br><small>Are you a supplier? <a href="/supplier-signup.html">Register your company with VTG</a> and submit products for review.</small></div>';return;}
  if(!matches.length){host.innerHTML='<div class="empty">No verified supplier listings match your search. Try another category or search term.</div>';return;}
  host.innerHTML=matches.map(p=>{
-  const image=Array.isArray(p.image_urls)&&p.image_urls[0]?'<img src="'+esc(p.image_urls[0])+'" alt="'+esc(p.name)+'" loading="lazy">':'<span>Image not supplied</span>';
+  const PM=window.VTGProductMedia,image=PM?PM.cardHtml(p.image_urls,p.name):(Array.isArray(p.image_urls)&&p.image_urls[0]?'<img src="'+esc(p.image_urls[0])+'" alt="'+esc(p.name)+'" loading="lazy">':'<span>Image not supplied</span>');
   const supplier=p.supplier_name||'Verified VTG supplier';
   const levelNames={registered_business:'Registered Business',vtg_verified:'VTG Verified',production_verified:'Production Verified',trade_performance_reviewed:'Trade Performance Reviewed'};
   const trustLabel=levelNames[p.supplier_verification_level]||'Business documents reviewed';
-  return '<article class="product"><div class="productArt">'+image+'</div><div class="productInfo"><span class="productCategory">'+esc(p.category||'General trade')+'</span><strong>'+esc(p.name)+'</strong><p>'+esc(p.supplier_country||p.origin_country||'Origin not supplied')+' · <span class="chip">'+esc(supplier)+'</span><br><small>'+esc(trustLabel)+' · MOQ '+Number(p.minimum_order_quantity||1).toLocaleString()+'</small></p><div class="productFoot"><b>'+money(p.unit_price,p.currency)+' <small>/ unit</small></b></div><div class="productActions"><button class="btn" type="button" data-view-product="'+esc(p.id)+'">View &amp; quote</button><button class="btn primary" type="button" data-enquire-product="'+esc(p.id)+'">Enquire</button><button class="btn" type="button" data-add="'+esc(p.id)+'">Add to cart</button></div></div></article>';
+  return '<article class="product"><div class="productArt"'+(PM?PM.attrs(p.image_urls,p.name):'')+'>'+image+'</div><div class="productInfo"><span class="productCategory">'+esc(p.category||'General trade')+'</span><strong>'+esc(p.name)+'</strong><p>'+esc(p.supplier_country||p.origin_country||'Origin not supplied')+' · <span class="chip">'+esc(supplier)+'</span><br><small>'+esc(trustLabel)+' · MOQ '+Number(p.minimum_order_quantity||1).toLocaleString()+'</small></p><div class="productFoot"><b>'+money(p.unit_price,p.currency)+' <small>/ unit</small></b></div><div class="productActions"><button class="btn" type="button" data-view-product="'+esc(p.id)+'">View &amp; quote</button><button class="btn primary" type="button" data-enquire-product="'+esc(p.id)+'">Enquire</button><button class="btn" type="button" data-add="'+esc(p.id)+'">Add to cart</button></div></div></article>';
  }).join('');
 }
+function stopGallery(){if(window.__vtgBuyerGallery){try{window.__vtgBuyerGallery.destroy();}catch(_){}window.__vtgBuyerGallery=null;}}
 function openProductDetails(id,mode){
  const p=state.products.find(item=>item.id===String(id));if(!p)return;
  const modal=$('buyerProductModal');if(!modal)return;
- const image=Array.isArray(p.image_urls)&&p.image_urls[0]?'<img src="'+esc(p.image_urls[0])+'" alt="'+esc(p.name)+' product image">':'<div class="buyerProductNoImage">Product image not supplied</div>';
+ const image='';
  const levelNames={registered_business:'Registered Business',vtg_verified:'VTG Verified',production_verified:'Production Verified',trade_performance_reviewed:'Trade Performance Reviewed'};
  $('buyerProductContent').innerHTML='<div class="buyerProductMedia">'+image+'</div><div class="buyerProductSummary"><span class="productCategory">'+esc(p.category||'General trade')+'</span><h2>'+esc(p.name)+'</h2><p class="buyerProductPrice">'+money(p.unit_price,p.currency)+' <small>/ unit</small></p><dl><div><dt>Supplier</dt><dd>'+esc(p.supplier_name||'Verified VTG supplier')+'</dd></div><div><dt>Supplier country</dt><dd>'+esc(p.supplier_country||p.origin_country||'Not supplied')+'</dd></div><div><dt>Verification</dt><dd>'+esc(levelNames[p.supplier_verification_level]||'Business documents reviewed')+'</dd></div><div><dt>Minimum order</dt><dd>'+Number(p.minimum_order_quantity||1).toLocaleString()+'</dd></div><div><dt>HS code</dt><dd>'+esc(p.hs_code||'Not supplied')+'</dd></div><div><dt>Lead time</dt><dd>'+(p.lead_time_days?Number(p.lead_time_days)+' days':'Not supplied')+'</dd></div></dl><h3>Product description</h3><p class="buyerProductDescription">'+esc(p.description||'The supplier has not added a product description.')+'</p></div>';
+ (function(){const host=$('buyerProductContent').querySelector('.buyerProductMedia'),PM=window.VTGProductMedia;if(!host)return;
+  if(window.__vtgBuyerGallery){try{window.__vtgBuyerGallery.destroy();}catch(_){}window.__vtgBuyerGallery=null;}
+  if(PM){window.__vtgBuyerGallery=PM.gallery(host,p.image_urls,p.name,{expand:i=>PM.open(p.image_urls,p.name,i)});}
+  else{const u=Array.isArray(p.image_urls)&&p.image_urls[0];host.innerHTML=u?'<img src="'+esc(u)+'" alt="'+esc(p.name)+' product image">':'<div class="buyerProductNoImage">Product image not supplied</div>';}})();
  $('buyerProductTitle').textContent=mode==='enquiry'?'Enquire about this product':'Product details & quote';
  $('buyerProductMode').value=mode;
  $('buyerProductId').value=p.id;
@@ -78,7 +83,7 @@ async function submitProductAction(event){
   const ref=result.data?.order_reference||'created';
   statusNode.textContent=(mode==='enquiry'?'Enquiry ':'Quote request ')+ref+' has been sent to the supplier.';
   button.textContent='Sent successfully';
-  setTimeout(()=>{$('buyerProductModal').classList.add('hidden');button.disabled=false;button.textContent=mode==='enquiry'?'Send enquiry':'Request a quote';},1200);
+  setTimeout(()=>{stopGallery();$('buyerProductModal').classList.add('hidden');button.disabled=false;button.textContent=mode==='enquiry'?'Send enquiry':'Request a quote';},1200);
  }catch(error){statusNode.textContent=error.message||'Could not send your request.';button.disabled=false;button.textContent=mode==='enquiry'?'Send enquiry':'Request a quote';}
 }
 function normaliseCart(items){
@@ -198,7 +203,7 @@ $('category')?.addEventListener('change',renderProducts);
 ['shipping','insurance','duty','other'].forEach(id=>$(id)?.addEventListener('input',renderCart));
 window.addEventListener('vtg:buyer-cart-hydrated',()=>{});
 $('buyerProductForm')?.addEventListener('submit',submitProductAction);
- $('buyerProductClose')?.addEventListener('click',()=>$('buyerProductModal')?.classList.add('hidden'));
- $('buyerProductModal')?.addEventListener('click',event=>{if(event.target.id==='buyerProductModal')event.currentTarget.classList.add('hidden');});
+ $('buyerProductClose')?.addEventListener('click',()=>{stopGallery();$('buyerProductModal')?.classList.add('hidden');});
+ $('buyerProductModal')?.addEventListener('click',event=>{if(event.target.id==='buyerProductModal'){stopGallery();event.currentTarget.classList.add('hidden');}});
  init();
 })();

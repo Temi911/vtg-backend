@@ -6,6 +6,8 @@ const form=$('liveProductForm'),toggle=$('liveProductToggle'),rows=$('liveProduc
 if(!form||!toggle||!rows||!notice)return;
 
 let db=null,user=null,profile=null,products=[];
+const PM=window.VTGProductMedia;
+const picker=(PM&&$('liveProductMediaField')&&$('liveProductFiles'))?PM.picker($('liveProductMediaField'),$('liveProductFiles')):null;
 function say(message){notice.textContent=message;const feedback=$('liveProductFormNotice');if(feedback&&!form.classList.contains('hidden')){feedback.textContent=message;feedback.classList.remove('hidden');}}
 function money(value,currency){return esc(currency||'USD')+' '+Number(value||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 async function connect(){
@@ -23,12 +25,16 @@ async function connect(){
  profile.supplierVerificationStatus=sp.data?.verification_status||'pending';
  return profile;
 }
+function mediaStrip(p){
+ if(!PM)return '';const m=PM.split(p.image_urls);if(!m.all.length)return '';
+ return '<div class="vpm-strip">'+m.all.slice(0,6).map((u,i)=>'<div class="vpm-pick'+(PM.isVideo(u)?' is-video':'')+'" data-vpm="'+esc(JSON.stringify(m.all))+'" data-vpm-name="'+esc(p.name)+'" tabindex="0" role="button" aria-label="View item '+(i+1)+'">'+(PM.isVideo(u)?'<video muted playsinline preload="metadata" src="'+esc(u)+'#t=0.5"></video><span class="vpm-thumb-play"><svg viewBox="0 0 24 24"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z"/></svg></span>':'<img loading="lazy" src="'+esc(u)+'" alt="">')+'</div>').join('')+(m.all.length>6?'<span class="vpm-pick-msg">+'+(m.all.length-6)+' more</span>':'')+'</div>';
+}
 function render(){
  if(!products.length){rows.innerHTML='<div class="empty">No live products have been added to this supplier account yet. Use “Add live product” to publish the first catalogue listing.</div>';return;}
  rows.innerHTML=products.map(p=>{
   const rs=p.review_status||'pending';const live=!!p.is_active&&rs==='approved'&&profile?.supplierVerificationStatus==='verified';
   const status=!p.is_active?'INACTIVE':rs==='rejected'?'REJECTED — see VTG note':rs==='pending'?'IN REVIEW — VTG is checking this listing':live?'LIVE — visible to buyers':'APPROVED — awaiting supplier verification';
-  return '<article class="record" style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap"><div style="min-width:0;flex:1"><strong>'+esc(p.name)+'</strong><small>'+esc(p.category||'Uncategorised')+' · MOQ '+Number(p.minimum_order_quantity||1).toLocaleString()+' · '+money(p.unit_price,p.currency)+'</small>'+(p.description?'<p class="subtext">'+esc(p.description)+'</p>':'')+(p.review_note&&rs==='rejected'?'<p class="subtext"><strong>VTG note:</strong> '+esc(p.review_note)+' Edit the listing to send it for review again.</p>':'')+(p.hs_code?'<small>HS code: '+esc(p.hs_code)+'</small>':'')+(p.lead_time_days?'<small>Lead time: '+Number(p.lead_time_days)+' days</small>':'')+'</div><div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap"><span class="pill '+(live?'ready':p.is_active?'pending':'info')+'">'+status+'</span>'+(p.is_active?'<button class="btn" type="button" data-product-deactivate="'+esc(p.id)+'">Unpublish</button>':'<button class="btn" type="button" data-product-activate="'+esc(p.id)+'">Publish</button>')+'</div></article>';
+  return '<article class="record" style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap"><div style="min-width:0;flex:1"><strong>'+esc(p.name)+'</strong><small>'+esc(p.category||'Uncategorised')+' · MOQ '+Number(p.minimum_order_quantity||1).toLocaleString()+' · '+money(p.unit_price,p.currency)+'</small>'+(p.description?'<p class="subtext">'+esc(p.description)+'</p>':'')+mediaStrip(p)+(p.review_note&&rs==='rejected'?'<p class="subtext"><strong>VTG note:</strong> '+esc(p.review_note)+' Edit the listing to send it for review again.</p>':'')+(p.hs_code?'<small>HS code: '+esc(p.hs_code)+'</small>':'')+(p.lead_time_days?'<small>Lead time: '+Number(p.lead_time_days)+' days</small>':'')+'</div><div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap"><span class="pill '+(live?'ready':p.is_active?'pending':'info')+'">'+status+'</span>'+(p.is_active?'<button class="btn" type="button" data-product-deactivate="'+esc(p.id)+'">Unpublish</button>':'<button class="btn" type="button" data-product-activate="'+esc(p.id)+'">Publish</button>')+'</div></article>';
  }).join('');
 }
 async function load(){
@@ -68,28 +74,36 @@ document.addEventListener('submit',event=>{
    const leadText=String(fd.get('leadTime')||'').trim(),leadMatch=leadText.match(/^\s*(\d+)\s*(?:days?)?\s*$/i);
    const image=String(fd.get('imageUrl')||'').trim(),description=String(fd.get('description')||'').trim();
    const details=[description,leadText&&!leadMatch?'Supplier-stated lead time: '+leadText:''].filter(Boolean).join('\n\n')||null;
-   const files=[...(form.elements.imageFiles?.files||[])];
-   if(files.length>4)throw new Error('Upload at most four product photos.');
-   const okTypes={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'};
-   for(const f of files){if(!okTypes[f.type])throw new Error('Photos must be JPEG, PNG or WEBP.');if(f.size>5242880)throw new Error(f.name+' is larger than 5 MB.');}
-   const uploaded=[];
-   for(const f of files){
-    const path=user.id+'/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+okTypes[f.type];
+   const files=picker?picker.files():[...(form.elements.imageFiles?.files||[])];
+   const L=PM?PM.limits:{photos:10,videos:3,photoBytes:5242880,videoBytes:52428800};
+   const photoTypes={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'},videoTypes={'video/mp4':'mp4','video/webm':'webm','video/quicktime':'mov'};
+   const photos=files.filter(f=>photoTypes[f.type]),videos=files.filter(f=>videoTypes[f.type]);
+   if(photos.length+videos.length!==files.length)throw new Error('Files must be JPEG, PNG or WEBP photos, or MP4, WEBM or MOV videos.');
+   if(photos.length>L.photos)throw new Error('Upload at most '+L.photos+' photos per product.');
+   if(videos.length>L.videos)throw new Error('Upload at most '+L.videos+' videos per product.');
+   for(const f of photos)if(f.size>L.photoBytes)throw new Error(f.name+' is larger than 5 MB.');
+   for(const f of videos)if(f.size>L.videoBytes)throw new Error(f.name+' is larger than 50 MB.');
+   const uploaded=[],ordered=[...photos,...videos];
+   let n=0;
+   for(const f of ordered){
+    n++;if(button)button.textContent='Uploading '+n+' of '+ordered.length+'…';
+    const ext=photoTypes[f.type]||videoTypes[f.type];
+    const path=user.id+'/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+ext;
     const up=await db.storage.from('vtg-product-images').upload(path,f,{contentType:f.type,upsert:false});
-    if(up.error)throw new Error('Photo upload failed: '+up.error.message);
+    if(up.error)throw new Error((videoTypes[f.type]?'Video':'Photo')+' upload failed: '+up.error.message);
     uploaded.push(db.storage.from('vtg-product-images').getPublicUrl(path).data.publicUrl);
    }
-   const payload={supplier_id:user.id,name,category:String(fd.get('category')||'').trim()||null,description:details,unit_price:price,currency:'USD',minimum_order_quantity:moq,hs_code:String(fd.get('hsCode')||'').trim()||null,lead_time_days:leadMatch?Number(leadMatch[1]):null,origin_country:profile.country||null,image_urls:[...uploaded,...(image?[image]:[])].slice(0,5),is_active:true};
+   const payload={supplier_id:user.id,name,category:String(fd.get('category')||'').trim()||null,description:details,unit_price:price,currency:'USD',minimum_order_quantity:moq,hs_code:String(fd.get('hsCode')||'').trim()||null,lead_time_days:leadMatch?Number(leadMatch[1]):null,origin_country:profile.country||null,image_urls:[...uploaded.filter(u=>!(PM&&PM.isVideo(u))),...(image?[image]:[]),...uploaded.filter(u=>PM&&PM.isVideo(u))].slice(0,14),is_active:true};
    const result=await db.from('products').insert(payload).select('id').single();
    if(result.error)throw result.error;
-   form.reset();form.classList.add('hidden');
+   form.reset();if(picker)picker.reset();form.classList.add('hidden');
    say('Product submitted to the VTG catalogue for review. Buyers will see it only after the listing is approved and your supplier verification is complete.');
    await load();
   }catch(error){say(error.message||'Product could not be saved to Supabase.');}
   finally{if(button){button.disabled=false;button.textContent='Save to VTG catalogue';}}
  })();
 },true);
-$('liveProductCancel')?.addEventListener('click',()=>{form.reset();form.classList.add('hidden');});
+$('liveProductCancel')?.addEventListener('click',()=>{form.reset();if(picker)picker.reset();form.classList.add('hidden');});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
 window.loadSupplierLiveProducts=load;
 })();
