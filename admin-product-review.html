@@ -25,7 +25,7 @@ button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-vis
 #msg{min-height:22px;font-weight:700}.empty{padding:28px;border:1px dashed var(--line);border-radius:12px;text-align:center;color:var(--muted)}
 </style>
 <link rel="stylesheet" href="/vtg-loader.css?v=20261117-lang-1"><script src="/vtg-loader.js?v=20261117-lang-1" defer></script>
-</head>
+<link rel="stylesheet" href="/vtg-product-media.css?v=20261127-media-1"><script src="/vtg-product-media.js?v=20261127-media-1"></script></head>
 <body>
 <header><strong>VTG STAFF · PRODUCT REVIEW</strong><a href="/admin-os.html">Back to admin</a></header>
 <main>
@@ -56,11 +56,12 @@ async function load(){
   var rows=r.data||[];
   if(!rows.length){box.innerHTML='<div class="empty">Nothing here.</div>';return}
   box.innerHTML=rows.map(function(p){
-    var imgs=(p.image_urls||[]).map(safeUrl).filter(Boolean).slice(0,5).map(function(u){return '<img src="'+esc(u)+'" alt="" loading="lazy">'}).join('');
+    var PM=window.VTGProductMedia,mm=PM?PM.split((p.image_urls||[]).map(safeUrl).filter(Boolean)):null;
+    var imgs=PM?(mm.all.length?'<div class="vpm-strip">'+mm.all.map(function(u,i){var v=PM.isVideo(u);return '<div class="vpm-pick'+(v?' is-video':'')+'" data-vpm="'+esc(JSON.stringify(mm.all))+'" data-vpm-name="'+esc(p.name)+'" tabindex="0" role="button" aria-label="View item '+(i+1)+'">'+(v?'<video muted playsinline preload="metadata" src="'+esc(u)+'#t=0.5"></video><span class="vpm-thumb-play"><svg viewBox="0 0 24 24"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z"/></svg></span>':'<img loading="lazy" src="'+esc(u)+'" alt="">')+'</div>'}).join('')+'</div>':''):(p.image_urls||[]).map(safeUrl).filter(Boolean).slice(0,5).map(function(u){return '<img src="'+esc(u)+'" alt="" loading="lazy">'}).join('');
     return '<article class="item" data-id="'+esc(p.id)+'"><div class="row"><div><strong>'+esc(p.name)+'</strong> <span class="tag">'+esc(p.review_status)+'</span>'+
       '<div class="muted">'+esc(p.category||'Uncategorised')+' · '+esc(p.currency||'')+' '+esc(p.unit_price==null?'price on request':p.unit_price)+' · MOQ '+esc(p.minimum_order_quantity||1)+(p.lead_time_days?' · '+esc(p.lead_time_days)+' days':'')+(p.hs_code?' · HS '+esc(p.hs_code):'')+'</div></div>'+
       '<div class="muted" style="text-align:right">'+esc(p.supplier_name||'Supplier')+'<br>'+esc(p.supplier_country||'')+' · supplier '+esc(p.supplier_verification||'not verified')+'</div></div>'+
-      (p.description?'<p>'+esc(p.description)+'</p>':'')+(imgs?'<div class="imgs">'+imgs+'</div>':'')+
+      (p.description?'<p>'+esc(p.description)+'</p>':'')+(imgs?(PM?imgs:'<div class="imgs">'+imgs+'</div>'):'')+
       (p.review_note?'<p class="muted">Last note: '+esc(p.review_note)+'</p>':'')+
       '<div class="actions"><textarea placeholder="Note for the supplier (required to reject)" aria-label="Note for the supplier"></textarea><button class="ok" data-d="approved" type="button">Approve</button><button class="no" data-d="rejected" type="button">Reject</button></div></article>';
   }).join('');
