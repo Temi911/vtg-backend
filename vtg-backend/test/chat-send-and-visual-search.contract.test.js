@@ -1,7 +1,7 @@
 const test=require('node:test');const assert=require('node:assert/strict');const fs=require('fs');const path=require('path');
 const root=path.join(__dirname,'..','..');const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 test('chat send path never references an undefined "read" variable',()=>{
-  const js=read('vtg-cross-account-messages.js');
+  const js=read('vtg-messenger.js');
   assert.doesNotMatch(js,/\bread\.id\b/);assert.doesNotMatch(js,/messages\[i\]=read\b/);assert.doesNotMatch(js,/push\(read\)/);
 });
 test('moderation list covers sexual, abusive and violent wording and survives letter swaps',()=>{
@@ -34,10 +34,10 @@ test('buyer dashboard exposes photo search and searches the approved live catalo
   assert.match(js,/state\.products/);
 });
 test('all role dashboards force incoming chat left and own chat right',()=>{
-  const css=read('vtg-chat-whatsapp.css');
-  assert.match(css,/\.vtg-wa-stream>\.vtg-wa-row\.is-self\{justify-content:flex-end\}/);
-  assert.match(css,/\.vtg-wa-stream>\.vtg-wa-row\.is-other\{justify-content:flex-start\}/);
-  for(const page of ['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html'])assert.match(read(page),/vtg-chat-whatsapp\.css\?v=20261125-contrast-1/);
+  const css=read('vtg-messenger.css');
+  assert.match(css,/\.vtgm-row\.is-self\{justify-content:flex-end!important\}/);
+  assert.match(css,/\.vtgm-row\.is-other\{justify-content:flex-start!important\}/);
+  for(const page of ['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html'])assert.match(read(page),/vtg-messenger\.css\?v=20261126-messenger-1/);
 });
 test('expanded moderation is shared by chat, edits and social feed RPCs',()=>{
   const sql=read('supabase/migrations/20261124120000_vtg_site_language_moderation_expansion.sql');
@@ -50,15 +50,14 @@ test('expanded moderation is shared by chat, edits and social feed RPCs',()=>{
 });
 
 test('message side is calculated from the viewing account identity and applied to every role',()=>{
- const core=read('vtg-chat-core.js'),messages=read('vtg-cross-account-messages.js');
+ const core=read('vtg-chat-core.js'),messages=read('vtg-messenger.js');
  assert.match(core,/function viewerOwnsMessage\(msg\)/);
  assert.match(core,/sender&&viewer\?sender===viewer:msg\?\.mine===true/);
- assert.match(core,/dataset\.messageSide/);
- assert.match(messages,/viewerId:userId/);
+ assert.match(messages,/const mine=m=>same\(m\.sender_id,S\.me\)/);
+ assert.match(messages,/justify-content:'\+\(self\?'flex-end':'flex-start'\)/);
  for(const page of ['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html']){
   const html=read(page);
   assert.match(html,/vtg-chat-core\.js\?v=20261124-viewer-align-4/);
-  assert.match(html,/vtg-cross-account-messages\.js\?v=20261124-buyer-call-lifecycle-2/);
-  assert.match(html,/vtg-chat-whatsapp\.css\?v=20261125-contrast-1/);
+  assert.match(html,/vtg-messenger\.js\?v=20261126-messenger-1/);
  }
 });

@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="/vtg-shell.css?v=20261030-1">
 <link rel="stylesheet" href="/vtg-auth.css?v=20261030-1">
 <link rel="stylesheet" href="/vtg-type.css"><link rel="stylesheet" href="/vtg-forms.css?v=20261105-1">
-<script src="/vtg-supabase-auth.js?v=20261115-uid-1"></script>
+<script src="/vtg-supabase-auth.js?v=20261125-staff-2"></script>
 <link rel="stylesheet" href="/vtg-loader.css?v=20261117-lang-1"><script src="/vtg-loader.js?v=20261117-lang-1" defer></script></head>
 <body>
 <main id="main" class="au">
@@ -26,7 +26,7 @@
 <div class="msg" id="msg" role="status" aria-live="polite"></div>
 <button class="primary" type="submit"><span>Sign in to workspace</span><span aria-hidden="true">&rarr;</span></button>
 </form>
-<p class="au-links"><a href="/workforce-access.html">&larr; Workforce access</a></p>
+<p class="au-links"><a href="/workforce-access.html">First time, or forgot your password? Get a private link</a></p>
 <p class="au-secure"><strong>Security note.</strong> Your role is checked by the VTG authentication response. A workspace URL alone does not grant access. Never share your login credentials with another worker.</p>
 </div></section>
 <aside class="au-side" style="background-image:url('https://images.pexels.com/photos/30481728/pexels-photo-30481728.jpeg?auto=compress&cs=tinysrgb&w=1400')" aria-label="Access information"><h2>One trade network. Clear responsibilities.</h2><ul><li><span><b>Role-specific workspaces</b>Each team signs in to its own workspace.</span></li><li><span><b>Invitation only</b>Workforce accounts are provisioned by VTG.</span></li><li><span><b>Verified every time</b>Your role is checked on sign-in.</span></li></ul></aside>
@@ -36,6 +36,10 @@
 const params=new URLSearchParams(location.search),requested=(params.get('workspace')||'staff').toLowerCase();
 const routes={agent:{label:'Trade Agent',role:'agent'},manager:{label:'Management',role:'manager'},staff:{label:'Staff & Operations',role:'staff'},logistics:{label:'Logistics & Clearing',role:'logistics'},compliance:{label:'Verification & Compliance',role:'compliance'},support:{label:'Customer Support',role:'support'},finance:{label:'Finance & Commissions',role:'finance'},inspector:{label:'Inspection & Quality',role:'inspector'},marketing:{label:'Marketing & Catalogue',role:'marketing'}};
 const selected=routes[requested]||routes.staff;
+const generic=!params.get('workspace');
+(function prefill(){const em=params.get('email');if(em){const i=document.getElementById('email');i.value=em;i.readOnly=false;}
+ const m=document.getElementById('msg');
+ if(params.get('linked')==='1'){m.textContent='Your email link is verified. Now sign in with your work email and password to open your workspace.';const p=document.getElementById('password');if(p&&em)setTimeout(()=>p.focus(),50);}})();
 document.getElementById('roleLabel').textContent=selected.label+' · Restricted access';
 document.getElementById('title').textContent=selected.label+' sign-in';
 document.getElementById('form').addEventListener('submit',async e=>{
@@ -45,6 +49,7 @@ document.getElementById('form').addEventListener('submit',async e=>{
  const submit=e.currentTarget.querySelector('button[type="submit"]');if(submit)submit.disabled=true;
  try{
   const auth=await window.VTG_AUTH_READY;
+  if(generic){await auth.signInStaff(data.get('email'),data.get('password'));msg.textContent='Access verified. Opening your workspace…';setTimeout(()=>location.replace('/workforce-access.html'),350);return;}
   await auth.signInWorkforce(data.get('email'),data.get('password'),selected.role);
   msg.textContent='Access verified. Opening your assigned workspace…';
   setTimeout(()=>location.replace(requested==='agent'?'/agent-dashboard.html':'/workforce-dashboard.html?workspace='+encodeURIComponent(requested)),350);

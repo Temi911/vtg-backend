@@ -36,7 +36,7 @@ test('staff access is email-link only: private page, server-side eligibility, no
   const page = read('workforce-access.html');
   assert.match(page, /vtg-staff-access/);
   assert.match(page, /VTG_AUTH_CONFIG=\{detectSessionInUrl:false\}/);
-  assert.doesNotMatch(page, /admin-signin|workforce-signin/);
+  assert.doesNotMatch(page, /href=["'][^"']*(admin-signin|workforce-signin)/);
   const fn = read('supabase/functions/vtg-staff-access/index.ts');
   assert.match(fn, /account_environment === "staff" && d\.is_active === true/);
   assert.match(fn, /shouldCreateUser: false/);

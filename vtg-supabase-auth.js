@@ -258,6 +258,19 @@
           save(result.session, workspaceUser);
           return { session: result.session, user: workspaceUser };
         },
+        async signInStaff(email, password) {
+          const result = await signInRaw(email, password);
+          const user = result.user;
+          const hasWorkspace = (user.workforceMemberships || []).some(item => item.status === 'active');
+          if (user.accountEnvironment !== 'staff' || (!hasWorkspace && user.role !== 'admin')) {
+            await client.auth.signOut({ scope: 'local' });
+            throw new Error(user.accountEnvironment !== 'staff'
+              ? 'This is not a VTG staff account. Public trade accounts cannot use workforce sign-in.'
+              : 'This account has no workspace assigned yet. Contact your VTG administrator.');
+          }
+          save(result.session, user);
+          return { session: result.session, user };
+        },
         async signInAdmin(email, password) {
           const result = await signInRaw(email, password);
           if (result.user.role !== 'admin' || result.user.accountEnvironment !== 'staff') {

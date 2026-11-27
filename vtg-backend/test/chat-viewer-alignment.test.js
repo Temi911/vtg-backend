@@ -34,21 +34,9 @@ test('role labels never override authenticated account identity',()=>{
 });
 
 test('all dashboard message streams use explicit outgoing/incoming alignment selectors',()=>{
- const css=read('vtg-chat-whatsapp.css');
- assert.match(css,/data-message-side="outgoing"[^}]*justify-content:flex-end!important/);
- assert.match(css,/data-message-side="incoming"[^}]*justify-content:flex-start!important/);
- assert.match(css,/\.vtg-peer-log>\.bubble\[data-message-side="outgoing"\][^{]*\{[^}]*align-self:flex-end!important/);
- for(const page of ['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html']){
-  const html=read(page);
-  assert.match(html,/vtg-chat-whatsapp\.css\?v=20261125-viewer-matrix-2/);
-  assert.match(html,/vtg-cross-account-messages\.js/);
- }
-});
-
-test('legacy buyer chat normalizes sender and viewer IDs before deciding message side',()=>{
- const js=read('vtg-buyer-messages-supabase.js');
- assert.match(js,/normalizeUserId=value=>String\(value\?\?''\)\.trim\(\)\.toLowerCase\(\)/);
- assert.match(js,/isViewerMessage\(m\.sender_id\)/);
- assert.match(js,/data-message-side="\'+messageSide/);
- assert.doesNotMatch(js,/m\.sender_id===userId/);
+ const css=read('vtg-messenger.css'),js=read('vtg-messenger.js');
+ assert.match(css,/\.vtgm-row\.is-self\{justify-content:flex-end!important\}/);
+ assert.match(css,/\.vtgm-row\.is-other\{justify-content:flex-start!important\}/);
+ assert.match(js,/data-side="'\+\(self\?'outgoing':'incoming'\)/);
+ for(const page of ['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html'])assert.match(read(page),/vtg-messenger\.js/);
 });

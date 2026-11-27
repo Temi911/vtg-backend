@@ -13,14 +13,9 @@ test('group conversations: every other member, whatever the role, is on the left
   for(const viewer of members)for(const sender of members)assert.equal(side(viewer,sender),viewer===sender?'right':'left');
   assert.equal(side('Buyer-1 ','buyer-1'),'right');
 });
-test('all three dashboards load the same chat renderer and stamp the viewer id on each message',()=>{
-  for(const f of ['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html']){const h=read(f);assert.match(h,/vtg-chat-core\.js/,f);assert.match(h,/vtg-cross-account-messages\.js/,f);}
-  assert.match(read('vtg-cross-account-messages.js'),/viewerId/);
-  assert.match(read('vtg-chat-whatsapp.css'),/\.vtg-wa-row\.is-self\{justify-content:flex-end\}/);
-});
-test('ghost chat buttons stay readable on all three dashboards',()=>{
-  const css=read('vtg-chat-whatsapp.css');
-  assert.match(css,/\.vtg-wa \.vtg-wa-sidebtn\.ghost\{background:var\(--wa-input\)!important;color:var\(--wa-ink\)!important/);
-  assert.match(css,/\.vtg-wa \.vtg-wa-head \.vtg-wa-sidebtn\.ghost\{background:rgba\(255,255,255,\.2\)!important;color:#fff!important/);
-  for(const f of ['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html'])assert.match(read(f),/vtg-chat-whatsapp\.css\?v=20261125-contrast-1/,f);
+test('all three dashboards load the same messenger and stamp the viewer id on the chat',()=>{
+  for(const f of ['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html']){const h=read(f);assert.match(h,/vtg-chat-core\.js/,f);assert.match(h,/vtg-messenger\.js\?v=20261126-messenger-1/,f);assert.match(h,/vtg-messenger\.css\?v=20261126-messenger-1/,f);assert.doesNotMatch(h,/vtg-cross-account-messages/,f);}
+  assert.match(read('vtg-messenger.js'),/host\.dataset\.viewerId=S\.me/);
+  assert.match(read('vtg-messenger.css'),/\.vtgm-row\.is-self\{justify-content:flex-end!important\}/);
+  assert.match(read('vtg-messenger.css'),/\.vtgm-row\.is-other\{justify-content:flex-start!important\}/);
 });
