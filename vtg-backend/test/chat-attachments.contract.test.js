@@ -33,5 +33,5 @@ test('AI function loads parsers lazily, enforces own-folder paths and treats fil
 });
 test('dashboards load the attachments script after core and before the chats',()=>{
  for(const f of pages){const h=read(f);const i=n=>h.indexOf('src="/'+n);
-  assert.ok(i('vtg-chat-core.js')>0&&i('vtg-chat-attachments.js')>i('vtg-chat-core.js')&&i('vtg-dashboard-chat.js')>i('vtg-chat-attachments.js')&&i('vtg-cross-account-messages.js')>i('vtg-chat-attachments.js'),f);}
+  assert.ok(i('vtg-chat-core.js')>0&&i('vtg-chat-attachments.js')>i('vtg-chat-core.js')&&i('vtg-dashboard-chat.js')>i('vtg-chat-attachments.js')&&i('vtg-messenger.js')>i('vtg-chat-attachments.js'),f);}
 });

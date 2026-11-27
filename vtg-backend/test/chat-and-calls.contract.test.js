@@ -10,14 +10,14 @@ const moderation=read('supabase/migrations/20261123210000_vtg_message_moderation
 const endCall=read('supabase/migrations/20261123225500_vtg_call_organizer_end_for_everyone.sql');
 const callLifecycle=read('supabase/migrations/20261124201947_vtg_call_lifecycle_cleanup.sql');
 const finalSend=read('supabase/migrations/20261123230000_vtg_final_chat_moderation_send_rpc.sql');
-const calls=read('vtg-calls.js'),msgs=read('vtg-cross-account-messages.js'),ai=read('vtg-dashboard-chat.js'),core=read('vtg-chat-core.js'),css=read('vtg-chat-whatsapp.css');
+const calls=read('vtg-calls.js'),msgs=read('vtg-messenger.js'),ai=read('vtg-dashboard-chat.js'),core=read('vtg-chat-core.js'),css=read('vtg-chat-whatsapp.css');
 const pages=['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html'];
 
 test('every dashboard loads the shared chat styles, core, calls and messages scripts in order',()=>{
  for(const f of pages){
   const h=read(f);
   assert.match(h,/vtg-chat-whatsapp\.css/,f);
-  const order=['vtg-chat-core.js','vtg-dashboard-chat.js','vtg-calls.js','vtg-cross-account-messages.js'].map(n=>h.indexOf('src="/'+n));
+  const order=['vtg-chat-core.js','vtg-dashboard-chat.js','vtg-calls.js','vtg-messenger.js'].map(n=>h.indexOf('src="/'+n));
   assert.ok(order.every(i=>i>0),f+' missing a script');
   assert.deepEqual([...order].sort((a,b)=>a-b),order,f+' scripts out of order');
   assert.match(h,/id="vtg-ai-chat"/,f);
@@ -37,7 +37,6 @@ test('own bubbles are right/blue and other people are left with name and per-per
 });
 
 test('buyer and supplier messages carry explicit role identity and stable role colours',()=>{
- assert.match(msgs,/role:mem\?\.role\|\|'other'/);
  assert.match(core,/dataset\.senderRole=String\(msg\.role\)/);
  assert.match(core,/roleLabel=\(\{buyer:'Buyer',supplier:'Supplier'/);
  assert.match(css,/data-sender-role="buyer"/);
@@ -117,8 +116,8 @@ test('dashboard message sending uses an authenticated RPC and enforces active co
  assert.match(send,/length\(v_body\) > 4000/);
  assert.match(send,/revoke all on function public\.vtg_send_message/);
  assert.match(send,/grant execute on function public\.vtg_send_message\(uuid, text\) to authenticated/);
- assert.match(msgs,/client\.rpc\(replyTarget\?'vtg_send_message_with_reply':'vtg_send_message'/);
- assert.doesNotMatch(msgs,/client\.from\('messages'\)\.insert/);
+ assert.match(msgs,/rpc\('vtg_send_message',\{p_conversation_id:convId,p_body:text/);
+ assert.doesNotMatch(msgs,/\.from\('messages'\)\.(insert|update|delete)/);
 });
 
 test('chat blocks sexual, abusive and threatening messages with a sender warning and private audit event',()=>{
@@ -127,16 +126,17 @@ test('chat blocks sexual, abusive and threatening messages with a sender warning
  assert.match(moderation,/warning_count/);
  assert.match(moderation,/This message was not sent/);
  assert.match(moderation,/revoke update on public\.messages from anon, authenticated/);
- assert.match(msgs,/This message was blocked by VTG content rules/);
+ assert.match(msgs,/res&&res\.ok===false\)\{toast\(res\.message/);
+ assert.match(read('supabase/migrations/20261126090000_vtg_messenger_rebuild.sql'),/This message was not sent\. VTG does not allow/);
 });
 test('message edits are sender-only, time-limited and rechecked by moderation',()=>{
  assert.match(moderation,/create or replace function public\.vtg_edit_message/);
  assert.match(moderation,/v_message\.sender_id<>v_user_id/);
  assert.match(moderation,/interval '15 minutes'/);
  assert.match(moderation,/private\.vtg_message_content_violation\(v_body\)/);
- assert.match(msgs,/client\.rpc\('vtg_edit_message'/);
- assert.match(msgs,/view\.editable/);
- assert.match(core,/Edited/);
+ assert.match(msgs,/rpc\('vtg_edit_message'/);
+ assert.match(msgs,/age<15\*60\*1000/);
+ assert.match(msgs,/<em>edited<\/em>/);
 });
 
 test('final ordered migration preserves the JSON moderation response after the legacy UUID RPC migration',()=>{
@@ -157,11 +157,12 @@ test('call setup can be cancelled without leaving an orphan active call',()=>{
 
 test('incoming call acceptance opens the chat and joins the live call',()=>{
  assert.match(calls,/const join=window\.VTGPeerMessages\?\.openWithCall;[\s\S]*join\(call\.conversation_id\)/);
- assert.match(msgs,/async openWithCall\(conversationId\)\{await openConv\(conversationId\);const live=liveCalls\[String\(conversationId\)\];if\(live\)startCall\(live\.kind\)/);
+ assert.match(msgs,/async function openWithCall\(id\)\{[\s\S]*await openChat\(id\);const live=S\.live\[String\(id\)\];if\(live\)startCallFor\(conv\(id\),live\.kind\)/);
+ assert.match(msgs,/window\.VTGPeerMessages=\{openWithCall\}/);
 });
 
 test('all dashboards invalidate stale call and cross-account messaging assets',()=>{
- for(const f of pages){const h=read(f);assert.match(h,/vtg-calls\.js\?v=20261124-buyer-call-lifecycle-2/);assert.match(h,/vtg-cross-account-messages\.js\?v=20261124-buyer-call-lifecycle-2/);}
+ for(const f of pages){const h=read(f);assert.match(h,/vtg-calls\.js\?v=20261124-buyer-call-lifecycle-2/);assert.match(h,/vtg-messenger\.js\?v=20261126-messenger-1/);}
 });
 
 
@@ -181,15 +182,16 @@ test('a stale abandoned call is retired before a new call starts',()=>{
 });
 
 test('buyer messages retain viewer identity and role for deterministic left/right rendering',()=>{
- assert.match(msgs,/viewerId:userId,viewerRole:role/);
+ assert.match(msgs,/host\.dataset\.viewerId=S\.me/);
  assert.match(msgs,/host\.dataset\.viewerRole=role/);
+ assert.match(msgs,/data-side="'\+\(self\?'outgoing':'incoming'\)/);
  assert.match(core,/dataset\.viewerRole=String\(msg\.viewerRole\)/);
  assert.match(core,/dataset\.messageSide=mine\?'outgoing':'incoming'/);
  for(const f of pages){
   const h=read(f);
   assert.match(h,/vtg-chat-core\.js\?v=20261124-viewer-align-4/);
-  assert.match(h,/vtg-cross-account-messages\.js\?v=20261124-buyer-call-lifecycle-2/);
+  assert.match(h,/vtg-messenger\.js\?v=20261126-messenger-1/);
   assert.match(h,/vtg-calls\.js\?v=20261124-buyer-call-lifecycle-2/);
-  assert.match(h,/vtg-chat-whatsapp\.css\?v=20261125-contrast-1/);
+  assert.match(h,/vtg-messenger\.css\?v=20261126-messenger-1/);
  }
 });

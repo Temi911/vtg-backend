@@ -13,40 +13,67 @@
 :root{color-scheme:light;--bg:#f3efe6;--panel:#fff;--ink:#17191b;--muted:#66717a;--line:#e5ded3;--red:#702a30;--brass:#b49a70}
 html[data-theme=dark]{color-scheme:dark;--bg:#111416;--panel:#1a2023;--ink:#f3efe6;--muted:#b9c0c3;--line:#30383b;--red:#c77a7e}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:var(--bg);color:var(--ink);font:14px/1.7 Manrope,Arial,sans-serif}.card{width:min(540px,100%);padding:clamp(28px,6vw,52px);background:var(--panel);border:1px solid var(--line);border-radius:20px}.eyebrow{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--brass)}h1{font-size:clamp(28px,5vw,42px);line-height:1.12;letter-spacing:-.04em;margin:15px 0}p{color:var(--muted)}#status{min-height:48px;margin-top:22px;padding:14px;border:1px solid var(--line);border-radius:10px}.link{display:inline-flex;margin-top:18px;padding:12px 17px;border-radius:9px;background:var(--red);color:#fff;text-decoration:none;font-weight:800}#returnLink[hidden]{display:none}
+.fld{margin:14px 0;text-align:left}.fld label{display:block;font-weight:700;font-size:13px;margin-bottom:6px}.fld input{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:10px;font:inherit;background:transparent;color:inherit}.fld input[readonly]{opacity:.75}.btn{width:100%;border:0;border-radius:10px;padding:14px;font:800 14px Manrope,Arial,sans-serif;cursor:pointer;background:#1558D6;color:#fff;margin-top:8px}.btn:disabled{opacity:.55;cursor:wait}.hint{font-size:12px;opacity:.75;margin:6px 0 0}#signupForm{display:none}
 </style>
 <link rel="stylesheet" href="/vtg-loader.css?v=20261117-lang-1"><script src="/vtg-loader.js?v=20261117-lang-1" defer></script></head>
 <body>
 <main class="card">
 <div class="eyebrow">VTG · Private workforce</div>
 <h1 id="title">Confirming your staff invitation</h1>
-<p>We are validating the invitation sent to your email address and connecting it to the assigned internal workspace.</p>
+<p id="intro">We are validating the invitation sent to your email address and connecting it to the assigned internal workspace.</p>
+<form id="signupForm" novalidate>
+<div class="fld"><label for="suEmail">Work email</label><input id="suEmail" type="email" readonly autocomplete="username"></div>
+<div class="fld"><label for="suName">Full name</label><input id="suName" type="text" maxlength="120" autocomplete="name" required placeholder="Your full name"></div>
+<div class="fld"><label for="suPw">Create a password</label><input id="suPw" type="password" minlength="10" maxlength="128" autocomplete="new-password" required><p class="hint">At least 10 characters with an uppercase letter, a lowercase letter and a number.</p></div>
+<div class="fld"><label for="suPw2">Confirm password</label><input id="suPw2" type="password" minlength="10" maxlength="128" autocomplete="new-password" required></div>
+<button class="btn" id="suBtn" type="submit">Create account and open my workspace</button>
+</form>
 <div id="status" role="status" aria-live="polite">Please wait while we verify your invitation…</div>
 <a class="link" id="returnLink" href="/workforce-access.html" hidden>Return to Workforce Access</a>
 </main>
 <script>
 (async()=>{
- const title=document.getElementById('title'),status=document.getElementById('status'),link=document.getElementById('returnLink');
+ const $=id=>document.getElementById(id);
+ const title=$('title'),status=$('status'),link=$('returnLink'),form=$('signupForm');
  const params=new URLSearchParams(location.search);
  const invitation=params.get('invitation'),token=params.get('token');
+ const problem=pw=>pw.length<10?'Use at least 10 characters.':(!/[a-z]/.test(pw)||!/[A-Z]/.test(pw)||!/[0-9]/.test(pw)?'Include an uppercase letter, a lowercase letter and a number.':'');
  try{
   if(!invitation||!token)throw new Error('This invitation link is incomplete. Ask your VTG administrator to resend it.');
   const auth=await window.VTG_AUTH_READY;
   const current=await auth.getCurrent();
   if(!current)throw new Error('The invitation could not establish a verified session. Open the invitation in the same browser or request a new email.');
   if(current.user.accountEnvironment!=='staff')throw new Error('This invitation is not connected to a private staff identity.');
-  const response=await fetch(auth.projectUrl+'/functions/v1/workforce-invitations/accept',{
-   method:'POST',
-   headers:{'Authorization':'Bearer '+current.session.access_token,'apikey':auth.publishableKey,'Content-Type':'application/json'},
-   body:JSON.stringify({invitation_id:invitation,token})
+  // New staff create their account (name + password) before they get access.
+  title.textContent='Create your VTG staff account';
+  $('intro').textContent='Your invitation is valid. Create your account with a password. You will use your work email and this password to sign in from now on.';
+  $('suEmail').value=current.user.email||'';$('suName').value=current.user.fullName||current.user.name||'';
+  status.textContent='';form.style.display='block';
+  form.addEventListener('submit',async e=>{
+   e.preventDefault();status.textContent='';
+   const name=$('suName').value.trim(),a=$('suPw').value,b=$('suPw2').value;
+   if(name.length<2){status.textContent='Enter your full name.';return;}
+   if(a!==b){status.textContent='The passwords do not match.';return;}
+   const p=problem(a);if(p){status.textContent=p;return;}
+   $('suBtn').disabled=true;status.textContent='Creating your account…';
+   try{
+    const {error:upErr}=await auth.client.auth.updateUser({password:a,data:{full_name:name}});
+    if(upErr)throw upErr;
+    const fresh=(await auth.client.auth.getSession()).data.session||current.session;
+    const response=await fetch(auth.projectUrl+'/functions/v1/workforce-invitations/accept',{
+     method:'POST',
+     headers:{'Authorization':'Bearer '+fresh.access_token,'apikey':auth.publishableKey,'Content-Type':'application/json'},
+     body:JSON.stringify({invitation_id:invitation,token})
+    });
+    const result=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(result.error||'The invitation could not be accepted. It may have expired or been revoked.');
+    const role=result.invitation?.workspace_role;
+    if(!role)throw new Error('The invitation was accepted but no workspace was assigned. Contact your VTG administrator.');
+    title.textContent='Account created';form.style.display='none';
+    status.textContent='Your VTG staff account is ready. Opening your assigned workspace…';
+    setTimeout(()=>location.replace('/workforce-dashboard.html?workspace='+encodeURIComponent(role)),700);
+   }catch(err){status.textContent=err.message||'The account could not be created. Please try again.';$('suBtn').disabled=false;link.hidden=false;}
   });
-  const result=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(result.error||'The invitation could not be accepted. It may have expired or been revoked.');
-  const role=result.invitation?.workspace_role;
-  if(!role)throw new Error('The invitation was accepted but no workspace was assigned. Contact your VTG administrator.');
-  history.replaceState({},document.title,location.pathname);
-  title.textContent='Staff invitation accepted';
-  status.textContent='Your VTG staff identity is ready. Opening your assigned workspace…';
-  setTimeout(()=>location.replace('/workforce-dashboard.html?workspace='+encodeURIComponent(role)),700);
  }catch(error){
   title.textContent='We could not complete this invitation';
   status.textContent=error.message||'Please ask your VTG administrator for help.';
@@ -54,5 +81,6 @@ html[data-theme=dark]{color-scheme:dark;--bg:#111416;--panel:#1a2023;--ink:#f3ef
  }
 })();
 </script>
+<script src="/vtg-password-toggle.js?v=20261123-1" defer></script>
 </body>
 </html>
