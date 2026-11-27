@@ -57,7 +57,7 @@ test('message side is calculated from the viewing account identity and applied t
  assert.match(messages,/justify-content:'\+\(self\?'flex-end':'flex-start'\)/);
  for(const page of ['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html']){
   const html=read(page);
-  assert.match(html,/vtg-chat-core\.js\?v=20261124-viewer-align-4/);
+  assert.match(html,/vtg-chat-core\.js\?v=20261127-icons-1/);
   assert.match(html,/vtg-messenger\.js\?v=20261126-messenger-1/);
  }
 });

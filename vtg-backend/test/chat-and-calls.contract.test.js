@@ -189,7 +189,7 @@ test('buyer messages retain viewer identity and role for deterministic left/righ
  assert.match(core,/dataset\.messageSide=mine\?'outgoing':'incoming'/);
  for(const f of pages){
   const h=read(f);
-  assert.match(h,/vtg-chat-core\.js\?v=20261124-viewer-align-4/);
+  assert.match(h,/vtg-chat-core\.js\?v=20261127-icons-1/);
   assert.match(h,/vtg-messenger\.js\?v=20261126-messenger-1/);
   assert.match(h,/vtg-calls\.js\?v=20261124-buyer-call-lifecycle-2/);
   assert.match(h,/vtg-messenger\.css\?v=20261126-messenger-1/);
