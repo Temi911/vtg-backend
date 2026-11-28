@@ -3,7 +3,7 @@
    Class prefix: vs-. Page-specific styles live in each page's own stylesheet. */
 :root{
   color-scheme:light;
-  --vs-bg:#F6F9FD;--vs-paper:#FFFFFF;--vs-tint:#E8F1FD;--vs-ink:#0B1F3A;--vs-ink-2:#2F4560;--vs-muted:#53677F;
+  --vs-bg:#F6F9FD;--vs-paper:#FFFFFF;--vs-tint:#E8F1FD;--vs-ink:#0B1F3A;--vs-ink-2:#2F4560;--vs-muted:#43576E;
   --vs-line:#D5E0EE;--vs-line-2:#B9C9DE;--vs-blue:#1558D6;--vs-blue-h:#0F46AE;--vs-blue-soft:#DCE9FC;
   --vs-sun:#FFB81C;--vs-sun-soft:#FFF1CC;--vs-ok:#0C7A4F;--vs-ok-soft:#DDF3E8;--vs-bad:#B3261E;--vs-bad-soft:#FBE4E2;
   --vs-foot:#0B2A55;--vs-radius:12px;--vs-radius-s:8px;--vs-shadow:0 1px 2px rgba(11,31,58,.05),0 6px 20px rgba(11,31,58,.06);

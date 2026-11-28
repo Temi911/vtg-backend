@@ -13,7 +13,7 @@
   if (!document.querySelector('link[data-vtg-polish]')) {
     var polishCss = document.createElement('link');
     polishCss.rel = 'stylesheet';
-    polishCss.href = '/vtg-polish.css?v=20261110-1';
+    polishCss.href = '/vtg-polish.css?v=20261128-contrast-2';
     polishCss.setAttribute('data-vtg-polish', '1');
     document.head.appendChild(polishCss);
   }

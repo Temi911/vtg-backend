@@ -42,7 +42,7 @@
 .actions{display:flex;justify-content:space-between;gap:12px;margin-top:20px}
 .actionButton{min-height:48px;padding:0 24px;border-radius:10px;border:1px solid var(--vs-line-2);background:var(--vs-paper);color:var(--vs-ink);font-weight:800;font-size:1rem;cursor:pointer}
 .actionButton.primary{background:var(--vs-blue);border-color:var(--vs-blue);color:#fff;margin-left:auto}
-html[data-theme="dark"] .actionButton.primary{color:#08162A}
+html[data-theme="dark"] .actionButton.primary{background:#1558D6;border-color:#1558D6;color:#fff}
 .actionButton[disabled]{opacity:.45;cursor:not-allowed}
 .actionButton[hidden]{display:none}
 .bottomLinks{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:24px;padding-top:18px;border-top:1px solid var(--vs-line);font-size:.9375rem}

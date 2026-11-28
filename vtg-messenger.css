@@ -131,3 +131,11 @@ html[data-theme="dark"] .vtgm-clearbar{background:#3A2F10;color:#FFE08A}html[dat
  .vtgm-menu{top:auto;bottom:0;left:0;right:0;transform:none;min-width:0;max-width:none;border-radius:18px 18px 0 0}
  .vtgm-dialog{top:auto;bottom:0;left:0;transform:none;width:100%;border-radius:18px 18px 0 0}
 }
+
+/* ===== follow the dashboard theme + skin (light/dark and the 10 colour skins) ===== */
+html[data-skin] .vtgm{--m-bg:var(--bg);--m-panel:var(--panel,var(--surface));--m-line:var(--line);--m-ink:var(--ink);--m-muted:var(--muted);--m-other:var(--panel2,var(--surface2,var(--panel)));--m-other-ink:var(--ink);--m-hover:var(--panel2,var(--surface2));--m-blue:var(--t-btn,var(--accent));--m-blue-2:var(--accent2,var(--accent));--m-self:var(--t-btn,var(--accent));--m-self-ink:var(--t-onbtn,#fff)}
+html[data-skin] .vtgm-btn{color:var(--t-onbtn,#fff)!important}
+html[data-skin] .vtgm-btn.ghost{background:transparent;color:var(--accent)!important;border-color:var(--accent)}
+html[data-skin] .vtgm-badge{background:var(--m-yellow);color:#14213A}
+html[data-skin] .vtgm-avatar{background:var(--m-blue);color:var(--t-onbtn,#fff)}
+html[data-skin][data-theme="dark"] .vtgm{box-shadow:none}
