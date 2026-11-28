@@ -120,7 +120,7 @@ test('chat, AI widget and call screens are re-pointed at the workspace theme on 
   for(const f of ['buyer-dashboard.html','supplier-dashboard.html','bank-trade-os.html']){
     const h=read(f);assert.ok(h.includes('vtg-chat-whatsapp.css'),f);
     assert.ok(h.indexOf('vtg-dashboard-themes.css')>h.indexOf('vtg-chat-whatsapp.css'),f+': theme sheet must load after chat css');
-    assert.match(h,/vtg-dashboard-themes\.css\?v=20261122-themes-2/);
+    assert.match(h,/vtg-dashboard-themes\.css\?v=20261128-themes-3/);
   }
   const widget=read('api/frontend.js');assert.match(widget,/html\[data-theme="dark"\] #vtg-ai-panel-v2/);
 });
