@@ -18,7 +18,7 @@ body{display:flex;flex-direction:column;min-height:100vh}
 #vtgPageNavigation{display:none!important}
 body > #vtgFooter.vtgCompactFooter{display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:2!important;flex:0 0 auto!important;width:100%!important;clear:both!important}
 #vtgFooter a{pointer-events:auto!important;visibility:visible!important}
-.adminToast{position:fixed;right:18px;bottom:18px;z-index:100;background:#17212b;color:#fff;padding:12px 16px;border-radius:10px;font-size:12.5px;box-shadow:0 10px 30px #0003;opacity:0;transform:translateY(8px);pointer-events:none;transition:.18s}.adminToast.show{opacity:1;transform:none}html[data-skin="midnight-harbor"] .sidebar{background:#111d29}html[data-skin="midnight-harbor"] .nav button{color:#d2dde6}html[data-skin="midnight-harbor"] .sidebarBottom{border-color:#33414f}@media(max-width:680px){.topbar .crumb{display:none}}\n/* Match the Buyer Dashboard theme behavior: skin changes accents, appearance controls the actual light/dark surfaces. */
+.adminToast{position:fixed;right:18px;bottom:18px;z-index:100;background:#17212b;color:#fff;padding:12px 16px;border-radius:10px;font-size:12.5px;box-shadow:0 10px 30px #0003;opacity:0;transform:translateY(8px);pointer-events:none;transition:.18s}.adminToast.show{opacity:1;transform:none}html[data-skin="midnight-harbor"][data-theme="dark"] .sidebar{background:#111d29}html[data-skin="midnight-harbor"][data-theme="dark"] .nav button{color:#d2dde6}html[data-skin="midnight-harbor"][data-theme="dark"] .sidebarBottom{border-color:#33414f}@media(max-width:680px){.topbar .crumb{display:none}}\n/* Match the Buyer Dashboard theme behavior: skin changes accents, appearance controls the actual light/dark surfaces. */
 html[data-skin="executive"]{--red:#1558D6;--accent:#1558D6;--soft:#E4EEFC;--skin-accent:#1558D6;--skin-soft:#E4EEFC}
 html[data-theme="dark"][data-skin="executive"]{--red:#5A9BFF;--accent:#5A9BFF;--soft:#173560;--skin-accent:#5A9BFF;--skin-soft:#173560}
 html[data-skin="ocean-finance"]{--red:#147da1;--soft:#e7f6fb;--skin-accent:#147da1;--skin-soft:#e7f6fb}
@@ -27,9 +27,9 @@ html[data-skin="copper-ledger"]{--red:#a65b36;--soft:#fbefe7;--skin-accent:#a65b
 html[data-skin="indigo-intel"]{--red:#6256c9;--soft:#efedff;--skin-accent:#6256c9;--skin-soft:#efedff}
 html[data-skin="crimson-ops"]{--red:#c02e49;--soft:#fff0f3;--skin-accent:#c02e49;--skin-soft:#fff0f3}
 html[data-skin="mono-pro"]{--red:#505965;--soft:#edf0f3;--skin-accent:#505965;--skin-soft:#edf0f3}
-html[data-skin="sandstone"]{--red:#9b7743;--soft:#f6f0e4;--skin-accent:#9b7743;--skin-soft:#f6f0e4}
+html[data-skin="sandstone"]{--red:#7a5828;--soft:#f6f0e4;--skin-accent:#7a5828;--skin-soft:#f6f0e4}
 html[data-skin="arctic-blue"]{--red:#3276cf;--soft:#eaf3ff;--skin-accent:#3276cf;--skin-soft:#eaf3ff}
-html[data-skin="midnight-harbor"]{--red:#1685a8;--soft:#e8f5fa;--skin-accent:#1685a8;--skin-soft:#e8f5fa}
+html[data-skin="midnight-harbor"]{--red:#0f6580;--soft:#e8f5fa;--skin-accent:#0f6580;--skin-soft:#e8f5fa}
 html[data-theme="dark"][data-skin="executive"]{--red:#3A7BEA;--soft:#2b191c;--skin-accent:#3A7BEA;--skin-soft:#2b191c}
 html[data-theme="dark"][data-skin="ocean-finance"]{--red:#62c4e7;--soft:#142d38;--skin-accent:#62c4e7;--skin-soft:#142d38}
 html[data-theme="dark"][data-skin="emerald-trade"]{--red:#68d8ad;--soft:#15352b;--skin-accent:#68d8ad;--skin-soft:#15352b}
@@ -234,5 +234,5 @@ const initialLanguage=localStorage.getItem('vtg-language')||localStorage.getItem
 
 
 <script src="/vtg-workforce-admin.js?v=20261106-1"></script>
-<script src="/vtg-user-id.js?v=20261116-bar-1" defer></script><script src="/vtg-admin-live.js?v=20261123-trust-1"></script>
+<script src="/vtg-user-id.js?v=20261128-img-1" defer></script><script src="/vtg-admin-live.js?v=20261123-trust-1"></script>
 <script>(function(){var r=document.documentElement;function m(){var s=document.querySelector('.sidebar');if(s&&matchMedia('(max-width:680px)').matches)r.style.setProperty('--adm-strip',Math.round(s.getBoundingClientRect().height)+'px');}addEventListener('resize',m);addEventListener('load',m);if(window.ResizeObserver){var s=document.querySelector('.sidebar');if(s)new ResizeObserver(m).observe(s);}m();})();</script></body></html>

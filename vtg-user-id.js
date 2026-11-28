@@ -51,3 +51,5 @@ async function start(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
+
+(function(){if(window.__vtgImgFbL)return;window.__vtgImgFbL=1;var s=document.createElement('script');s.src='/vtg-img-fallback.js?v=20261128-1';s.defer=true;(document.head||document.documentElement).appendChild(s);})();
