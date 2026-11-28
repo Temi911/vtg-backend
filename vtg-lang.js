@@ -104,7 +104,13 @@
   function announce(lang){
     try{document.dispatchEvent(new CustomEvent('vtg:languagechange',{detail:{lang:lang}}));}catch(_){}
   }
-  function engine(lang){setDoc(lang);cookie(lang);ensureTranslator(lang);}
+  function engine(lang){
+    var wasTranslated=/translated-(ltr|rtl)/.test(document.documentElement.className);
+    setDoc(lang);cookie(lang);ensureTranslator(lang);
+    // Switching back to English: Google's widget sometimes leaves translated text behind.
+    // Cookie is already cleared, so a reload guarantees the original English page.
+    if(lang==='en'&&wasTranslated){setTimeout(function(){if(/translated-(ltr|rtl)/.test(document.documentElement.className)||document.querySelector('font[style*="vertical-align"]'))location.reload();},900);}
+  }
 
   // Save the choice to the account (best effort; the column is user-editable).
   // The sign-in service loads separately; wait (up to ~8s) until it exists.
