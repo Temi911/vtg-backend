@@ -26,7 +26,7 @@
 .formMeta a,.au-links a{color:var(--vs-blue);font-weight:700}
 .msg{min-height:1.4em;font-size:.9375rem;color:var(--vs-bad)}.msg.ok,.msg.processing{color:var(--vs-ok)}
 .au-card .primary{min-height:50px;border:0;border-radius:10px;background:var(--vs-blue);color:#fff;font-size:1rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
-html[data-theme="dark"] .au-card .primary{color:#08162A}
+html[data-theme="dark"] .au-card .primary{background:#1558D6;color:#fff}html[data-theme="dark"] .au-card .primary:hover{background:#2F6FE0}
 .au-card .primary:hover{background:var(--vs-blue-h)}
 .au-card .primary:disabled{opacity:.6;cursor:wait}
 .au-links{margin-top:22px;color:var(--vs-ink-2)}

@@ -15,7 +15,7 @@ body .mk-head-in{box-sizing:border-box;width:calc(100% - 48px);max-width:var(--v
 @media(min-width:1250px){body .mk-head-in{margin:0 auto}}
 body .mk-head h1,body .mk-head .vs-lead{color:#fff}
 body .mk-head .vs-lead{opacity:.9;max-width:60ch}
-body .mk-head .vs-eyebrow{color:#FFD66B}
+body .mk-head .vs-eyebrow{color:#FFE08A}
 body .mk-head .vs-eyebrow::before{background:#FFB81C}
 .searchpanel{border:0;border-radius:999px;padding:8px;box-shadow:0 14px 36px rgba(6,24,60,.28)}
 .searchbar input,.searchbar select{border-radius:999px;min-height:48px;padding-left:18px}
@@ -71,8 +71,8 @@ body .vtg-inner-nav .vtg-inner-logo img{height:38px;width:auto;aspect-ratio:400/
 html[data-theme] body .vs-footer{background:#1558D6;color:#fff;border-top:3px solid #FFB81C;margin-top:72px}
 html[data-theme="dark"] body .vs-footer{background:#06101F}
 html[data-theme] body .vs-footer a,html[data-theme] body .vs-footer-brand p,html[data-theme] body .vs-footer-base .vs-wrap,html[data-theme] body .vs-footer-base nav a{color:rgba(255,255,255,.86)}
-html[data-theme] body .vs-footer a:hover,html[data-theme] body .vs-footer a.is-current,html[data-theme] body .vs-footer a[aria-current="page"]{color:#FFD66B}
-html[data-theme] body .vs-footer h4{color:#FFD66B}
+html[data-theme] body .vs-footer a:hover,html[data-theme] body .vs-footer a.is-current,html[data-theme] body .vs-footer a[aria-current="page"]{color:#FFE08A}
+html[data-theme] body .vs-footer h4{color:#FFE08A}
 html[data-theme] body .vs-footer-base{border-top-color:rgba(255,255,255,.2)}
 body .vs-footer-brand img{filter:brightness(0) invert(1)}
 /* one verified marker per card */
@@ -88,3 +88,11 @@ html[data-theme] body .vs-footer label,html[data-theme] body .vs-footer-base lab
 .vs-duo-cell::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(10,47,122,.55))}
 .vs-duo-cell span{position:absolute;left:14px;top:12px;z-index:2;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.92);color:#0A3F9E;font-size:.74rem;font-weight:800}
 .vs-duo figcaption{z-index:2}
+
+/* ===== contrast fixes (AA): filled brand buttons keep white text on brand blue in dark mode ===== */
+html[data-theme="dark"] body :is(.actionButton.primary,.au-card .primary,.vs-btn-primary,.vtg-inner-actions a:last-child,.vtg-inner-actions a:hover,.vtg-inner-actions button:hover){background:#1558D6!important;border-color:#1558D6!important;color:#fff!important}
+body #vpsSearch.primary,body #vpsSearch.primary:disabled{background:#1558D6!important;border-color:#1558D6!important;color:#fff!important;opacity:1}
+body #vpsSearch.primary:disabled{filter:grayscale(.35) brightness(.85)}
+html[data-theme="dark"] body form button.primary,html[data-theme="dark"] body form button.primary *{color:#fff!important}
+body .leaflet-control-attribution{background:rgba(255,255,255,.88)!important;color:#233044!important}
+body .leaflet-control-attribution a{color:#0A58CA!important}

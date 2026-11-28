@@ -4,6 +4,7 @@
 //  - personal-account requests are declined before any model is called and the user is pointed to the
 //    signed-in assistant in their dashboard, which is the only assistant that works with account data.
 const { SITE_KNOWLEDGE } = require('./_site-knowledge.js');
+const { answer: localAnswer } = require('./_local-answer.js');
 const SYSTEM_PROMPT = [
   'You are VTG AI, the public assistant on the website of VTG (Vintage Trade Global), a trade finance and marketplace platform connecting African businesses with suppliers in China and South Korea.',
   'You are a capable, friendly general assistant who also knows VTG deeply. You answer (1) questions about VTG: what it is, who it serves (buyers/importers, suppliers/exporters, banks and finance partners, inspection and logistics agents), how sign-up and verification work in general terms, and the public areas of the site; (2) international trade knowledge: sourcing, RFQs, quotations, Incoterms, shipping and freight, customs concepts, trade documents, letters of credit, inspections, payment risk, forex concepts and the Africa-China-South Korea corridor; and (3) any other general-knowledge question a curious visitor might ask: science, history, geography, business, technology, writing, maths, languages, learning, everyday how-to. Answer general questions directly, accurately and helpfully, as a knowledgeable assistant would, without steering them back to VTG. When a question touches live or fast-changing facts (today\'s news, prices, rates, scores), say you cannot check live data here and give the stable background you do know.',
@@ -70,13 +71,13 @@ function allowed(ip) {
   return true;
 }
 
-function providers(env) {
+function providers(env, oidc) {
   const trim = (v) => String(v).replace(/\/+$/, '');
   return [
     { name: 'gemini', key: env.GEMINI_API_KEY_PUBLIC_SITE || env.GEMINI_API_KEY || env.VTG_AI_API_KEY, base: trim(env.VTG_AI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai'), model: env.VTG_AI_MODEL || 'gemini-2.5-flash' },
     { name: 'groq', key: env.GROQ_API_KEY_PUBLIC_SITE || env.GROQ_API_KEY, base: 'https://api.groq.com/openai/v1', model: env.GROQ_MODEL || 'openai/gpt-oss-120b' },
     { name: 'openrouter', key: env.OPENROUTER_API_KEY_PUBLIC_SITE || env.OPENROUTER_API_KEY, base: 'https://openrouter.ai/api/v1', model: env.OPENROUTER_MODEL || 'openrouter/free' }
-  ].filter((p) => Boolean(p.key));
+  ].concat([{ name: 'vercel-gateway', key: env.AI_GATEWAY_API_KEY || oidc || env.VERCEL_OIDC_TOKEN, base: 'https://ai-gateway.vercel.sh/v1', model: env.VTG_AI_GATEWAY_MODEL || 'anthropic/claude-haiku-5.5' }]).filter((p) => Boolean(p.key));
 }
 
 async function handler(req, res) {
@@ -94,8 +95,9 @@ async function handler(req, res) {
   // The request body can carry a role, country or auth header; none of them is used. This endpoint is anonymous by design.
   if (isPersonalRequest(message)) return res.status(200).json({ reply: PERSONAL_REPLY, mode: 'public', scope: 'general' });
   if (isTaskRequest(message)) return res.status(200).json({ reply: TASK_REPLY, mode: 'public', scope: 'general', cta: { href: '/signup.html', label: 'Create free account' } });
-  const list = providers(process.env);
-  if (!list.length) return res.status(503).json({ error: { code: 'AI_NOT_CONFIGURED', message: 'VTG AI is not available right now. Please try again later or use the Contact page.' } });
+  const list = providers(process.env, String(req.headers['x-vercel-oidc-token'] || ''));
+  const offline = () => { const a = localAnswer(message); return a ? res.status(200).json({ reply: a.reply, mode: 'offline', scope: 'general' }) : res.status(200).json({ reply: 'I can answer questions about VTG (what it does, who it serves, how buying, selling, inspection, trade finance and tracking work) and I can point you to the right page. I could not find that in my VTG notes, and my general-knowledge service is temporarily unavailable. Try rephrasing, or use the Contact page for a person.', mode: 'offline', scope: 'general' }); };
+  if (!list.length) return offline();
   const convo = [{ role: 'system', content: SYSTEM_PROMPT }, ...cleanHistory(req.body?.history), { role: 'user', content: message }];
   for (const p of list) {
     const controller = new AbortController();
@@ -114,7 +116,7 @@ async function handler(req, res) {
       clearTimeout(timer);
     }
   }
-  return res.status(200).json({ reply: 'VTG AI is temporarily unable to answer. Please try again shortly, or use the Contact page.', mode: 'fallback', error: { code: 'AI_PROVIDER_UNAVAILABLE' } });
+  return offline();
 }
 module.exports = handler;
 module.exports.__test = { SYSTEM_PROMPT, isPersonalRequest, isTaskRequest, TASK_REPLY, SITE_KNOWLEDGE, cleanHistory, providers, PERSONAL_REPLY };
