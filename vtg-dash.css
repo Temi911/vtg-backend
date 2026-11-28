@@ -86,3 +86,10 @@ body :is(form,.form,.formCard,.form-card) :is(.hint,.help-text,.form-hint,.field
 body :is(form,.form,.formCard,.form-card) :is(.error,.field-error,[aria-invalid=true]){color:#B3261E}
 html[data-theme="dark"] body :is(form,.form,.formCard,.form-card) :is(.error,.field-error,[aria-invalid=true]){color:#FF8F86}
 body :is(form,.form,.formCard,.form-card) :is(input,select,textarea)[aria-invalid=true]{border-color:#B3261E;box-shadow:0 0 0 3px rgba(179,38,30,.12)}
+
+/* ===== overlays: always above the shared header, never clipped at the top ===== */
+body :is(.buyerProductModal,.modal-backdrop,.modal:has(>.modalBox),.modal:has(>.modalbox),#vtgMarketWorkspace,.vtg-receipt-backdrop){z-index:10000!important}
+body :is(.buyerProductModal,.modal-backdrop,.modal:has(>.modalBox),.modal:has(>.modalbox)){overflow-y:auto;overscroll-behavior:contain;align-items:flex-start;padding:max(16px,env(safe-area-inset-top,0px)) 16px 24px}
+body :is(.buyerProductModalBox,.modal-backdrop>.modal,.modalBox,.modalbox){margin-block:auto;max-height:calc(100dvh - 40px)}
+body .modalBox{overflow-y:auto}
+body .toast,body .adminToast{z-index:10001!important}
